@@ -3,9 +3,9 @@ import { Star, Trophy, Medal, Award, Gamepad2, ArrowLeft, Code, Sparkles } from 
 import IslamicRacingGame from './IslamicRacingGame';
 
 const top3 = [
-  { rank: 1, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity' },
-  { rank: 2, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: '', playable: 'game' },
-  { rank: 3, name: 'Nog onbekend', game: 'Wordt bekendgemaakt', klas: 'Groep 6', playable: false },
+  { rank: 1, name: 'Saifeddine Boulabkoul', game: 'Banana Storm Survivor', klas: 'Groep 7b', playable: 'bananastorm' },
+  { rank: 2, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity' },
+  { rank: 3, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: '', playable: 'game' },
 ];
 
 const rankIcons = {
@@ -22,6 +22,45 @@ const rankColors = {
 
 function App() {
   const [page, setPage] = useState('home');
+
+  if (page === 'bananastorm') {
+    return (
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.8)',
+            border: '2px solid #667eea',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <iframe
+          src="/bananastorm.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Banana Storm Survivor"
+        />
+      </div>
+    );
+  }
 
   if (page === 'vicecity') {
     return (
