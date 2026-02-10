@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario-achtig Spel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 4px solid #333;
+            background: linear-gradient(to bottom, #87ceeb 0%, #e0f6ff 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        canvas {
+            display: block;
+            background: inherit;
+        }
+
+        .ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.7);
+            z-index: 10;
+        }
+
+        .ui-item {
+            background: rgba(255,255,255,0.8);
+            padding: 8px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            min-width: 300px;
+        }
+
+        .game-over h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .game-over p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-over button {
+            padding: 12px 30px;
+            font-size: 18px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .game-over button:hover {
+            background: #45a049;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #333;
+            font-size: 12px;
+            background: rgba(255,255,255,0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .victory {
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div class="ui">
+            <div class="ui-item">Score: <span id="score">0</span></div>
+            <div class="ui-item">Size: <span id="size">1.0</span></div>
+            <div class="ui-item">Level: <span id="level">1</span></div>
+            <div class="ui-item">Boss HP: <span id="bossHP">-</span></div>
+        </div>
+
+        <div class="controls">
+            🎮 A/D of ← → voor bewegen | SPACE voor springen | R om opnieuw te spelen
+        </div>
+
+        <div class="game-over" id="gameOverScreen">
+            <h1 id="gameOverTitle">Game Over!</h1>
+            <p id="gameOverText">Je bent geraakt!</p>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button onclick="location.reload()">Opnieuw spelen</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game state
+        let gameState = {
+            level: 1,
+            score: 0,
+            gameOver: false,
+            victory: false,
+            difficultyMultiplier: 1
+        };
+
+        // Player
+        const player = {
+            x: 100,
+            y: 400,
+            width: 30,
+            height: 40,
+            velocityY: 0,
+            velocityX: 0,
+            speed: 5,
+            jumpPower: 12,
+            gravity: 0.6,
+            isJumping: false,
+            size: 1,
+            enemiesEaten: 0,
+            baseSpeed: 5,
+            baseJump: 12
+        };
+
+        // Input
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') e.preventDefault();
+            if (e.key === 'r' || e.key === 'R') {
+                if (gameState.gameOver || gameState.victory) {
+                    location.reload();
+                }
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Ground
+        const platforms = [
+            { x: 0, y: 550, width: 800, height: 50 }, // Main ground
+            { x: 150, y: 450, width: 200, height: 20 },
+            { x: 500, y: 400, width: 250, height: 20 },
+            { x: 250, y: 300, width: 150, height: 20 }
+        ];
+
+        // Enemies
+        let enemies = [];
+
+        class Enemy {
+            constructor(x, y, level = 1) {
+                this.x = x;
+                this.y = y;
+                this.width = 25;
+                this.height = 25;
+                this.velocityY = 0;
+                this.speed = 2 + (level * 0.5);
+                this.direction = Math.random() > 0.5 ? 1 : -1;
+                this.patrolDistance = 100;
+                this.startX = x;
+                this.gravity = 0.6;
+                this.isJumping = false;
+            }
+
+            update() {
+                this.velocityY += this.gravity;
+                this.y += this.velocityY;
+
+                // Collision met platforms
+                for (let platform of platforms) {
+                    if (this.y + this.height >= platform.y &&
+                        this.y + this.height <= platform.y + 20 &&
+                        this.x + this.width > platform.x &&
+                        this.x < platform.x + platform.width) {
+                        this.velocityY = 0;
+                        this.y = platform.y - this.height;
+                        this.isJumping = false;
+                    }
+                }
+
+                // Patrouille
+                this.x += this.speed * this.direction;
+
+                // Teruggaan
+                if (Math.abs(this.x - this.startX) > this.patrolDistance) {
+                    this.direction *= -1;
+                }
+
+                // Willekeurig springen
+                if (!this.isJumping && Math.random() < 0.02) {
+                    this.velocityY = -8;
+                    this.isJumping = true;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = '#FF6B6B';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+
+                // Ogen
+                ctx.fillStyle = 'white';
+                ctx.fillRect(this.x + 5, this.y + 8, 5, 5);
+                ctx.fillRect(this.x + 15, this.y + 8, 5, 5);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(this.x + 6, this.y + 9, 3, 3);
+                ctx.fillRect(this.x + 16, this.y + 9, 3, 3);
+            }
+        }
+
+        // Boss
+        let boss = null;
+
+        class Boss {
+            constructor() {
+                this.x = 600;
+                this.y = 300;
+                this.width = 60;
+                this.height = 60;
+                this.velocityY = 0;
+                this.speed = 2;
+                this.gravity = 0.6;
+                this.isJumping = false;
+                this.direction = -1;
+                this.maxHealth = 5 + gameState.level * 2;
+                this.health = this.maxHealth;
+                this.attackCooldown = 0;
+                this.projectiles = [];
+            }
+
+            update() {
+                // Beweging naar speler
+                if (player.x > this.x) {
+                    this.direction = 1;
+                    this.x += this.speed;
+                } else {
+                    this.direction = -1;
+                    this.x -= this.speed;
+                }
+
+                // Gravity
+                this.velocityY += this.gravity;
+                this.y += this.velocityY;
+
+                // Platform collision
+                for (let platform of platforms) {
+                    if (this.y + this.height >= platform.y &&
+                        this.y + this.height <= platform.y + 20 &&
+                        this.x + this.width > platform.x &&
+                        this.x < platform.x + platform.width) {
+                        this.velocityY = 0;
+                        this.y = platform.y - this.height;
+                        this.isJumping = false;
+                    }
+                }
+
+                // Springen
+                if (!this.isJumping && Math.random() < 0.03) {
+                    this.velocityY = -10;
+                    this.isJumping = true;
+                }
+
+                // Projectielen afvuren
+                this.attackCooldown--;
+                if (this.attackCooldown <= 0) {
+                    this.shoot();
+                    this.attackCooldown = 80;
+                }
+
+                // Update projectielen
+                this.projectiles = this.projectiles.filter(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.3;
+                    return p.y < 600;
+                });
+            }
+
+            shoot() {
+                this.projectiles.push({
+                    x: this.x + this.width / 2,
+                    y: this.y + this.height / 2,
+                    vx: this.direction * 4,
+                    vy: -2,
+                    width: 10,
+                    height: 10
+                });
+            }
+
+            draw() {
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+
+                // Crown
+                ctx.fillStyle = '#FF6B6B';
+                ctx.fillRect(this.x + 10, this.y - 10, 40, 10);
+
+                // Ogen
+                ctx.fillStyle = 'white';
+                ctx.fillRect(this.x + 15, this.y + 15, 8, 8);
+                ctx.fillRect(this.x + 37, this.y + 15, 8, 8);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(this.x + 17, this.y + 17, 4, 4);
+                ctx.fillRect(this.x + 39, this.y + 17, 4, 4);
+
+                // Projectielen
+                ctx.fillStyle = '#FF4444';
+                for (let p of this.projectiles) {
+                    ctx.fillRect(p.x, p.y, p.width, p.height);
+                }
+
+                // Health bar
+                ctx.fillStyle = '#333';
+                ctx.fillRect(this.x - 20, this.y - 25, 100, 10);
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(this.x - 20, this.y - 25, (this.health / this.maxHealth) * 100, 10);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.x - 20, this.y - 25, 100, 10);
+            }
+
+            takeDamage(damage) {
+                this.health -= damage;
+                if (this.health <= 0) {
+                    gameState.victory = true;
+                    gameState.gameOver = true;
+                }
+            }
+        }
+
+        // Collision detection
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // Spawn enemies
+        function spawnEnemies() {
+            enemies = [];
+            const enemyCount = 3 + gameState.level;
+            for (let i = 0; i < enemyCount; i++) {
+                enemies.push(new Enemy(100 + i * 150, 150, gameState.level));
+            }
+        }
+
+        // Update game
+        function update() {
+            if (gameState.gameOver) return;
+
+            // Player movement
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+                player.velocityX = -player.speed;
+            } else if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+                player.velocityX = player.speed;
+            } else {
+                player.velocityX = 0;
+            }
+
+            player.x += player.velocityX;
+
+            // Boundaries
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > 800) player.x = 800 - player.width;
+
+            // Gravity
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+
+            // Platform collision
+            let onPlatform = false;
+            for (let platform of platforms) {
+                if (player.y + player.height >= platform.y &&
+                    player.y + player.height <= platform.y + 20 &&
+                    player.x + player.width > platform.x &&
+                    player.x < platform.x + platform.width &&
+                    player.velocityY >= 0) {
+                    player.velocityY = 0;
+                    player.y = platform.y - player.height;
+                    player.isJumping = false;
+                    onPlatform = true;
+                }
+            }
+
+            // Jump
+            if ((keys[' '] || keys['w'] || keys['W'] || keys['ArrowUp']) && !player.isJumping && onPlatform) {
+                player.velocityY = -player.jumpPower;
+                player.isJumping = true;
+            }
+
+            // Enemy updates
+            for (let enemy of enemies) {
+                enemy.update();
+
+                // Player vs Enemy collision
+                if (checkCollision(player, enemy)) {
+                    if (player.size > 1.2) {
+                        // Speler eet vijand
+                        player.enemiesEaten++;
+                        player.size = 1 + (player.enemiesEaten * 0.08);
+                        player.width = 30 * player.size;
+                        player.height = 40 * player.size;
+                        player.speed = player.baseSpeed + (player.enemiesEaten * 0.2);
+                        player.jumpPower = player.baseJump + (player.enemiesEaten * 0.1);
+                        player.score = player.enemiesEaten * 100;
+
+                        // Verwijder vijand
+                        enemies.splice(enemies.indexOf(enemy), 1);
+                    } else {
+                        gameState.gameOver = true;
+                    }
+                }
+            }
+
+            // Boss spawnen na level 2
+            if (gameState.level >= 2 && boss === null) {
+                boss = new Boss();
+            }
+
+            // Boss updates
+            if (boss) {
+                boss.update();
+
+                // Player vs Boss collision
+                if (checkCollision(player, boss)) {
+                    if (player.size > 1.5) {
+                        boss.takeDamage(player.size * 0.2);
+                    } else {
+                        gameState.gameOver = true;
+                    }
+                }
+
+                // Projectiel vs Player
+                for (let projectile of boss.projectiles) {
+                    if (checkCollision(player, projectile)) {
+                        gameState.gameOver = true;
+                    }
+                }
+            }
+
+            // Level up na 10 vijanden
+            if (player.enemiesEaten >= (gameState.level * 10)) {
+                gameState.level++;
+                gameState.difficultyMultiplier = 1 + (gameState.level - 1) * 0.3;
+                spawnEnemies();
+                boss = null;
+            }
+
+            // Update UI
+            document.getElementById('score').textContent = player.score;
+            document.getElementById('size').textContent = player.size.toFixed(1);
+            document.getElementById('level').textContent = gameState.level;
+            if (boss) {
+                document.getElementById('bossHP').textContent = Math.max(0, boss.health).toFixed(1);
+            } else {
+                document.getElementById('bossHP').textContent = '-';
+            }
+        }
+
+        // Draw game
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(135, 206, 235, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw platforms
+            ctx.fillStyle = '#8B4513';
+            for (let platform of platforms) {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                // Grass on top
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(platform.x, platform.y - 5, platform.width, 5);
+                ctx.fillStyle = '#8B4513';
+            }
+
+            // Draw player
+            ctx.fillStyle = '#FF6B35';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width/2, player.y + player.height/2.5, player.width/2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#FFAF38';
+            ctx.fillRect(player.x, player.y + player.height/2, player.width, player.height/2);
+
+            // Player ogen
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width/3, player.y + player.height/3, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + player.width * 2/3, player.y + player.height/3, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw enemies
+            for (let enemy of enemies) {
+                enemy.draw();
+            }
+
+            // Draw boss
+            if (boss) {
+                boss.draw();
+            }
+
+            // Victory message
+            if (gameState.victory) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#FFD700';
+                ctx.font = 'bold 60px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('JE HEBT GEWONNEN!', canvas.width/2, canvas.height/2 - 50);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText(`Baas verslagen op level ${gameState.level}!`, canvas.width/2, canvas.height/2 + 50);
+            }
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+
+            if (gameState.gameOver) {
+                setTimeout(showGameOver, 100);
+            }
+        }
+
+        function showGameOver() {
+            const overlay = document.getElementById('gameOverScreen');
+            const title = document.getElementById('gameOverTitle');
+            const text = document.getElementById('gameOverText');
+
+            if (gameState.victory) {
+                title.textContent = '🎉 VICTORY! 🎉';
+                title.classList.add('victory');
+                text.textContent = `Je hebt de baas verslagen op level ${gameState.level}!`;
+            } else {
+                title.textContent = '💀 Game Over! 💀';
+                title.classList.remove('victory');
+                text.textContent = 'Je bent geraakt door een vijand!';
+            }
+
+            document.getElementById('finalScore').textContent = player.score;
+            overlay.style.display = 'block';
+        }
+
+        // Start game
+        spawnEnemies();
+        gameLoop();
+    </script>
+</body>
+</html>

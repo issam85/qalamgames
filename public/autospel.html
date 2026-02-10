@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Spel met Islam Vragen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #gameCanvas {
+            border: 4px solid white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            background: #333;
+        }
+
+        .menu, .quiz {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245,87,108,0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .quiz-option {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.02);
+        }
+
+        .quiz-option.correct {
+            background: rgba(76,175,80,0.6);
+            animation: pulse 0.5s;
+        }
+
+        .quiz-option.wrong {
+            background: rgba(244,67,54,0.6);
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .stats {
+            margin: 20px 0;
+            font-size: 1.3em;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .quiz h2 {
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .quiz-question {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Auto Spel met Islam Vragen 🌙</h1>
+
+        <div id="menu" class="menu">
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                Bestuur de auto met de pijltjestoetsen!<br>
+                ⬆️ Vooruit | ⬇️ Achteruit | ⬅️ Links | ➡️ Rechts<br>
+                Ontwijkt de obstakels en haal het einde van het level.<br>
+                Beantwoord daarna een Islam vraag om door te gaan!
+            </p>
+            <button onclick="startGame()">Start Spel</button>
+        </div>
+
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+        <div id="stats" class="stats hidden">
+            <div class="stat-item">Level: <span id="levelDisplay">1</span></div>
+            <div class="stat-item">Score: <span id="scoreDisplay">0</span></div>
+            <div class="stat-item">Levens: <span id="livesDisplay">3</span></div>
+        </div>
+
+        <div id="quiz" class="quiz hidden">
+            <h2>Level Voltooid! 🎉</h2>
+            <div class="quiz-question" id="quizQuestion"></div>
+            <div id="quizOptions"></div>
+        </div>
+
+        <div id="gameOver" class="menu hidden">
+            <h2 style="margin-bottom: 20px;">Game Over!</h2>
+            <p style="font-size: 1.3em; margin-bottom: 20px;">
+                Eindscoresnelheid: <span id="finalScore"></span><br>
+                Bereikte Level: <span id="finalLevel"></span>
+            </p>
+            <button onclick="location.reload()">Opnieuw Spelen</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameState = {
+            level: 1,
+            score: 0,
+            lives: 3,
+            distance: 0,
+            levelDistance: 1000,
+            speed: 3,
+            isPlaying: false
+        };
+
+        const car = {
+            x: 175,
+            y: 500,
+            width: 50,
+            height: 80,
+            speed: 6,
+            verticalSpeed: 6
+        };
+
+        const keys = {};
+        let obstacles = [];
+        let roadOffset = 0;
+
+        const islamQuestions = [
+            {
+                question: "Hoeveel pilaren heeft de Islam?",
+                options: ["3", "5", "7", "10"],
+                correct: 1
+            },
+            {
+                question: "Wat is de eerste pilaar van de Islam?",
+                options: ["Zakat (aalmoezen geven)", "Shahada (geloofsbelijdenis)", "Salat (gebed)", "Sawm (vasten)"],
+                correct: 1
+            },
+            {
+                question: "In welke maand vasten moslims?",
+                options: ["Ramadan", "Shawwal", "Dhul Hijjah", "Muharram"],
+                correct: 0
+            },
+            {
+                question: "Hoeveel keer per dag bidden moslims?",
+                options: ["3 keer", "5 keer", "7 keer", "10 keer"],
+                correct: 1
+            },
+            {
+                question: "Wat is de heilige stad van de Islam?",
+                options: ["Medina", "Jeruzalem", "Mekka", "Damascus"],
+                correct: 2
+            },
+            {
+                question: "Hoe heet het heilige boek van de Islam?",
+                options: ["Bijbel", "Thora", "Koran", "Hadith"],
+                correct: 2
+            },
+            {
+                question: "Wat betekent 'Islam' letterlijk?",
+                options: ["Vrede", "Onderwerping", "Geloof", "Liefde"],
+                correct: 1
+            },
+            {
+                question: "Wie was de laatste profeet in de Islam?",
+                options: ["Mozes", "Jezus", "Abraham", "Mohammed"],
+                correct: 3
+            },
+            {
+                question: "Wat is de Qibla?",
+                options: ["Een gebedskleed", "De richting van Mekka", "Een soort gebed", "Een moskee"],
+                correct: 1
+            },
+            {
+                question: "Hoe heet de bedevaart naar Mekka?",
+                options: ["Umrah", "Hajj", "Salat", "Zakat"],
+                correct: 1
+            }
+        ];
+
+        function startGame() {
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('gameCanvas').style.display = 'block';
+            document.getElementById('stats').classList.remove('hidden');
+            gameState.isPlaying = true;
+            obstacles = [];
+            createObstacles();
+            spawnRandomObstacle();
+            gameLoop();
+        }
+
+        function createObstacles() {
+            obstacles = [];
+        }
+
+        function spawnRandomObstacle() {
+            if (!gameState.isPlaying) return;
+
+            const side = Math.random();
+            let newObstacle = {
+                width: 50,
+                height: 50,
+                type: Math.floor(Math.random() * 3)
+            };
+
+            if (side < 0.5) {
+                newObstacle.x = Math.random() * (canvas.width - 80) + 30;
+                newObstacle.y = -60;
+                newObstacle.speedX = (Math.random() - 0.5) * 3;
+                newObstacle.speedY = gameState.speed + Math.random() * 2;
+            } else if (side < 0.75) {
+                newObstacle.x = -60;
+                newObstacle.y = Math.random() * (canvas.height - 100);
+                newObstacle.speedX = 3 + Math.random() * 2;
+                newObstacle.speedY = (Math.random() - 0.5) * 2;
+            } else {
+                newObstacle.x = canvas.width + 60;
+                newObstacle.y = Math.random() * (canvas.height - 100);
+                newObstacle.speedX = -(3 + Math.random() * 2);
+                newObstacle.speedY = (Math.random() - 0.5) * 2;
+            }
+
+            obstacles.push(newObstacle);
+
+            const nextSpawn = 800 - (gameState.level * 50) + Math.random() * 500;
+            setTimeout(spawnRandomObstacle, Math.max(300, nextSpawn));
+        }
+
+        function drawRoad() {
+            ctx.fillStyle = '#444';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([20, 15]);
+
+            roadOffset += gameState.speed;
+            if (roadOffset > 35) roadOffset = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, -roadOffset);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(0, 0, 20, canvas.height);
+            ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+        }
+
+        function drawCar() {
+            ctx.fillStyle = '#FF4444';
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(car.x + 10, car.y + 10, car.width - 20, 30);
+
+            ctx.fillStyle = '#222';
+            ctx.fillRect(car.x - 5, car.y + 60, 10, 15);
+            ctx.fillRect(car.x + car.width - 5, car.y + 60, 10, 15);
+        }
+
+        function drawObstacle(obs) {
+            if (obs.type === 0) {
+                ctx.fillStyle = '#FF9800';
+                ctx.beginPath();
+                ctx.moveTo(obs.x + obs.width / 2, obs.y);
+                ctx.lineTo(obs.x, obs.y + obs.height);
+                ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
+                ctx.closePath();
+                ctx.fill();
+            } else if (obs.type === 1) {
+                ctx.fillStyle = '#00BCD4';
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            } else {
+                ctx.fillStyle = '#4CAF50';
+                ctx.beginPath();
+                ctx.arc(obs.x + obs.width / 2, obs.y + obs.height / 2, obs.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function updateGame() {
+            if (keys['ArrowLeft'] && car.x > 20) {
+                car.x -= car.speed;
+            }
+            if (keys['ArrowRight'] && car.x < canvas.width - car.width - 20) {
+                car.x += car.speed;
+            }
+            if (keys['ArrowUp'] && car.y > 50) {
+                car.y -= car.verticalSpeed;
+            }
+            if (keys['ArrowDown'] && car.y < canvas.height - car.height - 20) {
+                car.y += car.verticalSpeed;
+            }
+
+            gameState.distance += gameState.speed;
+
+            obstacles.forEach(obs => {
+                obs.y += obs.speedY || gameState.speed;
+                obs.x += obs.speedX || 0;
+            });
+
+            obstacles = obstacles.filter(obs =>
+                obs.y < canvas.height + 100 &&
+                obs.y > -100 &&
+                obs.x < canvas.width + 100 &&
+                obs.x > -100
+            );
+
+            checkCollisions();
+
+            if (gameState.distance >= gameState.levelDistance) {
+                levelComplete();
+            }
+        }
+
+        function checkCollisions() {
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                if (car.x < obs.x + obs.width &&
+                    car.x + car.width > obs.x &&
+                    car.y < obs.y + obs.height &&
+                    car.y + car.height > obs.y) {
+
+                    gameState.lives--;
+                    updateStats();
+
+                    obstacles.splice(i, 1);
+
+                    if (gameState.lives <= 0) {
+                        endGame();
+                    }
+                }
+            }
+        }
+
+        function levelComplete() {
+            gameState.isPlaying = false;
+            gameState.score += 100 * gameState.level;
+            updateStats();
+            showQuiz();
+        }
+
+        function showQuiz() {
+            canvas.style.display = 'none';
+            document.getElementById('quiz').classList.remove('hidden');
+
+            const questionData = islamQuestions[Math.floor(Math.random() * islamQuestions.length)];
+            document.getElementById('quizQuestion').textContent = questionData.question;
+
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+
+            questionData.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => checkAnswer(index, questionData.correct, optionDiv);
+                optionsDiv.appendChild(optionDiv);
+            });
+        }
+
+        function checkAnswer(selected, correct, element) {
+            const allOptions = document.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selected === correct) {
+                element.classList.add('correct');
+                setTimeout(() => {
+                    nextLevel();
+                }, 1500);
+            } else {
+                element.classList.add('wrong');
+                allOptions[correct].classList.add('correct');
+                setTimeout(() => {
+                    nextLevel();
+                }, 2000);
+            }
+        }
+
+        function nextLevel() {
+            gameState.level++;
+            gameState.distance = 0;
+            gameState.speed += 0.5;
+            gameState.levelDistance += 200;
+
+            updateStats();
+
+            document.getElementById('quiz').classList.add('hidden');
+            canvas.style.display = 'block';
+
+            obstacles = [];
+            createObstacles();
+            gameState.isPlaying = true;
+            spawnRandomObstacle();
+            gameLoop();
+        }
+
+        function updateStats() {
+            document.getElementById('levelDisplay').textContent = gameState.level;
+            document.getElementById('scoreDisplay').textContent = gameState.score;
+            document.getElementById('livesDisplay').textContent = gameState.lives;
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+            canvas.style.display = 'none';
+            document.getElementById('stats').classList.add('hidden');
+            document.getElementById('gameOver').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('finalLevel').textContent = gameState.level;
+        }
+
+        function gameLoop() {
+            if (!gameState.isPlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoad();
+            drawCar();
+            obstacles.forEach(drawObstacle);
+            updateGame();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+    </script>
+</body>
+</html>

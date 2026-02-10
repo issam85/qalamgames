@@ -8,6 +8,12 @@ const top3 = [
   { rank: 3, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: 'Groep 6b', playable: 'game' },
 ];
 
+const honorable = [
+  { rank: 4, name: 'Mahir Tazammourti', game: 'Auto Spel met Islam Vragen', klas: 'Groep 6a', playable: 'autospel' },
+  { rank: 5, name: 'Reda Oruadia', game: 'Turbo Racer 3D - Mega Maps', klas: 'Groep 6c', playable: 'turboracer' },
+  { rank: 6, name: 'Junayd Bakkali', game: 'Mario-achtig Spel', klas: 'Groep 6a', playable: 'mariospel' },
+];
+
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
   2: <Medal size={36} fill="#C0C0C0" color="#C0C0C0" />,
@@ -22,6 +28,123 @@ const rankColors = {
 
 function App() {
   const [page, setPage] = useState('home');
+
+  if (page === 'turboracer') {
+    return (
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.8)',
+            border: '2px solid #00ff88',
+            color: '#00ff88',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <iframe
+          src="/turboracer.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Turbo Racer 3D"
+        />
+      </div>
+    );
+  }
+
+  if (page === 'mariospel') {
+    return (
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.8)',
+            border: '2px solid #e52521',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <iframe
+          src="/mariospel.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Mario-achtig Spel"
+        />
+      </div>
+    );
+  }
+
+  if (page === 'autospel') {
+    return (
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.8)',
+            border: '2px solid #f5576c',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <iframe
+          src="/autospel.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Auto Spel met Islam Vragen"
+        />
+      </div>
+    );
+  }
 
   if (page === 'bananastorm') {
     return (
@@ -381,6 +504,98 @@ function App() {
                   }}>
                     #{student.rank}
                   </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Honorable Mentions */}
+        <section style={{
+          textAlign: 'center',
+          marginBottom: '3rem',
+        }}>
+          <h3 style={{
+            fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
+            color: '#f4e3b5',
+            marginBottom: '1.5rem',
+            letterSpacing: '0.05em',
+            opacity: 0.8,
+          }}>
+            Eervolle vermelding
+          </h3>
+
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}>
+            {honorable.map((student) => (
+              <div key={student.rank} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.2rem',
+                padding: '1rem 1.5rem',
+                background: 'rgba(58, 35, 20, 0.4)',
+                border: '1px solid rgba(212, 175, 55, 0.2)',
+                borderRadius: '14px',
+              }}>
+                <div style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: '#d4af37',
+                  opacity: 0.5,
+                  flexShrink: 0,
+                  width: '40px',
+                }}>
+                  #{student.rank}
+                </div>
+                <div style={{ textAlign: 'left', flex: 1 }}>
+                  <div style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    color: '#f4e3b5',
+                    marginBottom: '0.2rem',
+                  }}>
+                    {student.name}
+                  </div>
+                  <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>
+                    {student.game}{student.klas ? ` — ${student.klas}` : ''}
+                  </div>
+                </div>
+                {student.playable && (
+                  <button
+                    onClick={() => setPage(student.playable)}
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      border: '2px solid rgba(212, 175, 55, 0.5)',
+                      background: 'rgba(212, 175, 55, 0.2)',
+                      color: '#d4af37',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      fontFamily: 'inherit',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.3s ease',
+                      flexShrink: 0,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
+                      e.currentTarget.style.color = '#1a0f0a';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
+                      e.currentTarget.style.color = '#d4af37';
+                    }}
+                  >
+                    <Gamepad2 size={14} />
+                    Speel
+                  </button>
                 )}
               </div>
             ))}
