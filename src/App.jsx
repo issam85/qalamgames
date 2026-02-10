@@ -3,8 +3,8 @@ import { Star, Trophy, Medal, Award, Gamepad2, ArrowLeft, Code, Sparkles } from 
 import IslamicRacingGame from './IslamicRacingGame';
 
 const top3 = [
-  { rank: 1, name: 'Nog onbekend', game: 'Vice City Racing 3D', klas: 'Groep 8', playable: 'vicecity' },
-  { rank: 2, name: 'Voorbeeld', game: 'سباق السلام — Race of Peace', klas: 'Demo', playable: 'game' },
+  { rank: 1, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity' },
+  { rank: 2, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: '', playable: 'game' },
   { rank: 3, name: 'Nog onbekend', game: 'Wordt bekendgemaakt', klas: 'Groep 6', playable: false },
 ];
 
@@ -294,7 +294,12 @@ function App() {
                     {student.name}
                   </div>
                   <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
-                    {student.game} — {student.klas}
+                    {student.gameSubtitle ? (
+                      <><span dir="rtl">{student.game}</span> — {student.gameSubtitle}</>
+                    ) : (
+                      student.game
+                    )}
+                    {student.klas ? ` — ${student.klas}` : ''}
                   </div>
                 </div>
                 {student.playable ? (
