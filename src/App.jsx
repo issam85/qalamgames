@@ -3,15 +3,16 @@ import { Star, Trophy, Medal, Award, Gamepad2, ArrowLeft, Code, Sparkles } from 
 import IslamicRacingGame from './IslamicRacingGame';
 
 const top3 = [
-  { rank: 1, name: 'Saifeddine Boulabkoul', game: 'Banana Storm Survivor', klas: 'Groep 7b', playable: 'bananastorm' },
-  { rank: 2, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity' },
-  { rank: 3, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: 'Groep 6b', playable: 'game' },
+  { rank: 1, name: 'Marouan El Amrani', game: 'Penalty Shooters Pro', gameSubtitle: 'Toernooi Edition', klas: 'Groep 7c', playable: 'penalty' },
+  { rank: 2, name: 'Saifeddine Boulabkoul', game: 'Banana Storm Survivor', klas: 'Groep 7b', playable: 'bananastorm' },
+  { rank: 3, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity' },
 ];
 
 const honorable = [
-  { rank: 4, name: 'Mahir Tazammourti', game: 'Auto Spel met Islam Vragen', klas: 'Groep 6a', playable: 'autospel' },
-  { rank: 5, name: 'Reda Oruadia', game: 'Turbo Racer 3D - Mega Maps', klas: 'Groep 6c', playable: 'turboracer' },
-  { rank: 6, name: 'Junayd Bakkali', game: 'Mario-achtig Spel', klas: 'Groep 6a', playable: 'mariospel' },
+  { rank: 4, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: 'Groep 6b', playable: 'game' },
+  { rank: 5, name: 'Mahir Tazammourti', game: 'Auto Spel met Islam Vragen', klas: 'Groep 6a', playable: 'autospel' },
+  { rank: 6, name: 'Reda Oruadia', game: 'Turbo Racer 3D - Mega Maps', klas: 'Groep 6c', playable: 'turboracer' },
+  { rank: 7, name: 'Junayd Bakkali', game: 'Mario-achtig Spel', klas: 'Groep 6a', playable: 'mariospel' },
 ];
 
 const rankIcons = {
@@ -219,6 +220,45 @@ function App() {
             border: 'none',
           }}
           title="Vice City Racing 3D"
+        />
+      </div>
+    );
+  }
+
+  if (page === 'penalty') {
+    return (
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.8)',
+            border: '2px solid #4caf50',
+            color: '#4caf50',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <iframe
+          src="/penalty.html"
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title="Penalty Shooters Pro"
         />
       </div>
     );
