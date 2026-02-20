@@ -26,17 +26,11 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             border-radius: 12px;
             overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-            max-width: 900px;
-            max-height: 600px;
         }
 
         canvas {
             display: block;
             background: #50b465;
-            width: 100%;
-            height: 100%;
         }
 
         #ui {
@@ -97,41 +91,35 @@
             align-items: center;
             color: white;
             backdrop-filter: blur(5px);
-            z-index: 50;
-            pointer-events: none;
         }
 
         #gameOverScreen.active {
             display: flex;
-            pointer-events: auto;
         }
 
         #gameOverScreen h1 {
-            font-size: clamp(32px, 8vw, 64px);
+            font-size: 64px;
             margin-bottom: 20px;
             color: #ff6b6b;
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
         }
 
         #gameOverScreen p {
-            font-size: clamp(18px, 4vw, 28px);
+            font-size: 28px;
             margin-bottom: 30px;
         }
 
         #restartBtn {
             padding: 15px 40px;
-            font-size: clamp(18px, 4vw, 24px);
+            font-size: 24px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            pointer-events: auto;
+            pointer-events: all;
             transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            min-height: 50px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
         }
 
         #restartBtn:hover {
@@ -141,22 +129,19 @@
 
         #restartBtn:active {
             transform: translateY(0);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
 
         #instructions {
             position: absolute;
-            bottom: 10px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.6);
-            padding: 10px 20px;
+            padding: 15px 30px;
             border-radius: 10px;
-            font-size: clamp(10px, 2vw, 14px);
+            font-size: 14px;
             color: white;
             text-align: center;
-            width: 90%;
-            max-width: 600px;
         }
 
         .particle {
@@ -1288,44 +1273,8 @@
 
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            mousePos.x = (e.clientX - rect.left) * scaleX;
-            mousePos.y = (e.clientY - rect.top) * scaleY;
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const touch = e.touches[0];
-            mousePos.x = (touch.clientX - rect.left) * scaleX;
-            mousePos.y = (touch.clientY - rect.top) * scaleY;
-        }, { passive: false });
-
-        canvas.addEventListener('touchstart', (e) => {
-            if (gameOver || isDancing) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const touch = e.touches[0];
-            mousePos.x = (touch.clientX - rect.left) * scaleX;
-            mousePos.y = (touch.clientY - rect.top) * scaleY;
-
-            const angle = Math.atan2((mousePos.y + camera.y) - player.y, (mousePos.x + camera.x) - player.x);
-            if (hasDoubleShot && hasSecondGun) {
-                const spread = 0.15;
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
-            } else if (hasDoubleShot) {
-                const spread = 0.15;
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
-            } else {
-                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
-            }
+            mousePos.x = e.clientX - rect.left;
+            mousePos.y = e.clientY - rect.top;
         });
 
         canvas.addEventListener('click', (e) => {
@@ -1406,14 +1355,7 @@
             keys[e.key] = false;
         });
 
-        document.getElementById('restartBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            resetGame();
-        });
-        document.getElementById('restartBtn').addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        document.getElementById('restartBtn').addEventListener('click', () => {
             resetGame();
         });
 
