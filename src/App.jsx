@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Star, Trophy, Medal, Award, Gamepad2, ArrowLeft, Code, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Star, Trophy, Medal, Award, Gamepad2, ArrowLeft, Code, Sparkles, Maximize, Minimize } from 'lucide-react';
 import IslamicRacingGame from './IslamicRacingGame';
 
 const top3 = [
@@ -27,317 +27,202 @@ const rankColors = {
   3: '#CD7F32',
 };
 
+// Game configurations for styling
+const gameStyles = {
+  turboracer:    { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer.html', title: 'Turbo Racer 3D' },
+  mariospel:     { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel.html', title: 'Mario-achtig Spel' },
+  autospel:      { border: '#f5576c', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/autospel.html', title: 'Auto Spel met Islam Vragen' },
+  bananastorm:   { border: '#667eea', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/bananastorm.html', title: 'Banana Storm Survivor' },
+  vicecity:      { border: '#ff00ff', color: '#ff00ff', bg: 'rgba(0,0,0,0.8)', font: 'Impact, sans-serif', src: '/vicecity.html', title: 'Vice City Racing 3D' },
+  penalty:       { border: '#4caf50', color: '#4caf50', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/penalty.html', title: 'Penalty Shooters Pro' },
+  bananastorm2:  { border: '#667eea', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/bananastorm2.html', title: 'Banana Storm Survivor V2' },
+  vicecity2:     { border: '#ff00ff', color: '#ff00ff', bg: 'rgba(0,0,0,0.8)', font: 'Impact, sans-serif', src: '/vicecity2.html', title: 'Vice City Racing 3D V2' },
+  autospel2:     { border: '#f5576c', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/autospel2.html', title: 'Auto Spel V2' },
+  turboracer2:   { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer2.html', title: 'Turbo Racer 3D V2' },
+  mariospel2:    { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel2.html', title: 'Mario-achtig Spel V2' },
+  game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
+};
+
+function GameView({ gameKey, onBack }) {
+  const containerRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const style = gameStyles[gameKey];
+
+  const isMobile = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isIOS = typeof window !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const enterFullscreen = () => {
+    const el = containerRef.current;
+    if (!el) return;
+    // Standard Fullscreen API (works on Android Chrome, Desktop)
+    const request = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (request) {
+      request.call(el).catch(() => {});
+    }
+    // Also try to lock screen orientation to landscape for better game experience
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(() => {});
+    }
+    // iOS fallback: scroll to hide address bar
+    if (isIOS) {
+      window.scrollTo(0, 1);
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document).catch(() => {});
+    }
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const onFsChange = () => {
+      setIsFullscreen(!!(document.fullscreenElement || document.webkitFullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange);
+    };
+  }, []);
+
+  // Auto-request fullscreen on mobile when game opens
+  useEffect(() => {
+    if (isMobile && containerRef.current) {
+      // Fullscreen API requires a user gesture, so we show a prompt instead of auto-requesting
+      // But we can try - some browsers allow it after a recent interaction
+      const timer = setTimeout(() => {
+        enterFullscreen();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
+
+  // Hide buttons after a few seconds of inactivity, show on tap
+  const [showControls, setShowControls] = useState(true);
+  const hideTimer = useRef(null);
+
+  useEffect(() => {
+    if (isFullscreen) {
+      hideTimer.current = setTimeout(() => setShowControls(false), 4000);
+      return () => clearTimeout(hideTimer.current);
+    } else {
+      setShowControls(true);
+    }
+  }, [isFullscreen]);
+
+  const handleTap = () => {
+    if (isFullscreen && !showControls) {
+      setShowControls(true);
+      hideTimer.current = setTimeout(() => setShowControls(false), 4000);
+    }
+  };
+
+  const handleBack = () => {
+    exitFullscreen();
+    onBack();
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onClick={handleTap}
+      style={{ width: '100%', height: '100vh', position: 'relative', background: '#000' }}
+    >
+      {/* Top bar with back + fullscreen buttons */}
+      <div style={{
+        position: 'absolute',
+        top: '0.5rem',
+        left: '0.5rem',
+        right: '0.5rem',
+        zIndex: 100,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        pointerEvents: 'none',
+        opacity: showControls ? 1 : 0,
+        transition: 'opacity 0.3s ease',
+      }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleBack(); }}
+          style={{
+            pointerEvents: showControls ? 'auto' : 'none',
+            background: style.bg,
+            border: `2px solid ${style.border}`,
+            color: style.color,
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1rem',
+            fontFamily: style.font,
+          }}
+        >
+          <ArrowLeft size={18} />
+          Terug
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+          style={{
+            pointerEvents: showControls ? 'auto' : 'none',
+            background: style.bg,
+            border: `2px solid ${style.border}`,
+            color: style.color,
+            padding: '0.5rem',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1rem',
+          }}
+          title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+        >
+          {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+        </button>
+      </div>
+
+      {/* Game content */}
+      {gameKey === 'game' ? (
+        <IslamicRacingGame />
+      ) : (
+        <iframe
+          src={style.src}
+          allow="fullscreen"
+          allowFullScreen
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+          }}
+          title={style.title}
+        />
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [page, setPage] = useState('home');
 
-  if (page === 'turboracer') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #00ff88',
-            color: '#00ff88',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/turboracer.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Turbo Racer 3D"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'mariospel') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #e52521',
-            color: '#fff',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/mariospel.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Mario-achtig Spel"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'autospel') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #f5576c',
-            color: '#fff',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/autospel.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Auto Spel met Islam Vragen"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'bananastorm') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #667eea',
-            color: '#fff',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/bananastorm.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Banana Storm Survivor"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'vicecity') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #ff00ff',
-            color: '#ff00ff',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'Impact, sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/vicecity.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Vice City Racing 3D"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'penalty') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.8)',
-            border: '2px solid #4caf50',
-            color: '#4caf50',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <iframe
-          src="/penalty.html"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="Penalty Shooters Pro"
-        />
-      </div>
-    );
-  }
-
-  if (page === 'bananastorm2') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button onClick={() => setPage('home')} style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, background: 'rgba(0,0,0,0.8)', border: '2px solid #667eea', color: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontFamily: 'sans-serif' }}><ArrowLeft size={18} />Terug</button>
-        <iframe src="/bananastorm2.html" style={{ width: '100%', height: '100%', border: 'none' }} title="Banana Storm Survivor V2" />
-      </div>
-    );
-  }
-
-  if (page === 'vicecity2') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button onClick={() => setPage('home')} style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, background: 'rgba(0,0,0,0.8)', border: '2px solid #ff00ff', color: '#ff00ff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontFamily: 'Impact, sans-serif' }}><ArrowLeft size={18} />Terug</button>
-        <iframe src="/vicecity2.html" style={{ width: '100%', height: '100%', border: 'none' }} title="Vice City Racing 3D V2" />
-      </div>
-    );
-  }
-
-  if (page === 'autospel2') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button onClick={() => setPage('home')} style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, background: 'rgba(0,0,0,0.8)', border: '2px solid #f5576c', color: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontFamily: 'sans-serif' }}><ArrowLeft size={18} />Terug</button>
-        <iframe src="/autospel2.html" style={{ width: '100%', height: '100%', border: 'none' }} title="Auto Spel V2" />
-      </div>
-    );
-  }
-
-  if (page === 'turboracer2') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button onClick={() => setPage('home')} style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, background: 'rgba(0,0,0,0.8)', border: '2px solid #00ff88', color: '#00ff88', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontFamily: 'sans-serif' }}><ArrowLeft size={18} />Terug</button>
-        <iframe src="/turboracer2.html" style={{ width: '100%', height: '100%', border: 'none' }} title="Turbo Racer 3D V2" />
-      </div>
-    );
-  }
-
-  if (page === 'mariospel2') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button onClick={() => setPage('home')} style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 100, background: 'rgba(0,0,0,0.8)', border: '2px solid #e52521', color: '#fff', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontFamily: 'sans-serif' }}><ArrowLeft size={18} />Terug</button>
-        <iframe src="/mariospel2.html" style={{ width: '100%', height: '100%', border: 'none' }} title="Mario-achtig Spel V2" />
-      </div>
-    );
-  }
-
-  if (page === 'game') {
-    return (
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <button
-          onClick={() => setPage('home')}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 100,
-            background: 'rgba(26, 15, 10, 0.8)',
-            border: '2px solid #d4af37',
-            color: '#d4af37',
-            padding: '0.5rem 1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '1rem',
-            fontFamily: '"Amiri", serif',
-          }}
-        >
-          <ArrowLeft size={18} />
-          Terug
-        </button>
-        <IslamicRacingGame />
-      </div>
-    );
+  // Render any game page using the unified GameView
+  if (page !== 'home' && gameStyles[page]) {
+    return <GameView gameKey={page} onBack={() => setPage('home')} />;
   }
 
   return (
