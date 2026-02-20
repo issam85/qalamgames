@@ -11,7 +11,6 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -23,7 +22,6 @@
             overflow: hidden;
             touch-action: none;
         }
-
         .container {
             text-align: center;
             max-width: 800px;
@@ -36,14 +34,12 @@
             flex: 1;
             overflow: hidden;
         }
-
         h1 {
             margin-bottom: 10px;
             font-size: 2em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             flex-shrink: 0;
         }
-
         #gameCanvas {
             border: 4px solid white;
             border-radius: 10px;
@@ -53,7 +49,6 @@
             touch-action: none;
             flex-shrink: 0;
         }
-
         .menu, .quiz {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -61,7 +56,6 @@
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-
         button {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
@@ -74,16 +68,13 @@
             transition: transform 0.2s, box-shadow 0.2s;
             font-weight: bold;
         }
-
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(245,87,108,0.4);
         }
-
         button:active {
             transform: translateY(0);
         }
-
         .quiz-option {
             background: rgba(255,255,255,0.2);
             padding: 15px;
@@ -93,33 +84,27 @@
             transition: all 0.3s;
             font-size: 1.1em;
         }
-
         .quiz-option:hover {
             background: rgba(255,255,255,0.3);
             transform: scale(1.02);
         }
-
         .quiz-option.correct {
             background: rgba(76,175,80,0.6);
             animation: pulse 0.5s;
         }
-
         .quiz-option.wrong {
             background: rgba(244,67,54,0.6);
             animation: shake 0.5s;
         }
-
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
         }
-
         .stats {
             width: 100%;
             max-width: 420px;
@@ -130,7 +115,6 @@
             flex-wrap: nowrap;
             flex-shrink: 0;
         }
-
         .stat-item {
             background: rgba(255,255,255,0.2);
             padding: 6px 12px;
@@ -139,35 +123,28 @@
             font-size: 0.95em;
             white-space: nowrap;
         }
-
         .hidden {
             display: none;
         }
-
         .quiz h2 {
             margin-bottom: 30px;
             font-size: 1.8em;
         }
-
         .quiz-question {
             font-size: 1.3em;
             margin-bottom: 30px;
             line-height: 1.5;
         }
-
         body.mobile {
             background: #000;
         }
-
         body.mobile .container {
             padding: 0;
             max-width: 100%;
         }
-
         body.mobile h1 {
             display: none;
         }
-
         body.mobile #gameCanvas {
             border: none;
             border-radius: 0;
@@ -176,7 +153,6 @@
             top: 0;
             left: 0;
         }
-
         body.mobile .stats {
             position: fixed;
             top: 0;
@@ -189,14 +165,12 @@
             z-index: 10;
             display: flex;
         }
-
         body.mobile .stat-item {
             padding: 4px 8px;
             font-size: 0.85em;
             flex: 1;
             text-align: center;
         }
-
         body.mobile .menu,
         body.mobile #gameOver {
             position: fixed;
@@ -208,7 +182,6 @@
             z-index: 20;
             padding: 30px 20px;
         }
-
         body.mobile .quiz {
             position: fixed;
             top: 0;
@@ -225,7 +198,6 @@
         body.mobile .quiz:not(.hidden) {
             display: flex;
         }
-
         body.mobile .quiz-option {
             padding: 18px;
             font-size: 1.05em;
@@ -233,7 +205,6 @@
             display: flex;
             align-items: center;
         }
-
         #joystick-container {
             display: none;
             position: fixed;
@@ -243,7 +214,6 @@
             height: 120px;
             z-index: 30;
         }
-
         #joystick-base {
             width: 120px;
             height: 120px;
@@ -254,7 +224,6 @@
             top: 0;
             left: 0;
         }
-
         #joystick-thumb {
             width: 50px;
             height: 50px;
@@ -266,7 +235,6 @@
             left: 35px;
             pointer-events: none;
         }
-
         #landscape-hint {
             display: none;
             position: fixed;
@@ -280,13 +248,11 @@
             text-align: center;
             padding: 30px;
         }
-
         #landscape-hint .rotate-icon {
             font-size: 4em;
             margin-bottom: 20px;
             animation: rotateHint 2s infinite;
         }
-
         @keyframes rotateHint {
             0%, 100% { transform: rotate(0deg); }
             50% { transform: rotate(90deg); }
@@ -298,10 +264,8 @@
         <div class="rotate-icon">📱</div>
         <p>Draai je telefoon horizontaal voor de beste ervaring</p>
     </div>
-
     <div class="container">
         <h1>🚗 Auto Spel met Islam Vragen 🌙</h1>
-
         <div id="menu" class="menu">
             <p style="font-size: 1.1em; margin-bottom: 30px;" id="controls-hint">
                 Bestuur de auto met de pijltjestoetsen!<br>
@@ -311,22 +275,18 @@
             </p>
             <button onclick="startGame()">Start Spel</button>
         </div>
-
         <canvas id="gameCanvas" width="400" height="600"></canvas>
-
         <div id="stats" class="stats hidden">
             <div class="stat-item">⏱ <span id="timerDisplay">0:00</span></div>
             <div class="stat-item"><span id="livesDisplay">❤️❤️❤️</span></div>
             <div class="stat-item">🏆 <span id="scoreDisplay">0</span></div>
             <div class="stat-item">❓ <span id="nextQuestionDisplay">0:30</span></div>
         </div>
-
         <div id="quiz" class="quiz hidden">
             <h2>Islam Vraag! 🌙</h2>
             <div class="quiz-question" id="quizQuestion"></div>
             <div id="quizOptions"></div>
         </div>
-
         <div id="gameOver" class="menu hidden">
             <h2 style="margin-bottom: 20px;">Game Over!</h2>
             <p style="font-size: 1.3em; margin-bottom: 20px;">
@@ -336,16 +296,13 @@
             <button onclick="location.reload()">Opnieuw Spelen</button>
         </div>
     </div>
-
     <div id="joystick-container">
         <div id="joystick-base"></div>
         <div id="joystick-thumb"></div>
     </div>
-
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
         const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
         if (isMobile) {
             document.body.classList.add('mobile');
@@ -354,10 +311,8 @@
                 'Ontwijkt de <strong>rode obstakels</strong> — ze kosten je een leven!<br>' +
                 'Elke 30 seconden krijg je een Islam vraag.';
         }
-
         const GAME_W = 400;
         const GAME_H = 600;
-
         function resizeCanvas() {
             const w = window.innerWidth;
             const h = window.innerHeight;
@@ -375,27 +330,22 @@
                 canvas.style.height = (GAME_H * s) + 'px';
             }
         }
-
         function checkOrientation() {
             if (!isMobile) return;
             const hint = document.getElementById('landscape-hint');
             hint.style.display = window.innerHeight > window.innerWidth ? 'flex' : 'none';
         }
-
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 300));
         document.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
         document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-
         const joystickContainer = document.getElementById('joystick-container');
         const joystickThumb = document.getElementById('joystick-thumb');
         const JOYSTICK_RADIUS = 60;
         const DEAD_ZONE = 10;
         let joystick = { active: false, startX: 0, startY: 0, dx: 0, dy: 0 };
-
         if (isMobile) {
             joystickContainer.style.display = 'block';
-
             joystickContainer.addEventListener('touchstart', e => {
                 const t = e.touches[0];
                 joystick.active = true;
@@ -404,7 +354,6 @@
                 joystick.dx = 0;
                 joystick.dy = 0;
             });
-
             window.addEventListener('touchmove', e => {
                 if (!joystick.active) return;
                 const t = e.touches[0];
@@ -420,7 +369,6 @@
                 joystickThumb.style.left = (35 + dx) + 'px';
                 joystickThumb.style.top = (35 + dy) + 'px';
             });
-
             window.addEventListener('touchend', () => {
                 joystick.active = false;
                 joystick.dx = 0;
@@ -429,7 +377,6 @@
                 joystickThumb.style.top = '35px';
             });
         }
-
         let gameState = {
             score: 0,
             lives: 3,
@@ -439,18 +386,15 @@
             lastQuestionAt: 0,
             questionInterval: 30
         };
-
         const car = {
             x: 175, y: 500,
             width: 50, height: 80,
             speed: 6, verticalSpeed: 6
         };
-
         const keys = {};
         let obstacles = [];
         let roadOffset = 0;
         let timerInterval = null;
-
         const islamQuestions = [
             { question: "Hoeveel pilaren heeft de Islam?", options: ["3", "5", "7", "10"], correct: 1 },
             { question: "Wat is de eerste pilaar van de Islam?", options: ["Zakat (aalmoezen geven)", "Shahada (geloofsbelijdenis)", "Salat (gebed)", "Sawm (vasten)"], correct: 1 },
@@ -463,19 +407,16 @@
             { question: "Wat is de Qibla?", options: ["Een gebedskleed", "De richting van Mekka", "Een soort gebed", "Een moskee"], correct: 1 },
             { question: "Hoe heet de bedevaart naar Mekka?", options: ["Umrah", "Hajj", "Salat", "Zakat"], correct: 1 }
         ];
-
         function formatTime(secs) {
             const m = Math.floor(secs / 60);
             const s = secs % 60;
             return m + ':' + String(s).padStart(2, '0');
         }
-
         function startGame() {
             document.getElementById('menu').classList.add('hidden');
             canvas.style.display = 'block';
             document.getElementById('stats').classList.remove('hidden');
             resizeCanvas();
-
             gameState.isPlaying = true;
             gameState.elapsedSeconds = 0;
             gameState.lastQuestionAt = 0;
@@ -483,13 +424,11 @@
             gameState.lives = 3;
             gameState.speed = 3;
             obstacles = [];
-
             updateStats();
             startTimer();
             spawnRandomObstacle();
             gameLoop();
         }
-
         function startTimer() {
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -507,7 +446,6 @@
                 }
             }, 1000);
         }
-
         function updateStats() {
             document.getElementById('timerDisplay').textContent = formatTime(gameState.elapsedSeconds);
             document.getElementById('scoreDisplay').textContent = gameState.score;
@@ -516,12 +454,10 @@
             const remaining = Math.max(0, nextAt - gameState.elapsedSeconds);
             document.getElementById('nextQuestionDisplay').textContent = formatTime(remaining);
         }
-
         function spawnRandomObstacle() {
             if (!gameState.isPlaying) return;
             const side = Math.random();
             let obs = { width: 50, height: 50 };
-
             if (side < 0.5) {
                 obs.x = Math.random() * (GAME_W - 80) + 30;
                 obs.y = -60;
@@ -538,65 +474,53 @@
                 obs.speedX = -(3 + Math.random() * 2);
                 obs.speedY = (Math.random() - 0.5) * 2;
             }
-
             obstacles.push(obs);
             const nextSpawn = 800 - (gameState.speed * 30) + Math.random() * 400;
             setTimeout(spawnRandomObstacle, Math.max(300, nextSpawn));
         }
-
         function drawRoad() {
             ctx.fillStyle = '#444';
             ctx.fillRect(0, 0, GAME_W, GAME_H);
-
             ctx.strokeStyle = '#FFD700';
             ctx.lineWidth = 3;
             ctx.setLineDash([20, 15]);
             roadOffset += gameState.speed;
             if (roadOffset > 35) roadOffset = 0;
-
             ctx.beginPath();
             ctx.moveTo(GAME_W / 2, -roadOffset);
             ctx.lineTo(GAME_W / 2, GAME_H);
             ctx.stroke();
             ctx.setLineDash([]);
-
             ctx.fillStyle = '#2a2a2a';
             ctx.fillRect(0, 0, 20, GAME_H);
             ctx.fillRect(GAME_W - 20, 0, 20, GAME_H);
         }
-
         function drawCar() {
             ctx.fillStyle = '#4FC3F7';
             ctx.beginPath();
             ctx.roundRect(car.x, car.y, car.width, car.height, 8);
             ctx.fill();
-
             ctx.fillStyle = '#0288D1';
             ctx.beginPath();
             ctx.roundRect(car.x + 8, car.y + 8, car.width - 16, 28, 5);
             ctx.fill();
-
             ctx.fillStyle = 'rgba(200,240,255,0.7)';
             ctx.beginPath();
             ctx.roundRect(car.x + 10, car.y + 10, car.width - 20, 20, 3);
             ctx.fill();
-
             ctx.fillStyle = '#111';
             ctx.beginPath(); ctx.roundRect(car.x - 7, car.y + 10, 10, 18, 3); ctx.fill();
             ctx.beginPath(); ctx.roundRect(car.x + car.width - 3, car.y + 10, 10, 18, 3); ctx.fill();
             ctx.beginPath(); ctx.roundRect(car.x - 7, car.y + car.height - 28, 10, 18, 3); ctx.fill();
             ctx.beginPath(); ctx.roundRect(car.x + car.width - 3, car.y + car.height - 28, 10, 18, 3); ctx.fill();
-
             ctx.fillStyle = '#FFF176';
             ctx.beginPath(); ctx.roundRect(car.x + 4, car.y + car.height - 12, 12, 8, 2); ctx.fill();
             ctx.beginPath(); ctx.roundRect(car.x + car.width - 16, car.y + car.height - 12, 12, 8, 2); ctx.fill();
         }
-
         function drawObstacle(obs) {
             const cx = obs.x + obs.width / 2;
             const cy = obs.y + obs.height / 2;
             const r = obs.width / 2;
-
             const grd = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r * 1.4);
             grd.addColorStop(0, 'rgba(255,60,60,0.5)');
             grd.addColorStop(1, 'rgba(255,0,0,0)');
@@ -604,7 +528,6 @@
             ctx.beginPath();
             ctx.arc(cx, cy, r * 1.4, 0, Math.PI * 2);
             ctx.fill();
-
             ctx.fillStyle = '#D32F2F';
             ctx.strokeStyle = '#FF8A80';
             ctx.lineWidth = 2.5;
@@ -619,7 +542,6 @@
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
-
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 3.5;
             ctx.lineCap = 'round';
@@ -628,7 +550,6 @@
             ctx.moveTo(cx - arm, cy - arm); ctx.lineTo(cx + arm, cy + arm);
             ctx.moveTo(cx + arm, cy - arm); ctx.lineTo(cx - arm, cy + arm);
             ctx.stroke();
-
             ctx.strokeStyle = 'rgba(255,235,59,0.85)';
             ctx.lineWidth = 2;
             ctx.setLineDash([4, 4]);
@@ -637,7 +558,6 @@
             ctx.stroke();
             ctx.setLineDash([]);
         }
-
         function getInput() {
             const input = { left: false, right: false, up: false, down: false };
             if (isMobile) {
@@ -657,30 +577,24 @@
             }
             return input;
         }
-
         function updateGame() {
             const input = getInput();
             const sf = isMobile ? Math.min(Math.abs(joystick.dx) / JOYSTICK_RADIUS, 1) : 1;
             const vf = isMobile ? Math.min(Math.abs(joystick.dy) / JOYSTICK_RADIUS, 1) : 1;
-
             if (input.left && car.x > 20) car.x -= car.speed * sf;
             if (input.right && car.x < GAME_W - car.width - 20) car.x += car.speed * sf;
             if (input.up && car.y > 50) car.y -= car.verticalSpeed * vf;
             if (input.down && car.y < GAME_H - car.height - 20) car.y += car.verticalSpeed * vf;
-
             obstacles.forEach(obs => {
                 obs.y += obs.speedY || gameState.speed;
                 obs.x += obs.speedX || 0;
             });
-
             obstacles = obstacles.filter(obs =>
                 obs.y < GAME_H + 100 && obs.y > -100 &&
                 obs.x < GAME_W + 100 && obs.x > -100
             );
-
             checkCollisions();
         }
-
         function checkCollisions() {
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 const obs = obstacles[i];
@@ -695,19 +609,15 @@
                 }
             }
         }
-
         function triggerQuestion() {
             gameState.isPlaying = false;
             canvas.style.display = 'none';
             if (isMobile) joystickContainer.style.display = 'none';
             document.getElementById('quiz').classList.remove('hidden');
-
             const questionData = islamQuestions[Math.floor(Math.random() * islamQuestions.length)];
             document.getElementById('quizQuestion').textContent = questionData.question;
-
             const optionsDiv = document.getElementById('quizOptions');
             optionsDiv.innerHTML = '';
-
             questionData.options.forEach((option, index) => {
                 const optionDiv = document.createElement('div');
                 optionDiv.className = 'quiz-option';
@@ -716,11 +626,9 @@
                 optionsDiv.appendChild(optionDiv);
             });
         }
-
         function checkAnswer(selected, correct, element) {
             const allOptions = document.querySelectorAll('.quiz-option');
             allOptions.forEach(opt => opt.style.pointerEvents = 'none');
-
             if (selected === correct) {
                 element.classList.add('correct');
                 gameState.score += 50;
@@ -736,7 +644,6 @@
             }
             setTimeout(resumeGame, selected === correct ? 1500 : 2000);
         }
-
         function resumeGame() {
             document.getElementById('quiz').classList.add('hidden');
             canvas.style.display = 'block';
@@ -745,7 +652,6 @@
             updateStats();
             gameLoop();
         }
-
         function endGame() {
             clearInterval(timerInterval);
             gameState.isPlaying = false;
@@ -757,7 +663,6 @@
             document.getElementById('finalTime').textContent = formatTime(gameState.elapsedSeconds);
             document.getElementById('finalScore').textContent = gameState.score;
         }
-
         function gameLoop() {
             if (!gameState.isPlaying) return;
             ctx.clearRect(0, 0, GAME_W, GAME_H);
@@ -767,10 +672,8 @@
             updateGame();
             requestAnimationFrame(gameLoop);
         }
-
         window.addEventListener('keydown', e => { keys[e.key] = true; });
         window.addEventListener('keyup', e => { keys[e.key] = false; });
-
         resizeCanvas();
     </script>
 </body>
