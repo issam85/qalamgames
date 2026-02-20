@@ -347,6 +347,7 @@
         if (isMobile) {
             joystickContainer.addEventListener('touchstart', e => {
                 e.preventDefault();
+                e.stopPropagation();
                 const t = e.touches[0];
                 joystick.active = true;
                 joystick.startX = t.clientX;
@@ -382,6 +383,7 @@
             const rjContainer = document.getElementById('joystick-right-container');
             const rjThumb = document.getElementById('joystick-right-thumb');
             rjContainer.addEventListener('touchstart', e => {
+                e.preventDefault();
                 e.stopPropagation();
                 const t = e.touches[0];
                 joystickRight.active = true;
@@ -978,7 +980,10 @@
         if (isMobile) {
             canvas.addEventListener('touchstart', e => {
                 if (gameOver || isDancing) return;
+                // Don't shoot if a joystick is active (user is using joystick, not tapping to shoot)
+                if (joystick.active || joystickRight.active) return;
                 const touch = e.touches[0];
+                // Ignore taps in the bottom 200px where UI controls live
                 if (touch.clientY > window.innerHeight - 200) return;
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
@@ -986,7 +991,7 @@
                 const tx = (touch.clientX - rect.left) * scaleX;
                 const ty = (touch.clientY - rect.top) * scaleY;
                 shootAt(tx + camera.x, ty + camera.y);
-            }, { passive: true });
+            }, { passive: false });
         }
         document.addEventListener('keydown', e => {
             keys[e.key] = true;
