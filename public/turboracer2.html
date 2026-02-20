@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>⚡ TURBO RACER 3D - MEGA MAPS Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { width: 100%; height: 100vh; overflow: hidden; font-family: 'Arial', sans-serif; background: #1a1a2e; }
+        #gameContainer { width: 100%; height: 100%; position: relative; }
+        #hud { position: absolute; top: 20px; left: 20px; color: #fff; font-family: 'Courier New', monospace; text-shadow: 0 0 10px rgba(0,0,0,0.8); z-index: 100; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 2px solid #00ff88; backdrop-filter: blur(10px); }
+        #speedometer { font-size: 32px; font-weight: bold; margin-bottom: 8px; color: #00ff88; text-shadow: 0 0 15px #00ff88; }
+        #speedBar { width: 200px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-bottom: 10px; border: 1px solid #00ff88; }
+        #speedBarFill { height: 100%; background: linear-gradient(90deg, #00ff88, #ff00ff); width: 0%; transition: width 0.1s; }
+        #stats { font-size: 13px; color: #00ff88; line-height: 1.6; }
+        #nextMilestone { font-size: 12px; color: #ffff00; margin-top: 8px; text-shadow: 0 0 8px #ffff00; }
+        #crashMsg { font-size: 14px; color: #ff4444; margin-top: 6px; min-height: 18px; text-shadow: 0 0 8px #ff0000; }
+        #mapSelector { position: absolute; top: 300px; left: 20px; background: rgba(0,0,0,0.7); border: 2px solid #00ffff; border-radius: 10px; padding: 15px; z-index: 150; color: #00ffff; }
+        #mapSelector div { margin: 8px 0; font-size: 12px; font-weight: bold; text-shadow: 0 0 8px #00ffff; }
+        .map-btn { padding: 8px 12px; background: #0f3460; border: 2px solid #00ffff; color: #00ffff; cursor: pointer; border-radius: 6px; margin: 5px 0; width: 100%; font-weight: bold; transition: all 0.2s; font-size: 12px; }
+        .map-btn:hover { background: #16213e; box-shadow: 0 0 15px rgba(0,255,255,0.5); }
+        .map-btn.active { background: linear-gradient(90deg, #00ff88, #00ffff); color: #000; border-color: #ffff00; box-shadow: 0 0 20px rgba(0,255,0,0.6); }
+        #controls { position: absolute; bottom: 20px; left: 20px; color: #00ff88; font-size: 11px; opacity: 0.9; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid #00ff88; max-width: 250px; }
+        #fpsDisplay { position: absolute; top: 20px; right: 20px; color: #ff00ff; font-size: 16px; font-family: monospace; text-shadow: 0 0 10px #ff00ff; background: rgba(0,0,0,0.6); padding: 10px 15px; border-radius: 8px; border: 1px solid #ff00ff; font-weight: bold; }
+        #quizPopup { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5f 100%); border: 3px solid #00ffff; border-radius: 15px; padding: 25px; max-width: 450px; color: #00ffff; text-shadow: 0 0 10px #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.5); z-index: 200; display: none; animation: slideUp 0.4s ease-out; }
+        #quizPopup.show { display: block; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .quiz-popup-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 8px #ffff00; }
+        .quiz-milestone { font-size: 14px; color: #00ffff; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #00ffff; padding-bottom: 10px; }
+        .quiz-popup-question { font-size: 16px; margin-bottom: 20px; color: #00ffff; line-height: 1.5; }
+        .popup-options { display: flex; flex-direction: column; gap: 10px; }
+        .popup-option-btn { padding: 12px 15px; background: linear-gradient(90deg, #0f3460 0%, #16213e 100%); border: 2px solid #00ffff; color: #00ffff; cursor: pointer; border-radius: 8px; font-size: 14px; transition: all 0.2s; text-align: left; font-weight: 500; }
+        .popup-option-btn:hover { background: linear-gradient(90deg, #16213e 0%, #1f2d4a 100%); box-shadow: 0 0 15px rgba(0,255,255,0.5); transform: translateX(5px); }
+        .popup-option-btn.correct { background: linear-gradient(90deg, #00aa00 0%, #00dd00 100%); color: #000; border-color: #00ff00; box-shadow: 0 0 20px rgba(0,255,0,0.6); }
+        .popup-option-btn.incorrect { background: linear-gradient(90deg, #aa0000 0%, #dd0000 100%); color: #ffff00; border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.6); }
+        .popup-result { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 15px; }
+        .result-correct { background: linear-gradient(90deg, #003300 0%, #005500 100%); border: 2px solid #00ff00; color: #00ff00; box-shadow: 0 0 15px rgba(0,255,0,0.4); }
+        .result-incorrect { background: linear-gradient(90deg, #330000 0%, #550000 100%); border: 2px solid #ff0000; color: #ffaa00; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
+        #quizTimer { text-align: center; margin-top: 15px; font-size: 14px; color: #ff00ff; font-weight: bold; text-shadow: 0 0 8px #ff00ff; }
+        .timer-bar { width: 100%; height: 6px; background: #0f3460; border-radius: 3px; margin-top: 8px; overflow: hidden; border: 1px solid #ff00ff; }
+        .timer-fill { height: 100%; background: linear-gradient(90deg, #ff00ff, #00ffff); width: 100%; transition: width 0.1s linear; }
+        #scoreBoard { position: absolute; top: 150px; right: 20px; background: rgba(0,0,0,0.7); border: 2px solid #ffff00; border-radius: 10px; padding: 15px; color: #ffff00; font-weight: bold; text-shadow: 0 0 8px #ffff00; z-index: 150; }
+        #scoreBoard div { margin: 5px 0; font-size: 14px; }
+        #livesDisplay { font-size: 22px; margin-top: 8px; }
+        #gameOver { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; flex-direction: column; gap: 20px; }
+        #gameOver.show { display: flex; }
+        #gameOver h1 { font-family: monospace; font-size: clamp(2rem,6vw,3.5rem); color: #ff4444; text-shadow: 0 0 20px #ff0000; }
+        #gameOver p { color: #00ff88; font-family: monospace; font-size: 1.2rem; }
+        #gameOver button { padding: 14px 40px; background: linear-gradient(90deg,#00aa44,#00ff88); border: none; border-radius: 10px; color: #000; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        #currentMap { position: absolute; bottom: 150px; left: 20px; background: rgba(0,0,0,0.7); border: 2px solid #ffff00; border-radius: 8px; padding: 12px; color: #ffff00; font-weight: bold; font-size: 14px; text-shadow: 0 0 8px #ffff00; }
+
+        /* ===== MOBILE ===== */
+        #landscapeHint { display: none; position: fixed; inset: 0; z-index: 9999; background: #000; color: #fff; flex-direction: column; justify-content: center; align-items: center; gap: 16px; font-size: 1.2rem; font-family: monospace; }
+        #landscapeHint.show { display: flex; }
+        #landscapeHint span { font-size: 3rem; animation: rot 1.5s ease-in-out infinite; }
+        @keyframes rot { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+        #joystickWrap { display: none; position: fixed; left: 20px; bottom: 30px; z-index: 300; touch-action: none; }
+        #joystickBase { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 3px solid rgba(255,255,255,0.4); position: relative; }
+        #joystickThumb { width: 50px; height: 50px; border-radius: 50%; background: rgba(0,255,136,0.7); border: 2px solid #00ff88; position: absolute; top: 35px; left: 35px; pointer-events: none; }
+        #brakeBtn { display: none; position: fixed; right: 30px; bottom: 40px; z-index: 300; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,50,50,0.7); border: 3px solid #ff4444; color: #fff; font-size: 1.4rem; font-weight: bold; font-family: monospace; touch-action: none; user-select: none; -webkit-user-select: none; display: none; align-items: center; justify-content: center; }
+        @media (max-width: 1024px) and (orientation: landscape) {
+            #joystickWrap { display: block; }
+            #brakeBtn { display: flex; }
+            #controls { display: none; }
+            #hud { padding: 8px 10px; }
+            #speedometer { font-size: 18px; margin-bottom: 4px; }
+            #speedBar { width: 130px; height: 6px; margin-bottom: 6px; }
+            #stats { font-size: 11px; line-height: 1.4; }
+            #livesDisplay { font-size: 16px; margin-top: 4px; }
+            #nextMilestone { font-size: 10px; }
+            #crashMsg { font-size: 11px; }
+            #scoreBoard { padding: 8px; top: 100px; }
+            #scoreBoard div { font-size: 11px; margin: 3px 0; }
+            #fpsDisplay { font-size: 12px; padding: 6px 10px; }
+            #quizPopup { left: 0; right: 0; bottom: 0; max-width: 100%; border-radius: 12px 12px 0 0; padding: 16px; }
+            .quiz-popup-question { font-size: 14px; margin-bottom: 12px; }
+            .popup-option-btn { padding: 10px 12px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+<div id="gameContainer"></div>
+<div id="hud">
+    <div id="speedometer">SPEED: 0 km/h</div>
+    <div id="speedBar"><div id="speedBarFill"></div></div>
+    <div id="stats">
+        <div>DISTANCE: 0 m</div>
+        <div id="gear">GEAR: N</div>
+        <div id="rpm">RPM: 0</div>
+    </div>
+    <div id="nextMilestone">📍 Next Quiz: 1000 m</div>
+    <div id="livesDisplay">❤️❤️❤️</div>
+    <div id="crashMsg"></div>
+</div>
+<div id="currentMap" onclick="toggleMapSelector()" style="cursor:pointer;">🗺️ FOREST MAP ▲</div>
+<div id="mapSelector" style="display:none;">
+    <button class="map-btn active" onclick="switchMap(0)">🌲 FOREST</button>
+    <button class="map-btn" onclick="switchMap(1)">🏜️ DESERT</button>
+    <button class="map-btn" onclick="switchMap(2)">⛰️ MOUNTAIN</button>
+</div>
+<div id="scoreBoard">
+    <div>📚 QUIZ SCORE</div>
+    <div id="correctAnswers">✓ Correct: 0</div>
+    <div id="totalQuestions">📋 Total: 0</div>
+    <div id="percentage">📊 Score: 0%</div>
+</div>
+<div id="fpsDisplay">FPS: 0</div>
+<div id="controls">⬆️ W/ARROWS: Drive | SPACE: Brake | R: Reset | 1/2/3: Maps</div>
+<div id="quizPopup">
+    <div class="quiz-milestone" id="milestoneInfo">🎯 MILESTONE 1000m</div>
+    <div class="quiz-popup-title">🕌 QUIZ QUESTION 🕌</div>
+    <div class="quiz-popup-question" id="popupQuestion">Loading...</div>
+    <div class="popup-options" id="popupOptions"></div>
+    <div id="popupResult" class="popup-result" style="display:none;"></div>
+    <div id="quizTimer">
+        <div>Time left: <span id="timerSeconds">45</span>s</div>
+        <div class="timer-bar"><div class="timer-fill" id="timerBar"></div></div>
+    </div>
+</div>
+<div id="landscapeHint"><span>📱</span><p>Draai je scherm horizontaal</p></div>
+<div id="joystickWrap"><div id="joystickBase"><div id="joystickThumb"></div></div></div>
+<div id="brakeBtn">⛔</div>
+<div id="gameOver">
+    <h1>💀 GAME OVER</h1>
+    <p id="gameOverStats"></p>
+    <button onclick="fullReset()">🔄 Opnieuw</button>
+</div>
+<script>
+const quizData = [
+    {question:"What is the holy book of Islam called?",options:["Quran","Bible","Torah","Vedas"],correct:0},
+    {question:"How many pillars of Islam are there?",options:["3","5","7","10"],correct:1},
+    {question:"What is the Islamic concept of the oneness of God?",options:["Shirk","Tawheed","Hadith","Sunnah"],correct:1},
+    {question:"Who is the greatest Islamic prophet?",options:["Jesus","Muhammad","Moses","Abraham"],correct:1},
+    {question:"In what language was the Quran revealed?",options:["Turkish","Persian","Arabic","Hebrew"],correct:2},
+    {question:"What is the pilgrimage to Mecca called?",options:["Hajj","Umrah","Salah","Zakat"],correct:0},
+    {question:"What does 'Salah' refer to?",options:["Charity","Greeting","Prayer","Fasting"],correct:2},
+    {question:"What does 'Zakat' mean?",options:["Prayer","Charity","Pilgrimage","Fasting"],correct:1},
+    {question:"What is the fasting month called?",options:["Hajj","Rajab","Ramadan","Shawwal"],correct:2},
+    {question:"What is the declaration of faith?",options:["Kalima","Zikr","Fatwa","Hadith"],correct:0},
+    {question:"In what city was Prophet Muhammad born?",options:["Medina","Mecca","Jerusalem","Damascus"],correct:1},
+    {question:"How many Surahs are in the Quran?",options:["100","114","120","144"],correct:1},
+    {question:"What is the first chapter called?",options:["Al-Baqarah","Al-Fatihah","Al-Ikhlas","Al-Nas"],correct:1},
+    {question:"What is 'Hadith'?",options:["Verses","Sayings of Prophet","Islamic law","History"],correct:1},
+    {question:"Who was the first Caliph?",options:["Umar","Abu Bakr","Uthman","Ali"],correct:1},
+    {question:"What was Prophet's first wife's name?",options:["Aisha","Khadijah","Hafsa","Zainab"],correct:1},
+    {question:"What does 'Hijrah' mean?",options:["Prayer","Migration","Pilgrimage","Fasting"],correct:1},
+    {question:"How many times daily do Muslims pray?",options:["3","4","5","7"],correct:2},
+    {question:"What does 'Haram' mean?",options:["Holy","Forbidden","Permitted","Required"],correct:1},
+    {question:"What does 'Halal' mean?",options:["Forbidden","Holy","Permitted","Required"],correct:2},
+    {question:"What is an Islamic place of worship?",options:["Temple","Mosque","Synagogue","Church"],correct:1},
+    {question:"What is the prayer tower called?",options:["Minbar","Mihrab","Minaret","Qibla"],correct:2},
+    {question:"Which direction do Muslims face in prayer?",options:["North","South","East","Towards Mecca"],correct:3},
+    {question:"What is Islamic modesty in dress?",options:["Hijab","Burka","Niqab","Abaya"],correct:0},
+    {question:"What is Islamic community called?",options:["Ummah","Khalifa","Fatwa","Hadith"],correct:0},
+    {question:"What greeting do Muslims use?",options:["Namaste","Assalamu alaikum","Shalom","Bonjour"],correct:1},
+    {question:"How many times do pilgrims circle the Kaaba?",options:["5","7","10","14"],correct:1},
+    {question:"What is the Eid after Ramadan called?",options:["Eid al-Adha","Eid al-Fitr","Eid Milad-un-Nabi","Isra and Mi'raj"],correct:1},
+    {question:"What is the festival of sacrifice called?",options:["Eid al-Fitr","Eid al-Adha","Eid Milad-un-Nabi","Ashura"],correct:1},
+    {question:"How many years for Quran revelation?",options:["10","15","20","23"],correct:3},
+];
+
+class MilestoneQuizSystem {
+    constructor() {
+        this.currentQuestion = 0;
+        this.score = 0;
+        this.answered = false;
+        this.totalAnswered = 0;
+        this.shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+        this.quizTimer = 30;
+        this.nextMilestone = 1000;
+        this.milestoneInterval = 1000;
+        this.quizActive = false;
+        this.quizTimerInterval = null;
+        this.timeElapsed = 0;
+    }
+    getCurrentQuestion() { return this.shuffledQuestions[this.currentQuestion]; }
+    answerQuestion(i) {
+        if (this.answered) return null;
+        this.answered = true; this.totalAnswered++;
+        const ok = i === this.getCurrentQuestion().correct;
+        if (ok) this.score++;
+        return ok;
+    }
+    nextQuestion() {
+        this.currentQuestion++;
+        this.answered = false;
+        if (this.currentQuestion >= this.shuffledQuestions.length) {
+            this.currentQuestion = 0;
+            this.shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+        }
+    }
+    resetTimer() { this.quizTimer = 30; }
+    updateTimer() { this.quizTimer--; if (this.quizTimer <= 0) this.endQuiz(); return this.quizTimer; }
+    tick(dt, velocity) {
+        if (this.quizActive) return;
+        if (Math.abs(velocity) > 1) this.timeElapsed += dt;
+        if (this.timeElapsed >= 15) {
+            this.timeElapsed = 0;
+            this.quizActive = true;
+            this.resetTimer();
+            gameRunning = false;
+            showMilestoneQuiz();
+        }
+    }
+    endQuiz() {
+        this.quizActive = false;
+        this.nextQuestion();
+        if (this.quizTimerInterval) clearInterval(this.quizTimerInterval);
+        showResumeBtn();
+    }
+    getPercentage() { return this.totalAnswered === 0 ? 0 : Math.round((this.score / this.totalAnswered) * 100); }
+}
+
+const quizSystem = new MilestoneQuizSystem();
+
+function showMilestoneQuiz() {
+    const q = quizSystem.getCurrentQuestion();
+    const ms = Math.round(quizSystem.nextMilestone - quizSystem.milestoneInterval);
+    document.getElementById('milestoneInfo').textContent = '🎯 QUIZ TIME! Game paused';
+    document.getElementById('popupQuestion').textContent = q.question;
+    let html = '';
+    q.options.forEach((o, i) => { html += `<button class="popup-option-btn" onclick="handleGameQuizAnswer(${i})">${o}</button>`; });
+    document.getElementById('popupOptions').innerHTML = html;
+    document.getElementById('popupResult').style.display = 'none';
+    document.getElementById('quizPopup').classList.add('show');
+    if (quizSystem.quizTimerInterval) clearInterval(quizSystem.quizTimerInterval);
+    quizSystem.quizTimerInterval = setInterval(() => {
+        if (!quizSystem.quizActive) { clearInterval(quizSystem.quizTimerInterval); return; }
+        const t = quizSystem.updateTimer();
+        document.getElementById('timerSeconds').textContent = t;
+        document.getElementById('timerBar').style.width = (t / 30 * 100) + '%';
+        if (t <= 0) quizSystem.endQuiz();
+    }, 1000);
+}
+
+function handleGameQuizAnswer(idx) {
+    const q = quizSystem.getCurrentQuestion();
+    const ok = quizSystem.answerQuestion(idx);
+    if (ok === null) return;
+    document.querySelectorAll('.popup-option-btn').forEach((b, i) => {
+        if (i === q.correct) b.classList.add('correct');
+        else if (i === idx && !ok) b.classList.add('incorrect');
+        b.disabled = true;
+    });
+    const r = document.getElementById('popupResult');
+    r.style.display = 'block';
+    r.className = 'popup-result ' + (ok ? 'result-correct' : 'result-incorrect');
+    r.textContent = ok ? '✓ CORRECT! Alhamdulillah!' : '✗ INCORRECT! Answer: ' + q.options[q.correct];
+    document.getElementById('correctAnswers').textContent = `✓ Correct: ${quizSystem.score}`;
+    document.getElementById('totalQuestions').textContent = `📋 Total: ${quizSystem.totalAnswered}`;
+    document.getElementById('percentage').textContent = `📊 Score: ${quizSystem.getPercentage()}%`;
+    quizSystem.endQuiz();
+}
+
+function showResumeBtn() {
+    const existing = document.getElementById('resumeBtn');
+    if (existing) existing.remove();
+    const btn = document.createElement('button');
+    btn.id = 'resumeBtn';
+    btn.textContent = '▶ DOORGAAN';
+    btn.style.cssText = 'margin-top:14px;width:100%;padding:14px;background:linear-gradient(90deg,#00aa44,#00ff88);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:bold;cursor:pointer;letter-spacing:1px;';
+    btn.onclick = resumeGame;
+    document.getElementById('quizTimer').insertAdjacentElement('afterend', btn);
+}
+
+function resumeGame() {
+    document.getElementById('quizPopup').classList.remove('show');
+    gameRunning = true;
+}
+
+let currentMapIndex = 0;
+const mapNames = ['🌲 FOREST MAP', '🏜️ DESERT MAP', '⛰️ MOUNTAIN MAP'];
+
+function toggleMapSelector() {
+    const ms = document.getElementById('mapSelector');
+    const open = ms.style.display !== 'none';
+    ms.style.display = open ? 'none' : 'block';
+    const lbl = mapNames[currentMapIndex].toUpperCase();
+    document.getElementById('currentMap').textContent = '\u{1F5FA}\uFE0F ' + lbl + (open ? ' \u25B2' : ' \u25BC');
+}
+
+function switchMap(i) {
+    currentMapIndex = i;
+    document.querySelectorAll('.map-btn').forEach((b, j) => b.classList.toggle('active', i === j));
+    document.getElementById('mapSelector').style.display = 'none';
+    document.getElementById('currentMap').textContent = '\u{1F5FA}\uFE0F ' + mapNames[i].toUpperCase() + ' \u25B2';
+    track.updateEnvironment(i);
+    car.group.position.set(0, 0.5, 0);
+    car.velocity = 0;
+    car.rotation = 0;
+    skyTimer = 0;
+    quizSystem.nextMilestone = 1000;
+    updateMilestoneDisplay();
+}
+
+window.addEventListener('keydown', e => {
+    if (e.key === '1') switchMap(0);
+    if (e.key === '2') switchMap(1);
+    if (e.key === '3') switchMap(2);
+});
+
+function updateMilestoneDisplay() {
+    document.getElementById('nextMilestone').textContent = `📍 Next Quiz: ${quizSystem.nextMilestone} m`;
+}
+
+// THREE.JS SETUP
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+scene.fog = new THREE.Fog(0x1a1a2e, 800, 2500);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+camera.position.set(0, 8, -30);
+
+const renderer = new THREE.WebGLRenderer({ antialias: false, precision: 'lowp', powerPreference: 'high-performance' });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.shadowMap.enabled = false;
+document.getElementById('gameContainer').appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+dirLight.position.set(150, 150, 75);
+scene.add(dirLight);
+
+// Particles
+const pGeom = new THREE.BufferGeometry();
+const pPos = new Float32Array(150 * 3);
+for (let i = 0; i < 150 * 3; i += 3) {
+    pPos[i] = (Math.random() - 0.5) * 300;
+    pPos[i+1] = Math.random() * 150;
+    pPos[i+2] = (Math.random() - 0.5) * 1500;
+}
+pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const particles = new THREE.Points(pGeom, new THREE.PointsMaterial({ color: 0x00ffff, size: 2, transparent: true, opacity: 0.6 }));
+scene.add(particles);
+
+// ROAD BOUNDARY: car x must stay within [-23, 23]
+const ROAD_HALF = 23;
+
+// CAR
+class Car {
+    constructor() {
+        this.group = new THREE.Group();
+
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 4.5), new THREE.MeshPhongMaterial({ color: 0xff00ff }));
+        body.position.y = 0.75;
+        this.group.add(body);
+
+        const win = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 1.2), new THREE.MeshPhongMaterial({ color: 0x00ffff, emissive: 0x00aaff }));
+        win.position.set(0, 1.4, -0.5);
+        this.group.add(win);
+
+        this.wheels = [];
+        [[- 1, 0.5, 1.2],[1, 0.5, 1.2],[-1, 0.5, -1.2],[1, 0.5, -1.2]].forEach(p => {
+            const w = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.4, 12), new THREE.MeshPhongMaterial({ color: 0x111111 }));
+            w.rotation.z = Math.PI / 2;
+            w.position.set(...p);
+            this.group.add(w);
+            this.wheels.push(w);
+        });
+
+        scene.add(this.group);
+
+        this.velocity = 0;
+        this.maxSpeed = 120;
+        this.acceleration = 18;
+        this.brakeForce = 120;
+        this.friction = 0.985;
+        this.rotation = 0;
+        this.angularVel = 0;
+        this.crashTimer = 0;
+    }
+
+    update(input, dt) {
+        const dtc = Math.min(dt, 0.05);
+
+        if (input.forward) {
+            this.velocity = Math.min(this.velocity + this.acceleration * dtc, this.maxSpeed);
+        } else if (input.backward) {
+            this.velocity = Math.max(this.velocity - this.acceleration * 0.7 * dtc, -this.maxSpeed * 0.4);
+        } else if (input.brake) {
+            this.velocity *= 0.88;
+        } else {
+            this.velocity *= this.friction;
+        }
+
+        if (Math.abs(this.velocity) < 0.1) this.velocity = 0;
+
+        const speedRatio = Math.abs(this.velocity) / this.maxSpeed;
+        const steerStrength = 0.008 + speedRatio * 0.012;
+        const maxAngular = 0.032;
+
+        if (input.left) this.angularVel = Math.max(this.angularVel - steerStrength, -maxAngular);
+        if (input.right) this.angularVel = Math.min(this.angularVel + steerStrength, maxAngular);
+        this.angularVel *= 0.82;
+
+        if (Math.abs(this.velocity) > 1) this.rotation += this.angularVel;
+
+        const nx = this.group.position.x + Math.sin(this.rotation) * this.velocity * dtc;
+        const nz = this.group.position.z + Math.cos(this.rotation) * this.velocity * dtc;
+
+        this.group.position.x = nx;
+
+        this.group.position.z = nz;
+        this.group.rotation.y = this.rotation;
+        this.group.position.y = 0.5;
+
+        this.wheels.forEach(w => { w.rotation.x += (this.velocity * 0.03 * dtc * 60) % (Math.PI * 2); });
+
+        if (this.crashTimer > 0) this.crashTimer -= dtc;
+    }
+}
+
+// OBSTACLE SYSTEM
+class ObstacleManager {
+    constructor() {
+        this.obstacles = [];
+        this.meshes = [];
+        this.color = 0xff4400;
+    }
+
+    clear() {
+        this.meshes.forEach(m => scene.remove(m));
+        this.meshes = [];
+        this.obstacles = [];
+    }
+
+    generate(mapIndex, count = 60) {
+        this.clear();
+        const colors = [0xff4400, 0xcc8800, 0x888888];
+        this.color = colors[mapIndex];
+
+        for (let i = 0; i < count; i++) {
+            const z = 300 + i * 80 + Math.random() * 40;
+            const x = (Math.random() - 0.5) * (ROAD_HALF * 2 - 6);
+            const w = 2 + Math.random() * 3;
+            const h = 2 + Math.random() * 3;
+            const d = 2 + Math.random() * 2;
+
+            const mesh = new THREE.Mesh(
+                new THREE.BoxGeometry(w, h, d),
+                new THREE.MeshPhongMaterial({ color: this.color, emissive: this.color, emissiveIntensity: 0.2 })
+            );
+            mesh.position.set(x, h / 2, z);
+            scene.add(mesh);
+            this.meshes.push(mesh);
+            this.obstacles.push({ x, z, hw: w / 2 + 1, hd: d / 2 + 2 });
+        }
+    }
+
+    checkCollision(car) {
+        const cx = car.group.position.x;
+        const cz = car.group.position.z;
+        for (const o of this.obstacles) {
+            if (Math.abs(cx - o.x) < o.hw && Math.abs(cz - o.z) < o.hd) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+// TRACK
+class Track {
+    constructor() {
+        this.envObjects = [];
+        this.updateEnvironment(0);
+    }
+
+    clearEnv() { this.envObjects.forEach(o => scene.remove(o)); this.envObjects = []; }
+
+    updateEnvironment(mapIndex) {
+        this.clearEnv();
+
+        const road = new THREE.Mesh(
+            new THREE.PlaneGeometry(54, 8000),
+            new THREE.MeshPhongMaterial({ color: 0x222222 })
+        );
+        road.rotation.x = -Math.PI / 2;
+        scene.add(road); this.envObjects.push(road);
+
+        // Road markings
+        for (let z = -3000; z < 5000; z += 40) {
+            const mark = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.5, 20),
+                new THREE.MeshPhongMaterial({ color: 0xffff00 })
+            );
+            mark.rotation.x = -Math.PI / 2;
+            mark.position.set(0, 0.01, z);
+            scene.add(mark); this.envObjects.push(mark);
+        }
+
+
+        if (mapIndex === 0) this.addForest();
+        else if (mapIndex === 1) this.addDesert();
+        else this.addMountain();
+
+        obstacleManager.generate(mapIndex);
+    }
+
+    addForest() {
+        scene.background = new THREE.Color(0x1a3a1a);
+        scene.fog = new THREE.Fog(0x1a3a1a, 800, 2500);
+        const cg = new THREE.ConeGeometry(8, 50, 12);
+        const cm = new THREE.MeshPhongMaterial({ color: 0x228b22 });
+        const tm = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+        for (let z = -2000; z < 5000; z += 80) {
+            [-1, 1].forEach(side => {
+                const x = side * (55 + Math.random() * 15);
+                const t = new THREE.Mesh(cg, cm); t.position.set(x, 25, z); scene.add(t); this.envObjects.push(t);
+                const tr = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 3, 30, 10), tm);
+                tr.position.set(x, 15, z); scene.add(tr); this.envObjects.push(tr);
+            });
+        }
+    }
+
+    addDesert() {
+        scene.background = new THREE.Color(0xD2B48C);
+        scene.fog = new THREE.Fog(0xD2B48C, 800, 2500);
+        const bm = new THREE.MeshPhongMaterial({ color: 0x9ACD32 });
+        const rm = new THREE.MeshPhongMaterial({ color: 0xCD853F });
+        for (let z = -2000; z < 5000; z += 100) {
+            [-1, 1].forEach(side => {
+                const x = side * (60 + Math.random() * 20);
+                const b = new THREE.Mesh(new THREE.CylinderGeometry(5, 0, 25, 10), bm);
+                b.position.set(x, 12.5, z); scene.add(b); this.envObjects.push(b);
+                const r = new THREE.Mesh(new THREE.IcosahedronGeometry(5, 2), rm);
+                r.position.set(x + side * 15, 5, z + 30); scene.add(r); this.envObjects.push(r);
+            });
+        }
+    }
+
+    addMountain() {
+        scene.background = new THREE.Color(0x4A4A4A);
+        scene.fog = new THREE.Fog(0x4A4A4A, 800, 2500);
+        const mm = new THREE.MeshPhongMaterial({ color: 0x696969 });
+        const sm = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+        for (let z = -2000; z < 5000; z += 120) {
+            [-1, 1].forEach(side => {
+                const x = side * (90 + Math.random() * 20);
+                const m = new THREE.Mesh(new THREE.ConeGeometry(20, 80, 12), mm);
+                m.position.set(x, 40, z); scene.add(m); this.envObjects.push(m);
+                const s = new THREE.Mesh(new THREE.ConeGeometry(18, 15, 12), sm);
+                s.position.set(x, 65, z); scene.add(s); this.envObjects.push(s);
+            });
+        }
+    }
+}
+
+// INPUT
+const input = { forward: false, backward: false, left: false, right: false, brake: false };
+
+window.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if ((k === 'arrowup' || k === 'w') && !gameRunning) { resumeGame(); return; }
+    if (k === 'arrowup' || k === 'w') input.forward = true;
+    if (k === 'arrowdown' || k === 's') input.backward = true;
+    if (k === 'arrowleft' || k === 'a') input.right = true;
+    if (k === 'arrowright' || k === 'd') input.left = true;
+    if (k === ' ') { input.brake = true; e.preventDefault(); }
+    if (k === 'r') resetCar();
+});
+
+window.addEventListener('keyup', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'arrowup' || k === 'w') input.forward = false;
+    if (k === 'arrowdown' || k === 's') input.backward = false;
+    if (k === 'arrowleft' || k === 'a') input.right = false;
+    if (k === 'arrowright' || k === 'd') input.left = false;
+    if (k === ' ') input.brake = false;
+});
+
+function resetCar() {
+    car.group.position.set(0, 0.5, 0);
+    car.velocity = 0;
+    car.rotation = 0;
+    car.angularVel = 0;
+    raceTime = 0;
+    quizSystem.timeElapsed = 0;
+}
+
+let crashMsgTimer = 0;
+function showCrash(msg) {
+    document.getElementById('crashMsg').textContent = msg;
+    crashMsgTimer = 2;
+}
+
+function loseLife(msg) {
+    if (!gameRunning) return;
+    lives--;
+    updateLives();
+    car.velocity = 0;
+    car.angularVel = 0;
+    car.group.position.x = 0;
+    blinkTimer = 1.5;
+    showCrash(msg);
+    if (lives <= 0) {
+        gameRunning = false;
+        setTimeout(showGameOver, 800);
+    }
+}
+
+function updateLives() {
+    document.getElementById('livesDisplay').textContent = '❤️'.repeat(Math.max(0, lives)) + '🤍'.repeat(Math.max(0, 3 - lives));
+}
+
+function showGameOver() {
+    const min = Math.floor(raceTime / 60).toString().padStart(2, '0');
+    const sec = Math.floor(raceTime % 60).toString().padStart(2, '0');
+    document.getElementById('gameOverStats').textContent =
+        'Tijd: ' + min + ':' + sec + '  |  Quiz: ' + quizSystem.score + '/' + quizSystem.totalAnswered;
+    document.getElementById('gameOver').classList.add('show');
+}
+
+function fullReset() {
+    lives = 3;
+    raceTime = 0;
+    quizSystem.score = 0;
+    quizSystem.totalAnswered = 0;
+    quizSystem.timeElapsed = 0;
+    quizSystem.currentQuestion = 0;
+    quizSystem.shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+    updateLives();
+    document.getElementById('gameOver').classList.remove('show');
+    document.getElementById('correctAnswers').textContent = '✓ Correct: 0';
+    document.getElementById('totalQuestions').textContent = '📋 Total: 0';
+    document.getElementById('percentage').textContent = '📊 Score: 0%';
+    car.group.position.set(0, 0.5, 0);
+    car.velocity = 0;
+    car.rotation = 0;
+    car.angularVel = 0;
+    gameRunning = true;
+}
+
+// INIT
+const obstacleManager = new ObstacleManager();
+
+// Sky color cycling: interpolate between colors every 30s
+const SKY_COLORS = [
+    { bg: 0x1a1a2e, fog: 0x1a1a2e },
+    { bg: 0x0a1628, fog: 0x0a1628 },
+    { bg: 0x2e1a1a, fog: 0x2e1a1a },
+    { bg: 0x1a2e1a, fog: 0x1a2e1a },
+    { bg: 0x1a1a2e, fog: 0x1a1a2e },
+    { bg: 0x2a1a3e, fog: 0x2a1a3e },
+    { bg: 0x3e2a0a, fog: 0x3e2a0a },
+    { bg: 0x0a2a3e, fog: 0x0a2a3e },
+];
+let skyTimer = 0;
+let skyIndex = 0;
+const SKY_INTERVAL = 30;
+const car = new Car();
+const track = new Track();
+
+// CAMERA
+function updateCamera() {
+    const t = new THREE.Vector3(car.group.position.x * 0.5, car.group.position.y + 8, car.group.position.z - 35);
+    camera.position.lerp(t, 0.08);
+    camera.lookAt(car.group.position.x, car.group.position.y + 2, car.group.position.z + 20);
+}
+
+// FPS
+let frameCount = 0, lastFpsTime = performance.now();
+function updateFPS() {
+    frameCount++;
+    const now = performance.now();
+    if (now - lastFpsTime >= 1000) {
+        document.getElementById('fpsDisplay').textContent = `FPS: ${frameCount}`;
+        frameCount = 0;
+        lastFpsTime = now;
+    }
+}
+
+// GAME LOOP
+let gameRunning = true;
+let lives = 3;
+let raceTime = 0;
+let blinkTimer = 0;
+let lastFrameTime = performance.now();
+
+function animate() {
+    requestAnimationFrame(animate);
+    const now = performance.now();
+    const dt = (now - lastFrameTime) / 1000;
+    lastFrameTime = now;
+
+    if (gameRunning) {
+        car.update(input, dt);
+        if (obstacleManager.checkCollision(car)) {
+            loseLife('💥 OBSTACLE HIT!');
+        }
+        if (Math.abs(car.group.position.x) > 27) {
+            loseLife('🌳 BOOM GERAAKT!');
+        }
+    }
+    updateCamera();
+
+    // Blink effect after crash
+    if (blinkTimer > 0) {
+        blinkTimer -= dt;
+        const visible = Math.floor(blinkTimer * 8) % 2 === 0;
+        car.group.visible = visible;
+        if (blinkTimer <= 0) car.group.visible = true;
+    }
+
+    // Crash message timer
+    if (crashMsgTimer > 0) {
+        crashMsgTimer -= dt;
+        if (crashMsgTimer <= 0) document.getElementById('crashMsg').textContent = '';
+    }
+
+    const speed = Math.abs(car.velocity * 3.6).toFixed(1);
+    const distance = Math.abs(car.group.position.z).toFixed(0);
+    const rpm = Math.floor((Math.abs(car.velocity) / 120) * 8000);
+
+    if (gameRunning && Math.abs(car.velocity) > 1) raceTime += dt;
+    const raceMin = Math.floor(raceTime / 60).toString().padStart(2, '0');
+    const raceSec = Math.floor(raceTime % 60).toString().padStart(2, '0');
+    document.getElementById('speedometer').textContent = `SPEED: ${speed} km/h`;
+    document.getElementById('speedBarFill').style.width = (Math.abs(car.velocity) / 120) * 100 + '%';
+    document.getElementById('stats').innerHTML = `
+        <div>DISTANCE: ${distance} m</div>
+        <div>${speed < 10 ? 'GEAR: N' : 'GEAR: ' + (1 + Math.floor(Number(speed) / 30))}</div>
+        <div>RPM: ${rpm}</div>
+        <div>⏱ ${raceMin}:${raceSec}</div>
+    `;
+
+    quizSystem.tick(dt, car.velocity);
+
+    // Sky color cycling
+    skyTimer += dt;
+    if (skyTimer >= SKY_INTERVAL) {
+        skyTimer = 0;
+        skyIndex = (skyIndex + 1) % SKY_COLORS.length;
+    }
+    const skyA = SKY_COLORS[skyIndex];
+    const skyB = SKY_COLORS[(skyIndex + 1) % SKY_COLORS.length];
+    const t = skyTimer / SKY_INTERVAL;
+    const lerpHex = (a, b, t) => {
+        const ar = (a >> 16) & 0xff, ag = (a >> 8) & 0xff, ab = a & 0xff;
+        const br = (b >> 16) & 0xff, bg2 = (b >> 8) & 0xff, bb = b & 0xff;
+        const r = Math.round(ar + (br - ar) * t);
+        const g = Math.round(ag + (bg2 - ag) * t);
+        const bl2 = Math.round(ab + (bb - ab) * t);
+        return (r << 16) | (g << 8) | bl2;
+    };
+    scene.background.setHex(lerpHex(skyA.bg, skyB.bg, t));
+    scene.fog.color.setHex(lerpHex(skyA.fog, skyB.fog, t));
+
+    renderer.render(scene, camera);
+    updateFPS();
+}
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ===== MOBILE CONTROLS =====
+const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
+
+function checkOrientation() {
+    if (!isMobile) return;
+    const hint = document.getElementById('landscapeHint');
+    if (window.innerHeight > window.innerWidth) {
+        hint.classList.add('show');
+        gameRunning = false;
+    } else {
+        hint.classList.remove('show');
+        if (lives > 0) gameRunning = true;
+    }
+}
+window.addEventListener('resize', checkOrientation);
+checkOrientation();
+
+if (isMobile) {
+    document.body.style.touchAction = 'none';
+    document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+    document.addEventListener('touchstart', e => {
+        if (e.target.id !== 'joystickBase' && e.target.id !== 'joystickThumb' && e.target.id !== 'brakeBtn') return;
+        e.preventDefault();
+    }, { passive: false });
+
+    const jWrap = document.getElementById('joystickWrap');
+    const jBase = document.getElementById('joystickBase');
+    const jThumb = document.getElementById('joystickThumb');
+    const brakeBtn = document.getElementById('brakeBtn');
+    const JR = 60; // radius
+    let jActive = false, jId = null, jOrigin = { x: 0, y: 0 };
+
+    jBase.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (!gameRunning) { resumeGame(); return; }
+        const t = e.changedTouches[0];
+        const r = jBase.getBoundingClientRect();
+        jActive = true; jId = t.identifier;
+        jOrigin = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }, { passive: false });
+
+    document.addEventListener('touchmove', e => {
+        if (!jActive) return;
+        for (const t of e.changedTouches) {
+            if (t.identifier !== jId) continue;
+            const dx = t.clientX - jOrigin.x;
+            const dy = t.clientY - jOrigin.y;
+            const dist = Math.min(Math.sqrt(dx*dx + dy*dy), JR);
+            const angle = Math.atan2(dy, dx);
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            jThumb.style.left = (35 + tx) + 'px';
+            jThumb.style.top = (35 + ty) + 'px';
+            const nx = tx / JR;
+            const ny = ty / JR;
+            input.forward = ny < -0.2;
+            input.backward = ny > 0.2;
+            input.left = nx < -0.2;
+            input.right = nx > 0.2;
+        }
+    }, { passive: false });
+
+    const endJoystick = e => {
+        for (const t of e.changedTouches) {
+            if (t.identifier !== jId) continue;
+            jActive = false; jId = null;
+            jThumb.style.left = '35px'; jThumb.style.top = '35px';
+            input.forward = false; input.backward = false;
+            input.left = false; input.right = false;
+        }
+    };
+    document.addEventListener('touchend', endJoystick, { passive: false });
+    document.addEventListener('touchcancel', endJoystick, { passive: false });
+
+    brakeBtn.addEventListener('touchstart', e => { e.preventDefault(); input.brake = true; }, { passive: false });
+    brakeBtn.addEventListener('touchend', e => { e.preventDefault(); input.brake = false; }, { passive: false });
+}
+
+
+animate();
+</script>
+</body>
+</html>

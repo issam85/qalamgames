@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Vice City Racing 3D</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; overflow: hidden; background: linear-gradient(to bottom, #ff6ec7 0%, #7873f5 50%, #4facfe 100%); }
+        #gameCanvas { display: block; width: 100vw; height: 100vh; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #ff00ff; font-size: 28px; font-weight: bold; text-shadow: 3px 3px 0px #000, -1px -1px 0px #000; z-index: 10; font-family: 'Impact', sans-serif; }
+        #speedometer { position: absolute; bottom: 30px; right: 30px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(50,0,50,0.9) 100%); border: 5px solid #ff00ff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(255,0,255,0.5); z-index: 10; }
+        #speed { font-size: 48px; color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; }
+        #speedLabel { font-size: 18px; color: #ff00ff; margin-top: 5px; }
+        #minimap { position: absolute; top: 20px; right: 20px; width: 200px; height: 200px; background: rgba(0,0,0,0.7); border: 3px solid #ff00ff; border-radius: 10px; z-index: 10; }
+        #gameOver { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: linear-gradient(135deg, rgba(255,0,255,0.95) 0%, rgba(0,255,255,0.95) 100%); color: white; padding: 50px; border-radius: 20px; text-align: center; display: none; z-index: 20; border: 5px solid #000; box-shadow: 0 0 50px rgba(255,0,255,0.8); }
+        #gameOver h1 { font-size: 60px; margin-bottom: 20px; color: #000; text-shadow: 3px 3px 0px #ff00ff; font-family: 'Impact', sans-serif; }
+        #gameOver p { font-size: 28px; margin: 10px 0; color: #000; font-weight: bold; }
+        #gameOver button { margin-top: 30px; padding: 20px 50px; font-size: 24px; background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%); color: #000; border: 3px solid #000; border-radius: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        #gameOver button:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(255,0,255,0.8); }
+        #quizModal { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: linear-gradient(135deg, rgba(0,100,0,0.98) 0%, rgba(0,50,0,0.98) 100%); color: white; padding: 40px; border-radius: 20px; text-align: center; display: none; z-index: 25; border: 5px solid gold; box-shadow: 0 0 50px rgba(255,215,0,0.8); max-width: 600px; width: 90%; }
+        #quizModal h2 { font-size: 36px; margin-bottom: 20px; color: gold; text-shadow: 2px 2px 4px #000; }
+        #quizModal p { font-size: 24px; margin: 20px 0; line-height: 1.5; }
+        .quiz-answer { display: block; width: 100%; margin: 10px 0; padding: 15px; font-size: 20px; background: rgba(255,255,255,0.1); color: white; border: 3px solid gold; border-radius: 10px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .quiz-answer:hover { background: rgba(255,215,0,0.3); transform: scale(1.05); }
+        .quiz-answer.correct { background: #00ff00; color: #000; }
+        .quiz-answer.wrong { background: #ff0000; color: #fff; }
+        #instructions { position: absolute; bottom: 20px; left: 20px; color: #00ffff; font-size: 20px; text-shadow: 2px 2px 0px #000; z-index: 10; font-weight: bold; }
+        #startScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #ff6ec7 0%, #7873f5 50%, #4facfe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 30; }
+        #startScreen h1 { font-size: 80px; color: #ff00ff; text-shadow: 5px 5px 0px #00ffff, -2px -2px 0px #000; margin-bottom: 30px; font-family: 'Impact', sans-serif; animation: pulse 2s infinite; }
+        #startScreen button { padding: 25px 60px; font-size: 32px; background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%); color: #000; border: 5px solid #000; border-radius: 20px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        #startScreen button:hover { transform: scale(1.1) rotate(-2deg); box-shadow: 0 0 40px rgba(255,0,255,0.9); }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        #landscapeHint { display: none; position: fixed; inset: 0; z-index: 9999; background: #000; color: #fff; flex-direction: column; justify-content: center; align-items: center; gap: 16px; font-size: 1.2rem; font-family: monospace; }
+        #landscapeHint.show { display: flex; }
+        #landscapeHint span { font-size: 3rem; animation: rotPhone 1.5s ease-in-out infinite; }
+        @keyframes rotPhone { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+        #joystickWrap { display: none; position: fixed; left: 20px; bottom: 30px; z-index: 300; touch-action: none; }
+        #joystickBase { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 3px solid rgba(255,0,255,0.6); position: relative; }
+        #joystickThumb { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,0,255,0.7); border: 2px solid #ff00ff; position: absolute; top: 35px; left: 35px; pointer-events: none; }
+        @media (max-width: 1024px) and (orientation: landscape) {
+            #joystickWrap { display: block; }
+            #instructions { display: none; }
+            #ui { font-size: 18px; top: 10px; left: 10px; }
+            #speedometer { width: 110px; height: 110px; bottom: 15px; right: 15px; border-width: 3px; }
+            #speed { font-size: 28px; }
+            #speedLabel { font-size: 12px; }
+            #minimap { width: 120px; height: 120px; top: 10px; right: 10px; }
+            #quizModal { padding: 20px; max-width: 95vw; }
+            #quizModal h2 { font-size: 22px; margin-bottom: 10px; }
+            #quizModal p { font-size: 16px; margin: 10px 0; }
+            .quiz-answer { padding: 10px; font-size: 14px; margin: 6px 0; }
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div id="startScreen">
+    <h1>VICE CITY RACING</h1>
+    <button onclick="startGame()">START GAME</button>
+</div>
+<div id="ui">
+    <div>SCORE: <span id="score">0</span></div>
+    <div>PASSED: <span id="passed">0</span></div>
+</div>
+<div id="speedometer">
+    <div id="speed">0</div>
+    <div id="speedLabel">KM/H</div>
+</div>
+<canvas id="minimap"></canvas>
+<div id="instructions">← → STEER | ↑ GAS | ↓ REM</div>
+<div id="gameOver">
+    <h1>WASTED!</h1>
+    <p>FINAL SCORE: <span id="finalScore">0</span></p>
+    <p>CARS PASSED: <span id="finalPassed">0</span></p>
+    <button onclick="restartGame()">PLAY AGAIN</button>
+</div>
+<div id="quizModal">
+    <h2>☪️ ISLAMITISCHE VRAAG ☪️</h2>
+    <p id="quizQuestion"></p>
+    <div id="quizAnswers"></div>
+</div>
+<div id="landscapeHint"><span>📱</span><p>Draai je scherm horizontaal</p></div>
+<div id="joystickWrap"><div id="joystickBase"><div id="joystickThumb"></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let scene, camera, renderer;
+let playerCar, cars = [];
+let gameRunning = false;
+let score = 0;
+let carsPassed = 0;
+let speed = 0;
+let maxSpeed = 80;
+let acceleration = 0.08;
+let roadSegments = [];
+let trees = [];
+let buildings = [];
+let palmTrees = [];
+let lastQuizScore = 0;
+let quizActive = false;
+
+// Track which lanes are occupied to guarantee a gap
+let occupiedLanes = new Set();
+
+const islamicQuestions = [
+    { question: "Hoeveel pilaren heeft de Islam?", answers: ["3","5","7","10"], correct: 1 },
+    { question: "Wat is de eerste pilaar van de Islam?", answers: ["Zakaat","Shahada (getuigenis)","Salaat (gebed)","Sawm (vasten)"], correct: 1 },
+    { question: "Hoeveel keer per dag bidden moslims?", answers: ["3","5","7","2"], correct: 1 },
+    { question: "In welke maand vasten moslims?", answers: ["Shawwal","Ramadan","Dhul Hijjah","Muharram"], correct: 1 },
+    { question: "Wat is de Qibla?", answers: ["Een gebedskleed","De richting van Mekka tijdens het gebed","Een moskee","Een gebedstijd"], correct: 1 },
+    { question: "Wat betekent 'Islam'?", answers: ["Vrede","Onderwerping aan Allah","Geloof","Gebed"], correct: 1 },
+    { question: "Hoeveel soera's heeft de Koran?", answers: ["100","114","99","125"], correct: 1 },
+    { question: "Wat is Zakaat?", answers: ["Een gebed","Aalmoezen geven","Vasten","Pelgrimstocht"], correct: 1 },
+    { question: "Waar is de Kaaba?", answers: ["Medina","Mekka","Jeruzalem","Cairo"], correct: 1 },
+    { question: "Wie was de laatste profeet in de Islam?", answers: ["Ibrahim (as)","Musa (as)","Isa (as)","Muhammad (saw)"], correct: 3 },
+    { question: "Wat betekent 'Allahu Akbar'?", answers: ["Allah is de Grootste","Allah is Barmhartig","Lof zij Allah","Er is geen god dan Allah"], correct: 0 },
+    { question: "Wat is de Hadj?", answers: ["Dagelijks gebed","Pelgrimstocht naar Mekka","Vasten","Aalmoezen"], correct: 1 },
+];
+
+const keys = { left: false, right: false, up: false, down: false };
+
+function init() {
+    const canvas = document.getElementById('gameCanvas');
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xff6ec7, 10, 200);
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 3, 8);
+    camera.lookAt(0, 0, 0);
+
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dirLight = new THREE.DirectionalLight(0xffd700, 0.8);
+    dirLight.position.set(10, 20, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.camera.left = -50; dirLight.shadow.camera.right = 50;
+    dirLight.shadow.camera.top = 50; dirLight.shadow.camera.bottom = -50;
+    scene.add(dirLight);
+    const sunLight = new THREE.PointLight(0xff00ff, 1, 100);
+    sunLight.position.set(0, 30, -30);
+    scene.add(sunLight);
+
+    createRoad();
+    createPlayer();
+    createEnvironment();
+
+    window.addEventListener('resize', onWindowResize);
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+    drawMinimap();
+}
+
+function createRoad() {
+    for (let i = 0; i < 50; i++) {
+        const road = new THREE.Mesh(
+            new THREE.PlaneGeometry(12, 10),
+            new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8 })
+        );
+        road.rotation.x = -Math.PI / 2;
+        road.position.z = -i * 10;
+        road.receiveShadow = true;
+        scene.add(road);
+        roadSegments.push(road);
+
+        const lineGeo = new THREE.PlaneGeometry(0.3, 8);
+        const lineMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        [-3, 3].forEach(x => {
+            const l = new THREE.Mesh(lineGeo, lineMat);
+            l.rotation.x = -Math.PI / 2;
+            l.position.set(x, 0.01, -i * 10);
+            scene.add(l);
+        });
+        const c = new THREE.Mesh(lineGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        c.rotation.x = -Math.PI / 2;
+        c.position.set(0, 0.01, -i * 10 - 2);
+        scene.add(c);
+    }
+}
+
+function createPlayer() {
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.5, 0.8, 3),
+        new THREE.MeshStandardMaterial({ color: 0x00ff00, metalness: 0.7, roughness: 0.3 })
+    );
+    body.position.y = 0.4; body.castShadow = true; g.add(body);
+
+    const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(1.3, 0.6, 1.5),
+        new THREE.MeshStandardMaterial({ color: 0x004400, metalness: 0.5, roughness: 0.5 })
+    );
+    cabin.position.set(0, 1.0, -0.3); cabin.castShadow = true; g.add(cabin);
+
+    const win = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 0.5, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x87ceeb, transparent: true, opacity: 0.6, metalness: 0.9 })
+    );
+    win.position.set(0, 1.0, 0.2); g.add(win);
+
+    const wheelGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.3, 16);
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    [[-0.8,0.3,1.0],[0.8,0.3,1.0],[-0.8,0.3,-1.0],[0.8,0.3,-1.0]].forEach(p => {
+        const w = new THREE.Mesh(wheelGeo, wheelMat);
+        w.rotation.z = Math.PI / 2;
+        w.position.set(p[0], p[1], p[2]);
+        w.castShadow = true; g.add(w);
+    });
+    playerCar = g;
+    playerCar.position.set(0, 0, 0);
+    scene.add(playerCar);
+}
+
+function createEnemyCar(lane) {
+    const g = new THREE.Group();
+    const colors = [0xff0000,0x0000ff,0xffff00,0xff00ff,0x00ffff,0xff8800,0xff1493];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const body = new THREE.Mesh(
+        new THREE.BoxGeometry(2.0, 1.0, 3.5),
+        new THREE.MeshStandardMaterial({ color, metalness: 0.7, roughness: 0.3, emissive: color, emissiveIntensity: 0.3 })
+    );
+    body.position.y = 0.5; body.castShadow = true; g.add(body);
+
+    const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(1.7, 0.8, 2.0),
+        new THREE.MeshStandardMaterial({ color, metalness: 0.7, roughness: 0.3, emissive: color, emissiveIntensity: 0.2 })
+    );
+    cabin.position.set(0, 1.3, -0.3); cabin.castShadow = true; g.add(cabin);
+
+    const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.4, 16);
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    [[-1.0,0.4,1.3],[1.0,0.4,1.3],[-1.0,0.4,-1.3],[1.0,0.4,-1.3]].forEach(p => {
+        const w = new THREE.Mesh(wheelGeo, wheelMat);
+        w.rotation.z = Math.PI / 2;
+        w.position.set(p[0], p[1], p[2]);
+        w.castShadow = true; g.add(w);
+    });
+
+    const lanes = [-4, -1.5, 1.5, 4];
+    g.position.set(lanes[lane], 0, -150 - (speed / 5));
+    g.userData.passed = false;
+    g.userData.lane = lane;
+    scene.add(g);
+    cars.push(g);
+}
+
+// Always max 2 cars per wave, always at least 2 free lanes
+let lastWaveTime = 0;
+const WAVE_INTERVAL = 2.2; // seconds between waves
+
+function spawnWave() {
+    const shuffled = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+    const count = Math.random() < 0.4 ? 1 : 2; // 40% chance 1 car, else 2
+    shuffled.slice(0, count).forEach(lane => createEnemyCar(lane));
+}
+
+function createEnvironment() {
+    for (let i = 0; i < 30; i++) {
+        const side = Math.random() > 0.5 ? 1 : -1;
+        const x = side * (8 + Math.random() * 5);
+        const z = -i * 15 - Math.random() * 10;
+        Math.random() > 0.5 ? createPalmTree(x, z) : createBuilding(x, z);
+    }
+}
+
+function createPalmTree(x, z) {
+    const g = new THREE.Group();
+    const trunk = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.3, 5, 8),
+        new THREE.MeshStandardMaterial({ color: 0x8B4513 })
+    );
+    trunk.position.y = 2.5; trunk.castShadow = true; g.add(trunk);
+    const leaves = new THREE.Mesh(
+        new THREE.ConeGeometry(1.5, 3, 8),
+        new THREE.MeshStandardMaterial({ color: 0x228B22 })
+    );
+    leaves.position.y = 5.5; leaves.castShadow = true; g.add(leaves);
+    g.position.set(x, 0, z);
+    scene.add(g);
+    palmTrees.push(g);
+}
+
+function createBuilding(x, z) {
+    const h = 8 + Math.random() * 12;
+    const w = 3 + Math.random() * 3;
+    const d = 3 + Math.random() * 3;
+    const colors = [0xff69b4, 0x9370db, 0x00ced1, 0xff1493];
+    const building = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        new THREE.MeshStandardMaterial({ color: colors[Math.floor(Math.random() * colors.length)], metalness: 0.3, roughness: 0.7 })
+    );
+    building.position.set(x, h / 2, z);
+    building.castShadow = true; building.receiveShadow = true;
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 3; j++) {
+            const wm = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.4, 0.6),
+                new THREE.MeshBasicMaterial({ color: Math.random() > 0.7 ? 0xffff00 : 0x111111 })
+            );
+            wm.position.set((j-1)*1, i*1.5-h/2+2, d/2+0.01);
+            building.add(wm);
+        }
+    }
+    scene.add(building);
+    buildings.push(building);
+}
+
+function updateGame() {
+    if (!gameRunning) return;
+
+    if (keys.up && speed < maxSpeed) {
+        speed += acceleration;
+    } else if (keys.down && speed > 0) {
+        speed -= acceleration * 3;
+    } else if (speed > 0) {
+        speed -= acceleration * 0.4;
+    }
+    speed = Math.max(0, Math.min(speed, maxSpeed));
+
+    if (keys.left && playerCar.position.x > -4.5) {
+        playerCar.position.x -= 0.15;
+        playerCar.rotation.y = 0.1;
+    } else if (keys.right && playerCar.position.x < 4.5) {
+        playerCar.position.x += 0.15;
+        playerCar.rotation.y = -0.1;
+    } else {
+        playerCar.rotation.y *= 0.9;
+    }
+
+    const moveSpeed = speed / 20;
+
+    roadSegments.forEach(seg => {
+        seg.position.z += moveSpeed;
+        if (seg.position.z > 20) seg.position.z -= 500;
+    });
+
+    cars.forEach((car, i) => {
+        car.position.z += moveSpeed;
+        if (!car.userData.passed && car.position.z > playerCar.position.z) {
+            car.userData.passed = true;
+            carsPassed++;
+            score += 100;
+            updateUI();
+        }
+        const dist = Math.sqrt(
+            Math.pow(car.position.x - playerCar.position.x, 2) +
+            Math.pow(car.position.z - playerCar.position.z, 2)
+        );
+        if (dist < 2.5) { gameOver(); return; }
+        if (car.position.z > 20) { scene.remove(car); cars.splice(i, 1); }
+    });
+
+    palmTrees.forEach(t => { t.position.z += moveSpeed; if (t.position.z > 20) t.position.z -= 450; });
+    buildings.forEach(b => { b.position.z += moveSpeed; if (b.position.z > 20) b.position.z -= 450; });
+
+    // Time-gated wave spawning
+    const now = performance.now() / 1000;
+    if (speed > 5 && now - lastWaveTime > WAVE_INTERVAL) {
+        lastWaveTime = now;
+        spawnWave();
+    }
+
+    score += Math.floor(speed / 10);
+    if (Math.random() < 0.1) updateUI();
+
+    if (score >= lastQuizScore + 5000 && !quizActive) showQuiz();
+
+    document.getElementById('speed').textContent = Math.floor(speed);
+    camera.position.z = playerCar.position.z + 8 + speed / 50;
+    camera.position.y = 3 + speed / 100;
+    camera.lookAt(playerCar.position.x, playerCar.position.y, playerCar.position.z - 5);
+}
+
+function updateUI() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('passed').textContent = carsPassed;
+}
+
+function showQuiz() {
+    quizActive = true;
+    gameRunning = false;
+    const q = islamicQuestions[Math.floor(Math.random() * islamicQuestions.length)];
+    document.getElementById('quizQuestion').textContent = q.question;
+    const div = document.getElementById('quizAnswers');
+    div.innerHTML = '';
+    q.answers.forEach((a, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-answer';
+        btn.textContent = a;
+        btn.onclick = () => answerQuiz(i, q.correct, btn);
+        div.appendChild(btn);
+    });
+    document.getElementById('quizModal').style.display = 'block';
+}
+
+function answerQuiz(sel, correct, btn) {
+    document.querySelectorAll('.quiz-answer').forEach(b => b.disabled = true);
+    if (sel === correct) {
+        btn.classList.add('correct');
+        score += 200;
+        setTimeout(() => {
+            document.getElementById('quizModal').style.display = 'none';
+            quizActive = false;
+            gameRunning = true;
+            lastQuizScore = Math.floor(score / 5000) * 5000;
+        }, 1500);
+    } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.quiz-answer')[correct].classList.add('correct');
+        setTimeout(() => {
+            gameOver();
+            document.getElementById('quizModal').style.display = 'none';
+        }, 2000);
+    }
+}
+
+function drawMinimap() {
+    const mc = document.getElementById('minimap');
+    const ctx = mc.getContext('2d');
+    mc.width = 200; mc.height = 200;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0,200,200);
+    ctx.fillStyle = '#444'; ctx.fillRect(50,0,100,200);
+    ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(50,0); ctx.lineTo(50,200);
+    ctx.moveTo(150,0); ctx.lineTo(150,200);
+    ctx.stroke();
+    ctx.fillStyle = '#00ff00'; ctx.fillRect(95,170,10,15);
+    cars.forEach(car => {
+        const rz = car.position.z - playerCar.position.z;
+        if (rz < -5 && rz > -100) {
+            const mz = 170 + (rz / 100) * 150;
+            const mx = 100 + (car.position.x / 6) * 50;
+            ctx.fillStyle = '#ff0000'; ctx.fillRect(mx-7, mz, 14, 20);
+        }
+    });
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    updateGame();
+    drawMinimap();
+    renderer.render(scene, camera);
+}
+
+function startGame() {
+    document.getElementById('startScreen').style.display = 'none';
+    gameRunning = true;
+    score = 0; carsPassed = 0; speed = 0; lastQuizScore = 0; quizActive = false;
+    updateUI();
+}
+
+function gameOver() {
+    gameRunning = false;
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalPassed').textContent = carsPassed;
+    document.getElementById('gameOver').style.display = 'block';
+}
+
+function restartGame() {
+    cars.forEach(c => scene.remove(c));
+    cars = [];
+    playerCar.position.set(0, 0, 0);
+    score = 0; carsPassed = 0; speed = 0; lastQuizScore = 0; quizActive = false;
+    updateUI();
+    document.getElementById('gameOver').style.display = 'none';
+    document.getElementById('quizModal').style.display = 'none';
+    gameRunning = true;
+}
+
+function onKeyDown(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = true;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = true;
+}
+function onKeyUp(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = false;
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = false;
+}
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// ===== MOBILE =====
+const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
+
+function checkOrientation() {
+    if (!isMobile) return;
+    const hint = document.getElementById('landscapeHint');
+    if (window.innerHeight > window.innerWidth) {
+        hint.classList.add('show');
+        gameRunning = false;
+    } else {
+        hint.classList.remove('show');
+    }
+}
+window.addEventListener('resize', checkOrientation);
+checkOrientation();
+
+if (isMobile) {
+    document.body.style.touchAction = 'none';
+    document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+    const jBase = document.getElementById('joystickBase');
+    const jThumb = document.getElementById('joystickThumb');
+    const JR = 60;
+    let jActive = false, jId = null, jOrigin = { x: 0, y: 0 };
+
+    jBase.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        const r = jBase.getBoundingClientRect();
+        jActive = true; jId = t.identifier;
+        jOrigin = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }, { passive: false });
+
+    document.addEventListener('touchmove', e => {
+        if (!jActive) return;
+        for (const t of e.changedTouches) {
+            if (t.identifier !== jId) continue;
+            const dx = t.clientX - jOrigin.x;
+            const dy = t.clientY - jOrigin.y;
+            const dist = Math.min(Math.sqrt(dx*dx + dy*dy), JR);
+            const angle = Math.atan2(dy, dx);
+            const tx = Math.cos(angle) * dist;
+            const ty = Math.sin(angle) * dist;
+            jThumb.style.left = (35 + tx) + 'px';
+            jThumb.style.top = (35 + ty) + 'px';
+            const nx = tx / JR;
+            const ny = ty / JR;
+            keys.left = nx < -0.25;
+            keys.right = nx > 0.25;
+            keys.up = ny < -0.25;
+            keys.down = ny > 0.25;
+        }
+    }, { passive: false });
+
+    const endJ = e => {
+        for (const t of e.changedTouches) {
+            if (t.identifier !== jId) continue;
+            jActive = false; jId = null;
+            jThumb.style.left = '35px'; jThumb.style.top = '35px';
+            keys.left = false; keys.right = false; keys.up = false; keys.down = false;
+        }
+    };
+    document.addEventListener('touchend', endJ, { passive: false });
+    document.addEventListener('touchcancel', endJ, { passive: false });
+}
+
+
+init();
+animate();
+</script>
+</body>
+</html>

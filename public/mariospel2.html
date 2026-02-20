@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mario-achtig Spel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            border: 4px solid #333;
+            background: linear-gradient(to bottom, #87ceeb 0%, #e0f6ff 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        body.mobile .container {
+            border: none;
+            box-shadow: none;
+            position: fixed;
+            top: 0; left: 0;
+        }
+
+        canvas {
+            display: block;
+            background: inherit;
+        }
+
+        .ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+            font-weight: bold;
+            font-size: 15px;
+            z-index: 10;
+            background: rgba(255,255,255,0.85);
+            padding: 6px 10px;
+            gap: 6px;
+        }
+
+        .ui-item {
+            background: rgba(255,255,255,0.8);
+            padding: 4px 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            display: none;
+            min-width: 280px;
+        }
+
+        .game-over h1 { font-size: 40px; margin-bottom: 16px; }
+        .game-over p { font-size: 18px; margin-bottom: 20px; }
+
+        .game-over button {
+            padding: 12px 28px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 8px;
+            min-height: 48px;
+        }
+
+        .game-over button:hover { background: #45a049; }
+
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #333;
+            font-size: 12px;
+            background: rgba(255,255,255,0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        body.mobile .controls { display: none; }
+
+        .victory { color: #FFD700; }
+
+        /* Joystick */
+        #joystick-container {
+            display: none;
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            width: 120px;
+            height: 120px;
+            z-index: 30;
+        }
+
+        #joystick-base {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 3px solid rgba(255,255,255,0.4);
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        #joystick-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: absolute;
+            top: 35px; left: 35px;
+            pointer-events: none;
+        }
+
+        /* Jump button */
+        #btn-jump {
+            display: none;
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.5);
+            background: rgba(76,175,80,0.7);
+            color: white;
+            font-size: 30px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #btn-jump:active { background: rgba(76,175,80,1); }
+
+        /* Landscape hint */
+        #landscape-hint {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4em;
+            text-align: center;
+            color: white;
+            padding: 30px;
+        }
+
+        #landscape-hint .rotate-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: rotateHint 2s infinite;
+        }
+
+        @keyframes rotateHint {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="landscape-hint">
+        <div class="rotate-icon">📱</div>
+        <p>Draai je telefoon horizontaal voor de beste ervaring</p>
+    </div>
+
+    <div class="container" id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div class="ui">
+            <div class="ui-item">Score: <span id="score">0</span></div>
+            <div class="ui-item">Size: <span id="size">1.0</span></div>
+            <div class="ui-item">Level: <span id="level">1</span></div>
+            <div class="ui-item">Boss HP: <span id="bossHP">-</span></div>
+        </div>
+
+        <div class="controls">
+            🎮 A/D of ← → voor bewegen | SPACE voor springen | R om opnieuw te spelen
+        </div>
+
+        <div class="game-over" id="gameOverScreen">
+            <h1 id="gameOverTitle">Game Over!</h1>
+            <p id="gameOverText">Je bent geraakt!</p>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button onclick="location.reload()">Opnieuw spelen</button>
+        </div>
+    </div>
+
+    <div id="joystick-container">
+        <div id="joystick-base"></div>
+        <div id="joystick-thumb"></div>
+    </div>
+
+    <div id="btn-jump">🦘</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const GAME_W = 800;
+        const GAME_H = 600;
+
+        // --- Device detection & scaling ---
+        const isMobile = ('ontouchstart' in window) && window.innerWidth <= 1024;
+
+        if (isMobile) {
+            document.body.classList.add('mobile');
+            document.getElementById('joystick-container').style.display = 'block';
+            document.getElementById('btn-jump').style.display = 'flex';
+        }
+
+        function resizeGame() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const s = Math.min(w / GAME_W, h / GAME_H);
+            const scaledW = GAME_W * s;
+            const scaledH = GAME_H * s;
+            const container = document.getElementById('gameContainer');
+            if (isMobile) {
+                canvas.style.width = scaledW + 'px';
+                canvas.style.height = scaledH + 'px';
+                canvas.style.position = 'absolute';
+                canvas.style.left = ((w - scaledW) / 2) + 'px';
+                canvas.style.top = ((h - scaledH) / 2) + 'px';
+                container.style.width = w + 'px';
+                container.style.height = h + 'px';
+                checkOrientation();
+            } else {
+                container.style.width = scaledW + 'px';
+                container.style.height = scaledH + 'px';
+                canvas.style.width = scaledW + 'px';
+                canvas.style.height = scaledH + 'px';
+            }
+        }
+
+        function checkOrientation() {
+            if (!isMobile) return;
+            document.getElementById('landscape-hint').style.display =
+                window.innerHeight > window.innerWidth ? 'flex' : 'none';
+        }
+
+        window.addEventListener('resize', resizeGame);
+        window.addEventListener('orientationchange', () => setTimeout(resizeGame, 300));
+        document.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+        document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+        // --- Joystick ---
+        const joystickContainer = document.getElementById('joystick-container');
+        const joystickThumb = document.getElementById('joystick-thumb');
+        const JOYSTICK_RADIUS = 60;
+        const DEAD_ZONE = 10;
+        let joystick = { active: false, startX: 0, startY: 0, dx: 0, dy: 0 };
+
+        if (isMobile) {
+            joystickContainer.addEventListener('touchstart', e => {
+                const t = e.touches[0];
+                joystick.active = true;
+                joystick.startX = t.clientX;
+                joystick.startY = t.clientY;
+                joystick.dx = 0;
+                joystick.dy = 0;
+            });
+
+            window.addEventListener('touchmove', e => {
+                if (!joystick.active) return;
+                const t = e.touches[0];
+                let dx = t.clientX - joystick.startX;
+                let dy = t.clientY - joystick.startY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > JOYSTICK_RADIUS) {
+                    dx = (dx / dist) * JOYSTICK_RADIUS;
+                    dy = (dy / dist) * JOYSTICK_RADIUS;
+                }
+                joystick.dx = dx;
+                joystick.dy = dy;
+                joystickThumb.style.left = (35 + dx) + 'px';
+                joystickThumb.style.top = (35 + dy) + 'px';
+            });
+
+            window.addEventListener('touchend', () => {
+                joystick.active = false;
+                joystick.dx = 0;
+                joystick.dy = 0;
+                joystickThumb.style.left = '35px';
+                joystickThumb.style.top = '35px';
+            });
+
+            // Jump button
+            document.getElementById('btn-jump').addEventListener('touchstart', e => {
+                e.stopPropagation();
+                jumpPressed = true;
+            });
+            document.getElementById('btn-jump').addEventListener('touchend', e => {
+                e.stopPropagation();
+                jumpPressed = false;
+            });
+        }
+
+        let jumpPressed = false;
+
+        function getMoveInput() {
+            if (isMobile) {
+                return Math.abs(joystick.dx) > DEAD_ZONE ? joystick.dx / JOYSTICK_RADIUS : 0;
+            }
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) return -1;
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) return 1;
+            return 0;
+        }
+
+        function getJumpInput() {
+            if (isMobile) return jumpPressed;
+            return !!(keys[' '] || keys['w'] || keys['W'] || keys['ArrowUp']);
+        }
+
+        // --- Game state ---
+        let gameState = {
+            level: 1,
+            score: 0,
+            gameOver: false,
+            victory: false,
+            difficultyMultiplier: 1
+        };
+
+        const ENEMY_COLORS = ['#FF6B6B','#FF9F43','#A855F7','#3B82F6','#10B981','#EC4899','#F59E0B','#EF4444'];
+        let enemyColor = ENEMY_COLORS[0];
+        let colorIndex = 0;
+        let speedTier = 0;
+        let intervalTimer = 0;
+        let flashEffect = { active: false, time: 0, duration: 45, color: '#fff' };
+
+        const player = {
+            x: 100,
+            y: 400,
+            width: 30,
+            height: 40,
+            velocityY: 0,
+            velocityX: 0,
+            speed: 5,
+            jumpPower: 12,
+            gravity: 0.6,
+            isJumping: false,
+            size: 1,
+            enemiesEaten: 0,
+            baseSpeed: 5,
+            baseJump: 12,
+            score: 0
+        };
+
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') e.preventDefault();
+            if ((e.key === 'r' || e.key === 'R') && (gameState.gameOver || gameState.victory)) {
+                location.reload();
+            }
+        });
+        window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+
+        const platforms = [
+            { x: 0, y: 550, width: 800, height: 50 },
+            { x: 150, y: 450, width: 200, height: 20 },
+            { x: 500, y: 400, width: 250, height: 20 },
+            { x: 250, y: 300, width: 150, height: 20 }
+        ];
+
+        let enemies = [];
+
+        class Enemy {
+            constructor(x, y, level = 1) {
+                this.x = x;
+                this.y = y;
+                this.width = 25;
+                this.height = 25;
+                this.velocityY = 0;
+                this.speed = 0.4 + (level * 0.1);
+                this.direction = Math.random() > 0.5 ? 1 : -1;
+                this.patrolDistance = 100;
+                this.startX = x;
+                this.gravity = 0.6;
+                this.isJumping = false;
+            }
+
+            update() {
+                this.velocityY += this.gravity;
+                this.y += this.velocityY;
+                for (let platform of platforms) {
+                    if (this.y + this.height >= platform.y &&
+                        this.y + this.height <= platform.y + 20 &&
+                        this.x + this.width > platform.x &&
+                        this.x < platform.x + platform.width) {
+                        this.velocityY = 0;
+                        this.y = platform.y - this.height;
+                        this.isJumping = false;
+                    }
+                }
+                this.x += this.speed * this.direction;
+                if (Math.abs(this.x - this.startX) > this.patrolDistance) {
+                    this.direction *= -1;
+                }
+                if (!this.isJumping && Math.random() < 0.02) {
+                    this.velocityY = -8;
+                    this.isJumping = true;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = enemyColor;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(this.x + 5, this.y + 8, 5, 5);
+                ctx.fillRect(this.x + 15, this.y + 8, 5, 5);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(this.x + 6, this.y + 9, 3, 3);
+                ctx.fillRect(this.x + 16, this.y + 9, 3, 3);
+            }
+        }
+
+        let boss = null;
+
+        class Boss {
+            constructor() {
+                this.x = 600;
+                this.y = 300;
+                this.width = 60;
+                this.height = 60;
+                this.velocityY = 0;
+                this.speed = 2;
+                this.gravity = 0.6;
+                this.isJumping = false;
+                this.direction = -1;
+                this.maxHealth = 5 + gameState.level * 2;
+                this.health = this.maxHealth;
+                this.attackCooldown = 0;
+                this.projectiles = [];
+            }
+
+            update() {
+                if (player.x > this.x) { this.direction = 1; this.x += this.speed; }
+                else { this.direction = -1; this.x -= this.speed; }
+                this.velocityY += this.gravity;
+                this.y += this.velocityY;
+                for (let platform of platforms) {
+                    if (this.y + this.height >= platform.y &&
+                        this.y + this.height <= platform.y + 20 &&
+                        this.x + this.width > platform.x &&
+                        this.x < platform.x + platform.width) {
+                        this.velocityY = 0;
+                        this.y = platform.y - this.height;
+                        this.isJumping = false;
+                    }
+                }
+                if (!this.isJumping && Math.random() < 0.03) {
+                    this.velocityY = -10;
+                    this.isJumping = true;
+                }
+                this.attackCooldown--;
+                if (this.attackCooldown <= 0) { this.shoot(); this.attackCooldown = 80; }
+                this.projectiles = this.projectiles.filter(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.3;
+                    return p.y < GAME_H;
+                });
+            }
+
+            shoot() {
+                this.projectiles.push({
+                    x: this.x + this.width / 2,
+                    y: this.y + this.height / 2,
+                    vx: this.direction * 4,
+                    vy: -2,
+                    width: 10,
+                    height: 10
+                });
+            }
+
+            draw() {
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = '#FF6B6B';
+                ctx.fillRect(this.x + 10, this.y - 10, 40, 10);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(this.x + 15, this.y + 15, 8, 8);
+                ctx.fillRect(this.x + 37, this.y + 15, 8, 8);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(this.x + 17, this.y + 17, 4, 4);
+                ctx.fillRect(this.x + 39, this.y + 17, 4, 4);
+                ctx.fillStyle = '#FF4444';
+                for (let p of this.projectiles) { ctx.fillRect(p.x, p.y, p.width, p.height); }
+                ctx.fillStyle = '#333';
+                ctx.fillRect(this.x - 20, this.y - 25, 100, 10);
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(this.x - 20, this.y - 25, (this.health / this.maxHealth) * 100, 10);
+                ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+                ctx.strokeRect(this.x - 20, this.y - 25, 100, 10);
+            }
+
+            takeDamage(damage) {
+                this.health -= damage;
+                if (this.health <= 0) {
+                    gameState.victory = true;
+                    gameState.gameOver = true;
+                }
+            }
+        }
+
+        function checkCollision(r1, r2) {
+            return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x &&
+                   r1.y < r2.y + r2.height && r1.y + r1.height > r2.y;
+        }
+
+        function spawnEnemies() {
+            enemies = [];
+            const count = 3 + gameState.level;
+            const spawnPositions = [350, 500, 650, 750, 420, 580, 700];
+            for (let i = 0; i < count; i++) {
+                const sx = spawnPositions[i % spawnPositions.length];
+                enemies.push(new Enemy(sx, 150, gameState.level));
+            }
+        }
+
+        let jumpWasPressed = false;
+
+        function update() {
+            if (gameState.gameOver) return;
+
+            // 15-second interval: speed up and change color
+            intervalTimer += 1/60;
+            if (intervalTimer >= 15) {
+                intervalTimer = 0;
+                speedTier++;
+                colorIndex = (colorIndex + 1) % ENEMY_COLORS.length;
+                enemyColor = ENEMY_COLORS[colorIndex];
+                gameState.level++;
+                for (let e of enemies) e.speed += 0.3;
+                flashEffect.active = true;
+                flashEffect.time = 0;
+                flashEffect.color = enemyColor;
+            }
+            if (flashEffect.active) flashEffect.time++;
+            if (flashEffect.time >= flashEffect.duration) flashEffect.active = false;
+
+            const moveX = getMoveInput();
+            player.velocityX = moveX * player.speed;
+            player.x += player.velocityX;
+
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > GAME_W) player.x = GAME_W - player.width;
+
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+
+            let onPlatform = false;
+            for (let platform of platforms) {
+                if (player.y + player.height >= platform.y &&
+                    player.y + player.height <= platform.y + 20 &&
+                    player.x + player.width > platform.x &&
+                    player.x < platform.x + platform.width &&
+                    player.velocityY >= 0) {
+                    player.velocityY = 0;
+                    player.y = platform.y - player.height;
+                    player.isJumping = false;
+                    onPlatform = true;
+                }
+            }
+
+            const jumpNow = getJumpInput();
+            if (jumpNow && !jumpWasPressed && !player.isJumping && onPlatform) {
+                player.velocityY = -player.jumpPower;
+                player.isJumping = true;
+            }
+            jumpWasPressed = jumpNow;
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                enemy.update();
+                if (checkCollision(player, enemy)) {
+                    if (player.size > 1.2) {
+                        player.enemiesEaten++;
+                        player.size = 1 + (player.enemiesEaten * 0.08);
+                        player.width = 30 * player.size;
+                        player.height = 40 * player.size;
+                        player.speed = player.baseSpeed + (player.enemiesEaten * 0.2);
+                        player.jumpPower = player.baseJump + (player.enemiesEaten * 0.1);
+                        player.score += 100;
+                        enemies.splice(i, 1);
+                    } else {
+                        gameState.gameOver = true;
+                    }
+                }
+            }
+
+            if (gameState.level >= 2 && boss === null) boss = new Boss();
+
+            if (boss) {
+                boss.update();
+                if (checkCollision(player, boss)) {
+                    if (player.size > 1.5) boss.takeDamage(player.size * 0.2);
+                    else gameState.gameOver = true;
+                }
+                for (let p of boss.projectiles) {
+                    if (checkCollision(player, p)) gameState.gameOver = true;
+                }
+            }
+
+            if (player.enemiesEaten >= (gameState.level * 10)) {
+                gameState.level++;
+                gameState.difficultyMultiplier = 1 + (gameState.level - 1) * 0.3;
+                spawnEnemies();
+                boss = null;
+            }
+
+            player.score += 1;
+            document.getElementById('score').textContent = player.score;
+            document.getElementById('size').textContent = player.size.toFixed(1);
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('bossHP').textContent = boss ? Math.max(0, boss.health).toFixed(1) : '-';
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(135,206,235,0.8)';
+            ctx.fillRect(0, 0, GAME_W, GAME_H);
+
+            ctx.fillStyle = '#8B4513';
+            for (let platform of platforms) {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(platform.x, platform.y - 5, platform.width, 5);
+                ctx.fillStyle = '#8B4513';
+            }
+
+            ctx.fillStyle = '#FF6B35';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width / 2, player.y + player.height / 2.5, player.width / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FFAF38';
+            ctx.fillRect(player.x, player.y + player.height / 2, player.width, player.height / 2);
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(player.x + player.width / 3, player.y + player.height / 3, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(player.x + player.width * 2 / 3, player.y + player.height / 3, 4, 0, Math.PI * 2); ctx.fill();
+
+            for (let enemy of enemies) enemy.draw();
+            if (boss) boss.draw();
+
+            // Flash effect on color/speed change
+            if (flashEffect.active) {
+                const progress = flashEffect.time / flashEffect.duration;
+                const alpha = (1 - progress) * 0.45;
+                ctx.fillStyle = flashEffect.color.replace(')', `,${alpha})`).replace('rgb', 'rgba').replace('#', '');
+                // Use hex color with alpha overlay instead
+                ctx.save();
+                ctx.globalAlpha = (1 - progress) * 0.45;
+                ctx.fillStyle = flashEffect.color;
+                ctx.fillRect(0, 0, GAME_W, GAME_H);
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 36px Arial';
+                ctx.textAlign = 'center';
+                ctx.globalAlpha = (1 - progress);
+                ctx.fillText('⚡ SNELLER! ⚡', GAME_W / 2, GAME_H / 2);
+                ctx.globalAlpha = 1;
+                ctx.restore();
+            }
+
+            if (gameState.victory) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, GAME_W, GAME_H);
+                ctx.fillStyle = '#FFD700';
+                ctx.font = 'bold 60px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('JE HEBT GEWONNEN!', GAME_W / 2, GAME_H / 2 - 50);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText(`Baas verslagen op level ${gameState.level}!`, GAME_W / 2, GAME_H / 2 + 50);
+            }
+        }
+
+        let gameOverShown = false;
+        function gameLoop() {
+            update();
+            draw();
+            if (gameState.gameOver && !gameOverShown) {
+                gameOverShown = true;
+                setTimeout(showGameOver, 100);
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function showGameOver() {
+            const overlay = document.getElementById('gameOverScreen');
+            const title = document.getElementById('gameOverTitle');
+            const text = document.getElementById('gameOverText');
+            if (gameState.victory) {
+                title.textContent = '🎉 VICTORY! 🎉';
+                title.classList.add('victory');
+                text.textContent = `Je hebt de baas verslagen op level ${gameState.level}!`;
+            } else {
+                title.textContent = '💀 Game Over! 💀';
+                title.classList.remove('victory');
+                text.textContent = 'Je bent geraakt door een vijand!';
+            }
+            document.getElementById('finalScore').textContent = player.score;
+            overlay.style.display = 'block';
+        }
+
+        spawnEnemies();
+        resizeGame();
+        gameLoop();
+    </script>
+</body>
+</html>
