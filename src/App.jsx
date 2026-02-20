@@ -306,11 +306,12 @@ function App() {
       <header style={{
         position: 'relative',
         width: '100%',
-        height: '50vh',
-        minHeight: '350px',
+        height: '60vh',
+        minHeight: '400px',
         overflow: 'hidden',
       }}>
         <img
+          className="hero-img"
           src="/school.png"
           alt="Al Qalam School"
           style={{
@@ -329,9 +330,9 @@ function App() {
         {/* Hero text */}
         <div style={{
           position: 'absolute',
-          bottom: '2rem',
+          top: '50%',
           left: '50%',
-          transform: 'translateX(-50%)',
+          transform: 'translate(-50%, -50%)',
           textAlign: 'center',
           width: '90%',
           maxWidth: '800px',
@@ -657,6 +658,14 @@ function App() {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap');
+
+        @media (max-width: 600px) {
+          .hero-img {
+            object-position: 30% 35% !important;
+            transform: scale(1.4);
+            transform-origin: 30% 35%;
+          }
+        }
       `}</style>
     </div>
   );
