@@ -219,9 +219,11 @@
             overflow-y: auto;
             z-index: 20;
             padding: 30px 20px;
-            display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+        body.mobile .quiz:not(.hidden) {
+            display: flex;
         }
 
         body.mobile .quiz-option {
