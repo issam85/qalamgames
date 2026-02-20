@@ -24,13 +24,25 @@
         #gameContainer {
             position: relative;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
+            border-radius: 0;
             overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        @media (min-width: 901px) {
+            #gameContainer {
+                border-radius: 12px;
+                max-width: 900px;
+                max-height: 600px;
+            }
         }
 
         canvas {
             display: block;
             background: #50b465;
+            width: 100%;
+            height: 100%;
         }
 
         #ui {
@@ -91,35 +103,41 @@
             align-items: center;
             color: white;
             backdrop-filter: blur(5px);
+            z-index: 50;
+            pointer-events: none;
         }
 
         #gameOverScreen.active {
             display: flex;
+            pointer-events: auto;
         }
 
         #gameOverScreen h1 {
-            font-size: 64px;
+            font-size: clamp(32px, 8vw, 64px);
             margin-bottom: 20px;
             color: #ff6b6b;
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
         }
 
         #gameOverScreen p {
-            font-size: 28px;
+            font-size: clamp(18px, 4vw, 28px);
             margin-bottom: 30px;
         }
 
         #restartBtn {
             padding: 15px 40px;
-            font-size: 24px;
+            font-size: clamp(18px, 4vw, 24px);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            pointer-events: all;
+            pointer-events: auto;
             transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            min-height: 50px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #restartBtn:hover {
@@ -129,24 +147,199 @@
 
         #restartBtn:active {
             transform: translateY(0);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
 
         #instructions {
             position: absolute;
-            bottom: 20px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.6);
-            padding: 15px 30px;
+            padding: 10px 20px;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: clamp(10px, 2vw, 14px);
             color: white;
             text-align: center;
+            width: 90%;
+            max-width: 600px;
         }
 
         .particle {
             position: absolute;
             pointer-events: none;
+        }
+
+        /* Mobile Controls */
+        #mobileControls {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        #mobileControls.active {
+            display: block;
+        }
+
+        .joystick-area {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 140px;
+            height: 140px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .joystick-base {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .joystick-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none;
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .action-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .action-btn.shoot {
+            background: rgba(255, 60, 60, 0.5);
+            width: 80px;
+            height: 80px;
+            font-size: 28px;
+        }
+
+        .action-btn.jump {
+            background: rgba(60, 180, 255, 0.5);
+        }
+
+        .action-btn.dance {
+            background: rgba(255, 180, 60, 0.5);
+        }
+
+        .action-btn.interact {
+            background: rgba(60, 255, 120, 0.5);
+        }
+
+        .action-btn:active, .action-btn.pressed {
+            transform: scale(0.9);
+            filter: brightness(1.3);
+        }
+
+        .shoot-area {
+            position: absolute;
+            bottom: 20px;
+            right: 100px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .action-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Landscape hint */
+        #landscapeHint {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            text-align: center;
+            gap: 20px;
+        }
+
+        #landscapeHint .rotate-icon {
+            font-size: 60px;
+            animation: rotate-phone 2s ease-in-out infinite;
+        }
+
+        @keyframes rotate-phone {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 900px) and (orientation: portrait) {
+            #landscapeHint {
+                display: flex;
+            }
+        }
+
+        /* Mobile instructions override */
+        @media (max-width: 900px) {
+            #instructions {
+                display: none !important;
+            }
+            #scoreDisplay { font-size: 16px !important; }
+            #levelDisplay { font-size: 14px !important; }
+            #weaponDisplay { font-size: 12px !important; }
+            #healthBar { width: 150px !important; height: 20px !important; }
+            #ui { padding: 10px !important; }
         }
     </style>
 </head>
@@ -169,13 +362,42 @@
         <div id="instructions">
             WASD - Bewegen | Spatie - Springen 🦘 | E - Dansen 💃 / Schatkist Openen 💎 | Muis - Schieten | Blijf binnen de storm!
         </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobileControls">
+            <div class="joystick-area" id="joystickArea">
+                <div class="joystick-base" id="joystickBase">
+                    <div class="joystick-thumb" id="joystickThumb"></div>
+                </div>
+            </div>
+            <div class="action-row">
+                <div class="action-col">
+                    <button class="action-btn interact" id="btnInteract">📦</button>
+                    <button class="action-btn dance" id="btnDance">💃</button>
+                </div>
+                <div class="action-col">
+                    <button class="action-btn jump" id="btnJump">🦘</button>
+                    <button class="action-btn shoot" id="btnShoot">🔫</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Landscape hint -->
+    <div id="landscapeHint">
+        <div class="rotate-icon">📱</div>
+        <h2>Draai je telefoon</h2>
+        <p>Dit spel werkt het best in landscape modus</p>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        // Keep internal resolution at 900x600 — CSS scales it to fill container
         canvas.width = 900;
         canvas.height = 600;
+
+        const isMobileDevice = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window);
 
         let player = {
             x: canvas.width / 2,
@@ -262,6 +484,9 @@
             stormRadius = 380;
             gameOver = false;
             level = 1;
+
+            levelUpMessage = '';
+            levelUpMessageTime = 0;
 
             camera.x = player.x - canvas.width / 2;
             camera.y = player.y - canvas.height / 2;
@@ -550,6 +775,10 @@
 
             if (stormRadius === 120 && level === 1) {
                 levelUp();
+            }
+
+            if (levelUpMessageTime > 0) {
+                levelUpMessageTime--;
             }
         }
 
@@ -853,6 +1082,21 @@
             }
 
             ctx.restore();
+
+            // Draw level-up message overlay (not affected by camera)
+            if (levelUpMessageTime > 0) {
+                const alpha = Math.min(1, levelUpMessageTime / 60);
+                ctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.5})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`;
+                ctx.font = 'bold 28px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#ffd700';
+                ctx.fillText(levelUpMessage, canvas.width / 2, canvas.height / 2);
+                ctx.shadowBlur = 0;
+            }
         }
 
         function drawBanana(x, y, size) {
@@ -1263,19 +1507,38 @@
             document.getElementById('gameOverScreen').classList.add('active');
         }
 
+        let levelUpMessage = '';
+        let levelUpMessageTime = 0;
+
         function levelUp() {
             level = 2;
             enemies = [];
-            setTimeout(() => {
-                alert('De storm is voorbij! Je hebt een nieuwe, mooiere wereld bereikt. De vijanden worden sterker!');
-            }, 100);
+            levelUpMessage = 'De storm is voorbij! Nieuwe wereld bereikt! Vijanden worden sterker!';
+            levelUpMessageTime = 300; // Show for ~5 seconds (300 frames at 60fps)
         }
 
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            mousePos.x = e.clientX - rect.left;
-            mousePos.y = e.clientY - rect.top;
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            mousePos.x = (e.clientX - rect.left) * scaleX;
+            mousePos.y = (e.clientY - rect.top) * scaleY;
         });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            // On mobile, don't update mousePos from canvas — use shoot button auto-aim instead
+            if (!isMobileDevice) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const touch = e.touches[0];
+                mousePos.x = (touch.clientX - rect.left) * scaleX;
+                mousePos.y = (touch.clientY - rect.top) * scaleY;
+            }
+        }, { passive: false });
+
+        // Original touchstart on canvas removed - handled by mobile controls section below
 
         canvas.addEventListener('click', (e) => {
             if (gameOver || isDancing) return;
@@ -1355,9 +1618,218 @@
             keys[e.key] = false;
         });
 
-        document.getElementById('restartBtn').addEventListener('click', () => {
+        document.getElementById('restartBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             resetGame();
         });
+        document.getElementById('restartBtn').addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            resetGame();
+        });
+
+        // ============ MOBILE CONTROLS ============
+        if (isMobileDevice) {
+            document.getElementById('mobileControls').classList.add('active');
+        }
+
+        // -- Joystick --
+        const joystickArea = document.getElementById('joystickArea');
+        const joystickBase = document.getElementById('joystickBase');
+        const joystickThumb = document.getElementById('joystickThumb');
+        let joystickActive = false;
+        let joystickOrigin = { x: 0, y: 0 };
+        const joystickMaxDist = 50;
+
+        joystickArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            joystickActive = true;
+            const touch = e.touches[0];
+            const rect = joystickBase.getBoundingClientRect();
+            joystickOrigin.x = rect.left + rect.width / 2;
+            joystickOrigin.y = rect.top + rect.height / 2;
+            handleJoystickMove(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        joystickArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!joystickActive) return;
+            const touch = e.touches[0];
+            handleJoystickMove(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        joystickArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            joystickActive = false;
+            joystickThumb.style.transform = 'translate(-50%, -50%)';
+            // Stop movement
+            keys['w'] = false;
+            keys['s'] = false;
+            keys['a'] = false;
+            keys['d'] = false;
+        }, { passive: false });
+
+        function handleJoystickMove(touchX, touchY) {
+            let dx = touchX - joystickOrigin.x;
+            let dy = touchY - joystickOrigin.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > joystickMaxDist) {
+                dx = (dx / dist) * joystickMaxDist;
+                dy = (dy / dist) * joystickMaxDist;
+            }
+
+            joystickThumb.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+            // Convert to WASD keys
+            const threshold = 15;
+            keys['w'] = dy < -threshold;
+            keys['s'] = dy > threshold;
+            keys['a'] = dx < -threshold;
+            keys['d'] = dx > threshold;
+        }
+
+        // -- Shoot Button --
+        const btnShoot = document.getElementById('btnShoot');
+        let shootInterval = null;
+
+        function doShoot() {
+            if (gameOver || isDancing) return;
+            // Shoot toward center-right of screen (forward direction)
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            // Find nearest enemy to aim at
+            let targetX = player.x + Math.cos(player.angle) * 200;
+            let targetY = player.y + Math.sin(player.angle) * 200;
+
+            if (enemies.length > 0) {
+                let nearestDist = Infinity;
+                enemies.forEach(enemy => {
+                    const d = Math.hypot(enemy.x - player.x, enemy.y - player.y);
+                    if (d < nearestDist) {
+                        nearestDist = d;
+                        targetX = enemy.x;
+                        targetY = enemy.y;
+                    }
+                });
+            }
+
+            const angle = Math.atan2(targetY - player.y, targetX - player.x);
+            player.angle = angle;
+            mousePos.x = (targetX - camera.x);
+            mousePos.y = (targetY - camera.y);
+
+            if (hasDoubleShot && hasSecondGun) {
+                const spread = 0.15;
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
+            } else if (hasDoubleShot) {
+                const spread = 0.15;
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
+            } else {
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
+            }
+        }
+
+        btnShoot.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnShoot.classList.add('pressed');
+            doShoot();
+            shootInterval = setInterval(doShoot, 200);
+        }, { passive: false });
+
+        btnShoot.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnShoot.classList.remove('pressed');
+            clearInterval(shootInterval);
+            shootInterval = null;
+        }, { passive: false });
+
+        // -- Jump Button --
+        const btnJump = document.getElementById('btnJump');
+        btnJump.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnJump.classList.add('pressed');
+            if (!isJumping && !isDancing) {
+                isJumping = true;
+                jumpVelocity = jumpPower;
+            }
+        }, { passive: false });
+
+        btnJump.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnJump.classList.remove('pressed');
+        }, { passive: false });
+
+        // -- Dance Button --
+        const btnDance = document.getElementById('btnDance');
+        btnDance.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnDance.classList.add('pressed');
+            isDancing = !isDancing;
+        }, { passive: false });
+
+        btnDance.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnDance.classList.remove('pressed');
+        }, { passive: false });
+
+        // -- Interact Button (open chests) --
+        const btnInteract = document.getElementById('btnInteract');
+        btnInteract.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnInteract.classList.add('pressed');
+            keys['e'] = true;
+        }, { passive: false });
+
+        btnInteract.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btnInteract.classList.remove('pressed');
+            keys['e'] = false;
+        }, { passive: false });
+
+        // Prevent canvas touchstart from also firing shoot on mobile
+        canvas.addEventListener('touchstart', (e) => {
+            // Only handle as shoot if NOT on mobile (on mobile we use the shoot button)
+            if (isMobileDevice) {
+                e.preventDefault();
+                return;
+            }
+            if (gameOver || isDancing) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touch = e.touches[0];
+            mousePos.x = (touch.clientX - rect.left) * scaleX;
+            mousePos.y = (touch.clientY - rect.top) * scaleY;
+
+            const angle = Math.atan2((mousePos.y + camera.y) - player.y, (mousePos.x + camera.x) - player.x);
+            if (hasDoubleShot && hasSecondGun) {
+                const spread = 0.15;
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
+            } else if (hasDoubleShot) {
+                const spread = 0.15;
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle - spread) * 8, vy: Math.sin(angle - spread) * 8, life: 100 });
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle + spread) * 8, vy: Math.sin(angle + spread) * 8, life: 100 });
+            } else {
+                bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100 });
+            }
+        }, { passive: false });
 
         init();
     </script>
