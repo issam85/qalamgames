@@ -346,6 +346,7 @@
         let shootInterval = null;
         if (isMobile) {
             joystickContainer.addEventListener('touchstart', e => {
+                e.preventDefault();
                 const t = e.touches[0];
                 joystick.active = true;
                 joystick.startX = t.clientX;
@@ -354,6 +355,8 @@
                 joystick.dy = 0;
             });
             window.addEventListener('touchmove', e => {
+                if (!joystick.active && !joystickRight.active) return;
+                e.preventDefault();
                 if (!joystick.active) return;
                 const t = e.touches[0];
                 let dx = t.clientX - joystick.startX;
