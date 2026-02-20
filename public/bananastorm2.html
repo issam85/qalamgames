@@ -343,94 +343,95 @@
         let joystickRight = { active: false, startX: 0, startY: 0, dx: 0, dy: 0 };
         let shootInterval = null;
         if (isMobile) {
-            joystickContainer.addEventListener('touchstart', e => {
-                e.preventDefault();
-                const t = e.touches[0];
-                joystick.active = true;
-                joystick.startX = t.clientX;
-                joystick.startY = t.clientY;
-                joystick.dx = 0;
-                joystick.dy = 0;
-            });
-            window.addEventListener('touchmove', e => {
-                if (!joystick.active && !joystickRight.active) return;
-                e.preventDefault();
-                const t = e.touches[0];
-                let dx = t.clientX - joystick.startX;
-                let dy = t.clientY - joystick.startY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist > JOYSTICK_RADIUS) {
-                    dx = (dx / dist) * JOYSTICK_RADIUS;
-                    dy = (dy / dist) * JOYSTICK_RADIUS;
-                }
-                joystick.dx = dx;
-                joystick.dy = dy;
-                joystickThumb.style.left = (35 + dx) + 'px';
-                joystickThumb.style.top = (35 + dy) + 'px';
-            });
-            window.addEventListener('touchend', e => {
-                // Only reset joystick if no touches remain on joystick area
-                joystick.active = false;
-                joystick.dx = 0;
-                joystick.dy = 0;
-                joystickThumb.style.left = '35px';
-                joystickThumb.style.top = '35px';
-            });
-            // Right joystick: shoot direction
             const rjContainer = document.getElementById('joystick-right-container');
             const rjThumb = document.getElementById('joystick-right-thumb');
-            rjContainer.addEventListener('touchstart', e => {
-                e.stopPropagation();
-                const t = e.touches[0];
-                joystickRight.active = true;
-                joystickRight.startX = t.clientX;
-                joystickRight.startY = t.clientY;
-                joystickRight.dx = 0;
-                joystickRight.dy = 0;
-                // Start auto-shooting while right joystick held
+            joystick.id = null;
+            joystickRight.id = null;
+            function resetLeftJoystick() {
+                joystick.active = false; joystick.id = null;
+                joystick.dx = 0; joystick.dy = 0;
+                joystickThumb.style.left = '35px';
+                joystickThumb.style.top = '35px';
+            }
+            function resetRightJoystick() {
+                joystickRight.active = false; joystickRight.id = null;
+                joystickRight.dx = 0; joystickRight.dy = 0;
+                rjThumb.style.left = '35px';
+                rjThumb.style.top = '35px';
                 clearInterval(shootInterval);
-                shootInterval = setInterval(() => {
-                    if (!gameOver && !isDancing && joystickRight.active) {
-                        const dist = Math.sqrt(joystickRight.dx * joystickRight.dx + joystickRight.dy * joystickRight.dy);
-                        if (dist > DEAD_ZONE) {
-                            const angle = Math.atan2(joystickRight.dy, joystickRight.dx);
-                            player.angle = angle;
-                            shootAt(player.x + Math.cos(angle) * 200, player.y + Math.sin(angle) * 200);
-                        }
+                shootInterval = null;
+            }
+            joystickContainer.addEventListener('touchstart', e => {
+                e.preventDefault();
+                for (const t of e.changedTouches) {
+                    if (!joystick.active) {
+                        joystick.active = true;
+                        joystick.id = t.identifier;
+                        joystick.startX = t.clientX;
+                        joystick.startY = t.clientY;
+                        joystick.dx = 0; joystick.dy = 0;
+                        break;
                     }
-                }, 250);
-            });
+                }
+            }, { passive: false });
+            rjContainer.addEventListener('touchstart', e => {
+                e.preventDefault();
+                for (const t of e.changedTouches) {
+                    if (!joystickRight.active) {
+                        joystickRight.active = true;
+                        joystickRight.id = t.identifier;
+                        joystickRight.startX = t.clientX;
+                        joystickRight.startY = t.clientY;
+                        joystickRight.dx = 0; joystickRight.dy = 0;
+                        clearInterval(shootInterval);
+                        shootInterval = setInterval(() => {
+                            if (!gameOver && !isDancing && joystickRight.active) {
+                                const dist = Math.sqrt(joystickRight.dx * joystickRight.dx + joystickRight.dy * joystickRight.dy);
+                                if (dist > DEAD_ZONE) {
+                                    const angle = Math.atan2(joystickRight.dy, joystickRight.dx);
+                                    player.angle = angle;
+                                    shootAt(player.x + Math.cos(angle) * 200, player.y + Math.sin(angle) * 200);
+                                }
+                            }
+                        }, 150);
+                        break;
+                    }
+                }
+            }, { passive: false });
             window.addEventListener('touchmove', e => {
-                if (!joystickRight.active) return;
-                // find the touch that started on the right joystick
-                for (let i = 0; i < e.touches.length; i++) {
-                    const t = e.touches[i];
-                    let dx = t.clientX - joystickRight.startX;
-                    let dy = t.clientY - joystickRight.startY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > JOYSTICK_RADIUS) {
-                        dx = (dx / dist) * JOYSTICK_RADIUS;
-                        dy = (dy / dist) * JOYSTICK_RADIUS;
+                for (const t of e.changedTouches) {
+                    if (joystick.active && t.identifier === joystick.id) {
+                        let dx = t.clientX - joystick.startX;
+                        let dy = t.clientY - joystick.startY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > JOYSTICK_RADIUS) { dx = (dx / dist) * JOYSTICK_RADIUS; dy = (dy / dist) * JOYSTICK_RADIUS; }
+                        joystick.dx = dx; joystick.dy = dy;
+                        joystickThumb.style.left = (35 + dx) + 'px';
+                        joystickThumb.style.top = (35 + dy) + 'px';
                     }
-                    joystickRight.dx = dx;
-                    joystickRight.dy = dy;
-                    rjThumb.style.left = (35 + dx) + 'px';
-                    rjThumb.style.top = (35 + dy) + 'px';
-                    break;
+                    if (joystickRight.active && t.identifier === joystickRight.id) {
+                        let dx = t.clientX - joystickRight.startX;
+                        let dy = t.clientY - joystickRight.startY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > JOYSTICK_RADIUS) { dx = (dx / dist) * JOYSTICK_RADIUS; dy = (dy / dist) * JOYSTICK_RADIUS; }
+                        joystickRight.dx = dx; joystickRight.dy = dy;
+                        rjThumb.style.left = (35 + dx) + 'px';
+                        rjThumb.style.top = (35 + dy) + 'px';
+                    }
                 }
-            });
+            }, { passive: true });
             window.addEventListener('touchend', e => {
-                // Check if right joystick touch ended
-                if (joystickRight.active) {
-                    joystickRight.active = false;
-                    joystickRight.dx = 0;
-                    joystickRight.dy = 0;
-                    rjThumb.style.left = '35px';
-                    rjThumb.style.top = '35px';
-                    clearInterval(shootInterval);
-                    shootInterval = null;
+                for (const t of e.changedTouches) {
+                    if (joystick.active && t.identifier === joystick.id) resetLeftJoystick();
+                    if (joystickRight.active && t.identifier === joystickRight.id) resetRightJoystick();
                 }
-            });
+            }, { passive: true });
+            window.addEventListener('touchcancel', e => {
+                for (const t of e.changedTouches) {
+                    if (joystick.active && t.identifier === joystick.id) resetLeftJoystick();
+                    if (joystickRight.active && t.identifier === joystickRight.id) resetRightJoystick();
+                }
+            }, { passive: true });
             // Mobile action buttons
             document.getElementById('btn-jump').addEventListener('touchstart', e => {
                 e.stopPropagation();
