@@ -328,7 +328,7 @@ function App() {
           background: 'linear-gradient(180deg, rgba(26,15,10,0.3) 0%, rgba(26,15,10,0.7) 70%, #1a0f0a 100%)',
         }} />
         {/* Hero text */}
-        <div style={{
+        <div className="hero-text" style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
@@ -664,6 +664,9 @@ function App() {
             object-position: 30% 35% !important;
             transform: scale(1.4);
             transform-origin: 30% 35%;
+          }
+          .hero-text {
+            top: 40% !important;
           }
         }
       `}</style>
