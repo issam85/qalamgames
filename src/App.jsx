@@ -18,6 +18,7 @@ const honorable = [
 // Lichting 2 — Tweede ronde gamemakers
 const lichting2 = [
   { name: 'Abdulahi Abdulkhader', game: 'Granny Horror Game', klas: 'Groep 7c', playable: 'grannyhorrorgame' },
+  { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
 ];
 
 const rankIcons = {
@@ -47,6 +48,7 @@ const gameStyles = {
   mariospel2:    { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel2.html', title: 'Mario-achtig Spel V2' },
   game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
   grannyhorrorgame: { border: '#8b0000', color: '#ff4444', bg: 'rgba(0,0,0,0.9)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: 'Granny Horror Game' },
+  sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
 };
 
 function GameView({ gameKey, onBack }) {
@@ -225,6 +227,7 @@ function GameView({ gameKey, onBack }) {
 
 function App() {
   const [page, setPage] = useState('home');
+  const [activeTab, setActiveTab] = useState('lichting1');
 
   // Render any game page using the unified GameView
   if (page !== 'home' && gameStyles[page]) {
@@ -377,406 +380,424 @@ function App() {
           width: '60%',
           height: '2px',
           background: 'linear-gradient(90deg, transparent, #d4af37, transparent)',
-          margin: '0 auto 4rem',
+          margin: '0 auto 3rem',
         }} />
 
-        {/* Lichting 1 Header */}
-        <section style={{
-          textAlign: 'center',
-          marginBottom: '2rem',
-        }}>
-          <h2 style={{
-            fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
-            color: '#d4af37',
-            marginBottom: '0.5rem',
-            letterSpacing: '0.05em',
-          }}>
-            Lichting 1
-          </h2>
-          <p style={{
-            fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
-            opacity: 0.7,
-            marginBottom: '0.5rem',
-          }}>
-            De eerste groep gamemakers van Al Qalam
-          </p>
-        </section>
-
-        {/* Top 3 Section */}
-        <section style={{
-          textAlign: 'center',
-          marginBottom: '4rem',
-        }}>
-          <h3 style={{
-            fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)',
-            color: '#d4af37',
-            marginBottom: '0.5rem',
-            letterSpacing: '0.05em',
-          }}>
-            Top 3 Beste Spellen
-          </h3>
-          <p style={{
-            fontSize: '1rem',
-            opacity: 0.7,
-            marginBottom: '2.5rem',
-          }}>
-            De leerlingen met het beste zelfgemaakte spel
-          </p>
-
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.2rem',
-            maxWidth: '600px',
-            margin: '0 auto',
-          }}>
-            {top3.map((student) => (
-              <div key={student.rank} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1.2rem',
-                padding: '1.2rem 1.5rem',
-                background: 'rgba(58, 35, 20, 0.6)',
-                border: `2px solid ${rankColors[student.rank]}40`,
-                borderRadius: '14px',
-                boxShadow: `0 0 20px ${rankColors[student.rank]}15`,
-                transition: 'transform 0.2s',
-              }}>
-                <div style={{ flexShrink: 0 }}>
-                  {rankIcons[student.rank]}
-                </div>
-                <div style={{ textAlign: 'left', flex: 1 }}>
-                  <div style={{
-                    fontSize: '1.3rem',
-                    fontWeight: 700,
-                    color: rankColors[student.rank],
-                    marginBottom: '0.2rem',
-                  }}>
-                    {student.name}
-                  </div>
-                  <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
-                    {student.gameSubtitle ? (
-                      <><span dir="rtl">{student.game}</span> — {student.gameSubtitle}</>
-                    ) : (
-                      student.game
-                    )}
-                    {student.klas ? ` — ${student.klas}` : ''}
-                  </div>
-                </div>
-                {student.playable ? (
-                  <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
-                    <button
-                      onClick={() => setPage(student.playable)}
-                      style={{
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.95rem',
-                        fontWeight: 700,
-                        border: '2px solid #d4af37',
-                        background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                        color: '#1a0f0a',
-                        cursor: 'pointer',
-                        borderRadius: '8px',
-                        fontFamily: 'inherit',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                        transition: 'all 0.3s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.08)';
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    >
-                      <Gamepad2 size={16} />
-                      Speel
-                    </button>
-                    {student.v2 && (
-                      <button
-                        onClick={() => setPage(student.v2)}
-                        style={{
-                          padding: '0.5rem 0.8rem',
-                          fontSize: '0.85rem',
-                          fontWeight: 700,
-                          border: '2px solid #d4af37',
-                          background: 'transparent',
-                          color: '#d4af37',
-                          cursor: 'pointer',
-                          borderRadius: '8px',
-                          fontFamily: 'inherit',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.3rem',
-                          transition: 'all 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
-                          e.currentTarget.style.color = '#1a0f0a';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.color = '#d4af37';
-                        }}
-                      >
-                        V2
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div style={{
-                    fontSize: '2rem',
-                    fontWeight: 700,
-                    color: rankColors[student.rank],
-                    opacity: 0.5,
-                  }}>
-                    #{student.rank}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Honorable Mentions */}
-        <section style={{
-          textAlign: 'center',
-          marginBottom: '3rem',
-        }}>
-          <h4 style={{
-            fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
-            color: '#f4e3b5',
-            marginBottom: '1.5rem',
-            letterSpacing: '0.05em',
-            opacity: 0.8,
-          }}>
-            Eervolle vermelding
-          </h4>
-
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            maxWidth: '600px',
-            margin: '0 auto',
-          }}>
-            {honorable.map((student) => (
-              <div key={student.rank} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1.2rem',
-                padding: '1rem 1.5rem',
-                background: 'rgba(58, 35, 20, 0.4)',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
-                borderRadius: '14px',
-              }}>
-                <div style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 700,
-                  color: '#d4af37',
-                  opacity: 0.5,
-                  flexShrink: 0,
-                  width: '40px',
-                }}>
-                  #{student.rank}
-                </div>
-                <div style={{ textAlign: 'left', flex: 1 }}>
-                  <div style={{
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    color: '#f4e3b5',
-                    marginBottom: '0.2rem',
-                  }}>
-                    {student.name}
-                  </div>
-                  <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>
-                    {student.game}{student.klas ? ` — ${student.klas}` : ''}
-                  </div>
-                </div>
-                {student.playable && (
-                  <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
-                    <button
-                      onClick={() => setPage(student.playable)}
-                      style={{
-                        padding: '0.4rem 0.8rem',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        border: '2px solid rgba(212, 175, 55, 0.5)',
-                        background: 'rgba(212, 175, 55, 0.2)',
-                        color: '#d4af37',
-                        cursor: 'pointer',
-                        borderRadius: '8px',
-                        fontFamily: 'inherit',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                        transition: 'all 0.3s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
-                        e.currentTarget.style.color = '#1a0f0a';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
-                        e.currentTarget.style.color = '#d4af37';
-                      }}
-                    >
-                      <Gamepad2 size={14} />
-                      Speel
-                    </button>
-                    {student.v2 && (
-                      <button
-                        onClick={() => setPage(student.v2)}
-                        style={{
-                          padding: '0.4rem 0.6rem',
-                          fontSize: '0.8rem',
-                          fontWeight: 700,
-                          border: '2px solid rgba(212, 175, 55, 0.5)',
-                          background: 'transparent',
-                          color: '#d4af37',
-                          cursor: 'pointer',
-                          borderRadius: '8px',
-                          fontFamily: 'inherit',
-                          display: 'flex',
-                          alignItems: 'center',
-                          transition: 'all 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
-                          e.currentTarget.style.color = '#1a0f0a';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.color = '#d4af37';
-                        }}
-                      >
-                        V2
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Divider between Lichting 1 and 2 */}
+        {/* Tab Navigation */}
         <div style={{
-          width: '80%',
-          height: '3px',
-          background: 'linear-gradient(90deg, transparent, #d4af37, #f4e3b5, #d4af37, transparent)',
-          margin: '2rem auto 4rem',
-          borderRadius: '2px',
-        }} />
-
-        {/* Lichting 2 Header */}
-        <section style={{
-          textAlign: 'center',
-          marginBottom: '2rem',
-        }}>
-          <h2 style={{
-            fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
-            color: '#d4af37',
-            marginBottom: '0.5rem',
-            letterSpacing: '0.05em',
-          }}>
-            Lichting 2
-          </h2>
-          <p style={{
-            fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
-            opacity: 0.7,
-            marginBottom: '0.5rem',
-          }}>
-            De nieuwe generatie gamemakers
-          </p>
-        </section>
-
-        {/* Lichting 2 Games */}
-        <section style={{
-          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '0.5rem',
           marginBottom: '3rem',
         }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            maxWidth: '600px',
-            margin: '0 auto',
-          }}>
-            {lichting2.map((student, i) => (
-              <div key={i} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1.2rem',
-                padding: '1.2rem 1.5rem',
-                background: 'rgba(58, 35, 20, 0.6)',
-                border: '2px solid rgba(212, 175, 55, 0.3)',
-                borderRadius: '14px',
-                boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)',
+          {[
+            { key: 'lichting1', label: 'Lichting 1' },
+            { key: 'lichting2', label: 'Lichting 2' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '0.8rem 2rem',
+                fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                fontWeight: 700,
+                fontFamily: 'inherit',
+                border: '2px solid #d4af37',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                letterSpacing: '0.05em',
+                transition: 'all 0.3s ease',
+                background: activeTab === tab.key
+                  ? 'linear-gradient(135deg, #d4af37, #f4e3b5)'
+                  : 'transparent',
+                color: activeTab === tab.key ? '#1a0f0a' : '#d4af37',
+                boxShadow: activeTab === tab.key
+                  ? '0 0 25px rgba(212, 175, 55, 0.4)'
+                  : 'none',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Lichting 1 Content */}
+        {activeTab === 'lichting1' && (
+          <>
+            <section style={{
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+            }}>
+              <p style={{
+                fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+                opacity: 0.7,
               }}>
-                <div style={{
-                  flexShrink: 0,
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <Gamepad2 size={20} color="#1a0f0a" />
-                </div>
-                <div style={{ textAlign: 'left', flex: 1 }}>
-                  <div style={{
-                    fontSize: '1.2rem',
-                    fontWeight: 700,
-                    color: '#f4e3b5',
-                    marginBottom: '0.2rem',
+                De eerste groep gamemakers van Al Qalam
+              </p>
+            </section>
+
+            {/* Top 3 Section */}
+            <section style={{
+              textAlign: 'center',
+              marginBottom: '4rem',
+            }}>
+              <h3 style={{
+                fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)',
+                color: '#d4af37',
+                marginBottom: '0.5rem',
+                letterSpacing: '0.05em',
+              }}>
+                Top 3 Beste Spellen
+              </h3>
+              <p style={{
+                fontSize: '1rem',
+                opacity: 0.7,
+                marginBottom: '2.5rem',
+              }}>
+                De leerlingen met het beste zelfgemaakte spel
+              </p>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.2rem',
+                maxWidth: '600px',
+                margin: '0 auto',
+              }}>
+                {top3.map((student) => (
+                  <div key={student.rank} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1.2rem',
+                    padding: '1.2rem 1.5rem',
+                    background: 'rgba(58, 35, 20, 0.6)',
+                    border: `2px solid ${rankColors[student.rank]}40`,
+                    borderRadius: '14px',
+                    boxShadow: `0 0 20px ${rankColors[student.rank]}15`,
+                    transition: 'transform 0.2s',
                   }}>
-                    {student.name}
+                    <div style={{ flexShrink: 0 }}>
+                      {rankIcons[student.rank]}
+                    </div>
+                    <div style={{ textAlign: 'left', flex: 1 }}>
+                      <div style={{
+                        fontSize: '1.3rem',
+                        fontWeight: 700,
+                        color: rankColors[student.rank],
+                        marginBottom: '0.2rem',
+                      }}>
+                        {student.name}
+                      </div>
+                      <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
+                        {student.gameSubtitle ? (
+                          <><span dir="rtl">{student.game}</span> — {student.gameSubtitle}</>
+                        ) : (
+                          student.game
+                        )}
+                        {student.klas ? ` — ${student.klas}` : ''}
+                      </div>
+                    </div>
+                    {student.playable ? (
+                      <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                        <button
+                          onClick={() => setPage(student.playable)}
+                          style={{
+                            padding: '0.5rem 1rem',
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            border: '2px solid #d4af37',
+                            background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                            color: '#1a0f0a',
+                            cursor: 'pointer',
+                            borderRadius: '8px',
+                            fontFamily: 'inherit',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            transition: 'all 0.3s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.08)';
+                            e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <Gamepad2 size={16} />
+                          Speel
+                        </button>
+                        {student.v2 && (
+                          <button
+                            onClick={() => setPage(student.v2)}
+                            style={{
+                              padding: '0.5rem 0.8rem',
+                              fontSize: '0.85rem',
+                              fontWeight: 700,
+                              border: '2px solid #d4af37',
+                              background: 'transparent',
+                              color: '#d4af37',
+                              cursor: 'pointer',
+                              borderRadius: '8px',
+                              fontFamily: 'inherit',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
+                              e.currentTarget.style.color = '#1a0f0a';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = '#d4af37';
+                            }}
+                          >
+                            V2
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 700,
+                        color: rankColors[student.rank],
+                        opacity: 0.5,
+                      }}>
+                        #{student.rank}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
-                    {student.game}{student.klas ? ` — ${student.klas}` : ''}
-                  </div>
-                </div>
-                {student.playable && (
-                  <button
-                    onClick={() => setPage(student.playable)}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '0.95rem',
+                ))}
+              </div>
+            </section>
+
+            {/* Honorable Mentions */}
+            <section style={{
+              textAlign: 'center',
+              marginBottom: '3rem',
+            }}>
+              <h4 style={{
+                fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
+                color: '#f4e3b5',
+                marginBottom: '1.5rem',
+                letterSpacing: '0.05em',
+                opacity: 0.8,
+              }}>
+                Eervolle vermelding
+              </h4>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                maxWidth: '600px',
+                margin: '0 auto',
+              }}>
+                {honorable.map((student) => (
+                  <div key={student.rank} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1.2rem',
+                    padding: '1rem 1.5rem',
+                    background: 'rgba(58, 35, 20, 0.4)',
+                    border: '1px solid rgba(212, 175, 55, 0.2)',
+                    borderRadius: '14px',
+                  }}>
+                    <div style={{
+                      fontSize: '1.5rem',
                       fontWeight: 700,
-                      border: '2px solid #d4af37',
+                      color: '#d4af37',
+                      opacity: 0.5,
+                      flexShrink: 0,
+                      width: '40px',
+                    }}>
+                      #{student.rank}
+                    </div>
+                    <div style={{ textAlign: 'left', flex: 1 }}>
+                      <div style={{
+                        fontSize: '1.1rem',
+                        fontWeight: 700,
+                        color: '#f4e3b5',
+                        marginBottom: '0.2rem',
+                      }}>
+                        {student.name}
+                      </div>
+                      <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>
+                        {student.game}{student.klas ? ` — ${student.klas}` : ''}
+                      </div>
+                    </div>
+                    {student.playable && (
+                      <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
+                        <button
+                          onClick={() => setPage(student.playable)}
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            fontSize: '0.85rem',
+                            fontWeight: 700,
+                            border: '2px solid rgba(212, 175, 55, 0.5)',
+                            background: 'rgba(212, 175, 55, 0.2)',
+                            color: '#d4af37',
+                            cursor: 'pointer',
+                            borderRadius: '8px',
+                            fontFamily: 'inherit',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            transition: 'all 0.3s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
+                            e.currentTarget.style.color = '#1a0f0a';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
+                            e.currentTarget.style.color = '#d4af37';
+                          }}
+                        >
+                          <Gamepad2 size={14} />
+                          Speel
+                        </button>
+                        {student.v2 && (
+                          <button
+                            onClick={() => setPage(student.v2)}
+                            style={{
+                              padding: '0.4rem 0.6rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              border: '2px solid rgba(212, 175, 55, 0.5)',
+                              background: 'transparent',
+                              color: '#d4af37',
+                              cursor: 'pointer',
+                              borderRadius: '8px',
+                              fontFamily: 'inherit',
+                              display: 'flex',
+                              alignItems: 'center',
+                              transition: 'all 0.3s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)';
+                              e.currentTarget.style.color = '#1a0f0a';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'transparent';
+                              e.currentTarget.style.color = '#d4af37';
+                            }}
+                          >
+                            V2
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+
+        {/* Lichting 2 Content */}
+        {activeTab === 'lichting2' && (
+          <>
+            <section style={{
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+            }}>
+              <p style={{
+                fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+                opacity: 0.7,
+              }}>
+                De nieuwe generatie gamemakers
+              </p>
+            </section>
+
+            <section style={{
+              textAlign: 'center',
+              marginBottom: '3rem',
+            }}>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                maxWidth: '600px',
+                margin: '0 auto',
+              }}>
+                {lichting2.map((student, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1.2rem',
+                    padding: '1.2rem 1.5rem',
+                    background: 'rgba(58, 35, 20, 0.6)',
+                    border: '2px solid rgba(212, 175, 55, 0.3)',
+                    borderRadius: '14px',
+                    boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)',
+                  }}>
+                    <div style={{
+                      flexShrink: 0,
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
                       background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                      color: '#1a0f0a',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                      fontFamily: 'inherit',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.4rem',
-                      flexShrink: 0,
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.08)';
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <Gamepad2 size={16} />
-                    Speel
-                  </button>
-                )}
+                      justifyContent: 'center',
+                    }}>
+                      <Gamepad2 size={20} color="#1a0f0a" />
+                    </div>
+                    <div style={{ textAlign: 'left', flex: 1 }}>
+                      <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 700,
+                        color: '#f4e3b5',
+                        marginBottom: '0.2rem',
+                      }}>
+                        {student.name}
+                      </div>
+                      <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
+                        {student.game}{student.klas ? ` — ${student.klas}` : ''}
+                      </div>
+                    </div>
+                    {student.playable && (
+                      <button
+                        onClick={() => setPage(student.playable)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          fontSize: '0.95rem',
+                          fontWeight: 700,
+                          border: '2px solid #d4af37',
+                          background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                          color: '#1a0f0a',
+                          cursor: 'pointer',
+                          borderRadius: '8px',
+                          fontFamily: 'inherit',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          flexShrink: 0,
+                          transition: 'all 0.3s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'scale(1.08)';
+                          e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      >
+                        <Gamepad2 size={16} />
+                        Speel
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          </>
+        )}
 
       </main>
 
