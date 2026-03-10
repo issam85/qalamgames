@@ -15,6 +15,11 @@ const honorable = [
   { rank: 7, name: 'Junayd Bakkali', game: 'Mario-achtig Spel', klas: 'Groep 6a', playable: 'mariospel', v2: 'mariospel2' },
 ];
 
+// Lichting 2 — Tweede ronde gamemakers
+const lichting2 = [
+  { name: 'Abdulahi Abdulkhader', game: 'Granny Horror Game', klas: 'Groep 7c', playable: 'grannyhorrorgame' },
+];
+
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
   2: <Medal size={36} fill="#C0C0C0" color="#C0C0C0" />,
@@ -41,6 +46,7 @@ const gameStyles = {
   turboracer2:   { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer2.html', title: 'Turbo Racer 3D V2' },
   mariospel2:    { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel2.html', title: 'Mario-achtig Spel V2' },
   game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
+  grannyhorrorgame: { border: '#8b0000', color: '#ff4444', bg: 'rgba(0,0,0,0.9)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: 'Granny Horror Game' },
 };
 
 function GameView({ gameKey, onBack }) {
@@ -374,19 +380,41 @@ function App() {
           margin: '0 auto 4rem',
         }} />
 
+        {/* Lichting 1 Header */}
+        <section style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+        }}>
+          <h2 style={{
+            fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
+            color: '#d4af37',
+            marginBottom: '0.5rem',
+            letterSpacing: '0.05em',
+          }}>
+            Lichting 1
+          </h2>
+          <p style={{
+            fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+            opacity: 0.7,
+            marginBottom: '0.5rem',
+          }}>
+            De eerste groep gamemakers van Al Qalam
+          </p>
+        </section>
+
         {/* Top 3 Section */}
         <section style={{
           textAlign: 'center',
           marginBottom: '4rem',
         }}>
-          <h2 style={{
-            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
+          <h3 style={{
+            fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)',
             color: '#d4af37',
             marginBottom: '0.5rem',
             letterSpacing: '0.05em',
           }}>
             Top 3 Beste Spellen
-          </h2>
+          </h3>
           <p style={{
             fontSize: '1rem',
             opacity: 0.7,
@@ -517,7 +545,7 @@ function App() {
           textAlign: 'center',
           marginBottom: '3rem',
         }}>
-          <h3 style={{
+          <h4 style={{
             fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
             color: '#f4e3b5',
             marginBottom: '1.5rem',
@@ -525,7 +553,7 @@ function App() {
             opacity: 0.8,
           }}>
             Eervolle vermelding
-          </h3>
+          </h4>
 
           <div style={{
             display: 'flex',
@@ -628,6 +656,122 @@ function App() {
                       </button>
                     )}
                   </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Divider between Lichting 1 and 2 */}
+        <div style={{
+          width: '80%',
+          height: '3px',
+          background: 'linear-gradient(90deg, transparent, #d4af37, #f4e3b5, #d4af37, transparent)',
+          margin: '2rem auto 4rem',
+          borderRadius: '2px',
+        }} />
+
+        {/* Lichting 2 Header */}
+        <section style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+        }}>
+          <h2 style={{
+            fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
+            color: '#d4af37',
+            marginBottom: '0.5rem',
+            letterSpacing: '0.05em',
+          }}>
+            Lichting 2
+          </h2>
+          <p style={{
+            fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+            opacity: 0.7,
+            marginBottom: '0.5rem',
+          }}>
+            De nieuwe generatie gamemakers
+          </p>
+        </section>
+
+        {/* Lichting 2 Games */}
+        <section style={{
+          textAlign: 'center',
+          marginBottom: '3rem',
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}>
+            {lichting2.map((student, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.2rem',
+                padding: '1.2rem 1.5rem',
+                background: 'rgba(58, 35, 20, 0.6)',
+                border: '2px solid rgba(212, 175, 55, 0.3)',
+                borderRadius: '14px',
+                boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)',
+              }}>
+                <div style={{
+                  flexShrink: 0,
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Gamepad2 size={20} color="#1a0f0a" />
+                </div>
+                <div style={{ textAlign: 'left', flex: 1 }}>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 700,
+                    color: '#f4e3b5',
+                    marginBottom: '0.2rem',
+                  }}>
+                    {student.name}
+                  </div>
+                  <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
+                    {student.game}{student.klas ? ` — ${student.klas}` : ''}
+                  </div>
+                </div>
+                {student.playable && (
+                  <button
+                    onClick={() => setPage(student.playable)}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.95rem',
+                      fontWeight: 700,
+                      border: '2px solid #d4af37',
+                      background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                      color: '#1a0f0a',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      fontFamily: 'inherit',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      flexShrink: 0,
+                      transition: 'all 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.08)';
+                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <Gamepad2 size={16} />
+                    Speel
+                  </button>
                 )}
               </div>
             ))}

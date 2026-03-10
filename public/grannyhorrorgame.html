@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>GRANNY'S NIGHTMARE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: 'Creepster', cursive; cursor: none; }
+  #cursor { position: fixed; width: 16px; height: 16px; background: radial-gradient(circle, #ff0000, #800000); border-radius: 50%; pointer-events: none; z-index: 9999; box-shadow: 0 0 12px #ff0000; transform: translate(-50%, -50%); }
+  #startScreen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; z-index: 100; }
+  #startScreen h1 { font-family: 'Nosifer', cursive; font-size: 4.5rem; color: #cc0000; text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000; animation: flicker 1.5s infinite; text-align: center; line-height: 1.1; }
+  #startBtn { margin-top: 30px; padding: 15px 50px; font-family: 'Creepster', cursive; font-size: 2rem; background: #1a0000; color: #ff2200; border: 2px solid #ff2200; cursor: pointer; animation: pulse 1s infinite; }
+  #startBtn:hover { background: #ff2200; color: #000; }
+  @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:0.7} 80%{opacity:0.5} }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 20px #ff2200} 50%{box-shadow:0 0 50px #ff2200} }
+  #gameContainer { position: fixed; inset: 0; display: none; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #hud { position: fixed; top: 10px; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; pointer-events: none; z-index: 50; }
+  #healthBar { width: 200px; height: 22px; background: #1a0000; border: 2px solid #ff0000; box-shadow: 0 0 10px #ff0000; overflow: hidden; }
+  #healthFill { height: 100%; background: linear-gradient(90deg, #cc0000, #ff4400); transition: width 0.2s; }
+  #scoreDisplay { font-family: 'Creepster', cursive; font-size: 2rem; color: #cc0000; text-shadow: 0 0 10px #ff0000; }
+  #waveDisplay { font-family: 'Creepster', cursive; font-size: 1.5rem; color: #880000; text-shadow: 0 0 8px #ff0000; }
+  #controls { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: #555; font-size: 1rem; text-align: center; pointer-events: none; z-index: 50; }
+  #jumpscare { position: fixed; inset: 0; background: #000; display: none; align-items: center; justify-content: center; z-index: 1000; flex-direction: column; }
+  #jumpscare.active { display: flex; animation: scareFlash 0.3s ease; }
+  #grannySvg { width: min(90vw, 600px); animation: grannybounce 0.25s infinite alternate; filter: drop-shadow(0 0 40px #ff0000); }
+  #jumpscareText { font-family: 'Nosifer', cursive; font-size: 3.5rem; color: #ff0000; margin-top: 20px; text-shadow: 0 0 30px #ff0000; animation: scareTextFlicker 0.2s infinite; text-align:center; }
+  @keyframes scareFlash { 0%{background:#fff} 30%{background:#ff0000} 100%{background:#000} }
+  @keyframes grannybounce { 0%{transform:scale(1) rotate(-3deg)} 100%{transform:scale(1.08) rotate(3deg)} }
+  @keyframes scareTextFlicker { 0%,100%{opacity:1;color:#ff0000} 50%{opacity:0.3;color:#fff} }
+  #restartBtn { margin-top: 30px; padding: 12px 40px; font-family: 'Creepster', cursive; font-size: 1.5rem; background: #1a0000; color: #ff2200; border: 2px solid #ff2200; cursor: pointer; display: none; animation: pulse 1s infinite; }
+  #restartBtn:hover { background: #ff2200; color: #000; }
+  .bloodSplat { position: fixed; pointer-events: none; font-size: 2rem; animation: splatFade 0.6s forwards; z-index: 500; }
+  @keyframes splatFade { 0%{opacity:1;transform:scale(0.5)} 100%{opacity:0;transform:scale(2) translateY(-40px)} }
+  #hitFlash { position: fixed; inset: 0; background: rgba(255,0,0,0.45); pointer-events: none; opacity: 0; z-index: 200; transition: opacity 0.1s; }
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="hitFlash"></div>
+<div id="startScreen">
+  <h1>GRANNY'S<br>NIGHTMARE</h1>
+  <p style="color:#888;font-size:1.3rem;margin:15px 0">Overleef de golven... als je durft 😈</p>
+  <p style="color:#550000;font-size:1rem">WASD = Bewegen &nbsp;|&nbsp; PIJLTJES = Schieten in alle richtingen</p>
+  <button id="startBtn" onclick="startGame()">SPEEL ALS JE DURFT</button>
+</div>
+<div id="gameContainer">
+  <canvas id="gameCanvas"></canvas>
+  <div id="hud">
+    <div>
+      <div style="color:#cc0000;font-size:0.85rem;margin-bottom:3px">LEVEN</div>
+      <div id="healthBar"><div id="healthFill" style="width:100%"></div></div>
+    </div>
+    <div id="scoreDisplay">SCORE: 0</div>
+    <div id="waveDisplay">GOLF: 1</div>
+  </div>
+  <div id="controls">WASD = Bewegen &nbsp;|&nbsp; ↑ ↓ ← → = Schieten</div>
+</div>
+<div id="jumpscare">
+  <svg id="grannySvg" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+    <rect x="120" y="260" width="160" height="180" rx="10" fill="#2a1a0a"/>
+    <rect x="120" y="280" width="160" height="15" fill="#1a0a00" opacity="0.5"/>
+    <rect x="120" y="310" width="160" height="15" fill="#1a0a00" opacity="0.5"/>
+    <rect x="120" y="340" width="160" height="15" fill="#1a0a00" opacity="0.5"/>
+    <rect x="60" y="265" width="65" height="25" rx="12" fill="#c8a070" transform="rotate(30 95 277)"/>
+    <rect x="275" y="265" width="65" height="25" rx="12" fill="#c8a070" transform="rotate(-30 305 277)"/>
+    <line x1="62" y1="310" x2="50" y2="295" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <line x1="62" y1="310" x2="45" y2="308" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <line x1="62" y1="310" x2="48" y2="320" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <line x1="338" y1="310" x2="350" y2="295" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <line x1="338" y1="310" x2="355" y2="308" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <line x1="338" y1="310" x2="352" y2="320" stroke="#c8a070" stroke-width="6" stroke-linecap="round"/>
+    <rect x="175" y="230" width="50" height="35" rx="8" fill="#c8a070"/>
+    <ellipse cx="200" cy="180" rx="100" ry="110" fill="#c8a070"/>
+    <ellipse cx="160" cy="170" rx="25" ry="28" fill="#0a0000"/>
+    <ellipse cx="240" cy="170" rx="25" ry="28" fill="#0a0000"/>
+    <ellipse cx="160" cy="170" rx="14" ry="15" fill="#cc0000"/>
+    <ellipse cx="240" cy="170" rx="14" ry="15" fill="#cc0000"/>
+    <ellipse cx="160" cy="173" rx="8" ry="9" fill="#000"/>
+    <ellipse cx="240" cy="173" rx="8" ry="9" fill="#000"/>
+    <path d="M140 240 Q200 300 260 240" fill="#1a0000"/>
+    <polygon points="155,242 165,262 175,242" fill="#d4d4a0"/>
+    <polygon points="175,242 185,268 195,242" fill="#d4d4a0"/>
+    <polygon points="195,242 205,268 215,242" fill="#d4d4a0"/>
+    <polygon points="215,242 225,262 235,242" fill="#d4d4a0"/>
+    <ellipse cx="200" cy="275" rx="25" ry="18" fill="#cc2244"/>
+    <path d="M190 290 Q192 310 190 320" stroke="#cc0000" stroke-width="3" fill="none"/>
+    <circle cx="190" cy="322" r="5" fill="#cc0000"/>
+    <path d="M100 150 Q110 80 200 70 Q290 80 300 150" fill="#e8e8e8"/>
+    <path d="M130 80 Q125 50 135 30" stroke="#e0e0e0" stroke-width="4" fill="none"/>
+    <path d="M200 70 Q200 35 205 15" stroke="#e0e0e0" stroke-width="4" fill="none"/>
+    <path d="M270 80 Q275 50 265 30" stroke="#e0e0e0" stroke-width="4" fill="none"/>
+    <path d="M145 155 L155 195" stroke="#8b0000" stroke-width="3"/>
+    <rect x="140" y="430" width="40" height="60" rx="8" fill="#2a1a0a"/>
+    <rect x="220" y="430" width="40" height="60" rx="8" fill="#2a1a0a"/>
+    <ellipse cx="155" cy="330" rx="15" ry="20" fill="#8b0000" opacity="0.7"/>
+  </svg>
+  <div id="jumpscareText">JE BENT DOOD! 💀<br>GRANNY HEEFT JE!</div>
+  <button id="restartBtn" onclick="restartGame()">PROBEER OPNIEUW... ALS JE DURFT</button>
+</div>
+
+<script>
+// ---- CURSOR ----
+const cursorEl = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cursorEl.style.left=e.clientX+'px'; cursorEl.style.top=e.clientY+'px'; });
+
+// ---- CANVAS ----
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
+
+// ---- STATE ----
+let keys = {}, gameRunning = false, gameLoopId;
+let player, bullets, enemies, particles, score, wave, bgScroll;
+let shootCooldown = 0;
+let waveSpawning = false;
+
+document.addEventListener('keydown', e => { keys[e.code] = true; e.preventDefault(); });
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+function startGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameContainer').style.display = 'block';
+  initGame();
+}
+
+function initGame() {
+  score = 0; wave = 1; bgScroll = 0;
+  gameRunning = true;
+  bullets = []; enemies = []; particles = [];
+  waveSpawning = false; shootCooldown = 0;
+
+  player = {
+    x: W/2 - 20, y: H/2 - 20,
+    w: 40, h: 40,
+    hp: 100, maxHp: 100,
+    speed: 4,
+    invincible: 0,
+    facing: 1  // 1=right, -1=left
+  };
+
+  updateHUD();
+  spawnWave();
+  if (gameLoopId) cancelAnimationFrame(gameLoopId);
+  loop();
+}
+
+// ---- SPAWNING ----
+function spawnWave() {
+  waveSpawning = true;
+  const count = 3 + wave * 2;
+  let spawned = 0;
+  function spawnOne() {
+    if (!gameRunning || spawned >= count) { waveSpawning = false; return; }
+    spawnEnemy(); spawned++;
+    setTimeout(spawnOne, 600);
+  }
+  spawnOne();
+}
+
+function spawnEnemy() {
+  const side = Math.floor(Math.random() * 4);
+  let x, y;
+  if (side === 0) { x = Math.random() * W; y = -60; }
+  else if (side === 1) { x = Math.random() * W; y = H + 60; }
+  else if (side === 2) { x = -60; y = Math.random() * H; }
+  else { x = W + 60; y = Math.random() * H; }
+
+  const isBig = Math.random() < 0.25 + wave * 0.05;
+  enemies.push({
+    x, y,
+    w: isBig ? 70 : 45,
+    h: isBig ? 70 : 45,
+    hp: isBig ? 60 + wave * 20 : 25 + wave * 10,
+    maxHp: isBig ? 60 + wave * 20 : 25 + wave * 10,
+    speed: isBig ? 1 + wave * 0.15 : 2 + wave * 0.25,
+    type: isBig ? 'big' : 'normal',
+    attackTimer: 0,
+    dying: false, deathTimer: 0,
+    angle: 0
+  });
+}
+
+// ---- GAME LOOP ----
+function loop() {
+  if (!gameRunning) return;
+  update();
+  draw();
+  gameLoopId = requestAnimationFrame(loop);
+}
+
+function update() {
+  bgScroll += 0.3;
+
+  // -- PLAYER MOVE (WASD) --
+  let dx = 0, dy = 0;
+  if (keys['KeyA'] || keys['KeyW'] && false) {} // just below
+  if (keys['KeyA']) dx -= 1;
+  if (keys['KeyD']) dx += 1;
+  if (keys['KeyW']) dy -= 1;
+  if (keys['KeyS']) dy += 1;
+  if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
+  player.x += dx * player.speed;
+  player.y += dy * player.speed;
+  if (dx > 0) player.facing = 1;
+  if (dx < 0) player.facing = -1;
+
+  // Keep in bounds
+  player.x = Math.max(0, Math.min(W - player.w, player.x));
+  player.y = Math.max(0, Math.min(H - player.h, player.y));
+
+  if (player.invincible > 0) player.invincible--;
+
+  // -- SHOOT with ARROW KEYS --
+  if (shootCooldown > 0) shootCooldown--;
+  const shootSpeed = 12;
+  let bvx = 0, bvy = 0;
+  if (keys['ArrowLeft'])  { bvx = -shootSpeed; bvy = 0; }
+  if (keys['ArrowRight']) { bvx = shootSpeed;  bvy = 0; }
+  if (keys['ArrowUp'])    { bvx = 0; bvy = -shootSpeed; }
+  if (keys['ArrowDown'])  { bvx = 0; bvy = shootSpeed; }
+  // Diagonal shooting
+  if (keys['ArrowLeft'] && keys['ArrowUp'])   { bvx = -shootSpeed*0.707; bvy = -shootSpeed*0.707; }
+  if (keys['ArrowLeft'] && keys['ArrowDown']) { bvx = -shootSpeed*0.707; bvy = shootSpeed*0.707; }
+  if (keys['ArrowRight'] && keys['ArrowUp'])  { bvx = shootSpeed*0.707;  bvy = -shootSpeed*0.707; }
+  if (keys['ArrowRight'] && keys['ArrowDown']){ bvx = shootSpeed*0.707;  bvy = shootSpeed*0.707; }
+
+  if ((bvx !== 0 || bvy !== 0) && shootCooldown <= 0) {
+    bullets.push({
+      x: player.x + player.w/2,
+      y: player.y + player.h/2,
+      vx: bvx, vy: bvy,
+      life: 80,
+      trail: []
+    });
+    shootCooldown = 8;
+    // Shoot sound
+    playShootSound();
+  }
+
+  // -- BULLETS --
+  bullets.forEach(b => {
+    b.trail.push({x: b.x, y: b.y});
+    if (b.trail.length > 6) b.trail.shift();
+    b.x += b.vx; b.y += b.vy; b.life--;
+  });
+  bullets = bullets.filter(b => b.life > 0 && b.x > -20 && b.x < W+20 && b.y > -20 && b.y < H+20);
+
+  // -- BULLET vs ENEMY --
+  bullets.forEach((b, bi) => {
+    enemies.forEach(e => {
+      if (e.dying) return;
+      if (b.x > e.x && b.x < e.x+e.w && b.y > e.y && b.y < e.y+e.h) {
+        const dmg = e.type === 'big' ? 15 : 20;
+        e.hp -= dmg;
+        spawnParticles(b.x, b.y, '#cc0000', 8);
+        addBloodSplat(b.x, b.y);
+        b.life = 0;
+        if (e.hp <= 0 && !e.dying) {
+          e.dying = true; e.deathTimer = 0;
+          score += (e.type === 'big' ? 100 : 50) * wave;
+          spawnParticles(e.x+e.w/2, e.y+e.h/2, '#ff2200', 20);
+          updateHUD();
+        }
+      }
+    });
+  });
+
+  // -- ENEMIES --
+  enemies.forEach(e => {
+    if (e.dying) { e.deathTimer++; return; }
+    e.angle += 0.05;
+    const tx = player.x + player.w/2 - e.w/2;
+    const ty = player.y + player.h/2 - e.h/2;
+    const edx = tx - e.x, edy = ty - e.y;
+    const dist = Math.sqrt(edx*edx + edy*edy);
+    if (dist > 1) { e.x += (edx/dist)*e.speed; e.y += (edy/dist)*e.speed; }
+
+    // Hit player
+    if (player.invincible <= 0) {
+      const px = player.x, py = player.y, pw = player.w, ph = player.h;
+      if (e.x < px+pw && e.x+e.w > px && e.y < py+ph && e.y+e.h > py) {
+        player.hp -= e.type === 'big' ? 10 : 6;
+        player.invincible = 50;
+        showHitFlash();
+        spawnParticles(player.x+pw/2, player.y+ph/2, '#ff0000', 10);
+        if (player.hp <= 0) {
+          gameRunning = false;
+          cancelAnimationFrame(gameLoopId);
+          setTimeout(showJumpscare, 400);
+        }
+        updateHUD();
+      }
+    }
+  });
+
+  enemies = enemies.filter(e => !(e.dying && e.deathTimer > 35));
+
+  // Check wave cleared
+  if (!waveSpawning && enemies.length === 0 && gameRunning) {
+    wave++;
+    document.getElementById('waveDisplay').textContent = 'GOLF: ' + wave;
+    setTimeout(spawnWave, 1800);
+    waveSpawning = true; // prevent double trigger
+  }
+
+  // Particles
+  particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.life--; });
+  particles = particles.filter(p => p.life > 0);
+}
+
+// ---- DRAW ----
+function draw() {
+  // BG
+  const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
+  grad.addColorStop(0, '#0f0008');
+  grad.addColorStop(1, '#000000');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Moving blood veins on floor
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  for (let i = 0; i < 12; i++) {
+    const ox = (i * 170 + bgScroll * 0.4) % (W + 200) - 100;
+    ctx.strokeStyle = '#cc0000';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(ox, 0);
+    ctx.bezierCurveTo(ox + 80, H*0.3, ox - 60, H*0.6, ox + 40, H);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Blood pools on ground
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = '#550000';
+  for (let i = 0; i < 7; i++) {
+    ctx.beginPath();
+    ctx.ellipse(((i*217 + 50) % W), ((i*133 + 80) % H), 35, 18, i*0.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // Particles
+  particles.forEach(p => {
+    ctx.save(); ctx.globalAlpha = p.life/40;
+    ctx.fillStyle = p.color; ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  });
+
+  // Bullet trails + bullets
+  bullets.forEach(b => {
+    // Trail
+    b.trail.forEach((t, i) => {
+      ctx.save();
+      ctx.globalAlpha = (i / b.trail.length) * 0.5;
+      ctx.fillStyle = '#ff4400';
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 4 * (i/b.trail.length), 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+    // Bullet
+    ctx.save();
+    ctx.shadowBlur = 15; ctx.shadowColor = '#ff6600';
+    ctx.fillStyle = '#ffaa00';
+    ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(b.x, b.y, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  });
+
+  // Enemies
+  enemies.forEach(e => drawEnemy(e));
+
+  // Player
+  drawPlayer();
+
+  // Vignette
+  const vig = ctx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H*0.85);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,0,0,0.75)');
+  ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
+
+  // Wave message
+  if (!waveSpawning && enemies.length === 0 && gameRunning) {
+    ctx.save();
+    ctx.fillStyle = `rgba(200,0,0,${0.5+0.5*Math.sin(Date.now()/200)})`;
+    ctx.font = "bold 2.5rem 'Creepster',cursive";
+    ctx.textAlign = 'center';
+    ctx.shadowBlur = 20; ctx.shadowColor = '#ff0000';
+    ctx.fillText('GOLF ' + wave + ' KOMT ERAAN...', W/2, H/2);
+    ctx.restore();
+  }
+}
+
+function drawPlayer() {
+  const p = player;
+  const cx = p.x + p.w/2, cy = p.y + p.h/2;
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  if (p.invincible > 0 && Math.floor(p.invincible/5) % 2 === 0) ctx.globalAlpha = 0.3;
+
+  // Glow
+  ctx.shadowBlur = 20; ctx.shadowColor = '#cc0000';
+
+  // Body
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath();
+  ctx.roundRect(-18, -22, 36, 44, 6);
+  ctx.fill();
+
+  // Armor
+  ctx.fillStyle = '#cc0000';
+  ctx.fillRect(-18, -22, 36, 7);
+  ctx.fillRect(-20, -10, 5, 25);
+  ctx.fillRect(15, -10, 5, 25);
+
+  // Head
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#e8c8a0';
+  ctx.beginPath();
+  ctx.arc(0, -30, 16, 0, Math.PI*2);
+  ctx.fill();
+
+  // Eyes glow red
+  ctx.fillStyle = '#ff2200';
+  ctx.shadowBlur = 8; ctx.shadowColor = '#ff0000';
+  ctx.beginPath();
+  ctx.arc(p.facing < 0 ? -6 : -5, -32, 4, 0, Math.PI*2);
+  ctx.arc(p.facing < 0 ? -6+12 : 5, -32, 4, 0, Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Pupils
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(p.facing < 0 ? -6 : -5, -32, 2, 0, Math.PI*2);
+  ctx.arc(p.facing < 0 ? 6 : 5, -32, 2, 0, Math.PI*2);
+  ctx.fill();
+
+  // Legs
+  ctx.fillStyle = '#0d0d1a';
+  ctx.fillRect(-16, 22, 13, 18);
+  ctx.fillRect(3, 22, 13, 18);
+
+  // Gun
+  ctx.fillStyle = '#333';
+  ctx.fillRect(p.facing > 0 ? 18 : -34, -5, 16, 8);
+  ctx.fillStyle = '#555';
+  ctx.fillRect(p.facing > 0 ? 30 : -30, -4, 6, 6);
+
+  ctx.restore();
+}
+
+function drawEnemy(e) {
+  ctx.save();
+  const cx = e.x + e.w/2, cy = e.y + e.h/2;
+  ctx.translate(cx, cy);
+
+  if (e.dying) {
+    ctx.globalAlpha = 1 - e.deathTimer/35;
+    ctx.scale(1 + e.deathTimer/35 * 0.5, 1 + e.deathTimer/35 * 0.5);
+  }
+
+  const isBig = e.type === 'big';
+  const r = e.w/2;
+
+  // Body pulsing
+  const pulse = 1 + Math.sin(e.angle * 3) * 0.05;
+  ctx.scale(pulse, pulse);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.ellipse(0, r * 0.9, r * 0.7, r * 0.2, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Body
+  ctx.fillStyle = isBig ? '#1a0500' : '#0a1800';
+  ctx.shadowBlur = isBig ? 20 : 12;
+  ctx.shadowColor = isBig ? '#ff4400' : '#44ff00';
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Tentacles / spikes
+  const spikeCount = isBig ? 8 : 6;
+  ctx.strokeStyle = isBig ? '#3a0a00' : '#0a3a00';
+  ctx.lineWidth = isBig ? 5 : 3;
+  for (let i = 0; i < spikeCount; i++) {
+    const ang = (i / spikeCount) * Math.PI * 2 + e.angle;
+    const len = r * (0.5 + 0.5 * Math.sin(e.angle * 2 + i));
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(ang) * r, Math.sin(ang) * r);
+    ctx.lineTo(Math.cos(ang) * (r + len), Math.sin(ang) * (r + len));
+    ctx.stroke();
+  }
+
+  // Inner face
+  ctx.fillStyle = isBig ? '#300a00' : '#0a3000';
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.7, 0, Math.PI*2);
+  ctx.fill();
+
+  // Eyes (3 eyes for horror)
+  const eyeColor = isBig ? '#ff6600' : '#00ff66';
+  ctx.fillStyle = eyeColor;
+  ctx.shadowBlur = 12; ctx.shadowColor = eyeColor;
+  ctx.beginPath();
+  ctx.arc(-r*0.3, -r*0.15, r*0.16, 0, Math.PI*2);
+  ctx.arc(r*0.3, -r*0.15, r*0.16, 0, Math.PI*2);
+  ctx.arc(0, r*0.2, r*0.13, 0, Math.PI*2); // third eye
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Pupils
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(-r*0.3, -r*0.15, r*0.07, 0, Math.PI*2);
+  ctx.arc(r*0.3, -r*0.15, r*0.07, 0, Math.PI*2);
+  ctx.arc(0, r*0.2, r*0.06, 0, Math.PI*2);
+  ctx.fill();
+
+  // Mouth
+  ctx.fillStyle = '#550000';
+  ctx.beginPath();
+  ctx.arc(0, r*0.35, r*0.3, 0.2, Math.PI-0.2);
+  ctx.fill();
+  // Teeth
+  ctx.fillStyle = '#cccc88';
+  for (let t = -2; t <= 2; t++) {
+    ctx.beginPath();
+    ctx.moveTo(t * r*0.13, r*0.35);
+    ctx.lineTo(t * r*0.13 + r*0.04, r*0.55);
+    ctx.lineTo(t * r*0.13 + r*0.09, r*0.35);
+    ctx.fill();
+  }
+
+  // HP bar
+  if (!e.dying) {
+    const bw = e.w + 10;
+    const pct = e.hp / e.maxHp;
+    ctx.fillStyle = '#1a0000';
+    ctx.fillRect(-bw/2, -r - 18, bw, 7);
+    ctx.fillStyle = pct > 0.5 ? '#00cc00' : pct > 0.25 ? '#cccc00' : '#cc0000';
+    ctx.fillRect(-bw/2, -r - 18, bw * pct, 7);
+  }
+
+  ctx.restore();
+}
+
+// ---- EFFECTS ----
+function spawnParticles(x,y,color,count) {
+  for(let i=0;i<count;i++) particles.push({x,y,vx:(Math.random()-0.5)*12,vy:(Math.random()-0.5)*12-2,life:15+Math.random()*20,color,size:2+Math.random()*5});
+}
+
+function addBloodSplat(x,y) {
+  const el = document.createElement('div');
+  el.className = 'bloodSplat';
+  el.textContent = ['🩸','💀','☠️'][Math.floor(Math.random()*3)];
+  el.style.left = x+'px'; el.style.top = y+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 600);
+}
+
+function showHitFlash() {
+  const f = document.getElementById('hitFlash');
+  f.style.opacity = '1';
+  setTimeout(()=>f.style.opacity='0', 100);
+}
+
+function updateHUD() {
+  document.getElementById('healthFill').style.width = Math.max(0,(player.hp/player.maxHp)*100)+'%';
+  document.getElementById('scoreDisplay').textContent = 'SCORE: ' + score;
+}
+
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playShootSound() {
+  try {
+    const ac = getAudioCtx();
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.connect(g); g.connect(ac.destination);
+    osc.frequency.setValueAtTime(300, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ac.currentTime + 0.08);
+    g.gain.setValueAtTime(0.08, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.08);
+    osc.start(); osc.stop(ac.currentTime + 0.1);
+  } catch(err) {}
+}
+
+function showJumpscare() {
+  document.getElementById('jumpscare').classList.add('active');
+  try {
+    const ac = getAudioCtx();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.frequency.setValueAtTime(60, ac.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(900, ac.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.4, ac.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 1.2);
+    osc.start(); osc.stop(ac.currentTime + 1.2);
+  } catch(e) {}
+  setTimeout(() => { document.getElementById('restartBtn').style.display = 'block'; }, 2000);
+}
+
+function restartGame() {
+  document.getElementById('jumpscare').classList.remove('active');
+  document.getElementById('restartBtn').style.display = 'none';
+  initGame();
+}
+</script>
+</body>
+</html>
