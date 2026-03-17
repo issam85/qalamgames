@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>GRANNY'S NIGHTMARE</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Amiri:wght@400;700&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #000; overflow: hidden; font-family: 'Creepster', cursive; cursor: none; }
   #cursor { position: fixed; width: 16px; height: 16px; background: radial-gradient(circle, #ff0000, #800000); border-radius: 50%; pointer-events: none; z-index: 9999; box-shadow: 0 0 12px #ff0000; transform: translate(-50%, -50%); }
@@ -34,6 +34,79 @@
   .bloodSplat { position: fixed; pointer-events: none; font-size: 2rem; animation: splatFade 0.6s forwards; z-index: 500; }
   @keyframes splatFade { 0%{opacity:1;transform:scale(0.5)} 100%{opacity:0;transform:scale(2) translateY(-40px)} }
   #hitFlash { position: fixed; inset: 0; background: rgba(255,0,0,0.45); pointer-events: none; opacity: 0; z-index: 200; transition: opacity 0.1s; }
+
+  /* ── Quran Verse Overlay ── */
+  #verseOverlay {
+    position: fixed; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    z-index: 300; background: rgba(0,0,0,0.75);
+    pointer-events: none;
+  }
+  #verseOverlay.show { display: flex; pointer-events: auto; }
+  #verseBox {
+    background: linear-gradient(160deg, #0a1a0a, #1a2a1a);
+    border: 2px solid #4caf50;
+    border-radius: 16px;
+    padding: 30px 36px;
+    max-width: 540px; width: 90%;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(76,175,80,0.4);
+    animation: verseAppear 0.5s ease;
+  }
+  @keyframes verseAppear { 0%{opacity:0;transform:scale(0.85)} 100%{opacity:1;transform:scale(1)} }
+  #verseArabic {
+    font-family: 'Amiri', serif;
+    font-size: 2rem;
+    color: #ffd700;
+    direction: rtl;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    text-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+  #verseDutch {
+    font-family: 'Amiri', serif;
+    font-size: 1rem;
+    color: #ccc;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  #verseRef {
+    font-size: 0.85rem;
+    color: #4caf50;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  #verseQuestion {
+    font-family: 'Creepster', cursive;
+    font-size: 1.2rem;
+    color: #fff;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+  }
+  .verse-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .verse-opt {
+    background: #0a2a0a; border: 1px solid #2a5a2a; border-radius: 8px;
+    padding: 11px 8px; color: #ccc; font-size: 0.95rem; cursor: pointer;
+    transition: all .2s; letter-spacing: 1px; font-family: 'Amiri', serif;
+  }
+  .verse-opt:hover { background: #1a4a1a; border-color: #4caf50; color: #fff; }
+  .verse-opt.correct { background: #1a4a1a; border-color: #4caf50; color: #4caf50; font-weight: bold; }
+  .verse-opt.wrong { background: #3a0a0a; border-color: #e53935; color: #e53935; }
+  #verseResult {
+    margin-top: 14px;
+    font-family: 'Creepster', cursive;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    min-height: 24px;
+  }
+  #verseContinue {
+    margin-top: 12px;
+    background: #ffd700; color: #111; border: none;
+    padding: 9px 30px; font-family: 'Creepster', cursive;
+    font-size: 1.1rem; letter-spacing: 3px; border-radius: 6px;
+    cursor: pointer; display: none;
+  }
 </style>
 </head>
 <body>
@@ -57,6 +130,20 @@
   </div>
   <div id="controls">WASD = Bewegen &nbsp;|&nbsp; ↑ ↓ ← → = Schieten</div>
 </div>
+
+<!-- Quran Verse Overlay -->
+<div id="verseOverlay">
+  <div id="verseBox">
+    <div id="verseArabic"></div>
+    <div id="verseDutch"></div>
+    <div id="verseRef"></div>
+    <div id="verseQuestion"></div>
+    <div class="verse-opts" id="verseOpts"></div>
+    <div id="verseResult"></div>
+    <button id="verseContinue" onclick="closeVerse()">▶ VERDER SPELEN</button>
+  </div>
+</div>
+
 <div id="jumpscare">
   <svg id="grannySvg" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
     <rect x="120" y="260" width="160" height="180" rx="10" fill="#2a1a0a"/>
@@ -112,11 +199,275 @@ let W, H;
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
 
+// ---- QURAN VERSES (Hizb 1-3: An-Nas 114 t/m Al-Jinn 72) ----
+const quranVerses = [
+  {
+    arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ ﴿١﴾ مَلِكِ النَّاسِ ﴿٢﴾ إِلَـٰهِ النَّاسِ',
+    dutch: 'Zeg: "Ik zoek toevlucht bij de Heer van de mensen, de Koning van de mensen, de God van de mensen."',
+    ref: 'Surah An-Nas (114:1-3)',
+    vraag: 'Bij wie zoeken we toevlucht volgens Surah An-Nas?',
+    opts: ['Bij de mensen', 'Bij de Heer van de mensen', 'Bij de engelen', 'Bij de djinn'],
+    correct: 1
+  },
+  {
+    arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ',
+    dutch: 'Zeg: "Ik zoek toevlucht bij de Heer van de dageraad, tegen het kwaad van wat Hij geschapen heeft."',
+    ref: 'Surah Al-Falaq (113:1-2)',
+    vraag: 'Wat betekent "Al-Falaq"?',
+    opts: ['De nacht', 'De dageraad', 'De zon', 'De maan'],
+    correct: 1
+  },
+  {
+    arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ ﴿١﴾ اللَّهُ الصَّمَدُ',
+    dutch: 'Zeg: "Hij is Allah, de Enige. Allah, de Onafhankelijke."',
+    ref: 'Surah Al-Ikhlas (112:1-2)',
+    vraag: 'Wat betekent "As-Samad"?',
+    opts: ['De Schepper', 'De Barmhartige', 'De Onafhankelijke', 'De Almachtige'],
+    correct: 2
+  },
+  {
+    arabic: 'تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ',
+    dutch: 'Mogen de handen van Abu Lahab vergaan, en moge hij vergaan!',
+    ref: 'Surah Al-Masad (111:1)',
+    vraag: 'Wie wordt er in Surah Al-Masad genoemd?',
+    opts: ['Abu Bakr', 'Abu Lahab', 'Abu Talib', 'Abu Jahl'],
+    correct: 1
+  },
+  {
+    arabic: 'إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ',
+    dutch: 'Wanneer de hulp van Allah komt en de overwinning.',
+    ref: 'Surah An-Nasr (110:1)',
+    vraag: 'Wat komt er samen met de hulp van Allah?',
+    opts: ['Rijkdom', 'De overwinning', 'De regen', 'De engelen'],
+    correct: 1
+  },
+  {
+    arabic: 'قُلْ يَا أَيُّهَا الْكَافِرُونَ ﴿١﴾ لَا أَعْبُدُ مَا تَعْبُدُونَ',
+    dutch: 'Zeg: "O ongelovigen! Ik aanbid niet wat jullie aanbidden."',
+    ref: 'Surah Al-Kafirun (109:1-2)',
+    vraag: 'Wat is de boodschap van Surah Al-Kafirun?',
+    opts: ['Samen bidden', 'Geen compromis in aanbidding', 'Handel drijven', 'Oorlog voeren'],
+    correct: 1
+  },
+  {
+    arabic: 'إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ',
+    dutch: 'Voorwaar, Wij hebben jou Al-Kawthar gegeven.',
+    ref: 'Surah Al-Kawthar (108:1)',
+    vraag: 'Wat is Al-Kawthar?',
+    opts: ['Een berg', 'Een rivier in het Paradijs', 'Een engel', 'Een stad'],
+    correct: 1
+  },
+  {
+    arabic: 'أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ',
+    dutch: 'Heb jij degene gezien die de Dag des Oordeels loochent?',
+    ref: "Surah Al-Ma'un (107:1)",
+    vraag: "Waar gaat Surah Al-Ma'un over?",
+    opts: ['Het gebed', 'Het helpen van armen en wezen', 'De hemel', 'De dieren'],
+    correct: 1
+  },
+  {
+    arabic: 'لِإِيلَافِ قُرَيْشٍ ﴿١﴾ إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ',
+    dutch: 'Vanwege de veiligheid van de Quraish, hun veilige winter- en zomerreizen.',
+    ref: 'Surah Quraysh (106:1-2)',
+    vraag: 'Welke twee reizen worden genoemd in Surah Quraysh?',
+    opts: ['Ochtend en avond', 'Winter en zomer', 'Land en zee', 'Oost en west'],
+    correct: 1
+  },
+  {
+    arabic: 'أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ',
+    dutch: 'Heb jij niet gezien hoe jouw Heer heeft gehandeld met de mensen van de olifant?',
+    ref: 'Surah Al-Fil (105:1)',
+    vraag: 'Welk dier wordt genoemd in Surah Al-Fil?',
+    opts: ['Een kameel', 'Een paard', 'Een olifant', 'Een leeuw'],
+    correct: 2
+  },
+  {
+    arabic: 'وَيْلٌ لِّكُلِّ هُمَزَةٍ لُّمَزَةٍ',
+    dutch: 'Wee iedere lasteraar en roddelaar!',
+    ref: 'Surah Al-Humazah (104:1)',
+    vraag: 'Wat wordt er veroordeeld in Surah Al-Humazah?',
+    opts: ['Stelen', 'Lasteren en roddelen', 'Liegen', 'Luiheid'],
+    correct: 1
+  },
+  {
+    arabic: 'وَالْعَصْرِ ﴿١﴾ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ',
+    dutch: 'Bij de tijd! Voorwaar, de mens is zeker in verlies.',
+    ref: 'Surah Al-Asr (103:1-2)',
+    vraag: 'Waar zweert Allah bij in Surah Al-Asr?',
+    opts: ['De zon', 'De maan', 'De tijd', 'De sterren'],
+    correct: 2
+  },
+  {
+    arabic: 'أَلْهَاكُمُ التَّكَاثُرُ ﴿١﴾ حَتَّىٰ زُرْتُمُ الْمَقَابِرَ',
+    dutch: 'Het wedijveren om meer leidt jullie af, totdat jullie de graven bezoeken.',
+    ref: 'Surah At-Takathur (102:1-2)',
+    vraag: 'Wat leidt de mens af volgens Surah At-Takathur?',
+    opts: ['Het gebed', 'Het wedijveren om meer', 'De slaap', 'Het eten'],
+    correct: 1
+  },
+  {
+    arabic: 'الْقَارِعَةُ ﴿١﴾ مَا الْقَارِعَةُ ﴿٢﴾ وَمَا أَدْرَاكَ مَا الْقَارِعَةُ',
+    dutch: 'De Dag die alles stukslaat! Wat is de Dag die alles stukslaat? En wat doet jou weten wat het is?',
+    ref: "Surah Al-Qari'ah (101:1-3)",
+    vraag: "Wat beschrijft Surah Al-Qari'ah?",
+    opts: ['Een aardbeving', 'De Dag des Oordeels', 'Een storm', 'De dood'],
+    correct: 1
+  },
+  {
+    arabic: 'وَالْعَادِيَاتِ ضَبْحًا ﴿١﴾ فَالْمُورِيَاتِ قَدْحًا',
+    dutch: 'Bij de rennende (paarden) die hijgen, en vonken slaan.',
+    ref: 'Surah Al-Adiyat (100:1-2)',
+    vraag: 'Welke dieren worden bedoeld met "Al-Adiyat"?',
+    opts: ['Kamelen', 'Paarden', 'Vogels', 'Leeuwen'],
+    correct: 1
+  },
+  {
+    arabic: 'إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا',
+    dutch: 'Wanneer de aarde met haar (laatste) beving wordt geschud.',
+    ref: 'Surah Az-Zalzalah (99:1)',
+    vraag: 'Wat gebeurt er in Surah Az-Zalzalah?',
+    opts: ['Het regent', 'De aarde beeft', 'De zon verdwijnt', 'De zee splitst'],
+    correct: 1
+  },
+  {
+    arabic: 'لَمْ يَكُنِ الَّذِينَ كَفَرُوا مِن أَهْلِ الْكِتَابِ مُنفَكِّينَ حَتَّىٰ تَأْتِيَهُمُ الْبَيِّنَةُ',
+    dutch: 'Degenen die ongelovig waren zouden niet ophouden totdat het duidelijke bewijs tot hen kwam.',
+    ref: 'Surah Al-Bayyinah (98:1)',
+    vraag: 'Wat betekent "Al-Bayyinah"?',
+    opts: ['De nacht', 'Het duidelijke bewijs', 'De beloning', 'De straf'],
+    correct: 1
+  },
+  {
+    arabic: 'إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ',
+    dutch: 'Voorwaar, Wij hebben hem (de Quran) neergezonden in de Nacht van de Qadr.',
+    ref: 'Surah Al-Qadr (97:1)',
+    vraag: 'Laylatul Qadr is beter dan hoeveel maanden?',
+    opts: ['100 maanden', '1000 maanden', '500 maanden', '10.000 maanden'],
+    correct: 1
+  },
+  {
+    arabic: 'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',
+    dutch: 'Lees! In de naam van jouw Heer Die heeft geschapen.',
+    ref: 'Surah Al-Alaq (96:1)',
+    vraag: 'Wat was het eerste woord dat aan de Profeet ﷺ geopenbaard werd?',
+    opts: ['Bid', 'Lees', 'Schrijf', 'Spreek'],
+    correct: 1
+  },
+  {
+    arabic: 'وَالتِّينِ وَالزَّيْتُونِ ﴿١﴾ وَطُورِ سِينِينَ',
+    dutch: 'Bij de vijg en de olijf! En bij de berg Sinai.',
+    ref: 'Surah At-Tin (95:1-2)',
+    vraag: 'Welke twee vruchten noemt Allah in Surah At-Tin?',
+    opts: ['Dadel en druif', 'Vijg en olijf', 'Appel en peer', 'Granaatappel en banaan'],
+    correct: 1
+  },
+  {
+    arabic: 'أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ',
+    dutch: 'Hebben Wij jouw borst niet verruimd?',
+    ref: 'Surah Ash-Sharh (94:1)',
+    vraag: 'Tot wie is Surah Ash-Sharh gericht?',
+    opts: ['Musa عليه السلام', 'Ibrahim عليه السلام', 'De Profeet Muhammad ﷺ', 'Isa عليه السلام'],
+    correct: 2
+  },
+  {
+    arabic: 'وَالضُّحَىٰ ﴿١﴾ وَاللَّيْلِ إِذَا سَجَىٰ ﴿٢﴾ مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ',
+    dutch: 'Bij de ochtendgloren! En bij de nacht wanneer het stil wordt. Jouw Heer heeft je niet verlaten, noch haat Hij je.',
+    ref: 'Surah Ad-Duha (93:1-3)',
+    vraag: 'Wat belooft Allah in Surah Ad-Duha?',
+    opts: ['Rijkdom', 'Dat Hij de Profeet ﷺ niet verlaten heeft', 'Een lang leven', 'Veel kinderen'],
+    correct: 1
+  },
+  {
+    arabic: 'وَاللَّيْلِ إِذَا يَغْشَىٰ ﴿١﴾ وَالنَّهَارِ إِذَا تَجَلَّىٰ',
+    dutch: 'Bij de nacht wanneer hij bedekt! En bij de dag wanneer hij verschijnt.',
+    ref: 'Surah Al-Layl (92:1-2)',
+    vraag: 'Welke twee dingen contrasteert Allah in het begin van Surah Al-Layl?',
+    opts: ['Zon en maan', 'Nacht en dag', 'Land en zee', 'Bergen en rivieren'],
+    correct: 1
+  },
+  {
+    arabic: 'وَالشَّمْسِ وَضُحَاهَا ﴿١﴾ وَالْقَمَرِ إِذَا تَلَاهَا',
+    dutch: 'Bij de zon en haar ochtendlicht! En bij de maan wanneer hij haar volgt.',
+    ref: 'Surah Ash-Shams (91:1-2)',
+    vraag: 'Wat volgt de zon volgens Surah Ash-Shams?',
+    opts: ['De sterren', 'De maan', 'De aarde', 'De wind'],
+    correct: 1
+  },
+  {
+    arabic: 'لَا أُقْسِمُ بِهَـٰذَا الْبَلَدِ ﴿١﴾ وَأَنتَ حِلٌّ بِهَـٰذَا الْبَلَدِ',
+    dutch: 'Ik zweer bij deze stad (Mekka)! En jij bent een bewoner van deze stad.',
+    ref: 'Surah Al-Balad (90:1-2)',
+    vraag: 'Welke stad wordt bedoeld in Surah Al-Balad?',
+    opts: ['Medina', 'Jeruzalem', 'Mekka', 'Taif'],
+    correct: 2
+  },
+];
+
+let usedVerseIdxs = [];
+let versePaused = false;
+
+function getRandomVerse() {
+  if (usedVerseIdxs.length >= quranVerses.length) usedVerseIdxs = [];
+  let idx;
+  do { idx = Math.floor(Math.random() * quranVerses.length); } while (usedVerseIdxs.includes(idx));
+  usedVerseIdxs.push(idx);
+  return quranVerses[idx];
+}
+
+function showVerse() {
+  versePaused = true;
+  const v = getRandomVerse();
+  document.getElementById('verseArabic').textContent = v.arabic;
+  document.getElementById('verseDutch').textContent = v.dutch;
+  document.getElementById('verseRef').textContent = v.ref;
+  document.getElementById('verseQuestion').textContent = v.vraag;
+  document.getElementById('verseResult').textContent = '';
+  document.getElementById('verseContinue').style.display = 'none';
+  const optsEl = document.getElementById('verseOpts');
+  optsEl.innerHTML = '';
+  v.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'verse-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerVerse(i, v.correct, optsEl);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('verseOverlay').classList.add('show');
+}
+
+function answerVerse(chosen, correct, optsEl) {
+  optsEl.querySelectorAll('.verse-opt').forEach((b, i) => {
+    b.onclick = null;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen) b.classList.add('wrong');
+  });
+  const res = document.getElementById('verseResult');
+  if (chosen === correct) {
+    res.style.color = '#4caf50';
+    res.textContent = "✓ CORRECT! MASHA'ALLAH! 🌟";
+    // Bonus: heal player a bit for correct answer
+    if (player) {
+      player.hp = Math.min(player.maxHp, player.hp + 15);
+      updateHUD();
+    }
+  } else {
+    res.style.color = '#e53935';
+    res.textContent = '✗ HELAAS — BLIJF LEREN! 📖';
+  }
+  document.getElementById('verseContinue').style.display = 'inline-block';
+}
+
+function closeVerse() {
+  document.getElementById('verseOverlay').classList.remove('show');
+  versePaused = false;
+}
+
 // ---- STATE ----
 let keys = {}, gameRunning = false, gameLoopId;
 let player, bullets, enemies, particles, score, wave, bgScroll;
 let shootCooldown = 0;
 let waveSpawning = false;
+let walkCycle = 0; // for abaya sway animation
 
 document.addEventListener('keydown', e => { keys[e.code] = true; e.preventDefault(); });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
@@ -128,7 +479,7 @@ function startGame() {
 }
 
 function initGame() {
-  score = 0; wave = 1; bgScroll = 0;
+  score = 0; wave = 1; bgScroll = 0; walkCycle = 0;
   gameRunning = true;
   bullets = []; enemies = []; particles = [];
   waveSpawning = false; shootCooldown = 0;
@@ -187,7 +538,9 @@ function spawnEnemy() {
 // ---- GAME LOOP ----
 function loop() {
   if (!gameRunning) return;
-  update();
+  if (!versePaused) {
+    update();
+  }
   draw();
   gameLoopId = requestAnimationFrame(loop);
 }
@@ -197,7 +550,6 @@ function update() {
 
   // -- PLAYER MOVE (WASD) --
   let dx = 0, dy = 0;
-  if (keys['KeyA'] || keys['KeyW'] && false) {} // just below
   if (keys['KeyA']) dx -= 1;
   if (keys['KeyD']) dx += 1;
   if (keys['KeyW']) dy -= 1;
@@ -207,6 +559,9 @@ function update() {
   player.y += dy * player.speed;
   if (dx > 0) player.facing = 1;
   if (dx < 0) player.facing = -1;
+
+  // Walk cycle for abaya animation
+  if (dx !== 0 || dy !== 0) walkCycle += 0.15;
 
   // Keep in bounds
   player.x = Math.max(0, Math.min(W - player.w, player.x));
@@ -237,7 +592,6 @@ function update() {
       trail: []
     });
     shootCooldown = 8;
-    // Shoot sound
     playShootSound();
   }
 
@@ -299,11 +653,19 @@ function update() {
 
   enemies = enemies.filter(e => !(e.dying && e.deathTimer > 35));
 
-  // Check wave cleared
+  // Check wave cleared → show Quran verse between waves
   if (!waveSpawning && enemies.length === 0 && gameRunning) {
     wave++;
     document.getElementById('waveDisplay').textContent = 'GOLF: ' + wave;
-    setTimeout(spawnWave, 1800);
+    // Show a verse between waves
+    showVerse();
+    // After verse is closed, spawn next wave
+    const checkVerseClosed = setInterval(() => {
+      if (!versePaused) {
+        clearInterval(checkVerseClosed);
+        setTimeout(spawnWave, 800);
+      }
+    }, 200);
     waveSpawning = true; // prevent double trigger
   }
 
@@ -355,7 +717,6 @@ function draw() {
 
   // Bullet trails + bullets
   bullets.forEach(b => {
-    // Trail
     b.trail.forEach((t, i) => {
       ctx.save();
       ctx.globalAlpha = (i / b.trail.length) * 0.5;
@@ -365,7 +726,6 @@ function draw() {
       ctx.fill();
       ctx.restore();
     });
-    // Bullet
     ctx.save();
     ctx.shadowBlur = 15; ctx.shadowColor = '#ff6600';
     ctx.fillStyle = '#ffaa00';
@@ -399,6 +759,7 @@ function draw() {
   }
 }
 
+// ---- DRAW PLAYER: Muslim character with abaya ----
 function drawPlayer() {
   const p = player;
   const cx = p.x + p.w/2, cy = p.y + p.h/2;
@@ -407,54 +768,146 @@ function drawPlayer() {
 
   if (p.invincible > 0 && Math.floor(p.invincible/5) % 2 === 0) ctx.globalAlpha = 0.3;
 
-  // Glow
-  ctx.shadowBlur = 20; ctx.shadowColor = '#cc0000';
+  // Subtle glow
+  ctx.shadowBlur = 15; ctx.shadowColor = '#4caf50';
 
-  // Body
+  // Abaya sway based on walking
+  const sway = Math.sin(walkCycle) * 2;
+
+  // ── Abaya (long flowing robe) ──
+  // Main robe body - dark flowing garment
   ctx.fillStyle = '#1a1a2e';
   ctx.beginPath();
-  ctx.roundRect(-18, -22, 36, 44, 6);
+  ctx.moveTo(-16, -18);   // left shoulder
+  ctx.lineTo(-18 + sway, 28);    // left bottom (sway)
+  ctx.quadraticCurveTo(-10, 32, 0, 30);  // bottom curve
+  ctx.quadraticCurveTo(10, 32, 18 - sway, 28);  // right bottom
+  ctx.lineTo(16, -18);    // right shoulder
+  ctx.closePath();
   ctx.fill();
 
-  // Armor
-  ctx.fillStyle = '#cc0000';
-  ctx.fillRect(-18, -22, 36, 7);
-  ctx.fillRect(-20, -10, 5, 25);
-  ctx.fillRect(15, -10, 5, 25);
+  // Abaya fold lines
+  ctx.strokeStyle = '#0d0d18';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(-6, -10); ctx.lineTo(-8 + sway*0.5, 26);
+  ctx.moveTo(4, -10); ctx.lineTo(2 + sway*0.5, 26);
+  ctx.moveTo(-12, -5); ctx.lineTo(-14 + sway*0.7, 25);
+  ctx.stroke();
 
-  // Head
+  // Green trim at bottom of abaya (Islamic touch)
+  ctx.strokeStyle = '#2e7d32';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-18 + sway, 27);
+  ctx.quadraticCurveTo(-10, 31, 0, 29);
+  ctx.quadraticCurveTo(10, 31, 18 - sway, 27);
+  ctx.stroke();
+
+  // ── Sleeves ──
+  // Left sleeve
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath();
+  ctx.moveTo(-16, -12);
+  ctx.lineTo(-24, 2);
+  ctx.lineTo(-20, 6);
+  ctx.lineTo(-14, -4);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right sleeve
+  ctx.beginPath();
+  ctx.moveTo(16, -12);
+  ctx.lineTo(24, 2);
+  ctx.lineTo(20, 6);
+  ctx.lineTo(14, -4);
+  ctx.closePath();
+  ctx.fill();
+
+  // ── Hands (skin) ──
   ctx.shadowBlur = 0;
-  ctx.fillStyle = '#e8c8a0';
+  ctx.fillStyle = '#c8945a';
   ctx.beginPath();
-  ctx.arc(0, -30, 16, 0, Math.PI*2);
+  ctx.arc(-22, 5, 4, 0, Math.PI*2);
+  ctx.arc(22, 5, 4, 0, Math.PI*2);
   ctx.fill();
 
-  // Eyes glow red
-  ctx.fillStyle = '#ff2200';
-  ctx.shadowBlur = 8; ctx.shadowColor = '#ff0000';
+  // ── Head with kufi/taqiyah ──
+  // Head (skin)
+  ctx.fillStyle = '#c8945a';
   ctx.beginPath();
-  ctx.arc(p.facing < 0 ? -6 : -5, -32, 4, 0, Math.PI*2);
-  ctx.arc(p.facing < 0 ? -6+12 : 5, -32, 4, 0, Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
-
-  // Pupils
-  ctx.fillStyle = '#000';
-  ctx.beginPath();
-  ctx.arc(p.facing < 0 ? -6 : -5, -32, 2, 0, Math.PI*2);
-  ctx.arc(p.facing < 0 ? 6 : 5, -32, 2, 0, Math.PI*2);
+  ctx.arc(0, -28, 14, 0, Math.PI*2);
   ctx.fill();
 
-  // Legs
-  ctx.fillStyle = '#0d0d1a';
-  ctx.fillRect(-16, 22, 13, 18);
-  ctx.fillRect(3, 22, 13, 18);
+  // Kufi (prayer cap) - white with pattern
+  ctx.fillStyle = '#f5f5f0';
+  ctx.beginPath();
+  ctx.ellipse(0, -34, 15, 8, 0, Math.PI, Math.PI*2);
+  ctx.fill();
 
-  // Gun
+  // Kufi pattern lines
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 0.8;
+  for (let i = -12; i <= 12; i += 4) {
+    ctx.beginPath();
+    const topY = -38 + Math.abs(i)*0.3;
+    ctx.moveTo(i, -34);
+    ctx.lineTo(i, topY);
+    ctx.stroke();
+  }
+
+  // Kufi border
+  ctx.strokeStyle = '#2e7d32';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(0, -34, 15, 8, 0, Math.PI+0.1, -0.1);
+  ctx.stroke();
+
+  // ── Beard (small neat beard) ──
+  ctx.fillStyle = '#1a0f00';
+  ctx.beginPath();
+  ctx.moveTo(-7, -20);
+  ctx.quadraticCurveTo(-8, -14, -5, -12);
+  ctx.quadraticCurveTo(0, -10, 5, -12);
+  ctx.quadraticCurveTo(8, -14, 7, -20);
+  ctx.closePath();
+  ctx.fill();
+
+  // ── Eyes ──
+  // Eye whites
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.ellipse(-5, -30, 3.5, 3, 0, 0, Math.PI*2);
+  ctx.ellipse(5, -30, 3.5, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Pupils (looking in facing direction)
+  ctx.fillStyle = '#1a0f00';
+  ctx.beginPath();
+  ctx.arc(-5 + p.facing*1.5, -30, 2, 0, Math.PI*2);
+  ctx.arc(5 + p.facing*1.5, -30, 2, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Shoes (simple) ──
+  ctx.fillStyle = '#2a1a0a';
+  ctx.beginPath();
+  ctx.ellipse(-8 + sway*0.3, 30, 6, 3, 0, 0, Math.PI*2);
+  ctx.ellipse(8 - sway*0.3, 30, 6, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // ── Gun (held in right hand) ──
   ctx.fillStyle = '#333';
-  ctx.fillRect(p.facing > 0 ? 18 : -34, -5, 16, 8);
+  ctx.fillRect(p.facing > 0 ? 22 : -38, 1, 16, 7);
   ctx.fillStyle = '#555';
-  ctx.fillRect(p.facing > 0 ? 30 : -30, -4, 6, 6);
+  ctx.fillRect(p.facing > 0 ? 34 : -34, 2, 5, 5);
+
+  // ── Small green glow around player (spiritual protection aura) ──
+  ctx.globalAlpha = 0.08 + Math.sin(Date.now()/500)*0.04;
+  ctx.strokeStyle = '#4caf50';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, 38, 0, Math.PI*2);
+  ctx.stroke();
 
   ctx.restore();
 }
