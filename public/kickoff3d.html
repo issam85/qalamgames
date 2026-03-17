@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>KICK OFF 3D</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0f;overflow:hidden;font-family:'Barlow Condensed',sans-serif;}
+#c{display:block;width:100vw;height:100vh;}
+#hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:18px 30px;pointer-events:none;z-index:10;}
+.team{display:flex;flex-direction:column;align-items:center;}
+.tname{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;}
+.tname.r{color:#ff4455;text-shadow:0 0 20px #ff4455aa;}
+.tname.b{color:#44aaff;text-shadow:0 0 20px #44aaffaa;}
+.ctrl{font-size:0.7rem;color:#444;letter-spacing:1px;margin-top:3px;}
+#mid{display:flex;flex-direction:column;align-items:center;}
+#score{font-family:'Bebas Neue',sans-serif;font-size:3.8rem;color:#fff;letter-spacing:10px;text-shadow:0 2px 20px rgba(255,255,255,0.3);}
+#timer{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#888;letter-spacing:3px;margin-top:-6px;}
+#goal-msg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:20;opacity:0;transition:opacity .2s;}
+#goal-msg span{font-family:'Bebas Neue',sans-serif;font-size:9rem;letter-spacing:12px;color:#ffd700;text-shadow:0 0 80px #ffd700,0 0 40px #ff8800;transform:scale(0.8);transition:transform .3s;}
+#over{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30;}
+#over h1{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:#ffd700;letter-spacing:8px;text-shadow:0 0 50px #ffd700aa;margin-bottom:15px;}
+#over p{font-size:1.1rem;color:#888;letter-spacing:3px;text-transform:uppercase;}
+#start-screen{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:40;}
+#start-screen h1{font-family:'Bebas Neue',sans-serif;font-size:6rem;color:#ffd700;letter-spacing:10px;text-shadow:0 0 60px #ffd700aa;margin-bottom:5px;}
+.sub{font-size:1rem;color:#666;letter-spacing:5px;text-transform:uppercase;margin-bottom:50px;}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:20px 60px;margin-bottom:45px;}
+.ks h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;margin-bottom:10px;}
+.ks.r h3{color:#ff4455;}.ks.b h3{color:#44aaff;}
+.ks p{font-size:.9rem;color:#bbb;line-height:2.2;letter-spacing:1px;}
+kbd{background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:2px 8px;color:#fff;font-size:.8rem;font-family:monospace;}
+#btn{background:#ffd700;color:#111;border:none;padding:14px 55px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:5px;border-radius:6px;cursor:pointer;box-shadow:0 0 30px #ffd70055;transition:transform .15s;}
+#btn:hover{transform:scale(1.06);}
+/* ── Islamitische vraag overlay ── */
+#quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:25;background:rgba(0,0,0,0.7);}
+#quiz.show{display:flex;}
+#quiz-box{background:linear-gradient(160deg,#0d1f0d,#1a3a1a);border:2px solid #4caf50;border-radius:16px;padding:36px 40px;max-width:560px;width:90%;text-align:center;box-shadow:0 0 60px #4caf5066;}
+#quiz-box .arabic{font-size:2.2rem;color:#ffd700;margin-bottom:6px;text-shadow:0 0 20px #ffd70088;letter-spacing:2px;}
+#quiz-box .translation{font-size:0.85rem;color:#aaa;letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;}
+#quiz-box .vraag{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#fff;letter-spacing:2px;margin-bottom:24px;line-height:1.3;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.quiz-opt{background:#0a2a0a;border:1px solid #2a5a2a;border-radius:8px;padding:13px 10px;color:#ccc;font-size:1rem;cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.quiz-opt:hover{background:#1a4a1a;border-color:#4caf50;color:#fff;}
+.quiz-opt.correct{background:#1a4a1a;border-color:#4caf50;color:#4caf50;font-weight:bold;}
+.quiz-opt.wrong{background:#3a0a0a;border-color:#e53935;color:#e53935;}
+#quiz-result{margin-top:20px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;min-height:28px;}
+#quiz-continue{margin-top:16px;background:#ffd700;color:#111;border:none;padding:10px 36px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:4px;border-radius:6px;cursor:pointer;display:none;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div class="team">
+    <div class="tname r">⚪ REAL MADRID</div>
+    <div class="ctrl">W A S D · Q shoot</div>
+  </div>
+  <div id="mid">
+    <div id="score">0 – 0</div>
+    <div id="timer">01:00</div>
+  </div>
+  <div class="team" style="align-items:flex-end">
+    <div class="tname b">BARÇA 🔵</div>
+    <div class="ctrl">↑↓←→ · O shoot</div>
+  </div>
+</div>
+<div id="goal-msg"><span>GOAL!</span></div>
+<div id="quiz">
+  <div id="quiz-box">
+    <div class="arabic" id="q-arabic"></div>
+    <div class="translation" id="q-trans"></div>
+    <div class="vraag" id="q-text"></div>
+    <div class="quiz-opts" id="q-opts"></div>
+    <div id="quiz-result"></div>
+    <button id="quiz-continue" onclick="closeQuiz()">▶ VERDER SPELEN</button>
+  </div>
+</div>
+<div id="over"><h1 id="winner-text">GELIJKSPEL!</h1><p>Druk ENTER om opnieuw te spelen</p></div>
+<div id="start-screen">
+  <h1>KICK OFF 3D</h1>
+  <p class="sub">2 Spelers Voetbal</p>
+  <div class="keys">
+    <div class="ks r"><h3>⚪ REAL MADRID — Ronaldo</h3><p><kbd>W</kbd> Voor &nbsp; <kbd>S</kbd> Achter<br><kbd>A</kbd> Links &nbsp; <kbd>D</kbd> Rechts<br><kbd>Q</kbd> Schieten</p></div>
+    <div class="ks b"><h3>🔵 BARCELONA — Messi</h3><p><kbd>↑</kbd> Voor &nbsp; <kbd>↓</kbd> Achter<br><kbd>←</kbd> Links &nbsp; <kbd>→</kbd> Rechts<br><kbd>O</kbd> Schieten</p></div>
+  </div>
+  <button id="btn">⚽ AFTRAP!</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── SCENE SETUP ───────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0f);
+scene.fog = new THREE.Fog(0x0a0a0f, 40, 90);
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 200);
+camera.position.set(0, 22, 28);
+camera.lookAt(0, 0, 0);
+window.addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+// ─── LIGHTS ────────────────────────────────────────────────────────────────
+const ambient = new THREE.AmbientLight(0x223344, 0.8);
+scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+sun.position.set(5, 20, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.near = 0.1;
+sun.shadow.camera.far = 80;
+sun.shadow.camera.left = -25;
+sun.shadow.camera.right = 25;
+sun.shadow.camera.top = 20;
+sun.shadow.camera.bottom = -20;
+scene.add(sun);
+// Stadium lights
+[-12,12].forEach(x=>{
+  [-16,16].forEach(z=>{
+    const l = new THREE.PointLight(0xffffff, 0.8, 50);
+    l.position.set(x, 15, z);
+    scene.add(l);
+  });
+});
+// ─── FIELD ─────────────────────────────────────────────────────────────────
+const FW = 30, FD = 20;
+// Grass
+const grassGeo = new THREE.PlaneGeometry(FW, FD, 20, 14);
+const grassMat = new THREE.MeshLambertMaterial({color:0x2d8a3e});
+const grass = new THREE.Mesh(grassGeo, grassMat);
+grass.rotation.x = -Math.PI/2;
+grass.receiveShadow = true;
+scene.add(grass);
+// Stripe pattern via vertex colors
+const pos = grassGeo.attributes.position;
+const colors = [];
+for(let i=0;i<pos.count;i++){
+  const x = pos.getX(i);
+  const stripe = Math.floor((x + FW/2) / (FW/10)) % 2 === 0;
+  colors.push(stripe?0.18:0.16, stripe?0.54:0.50, stripe?0.24:0.22);
+}
+grassGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+grassMat.vertexColors = true;
+// Field lines (white boxes on grass)
+function addLine(x,z,w,d){
+  const g = new THREE.PlaneGeometry(w,d);
+  const m = new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7});
+  const mesh = new THREE.Mesh(g,m);
+  mesh.rotation.x = -Math.PI/2;
+  mesh.position.set(x,0.01,z);
+  scene.add(mesh);
+}
+// Outline
+addLine(0,0,FW,0.12); // top
+addLine(0,0,0.12,FD); // placeholder - use 4 sides
+scene.remove(scene.children[scene.children.length-1]);
+// Border lines
+const lineMat = new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.75});
+function fieldLine(x,z,w,d){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),lineMat.clone());
+  m.rotation.x=-Math.PI/2;m.position.set(x,.011,z);scene.add(m);
+}
+fieldLine(0, -FD/2, FW, .1);
+fieldLine(0,  FD/2, FW, .1);
+fieldLine(-FW/2, 0, .1, FD);
+fieldLine( FW/2, 0, .1, FD);
+fieldLine(0, 0, .1, FD); // centre line
+// Centre circle
+const circleGeo = new THREE.RingGeometry(3.8, 4.1, 48);
+const circleMesh = new THREE.Mesh(circleGeo, new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.7,side:THREE.DoubleSide}));
+circleMesh.rotation.x=-Math.PI/2; circleMesh.position.y=0.012; scene.add(circleMesh);
+// Centre dot
+const cdot = new THREE.Mesh(new THREE.CircleGeometry(.2,16), new THREE.MeshBasicMaterial({color:0xffffff}));
+cdot.rotation.x=-Math.PI/2; cdot.position.y=0.013; scene.add(cdot);
+// Penalty boxes
+[-1,1].forEach(side=>{
+  const bw=7,bd=10,bx=side*(FW/2-bw/2);
+  fieldLine(bx, 0, bw, .1);
+  fieldLine(bx-side*bw/2, bd/2, .1, bd);
+  fieldLine(bx-side*bw/2, -bd/2, .1, bd);
+  fieldLine(bx, bd/2, bw, .1);
+  fieldLine(bx, -bd/2, bw, .1);
+});
+// ─── BEAUTIFUL 3D GOALS ────────────────────────────────────────────────────
+const GW2=5.0, GH2=2.4, GD2=2.0;
+const goalLights = [];
+function makeGoal(xSide, teamColor){
+  const dir = xSide;
+  const group = new THREE.Group();
+  function postMat(){
+    return new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      emissive: new THREE.Color(teamColor).multiplyScalar(0.2),
+      shininess: 200, specular: new THREE.Color(0xbbbbbb)
+    });
+  }
+  const R = 0.1;
+  function postV(px,py,pz,h){
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(R,R,h,20),postMat());
+    m.position.set(px,py,pz); m.castShadow=true; group.add(m);
+  }
+  function barZ(px,py,pz,l){
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(R,R,l,20),postMat());
+    m.rotation.set(Math.PI/2,0,0);
+    m.position.set(px,py,pz); m.castShadow=true; group.add(m);
+  }
+  function barX(px,py,pz,l){
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(R,R,l,20),postMat());
+    m.rotation.set(0,0,Math.PI/2);
+    m.position.set(px,py,pz); m.castShadow=true; group.add(m);
+  }
+  postV(0, GH2/2, -GW2/2, GH2);
+  postV(0, GH2/2,  GW2/2, GH2);
+  barZ(0, GH2,     0,      GW2);
+  postV(dir*GD2, GH2/2, -GW2/2, GH2);
+  postV(dir*GD2, GH2/2,  GW2/2, GH2);
+  barZ(dir*GD2,  GH2,    0,      GW2);
+  barZ(dir*GD2,  R,      0,      GW2);
+  barX(dir*GD2/2, GH2,  -GW2/2, GD2);
+  barX(dir*GD2/2, GH2,   GW2/2, GD2);
+  barX(dir*GD2/2, R,    -GW2/2, GD2);
+  barX(dir*GD2/2, R,     GW2/2, GD2);
+  const sH = GH2*0.6, sD = GD2*0.9;
+  const sLen = Math.sqrt(sH*sH + sD*sD);
+  const sAng = Math.atan2(sH, sD) * dir;
+  const sm1=new THREE.Mesh(new THREE.CylinderGeometry(R*0.7,R*0.7,sLen,12),postMat());
+  sm1.rotation.set(0,0,sAng); sm1.position.set(dir*GD2*1.35, GH2*0.55, -GW2/2); group.add(sm1);
+  const sm2=new THREE.Mesh(new THREE.CylinderGeometry(R*0.7,R*0.7,sLen,12),postMat());
+  sm2.rotation.set(0,0,sAng); sm2.position.set(dir*GD2*1.35, GH2*0.55,  GW2/2); group.add(sm2);
+  [[0,-GW2/2],[0,GW2/2],[dir*GD2,-GW2/2],[dir*GD2,GW2/2]].forEach(([px,pz])=>{
+    const cap=new THREE.Mesh(new THREE.SphereGeometry(R*1.2,12,8),postMat());
+    cap.position.set(px,GH2,pz); group.add(cap);
+  });
+  const netColor = new THREE.Color(teamColor).lerp(new THREE.Color(0xffffff), 0.55);
+  const NR = 0.018, COLS=14, ROWS=9;
+  function netWire(px,py,pz, axis, len, opacity, col){
+    const mat=new THREE.MeshBasicMaterial({color:col, transparent:true, opacity});
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(NR,NR,len,4),mat);
+    m.position.set(px,py,pz);
+    if(axis==='x') m.rotation.set(0,0,Math.PI/2);
+    else if(axis==='z') m.rotation.set(Math.PI/2,0,0);
+    group.add(m);
+  }
+  for(let i=0;i<=COLS;i++){
+    const nz = -GW2/2 + i*(GW2/COLS);
+    netWire(0, GH2/2, nz, 'y', GH2, 0.65, netColor);
+  }
+  for(let i=0;i<=ROWS;i++){
+    netWire(0, i*(GH2/ROWS), 0, 'z', GW2, 0.65, netColor);
+  }
+  for(let i=0;i<=COLS;i++){
+    const nz = -GW2/2 + i*(GW2/COLS);
+    netWire(dir*GD2, GH2/2, nz, 'y', GH2, 0.5, netColor);
+  }
+  for(let i=0;i<=ROWS;i++){
+    netWire(dir*GD2, i*(GH2/ROWS), 0, 'z', GW2, 0.5, netColor);
+  }
+  for(let i=0;i<=COLS;i++){
+    const nz=-GW2/2+i*(GW2/COLS);
+    netWire(dir*GD2/2, GH2, nz, 'x', GD2, 0.3, 0xffffff);
+  }
+  for(let i=0;i<=ROWS;i++){
+    netWire(dir*(i*GD2/ROWS), GH2, 0, 'z', GW2, 0.3, 0xffffff);
+  }
+  [-GW2/2, GW2/2].forEach(pz=>{
+    for(let i=0;i<=ROWS;i++) netWire(dir*GD2/2, i*(GH2/ROWS), pz, 'x', GD2, 0.28, 0xdddddd);
+    for(let i=0;i<=COLS;i++) netWire(dir*(i*GD2/COLS), GH2/2, pz, 'y', GH2, 0.28, 0xdddddd);
+  });
+  const glow = new THREE.PointLight(teamColor, 0.0, 10);
+  glow.position.set(dir*GD2*0.5, GH2*0.5, 0);
+  group.add(glow);
+  goalLights.push(glow);
+  group.position.set(dir*(FW/2), 0, 0);
+  scene.add(group);
+}
+makeGoal(-1, 0xffd700);
+makeGoal( 1, 0xa50044);
+// ─── PLAYERS ───────────────────────────────────────────────────────────────
+function makePlayer(x, z, isMessi){
+  const group = new THREE.Group();
+  const skinColor  = isMessi ? 0xd4956a : 0xc8845a;
+  const shirtColor = isMessi ? 0x004d98 : 0xfafafa;
+  const shortsColor= isMessi ? 0x004d98 : 0xfafafa;
+  const socksColor = isMessi ? 0xa50044 : 0xfafafa;
+  const shoeColor  = 0x111111;
+  const scale = isMessi ? 0.91 : 1.0;
+  function M(geo, color){ return new THREE.Mesh(geo, new THREE.MeshPhongMaterial({color, shininess:40})); }
+  function addTo(parent, mesh){ mesh.castShadow=true; parent.add(mesh); return mesh; }
+  function add(mesh){ return addTo(group, mesh); }
+  const shorts = add(M(new THREE.CylinderGeometry(0.32*scale,0.28*scale,0.42*scale,12), shortsColor));
+  shorts.position.y = 0.40*scale;
+  const upperBody = new THREE.Group();
+  upperBody.position.set(0, 0.55*scale, 0);
+  group.add(upperBody);
+  function addU(mesh){ mesh.castShadow=true; upperBody.add(mesh); return mesh; }
+  const torso = addU(M(new THREE.CylinderGeometry(0.38*scale, 0.30*scale, 0.9*scale, 12), shirtColor));
+  torso.position.y = 0.28*scale;
+  if(isMessi){
+    const barcaStripes = [0xa50044, 0x004d98, 0xa50044, 0x004d98, 0xa50044];
+    for(let s=0;s<5;s++){
+      const stripe = addU(M(new THREE.BoxGeometry(0.072*scale, 0.90*scale, 0.012*scale), barcaStripes[s]));
+      stripe.position.set((-0.30*scale + s*0.15*scale), 0.28*scale, 0.36*scale);
+    }
+    const collar = addU(M(new THREE.CylinderGeometry(0.14*scale, 0.14*scale, 0.07*scale, 12), 0xa50044));
+    collar.position.y = 0.74*scale;
+    const crest = addU(M(new THREE.BoxGeometry(0.13*scale, 0.16*scale, 0.012*scale), 0xf5c518));
+    crest.position.set(0.17*scale, 0.44*scale, 0.37*scale);
+    const shortBand = add(M(new THREE.CylinderGeometry(0.30*scale, 0.28*scale, 0.07*scale, 12), 0xf5c518));
+    shortBand.position.y = 0.56*scale;
+  } else {
+    const collar = addU(M(new THREE.CylinderGeometry(0.155*scale, 0.155*scale, 0.06*scale, 12), 0xd4af37));
+    collar.position.y = 0.74*scale;
+    const crest = addU(M(new THREE.BoxGeometry(0.13*scale, 0.16*scale, 0.012*scale), 0x6b2d8b));
+    crest.position.set(-0.17*scale, 0.44*scale, 0.37*scale);
+    const star = addU(M(new THREE.SphereGeometry(0.04*scale, 5, 4), 0xffd700));
+    star.position.set(-0.17*scale, 0.62*scale, 0.37*scale);
+    star.scale.set(1.6, 0.45, 0.3);
+    [-1,1].forEach(side=>{
+      const trim = addU(M(new THREE.CylinderGeometry(0.108*scale, 0.108*scale, 0.07*scale, 8), 0xd4af37));
+      trim.position.set(side*0.55*scale, 0.09*scale, 0);
+    });
+  }
+  const lShoulder = addU(M(new THREE.SphereGeometry(0.16*scale,8,6), shirtColor));
+  lShoulder.position.set(-0.5*scale, 0.57*scale, 0);
+  const lArm = addU(M(new THREE.CylinderGeometry(0.10*scale,0.08*scale,0.6*scale,8), skinColor));
+  lArm.position.set(-0.55*scale, 0.26*scale, 0);
+  lArm.rotation.z = 0.35;
+  const lHand = addU(M(new THREE.SphereGeometry(0.09*scale,8,6), skinColor));
+  lHand.position.set(-0.62*scale, -0.04*scale, 0.05*scale);
+  const rShoulder = addU(M(new THREE.SphereGeometry(0.16*scale,8,6), shirtColor));
+  rShoulder.position.set(0.5*scale, 0.57*scale, 0);
+  const rArm = addU(M(new THREE.CylinderGeometry(0.10*scale,0.08*scale,0.6*scale,8), skinColor));
+  rArm.position.set(0.55*scale, 0.26*scale, 0);
+  rArm.rotation.z = -0.35;
+  const rHand = addU(M(new THREE.SphereGeometry(0.09*scale,8,6), skinColor));
+  rHand.position.set(0.62*scale, -0.04*scale, 0.05*scale);
+  const headY = 0.85*scale;
+  const headR = 0.28*scale;
+  const neck = addU(M(new THREE.CylinderGeometry(0.1*scale,0.12*scale,0.18*scale,8), skinColor));
+  neck.position.y = 0.76*scale;
+  const head = addU(M(new THREE.SphereGeometry(headR,14,10), skinColor));
+  head.position.y = headY;
+  [-1,1].forEach(side=>{
+    const eye = addU(M(new THREE.SphereGeometry(0.05*scale,6,6), 0xffffff));
+    eye.position.set(side*0.11*scale, headY+0.04*scale, headR*0.88);
+    const pupil = addU(M(new THREE.SphereGeometry(0.03*scale,6,6), 0x111111));
+    pupil.position.set(side*0.11*scale, headY+0.04*scale, headR*0.97);
+  });
+  if(isMessi){
+    const hair = addU(M(new THREE.SphereGeometry(headR*1.08,10,8), 0x1a0f00));
+    hair.position.set(0, headY+0.06*scale, -0.02*scale);
+    hair.scale.set(1, 0.6, 1);
+  } else {
+    const hairBase = addU(M(new THREE.SphereGeometry(headR*1.05,10,8), 0x1a0f00));
+    hairBase.position.set(0, headY+0.05*scale, 0);
+    hairBase.scale.set(1, 0.55, 1);
+    const quiff = addU(M(new THREE.CylinderGeometry(0.08*scale,0.14*scale,0.22*scale,8), 0x1a0f00));
+    quiff.position.set(0, headY+0.28*scale, 0.06*scale);
+    quiff.rotation.x = -0.3;
+  }
+  [-1,1].forEach(side=>{
+    const brow = addU(M(new THREE.BoxGeometry(0.1*scale,0.025*scale,0.025*scale), 0x1a0f00));
+    brow.position.set(side*0.11*scale, headY+0.11*scale, headR*0.82);
+    brow.rotation.z = side*0.15;
+  });
+  const nose = addU(M(new THREE.SphereGeometry(0.035*scale,6,5), skinColor));
+  nose.position.set(0, headY-0.02*scale, headR*0.96);
+  nose.scale.set(1,0.7,0.8);
+  const numPatch = addU(M(new THREE.PlaneGeometry(0.18*scale,0.22*scale), isMessi?0xa50044:0xffd700));
+  numPatch.position.set(0, 0.30*scale, -0.31*scale);
+  const legMeshes = [];
+  [-0.18*scale, 0.18*scale].forEach((lx)=>{
+    const hipPivot = new THREE.Group();
+    hipPivot.position.set(lx, 0.36*scale, 0);
+    group.add(hipPivot);
+    const thigh = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.13*scale, 0.10*scale, 0.42*scale, 10),
+      new THREE.MeshPhongMaterial({color: skinColor})
+    );
+    thigh.position.set(0, -0.21*scale, 0);
+    thigh.castShadow = true;
+    hipPivot.add(thigh);
+    const kneePivot = new THREE.Group();
+    kneePivot.position.set(0, -0.42*scale, 0);
+    hipPivot.add(kneePivot);
+    const shin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.10*scale, 0.08*scale, 0.40*scale, 10),
+      new THREE.MeshPhongMaterial({color: socksColor})
+    );
+    shin.position.set(0, -0.20*scale, 0);
+    shin.castShadow = true;
+    kneePivot.add(shin);
+    const shoe = new THREE.Mesh(
+      new THREE.SphereGeometry(0.13*scale, 8, 6),
+      new THREE.MeshPhongMaterial({color: shoeColor, shininess:60})
+    );
+    shoe.position.set(0, -0.38*scale, 0.12*scale);
+    shoe.scale.set(1.1, 0.55, 1.7);
+    shoe.castShadow = true;
+    kneePivot.add(shoe);
+    legMeshes.push({ hipPivot, kneePivot });
+  });
+  group.position.set(x, 0, z);
+  group.castShadow = true;
+  scene.add(group);
+  return {
+    mesh: group,
+    upperBody,
+    legs: legMeshes,
+    x, z, vx:0, vz:0,
+    r: 0.6, cd: 0,
+    legAngle: 0,
+    scale
+  };
+}
+// ─── BALL ──────────────────────────────────────────────────────────────────
+const ballGeo = new THREE.SphereGeometry(0.35, 16, 12);
+const ballMat = new THREE.MeshLambertMaterial({color:0xffffff});
+const ballMesh = new THREE.Mesh(ballGeo, ballMat);
+ballMesh.castShadow=true;
+scene.add(ballMesh);
+for(let i=0;i<6;i++){
+  const patch = new THREE.Mesh(
+    new THREE.CircleGeometry(0.1,6),
+    new THREE.MeshBasicMaterial({color:0x111111, side:THREE.DoubleSide})
+  );
+  const phi = Math.acos(-1+2*i/5)*0.8;
+  const theta = Math.sqrt(5*Math.PI)*i;
+  patch.position.set(
+    0.36*Math.sin(phi)*Math.cos(theta),
+    0.36*Math.cos(phi),
+    0.36*Math.sin(phi)*Math.sin(theta)
+  );
+  patch.lookAt(0,0,0);
+  ballMesh.add(patch);
+}
+const shadowGeo = new THREE.CircleGeometry(0.35, 16);
+const shadowMat = new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:0.4});
+const ballShadow = new THREE.Mesh(shadowGeo, shadowMat);
+ballShadow.rotation.x = -Math.PI/2;
+ballShadow.position.y = 0.01;
+scene.add(ballShadow);
+// ─── STADIUM ATMOSPHERE ────────────────────────────────────────────────────
+[-FD/2-4, FD/2+4].forEach((z,i)=>{
+  for(let j=0;j<80;j++){
+    const dot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.18,6,6),
+      new THREE.MeshBasicMaterial({color: new THREE.Color().setHSL(Math.random(),0.7,0.55)})
+    );
+    dot.position.set(
+      (Math.random()-0.5)*(FW+6),
+      1.5+Math.random()*4,
+      z+(i===0?-0.5:0.5)
+    );
+    scene.add(dot);
+  }
+});
+// ─── GAME STATE ────────────────────────────────────────────────────────────
+const keys={};
+document.addEventListener('keydown',e=>{
+  keys[e.key]=true;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
+  if(e.key==='Enter' && gameOver){
+    document.getElementById('over').style.display='none';
+    score=[0,0]; updScore();
+    resetGame(false); startTimer();
+    gameRunning=true; gameOver=false;
+  }
+});
+document.addEventListener('keyup',e=>{keys[e.key]=false;});
+const SPEED=8, SPRINTSPD=13, SHOOTPOW=0.5, FRIC=0.99;
+const GOAL_HZ=GW2/2+0.3, GOAL_HY=GH2+0.3;
+let score=[0,0], timeLeft=60, gameRunning=false, gameOver=false, timerID=null;
+let ball={x:0,y:0.35,z:0,vx:0,vy:0,vz:0};
+let p1,p2;
+function cleanPlayers(){
+  if(p1){ scene.remove(p1.mesh); p1=null; }
+  if(p2){ scene.remove(p2.mesh); p2=null; }
+}
+function resetGame(ko=false){
+  cleanPlayers();
+  p1 = makePlayer(-6, 0, false);
+  p2 = makePlayer( 6, 0, true);
+  ball={x:0,y:0.35,z:0,vx:0,vy:0,vz:0};
+  celebratingPlayer=null; celebrationTimer=0;
+  if(!ko){score=[0,0];timeLeft=60;gameOver=false;updScore();updTimer();}
+}
+function updScore(){document.getElementById('score').textContent=score[0]+' – '+score[1];}
+function updTimer(){const m=String(Math.floor(timeLeft/60)).padStart(2,'0'),s=String(timeLeft%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s;}
+function startTimer(){
+  if(timerID) clearInterval(timerID);
+  timerID=setInterval(()=>{
+    if(!gameRunning||gameOver){clearInterval(timerID);return;}
+    timeLeft--;
+    updTimer();
+    if(timeLeft<=0){
+      clearInterval(timerID);
+      gameOver=true; gameRunning=false;
+      const over=document.getElementById('over');
+      const wt=document.getElementById('winner-text');
+      if(score[0]>score[1]) wt.textContent='⚪ REAL MADRID WINT!';
+      else if(score[1]>score[0]) wt.textContent='🔵 BARÇA WINT!';
+      else wt.textContent='GELIJKSPEL!';
+      over.style.display='flex';
+    }
+  },1000);
+}
+function showGoal(){
+  const el=document.getElementById('goal-msg');
+  el.style.opacity='1';
+  el.querySelector('span').style.transform='scale(1)';
+  setTimeout(()=>{el.style.opacity='0';el.querySelector('span').style.transform='scale(0.8)';},1500);
+}
+function dist2D(a,b){return Math.hypot(a.x-b.x,a.z-b.z);}
+function updatePlayer(p, fwd, bwd, lft, rgt, sht, isP1){
+  const sprinting = keys[sht];
+  const spd = (sprinting?SPRINTSPD:SPEED) * 0.016;
+  let dx=0,dz=0;
+  if(keys[fwd])dz-=1; if(keys[bwd])dz+=1;
+  if(keys[lft])dx-=1; if(keys[rgt])dx+=1;
+  if(dx&&dz){dx*=0.707;dz*=0.707;}
+  p.vx=dx*spd; p.vz=dz*spd;
+  p.x+=p.vx; p.z+=p.vz;
+  if(dx!==0||dz!==0){
+    p.legAngle+=0.28;
+    if(p.legs){
+      if(p.legs[0] && p.legs[0].hipPivot) p.legs[0].hipPivot.rotation.x =  Math.sin(p.legAngle)*0.55;
+      p.legs[1].hipPivot.rotation.x = -Math.sin(p.legAngle)*0.55;
+      p.legs[0].kneePivot.rotation.x = Math.max(0, Math.sin(p.legAngle+0.8)*0.5);
+      p.legs[1].kneePivot.rotation.x = Math.max(0,-Math.sin(p.legAngle+0.8)*0.5);
+    }
+  } else if(p.legs){
+    p.legs[0].hipPivot.rotation.x = 0;
+    p.legs[1].hipPivot.rotation.x = 0;
+    p.legs[0].kneePivot.rotation.x = 0;
+    p.legs[1].kneePivot.rotation.x = 0;
+  }
+  if(dx!==0||dz!==0) p.mesh.rotation.y=Math.atan2(dx,dz);
+  p.x=Math.max(-FW/2+0.6,Math.min(FW/2-0.6,p.x));
+  p.z=Math.max(-FD/2+0.6,Math.min(FD/2-0.6,p.z));
+  p.mesh.position.set(p.x,0,p.z);
+  if(p.cd>0) p.cd--;
+  const d=dist2D(p,ball);
+  if(d<p.r+0.35+0.1){
+    if(keys[sht]&&p.cd===0){
+      const tx=isP1?FW/2+2:(-FW/2-2), tz=(Math.random()-.5)*(GW2*0.6);
+      const ang=Math.atan2(tz-ball.z,tx-ball.x);
+      ball.vx=Math.cos(ang)*SHOOTPOW;
+      ball.vz=Math.sin(ang)*SHOOTPOW;
+      ball.vy=0.03;
+      p.cd=25;
+      if(p.legs){
+        p.legs[0].hipPivot.rotation.x = -1.1;
+        p.legs[0].kneePivot.rotation.x = 0.6;
+      }
+    }else{
+      const ang=Math.atan2(ball.z-p.z,ball.x-p.x);
+      ball.vx+=Math.cos(ang)*0.09+p.vx*0.45;
+      ball.vz+=Math.sin(ang)*0.09+p.vz*0.45;
+    }
+  }
+}
+function updateBall(){
+  ball.vx*=FRIC; ball.vz*=FRIC;
+  ball.vy-=0.006;
+  ball.x+=ball.vx; ball.y+=ball.vy; ball.z+=ball.vz;
+  if(ball.y<0.35){ball.y=0.35;ball.vy*=-0.45;if(Math.abs(ball.vy)<0.01)ball.vy=0;}
+  if(ball.z-0.35<-FD/2){ball.z=-FD/2+0.35;ball.vz*=-.7;}
+  if(ball.z+0.35>FD/2){ball.z=FD/2-0.35;ball.vz*=-.7;}
+  if(ball.x<-FW/2+0.1){
+    if(Math.abs(ball.z)<GOAL_HZ && ball.y<GOAL_HY+0.4){
+      goalScored(1); return;
+    } else {
+      ball.x=-FW/2+0.4; ball.vx=Math.abs(ball.vx)*0.6;
+    }
+  }
+  if(ball.x>FW/2-0.1){
+    if(Math.abs(ball.z)<GOAL_HZ && ball.y<GOAL_HY+0.4){
+      goalScored(0); return;
+    } else {
+      ball.x=FW/2-0.4; ball.vx=-Math.abs(ball.vx)*0.6;
+    }
+  }
+  [p1,p2].forEach(p=>{
+    const d=Math.hypot(p.x-ball.x, p.z-ball.z);
+    if(d<p.r+0.35){
+      const ang=Math.atan2(ball.z-p.z,ball.x-p.x);
+      const ov=p.r+0.35-d;
+      ball.x+=Math.cos(ang)*ov; ball.z+=Math.sin(ang)*ov;
+      const sp=Math.max(Math.hypot(ball.vx,ball.vz),0.05);
+      ball.vx=Math.cos(ang)*sp; ball.vz=Math.sin(ang)*sp;
+    }
+  });
+  const pd=dist2D(p1,p2);
+  if(pd<p1.r+p2.r){
+    const ang=Math.atan2(p2.z-p1.z,p2.x-p1.x),ov=(p1.r+p2.r-pd)/2;
+    p1.x-=Math.cos(ang)*ov; p1.z-=Math.sin(ang)*ov;
+    p2.x+=Math.cos(ang)*ov; p2.z+=Math.sin(ang)*ov;
+  }
+  ballMesh.position.set(ball.x, ball.y, ball.z);
+  ballMesh.rotation.x+=ball.vz*3; ballMesh.rotation.z-=ball.vx*3;
+  ballShadow.position.set(ball.x,0.011,ball.z);
+  const sh=1-Math.min(ball.y/6,0.7);
+  ballShadow.scale.setScalar(sh);
+}
+// ─── CONFETTI SYSTEM ───────────────────────────────────────────────────────
+const confettiParticles = [];
+const confettiColors = [0xffd700,0xf5f5f5,0x004d98,0xa50044,0xffd700,0xf5f5f5,0x004d98,0xa50044];
+function spawnConfetti(){
+  for(let i=0;i<120;i++){
+    const geo = new THREE.BoxGeometry(0.18,0.18,0.04);
+    const mat = new THREE.MeshBasicMaterial({color: confettiColors[Math.floor(Math.random()*confettiColors.length)], side:THREE.DoubleSide});
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set((Math.random()-0.5)*8, 3+Math.random()*4, (Math.random()-0.5)*6);
+    m.rotation.set(Math.random()*Math.PI*2, Math.random()*Math.PI*2, Math.random()*Math.PI*2);
+    scene.add(m);
+    confettiParticles.push({
+      mesh: m,
+      vx: (Math.random()-0.5)*0.18,
+      vy: Math.random()*0.08+0.02,
+      vz: (Math.random()-0.5)*0.18,
+      rx: (Math.random()-0.5)*0.15,
+      ry: (Math.random()-0.5)*0.15,
+      life: 120+Math.floor(Math.random()*60)
+    });
+  }
+}
+function updateConfetti(){
+  for(let i=confettiParticles.length-1;i>=0;i--){
+    const p=confettiParticles[i];
+    p.vy -= 0.004;
+    p.mesh.position.x += p.vx;
+    p.mesh.position.y += p.vy;
+    p.mesh.position.z += p.vz;
+    p.mesh.rotation.x += p.rx;
+    p.mesh.rotation.y += p.ry;
+    p.life--;
+    if(p.life<=0){
+      scene.remove(p.mesh);
+      confettiParticles.splice(i,1);
+    }
+  }
+}
+// ─── CELEBRATION ───────────────────────────────────────────────────────────
+let celebrationTimer = 0;
+let celebratingPlayer = null;
+function startCelebration(scorer){
+  celebrationTimer = 360;
+  celebratingPlayer = scorer;
+  scorer.mesh.position.y = 0;
+  scorer.mesh.rotation.set(0, 0, 0);
+}
+function lerp(a,b,t){ return a+(b-a)*Math.min(Math.max(t,0),1); }
+function easeInOut(t){ return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+function updateCelebration(){
+  if(celebrationTimer<=0||!celebratingPlayer) return;
+  const p = celebratingPlayer;
+  const t = celebrationTimer;
+  const ub = p.upperBody;
+  p.mesh.position.y = 0;
+  if(t > 300){
+    const f = (360-t)/60;
+    p.mesh.position.x += 0.07;
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x =  Math.sin(f*11)*0.75;
+      p.legs[1].hipPivot.rotation.x = -Math.sin(f*11)*0.75;
+      p.legs[0].kneePivot.rotation.x = Math.max(0,  Math.sin(f*11)*0.5);
+      p.legs[1].kneePivot.rotation.x = Math.max(0, -Math.sin(f*11)*0.5);
+    }
+    ub.rotation.x = 0;
+  }
+  else if(t > 230){
+    const prog = easeInOut((300-t)/70);
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x = lerp(0, 0.6, prog);
+      p.legs[1].hipPivot.rotation.x = lerp(0, 0.6, prog);
+      p.legs[0].kneePivot.rotation.x = lerp(0, 2.5, prog);
+      p.legs[1].kneePivot.rotation.x = lerp(0, 2.5, prog);
+      p.legs[0].hipPivot.position.y = lerp(p.scale*0.36, p.scale*0.06, prog);
+      p.legs[1].hipPivot.position.y = lerp(p.scale*0.36, p.scale*0.06, prog);
+    }
+    ub.position.y = lerp(p.scale*0.55, p.scale*0.20, prog);
+    ub.rotation.x = lerp(0, 0.15, prog);
+    goalLights.forEach(gl=>{ gl.intensity = lerp(0, 2.0, prog); });
+  }
+  else if(t > 160){
+    const prog = easeInOut((230-t)/70);
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x = 0.6;
+      p.legs[1].hipPivot.rotation.x = 0.6;
+      p.legs[0].kneePivot.rotation.x = 2.5;
+      p.legs[1].kneePivot.rotation.x = 2.5;
+      p.legs[0].hipPivot.position.y = p.scale*0.06;
+      p.legs[1].hipPivot.position.y = p.scale*0.06;
+    }
+    ub.rotation.x = lerp(0.15, Math.PI * 0.80, prog);
+    ub.position.z = lerp(0, p.scale * 0.3, prog);
+    goalLights.forEach(gl=>{ gl.intensity = lerp(2.0, 4.5, prog); });
+  }
+  else if(t > 70){
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x = 0.6;
+      p.legs[1].hipPivot.rotation.x = 0.6;
+      p.legs[0].kneePivot.rotation.x = 2.5;
+      p.legs[1].kneePivot.rotation.x = 2.5;
+      p.legs[0].hipPivot.position.y = p.scale*0.06;
+      p.legs[1].hipPivot.position.y = p.scale*0.06;
+    }
+    ub.rotation.x = Math.PI * 0.80;
+    ub.position.z = p.scale * 0.3;
+    ub.position.y = p.scale * 0.20;
+    goalLights.forEach(gl=>{ gl.intensity = 4.0 + Math.sin((160-t)*0.1)*0.8; });
+  }
+  else {
+    const prog = easeInOut((70-t)/70);
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x = lerp(0.6, 0, prog);
+      p.legs[1].hipPivot.rotation.x = lerp(0.6, 0, prog);
+      p.legs[0].kneePivot.rotation.x = lerp(2.5, 0, prog);
+      p.legs[1].kneePivot.rotation.x = lerp(2.5, 0, prog);
+      p.legs[0].hipPivot.position.y = lerp(p.scale*0.06, p.scale*0.36, prog);
+      p.legs[1].hipPivot.position.y = lerp(p.scale*0.06, p.scale*0.36, prog);
+    }
+    ub.rotation.x = lerp(Math.PI*0.80, 0, prog);
+    ub.position.y = lerp(p.scale*0.20, p.scale*0.55, prog);
+    ub.position.z = lerp(p.scale*0.30, 0, prog);
+    goalLights.forEach(gl=>{ gl.intensity = lerp(4.0, 0, prog); });
+  }
+  celebrationTimer--;
+  if(celebrationTimer<=0){
+    ub.rotation.set(0,0,0);
+    ub.position.set(0, p.scale*0.55, 0);
+    if(p.legs) p.legs.forEach(l=>{
+      l.hipPivot.rotation.set(0,0,0);
+      l.kneePivot.rotation.set(0,0,0);
+      l.hipPivot.position.y = p.scale*0.36;
+    });
+    p.mesh.position.set(p.x, 0, p.z);
+    goalLights.forEach(gl=>{ gl.intensity=0; });
+    celebratingPlayer = null;
+  }
+}
+// ── Islamitische vragen ─────────────────────────────────────────────────────
+const islamVragen = [
+  { arabic:'بِسْمِ اللَّهِ', trans:'Bismillah', vraag:'Wat betekent "Bismillah"?', opts:['In de naam van Allah','Dank zij Allah','Allah is groot','Lof zij Allah'], correct:0 },
+  { arabic:'اللَّهُ أَكْبَرُ', trans:'Allahu Akbar', vraag:'Hoeveel keer per dag bidden moslims?', opts:['3 keer','4 keer','5 keer','6 keer'], correct:2 },
+  { arabic:'الصَّلَاة', trans:'As-Salah', vraag:'Wat is de eerste pijler van de islam?', opts:['Het vasten','De getuigenis (Shahada)','De zakat','De bedevaart'], correct:1 },
+  { arabic:'رَمَضَان', trans:'Ramadan', vraag:'In welke maand vasten moslims?', opts:['Rajab',"Sha'ban",'Ramadan','Dhul Hijja'], correct:2 },
+  { arabic:'الْكَعْبَة', trans:"Al-Ka'ba", vraag:"In welke stad staat de Ka'ba?", opts:['Medina','Jeruzalem','Bagdad','Mekka'], correct:3 },
+  { arabic:'الزَّكَاة', trans:'Az-Zakah', vraag:'Wat is Zakat?', opts:['Het gebed','Aalmoezen geven','Het vasten','De bedevaart'], correct:1 },
+  { arabic:'الْحَجّ', trans:'Al-Hajj', vraag:'Hoe vaak moet een moslim op bedevaart als hij kan?', opts:['Elk jaar','Eén keer in het leven','Elke 5 jaar','Nooit verplicht'], correct:1 },
+  { arabic:'النَّبِيّ مُحَمَّد ﷺ', trans:'De Profeet Muhammad ﷺ', vraag:'In welke stad werd de Profeet Muhammad ﷺ geboren?', opts:['Medina','Jeruzalem','Mekka','Taif'], correct:2 },
+  { arabic:'الْقُرْآن', trans:'Al-Quran', vraag:"Hoeveel soera's heeft de Quran?", opts:['99','100','114','120'], correct:2 },
+  { arabic:'السُّجُود', trans:'As-Sujood', vraag:'Wat betekent sujood?', opts:['Staan in gebed','Buigen','Hoofd op de grond','Zitten'], correct:2 },
+  { arabic:'الْفَاتِحَة', trans:'Al-Fatiha', vraag:'Welke soera heet "de Opening"?', opts:['Al-Baqara','Al-Fatiha','Al-Ikhlas','Yasin'], correct:1 },
+  { arabic:'الْأَذَان', trans:'Al-Adhan', vraag:'Wat is de adhan?', opts:['Het gebedskleed','De oproep tot gebed','Het vasten','De moskee'], correct:1 },
+];
+let usedVragen = [];
+function getRandomVraag(){
+  if(usedVragen.length>=islamVragen.length) usedVragen=[];
+  let idx; do { idx=Math.floor(Math.random()*islamVragen.length); } while(usedVragen.includes(idx));
+  usedVragen.push(idx); return islamVragen[idx];
+}
+function showQuiz(){
+  const v=getRandomVraag();
+  document.getElementById('q-arabic').textContent=v.arabic;
+  document.getElementById('q-trans').textContent=v.trans;
+  document.getElementById('q-text').textContent=v.vraag;
+  document.getElementById('quiz-result').textContent='';
+  document.getElementById('quiz-continue').style.display='none';
+  const optsEl=document.getElementById('q-opts');
+  optsEl.innerHTML='';
+  v.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt'; btn.textContent=opt;
+    btn.onclick=()=>answerQuiz(i,v.correct,optsEl);
+    optsEl.appendChild(btn);
+  });
+  document.getElementById('quiz').classList.add('show');
+}
+function answerQuiz(chosen,correct,optsEl){
+  optsEl.querySelectorAll('.quiz-opt').forEach((b,i)=>{
+    b.onclick=null;
+    if(i===correct) b.classList.add('correct');
+    else if(i===chosen) b.classList.add('wrong');
+  });
+  const res=document.getElementById('quiz-result');
+  res.style.color = chosen===correct ? '#4caf50':'#e53935';
+  res.textContent  = chosen===correct ? "✓ CORRECT! MASHA'ALLAH! 🌟":"✗ HELAAS — BLIJF LEREN! 📖";
+  document.getElementById('quiz-continue').style.display='inline-block';
+}
+function closeQuiz(){
+  document.getElementById('quiz').classList.remove('show');
+  doReset();
+}
+// ── Goal logic ────────────────────────────────────────────────────────────────
+let goalPause=false;
+let resetTimeout=null;
+function goalScored(team){
+  if(goalPause) return;
+  goalPause=true;
+  score[team]++;
+  updScore();
+  showGoal();
+  spawnConfetti();
+  const scorer = team===0 ? p1 : p2;
+  startCelebration(scorer);
+  setTimeout(showQuiz, 1800);
+  if(resetTimeout) clearTimeout(resetTimeout);
+  resetTimeout = setTimeout(()=>{
+    resetTimeout=null;
+    cleanPlayers();
+    resetGame(true);
+    goalPause=false;
+  }, 6500);
+}
+function doReset(){
+  if(resetTimeout){
+    clearTimeout(resetTimeout);
+    resetTimeout=null;
+    cleanPlayers();
+    resetGame(true);
+    goalPause=false;
+  }
+}
+// ── Camera ────────────────────────────────────────────────────────────────────
+let camTarget={x:0,z:0};
+function updateCamera(){
+  if(celebratingPlayer && celebrationTimer>0){
+    const sp=celebratingPlayer;
+    const tx=sp.mesh.position.x, tz=sp.mesh.position.z;
+    camTarget.x+=(tx-camTarget.x)*0.06;
+    camTarget.z+=(tz-camTarget.z)*0.06;
+    const cx = tx+(sp.x<0?-6:6);
+    camera.position.x+=(cx-camera.position.x)*0.05;
+    camera.position.y+=(5-camera.position.y)*0.05;
+    camera.position.z+=(tz+9-camera.position.z)*0.05;
+    camera.lookAt(tx,0.5,tz);
+  } else {
+    const mx=(p1.x+p2.x)/2, mz=(p1.z+p2.z)/2;
+    camTarget.x+=(mx-camTarget.x)*0.04;
+    camTarget.z+=(mz*0.3-camTarget.z)*0.04;
+    camera.position.x+=(camTarget.x*0.3-camera.position.x)*0.04;
+    camera.position.y+=(22-camera.position.y)*0.03;
+    camera.position.z+=(26+camTarget.z-camera.position.z)*0.04;
+    camera.lookAt(camTarget.x*0.3,0,camTarget.z*0.3);
+  }
+}
+// ── Start button & keyboard ───────────────────────────────────────────────────
+document.getElementById('btn').onclick = ()=>{
+  document.getElementById('start-screen').style.display='none';
+  resetGame(false);
+  startTimer();
+  gameRunning = true;
+};
+// ── Game loop ─────────────────────────────────────────────────────────────────
+function loop(){
+  requestAnimationFrame(loop);
+  updateConfetti();
+  updateCelebration();
+  if(gameRunning && !gameOver && !goalPause){
+    updatePlayer(p1,'w','s','a','d','q',true);
+    updatePlayer(p2,'ArrowUp','ArrowDown','ArrowLeft','ArrowRight','o',false);
+    updateBall();
+    updateCamera();
+  }
+  renderer.render(scene,camera);
+}
+loop();
+</script>
+</body>
+</html>

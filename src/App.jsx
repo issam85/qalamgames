@@ -19,6 +19,7 @@ const honorable = [
 const lichting2 = [
   { name: 'Abdulahi Abdulkhader', game: 'Granny Horror Game', klas: 'Groep 7c', playable: 'grannyhorrorgame' },
   { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
+  { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
 ];
 
 const rankIcons = {
@@ -49,6 +50,7 @@ const gameStyles = {
   game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
   grannyhorrorgame: { border: '#8b0000', color: '#ff4444', bg: 'rgba(0,0,0,0.9)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: 'Granny Horror Game' },
   sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
+  kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
 };
 
 function GameView({ gameKey, onBack }) {
