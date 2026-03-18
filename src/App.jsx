@@ -20,6 +20,7 @@ const lichting2 = [
   { name: 'Abdulahi Abdulkhader', game: 'Granny Horror Game', klas: 'Groep 7c', playable: 'grannyhorrorgame' },
   { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
   { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
+  { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
 ];
 
 const rankIcons = {
@@ -51,6 +52,7 @@ const gameStyles = {
   grannyhorrorgame: { border: '#8b0000', color: '#ff4444', bg: 'rgba(0,0,0,0.9)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: 'Granny Horror Game' },
   sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
   kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
+  stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
 };
 
 function GameView({ gameKey, onBack }) {

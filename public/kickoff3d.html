@@ -32,6 +32,16 @@ body{background:#0a0a0f;overflow:hidden;font-family:'Barlow Condensed',sans-seri
 kbd{background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:2px 8px;color:#fff;font-size:.8rem;font-family:monospace;}
 #btn{background:#ffd700;color:#111;border:none;padding:14px 55px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:5px;border-radius:6px;cursor:pointer;box-shadow:0 0 30px #ffd70055;transition:transform .15s;}
 #btn:hover{transform:scale(1.06);}
+.mode-btns{display:flex;gap:20px;margin-bottom:32px;}
+.mode-btn{background:transparent;border:2px solid #444;color:#888;padding:12px 28px;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:4px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.mode-btn:hover{border-color:#ffd700;color:#ffd700;}
+.mode-btn.active{background:#ffd70022;border-color:#ffd700;color:#ffd700;box-shadow:0 0 20px #ffd70044;}
+#bot-info{font-size:0.8rem;color:#555;letter-spacing:2px;margin-bottom:20px;min-height:18px;}
+#pause-btn{pointer-events:auto;display:none;margin-top:8px;background:#ffd700;border:none;color:#111;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;padding:6px 22px;border-radius:6px;cursor:pointer;box-shadow:0 0 14px #ffd70066;transition:transform .15s;}
+#pause-btn:hover{transform:scale(1.08);}
+#pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:35;}
+#pause-overlay.show{display:flex;}
+#pause-overlay h2{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:#ffd700;letter-spacing:10px;text-shadow:0 0 40px #ffd700aa;}
 /* ── Islamitische vraag overlay ── */
 #quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:25;background:rgba(0,0,0,0.7);}
 #quiz.show{display:flex;}
@@ -57,7 +67,8 @@ kbd{background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:2px 8px;c
   </div>
   <div id="mid">
     <div id="score">0 – 0</div>
-    <div id="timer">01:00</div>
+    <div id="timer">05:00</div>
+    <button id="pause-btn" onclick="togglePause()">⏸ PAUZE</button>
   </div>
   <div class="team" style="align-items:flex-end">
     <div class="tname b">BARÇA 🔵</div>
@@ -76,12 +87,18 @@ kbd{background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:2px 8px;c
   </div>
 </div>
 <div id="over"><h1 id="winner-text">GELIJKSPEL!</h1><p>Druk ENTER om opnieuw te spelen</p></div>
+<div id="pause-overlay"><h2>⏸ PAUZE</h2></div>
 <div id="start-screen">
   <h1>KICK OFF 3D</h1>
-  <p class="sub">2 Spelers Voetbal</p>
-  <div class="keys">
-    <div class="ks r"><h3>⚪ REAL MADRID — Ronaldo</h3><p><kbd>W</kbd> Voor &nbsp; <kbd>S</kbd> Achter<br><kbd>A</kbd> Links &nbsp; <kbd>D</kbd> Rechts<br><kbd>Q</kbd> Schieten</p></div>
-    <div class="ks b"><h3>🔵 BARCELONA — Messi</h3><p><kbd>↑</kbd> Voor &nbsp; <kbd>↓</kbd> Achter<br><kbd>←</kbd> Links &nbsp; <kbd>→</kbd> Rechts<br><kbd>O</kbd> Schieten</p></div>
+  <p class="sub">Real Madrid vs FC Barcelona</p>
+  <div class="mode-btns">
+    <button class="mode-btn active" id="mode-2p" onclick="setMode('2p')">👥 2 SPELERS</button>
+    <button class="mode-btn" id="mode-bot" onclick="setMode('bot')">🤖 TEGEN BOT</button>
+  </div>
+  <div id="bot-info"></div>
+  <div class="keys" id="keys-display">
+    <div class="ks r"><h3>⚪ REAL MADRID</h3><p><kbd>W</kbd> Voor &nbsp; <kbd>S</kbd> Achter<br><kbd>A</kbd> Links &nbsp; <kbd>D</kbd> Rechts<br><kbd>Q</kbd> Schieten</p></div>
+    <div class="ks b"><h3>🔵 BARCELONA</h3><p><kbd>↑</kbd> Voor &nbsp; <kbd>↓</kbd> Achter<br><kbd>←</kbd> Links &nbsp; <kbd>→</kbd> Rechts<br><kbd>O</kbd> Schieten</p></div>
   </div>
   <button id="btn">⚽ AFTRAP!</button>
 </div>
@@ -215,17 +232,21 @@ function makeGoal(xSide, teamColor){
     m.rotation.set(0,0,Math.PI/2);
     m.position.set(px,py,pz); m.castShadow=true; group.add(m);
   }
+  // Front frame
   postV(0, GH2/2, -GW2/2, GH2);
   postV(0, GH2/2,  GW2/2, GH2);
   barZ(0, GH2,     0,      GW2);
+  // Back frame
   postV(dir*GD2, GH2/2, -GW2/2, GH2);
   postV(dir*GD2, GH2/2,  GW2/2, GH2);
   barZ(dir*GD2,  GH2,    0,      GW2);
   barZ(dir*GD2,  R,      0,      GW2);
+  // Depth bars
   barX(dir*GD2/2, GH2,  -GW2/2, GD2);
   barX(dir*GD2/2, GH2,   GW2/2, GD2);
   barX(dir*GD2/2, R,    -GW2/2, GD2);
   barX(dir*GD2/2, R,     GW2/2, GD2);
+  // Diagonal supports
   const sH = GH2*0.6, sD = GD2*0.9;
   const sLen = Math.sqrt(sH*sH + sD*sD);
   const sAng = Math.atan2(sH, sD) * dir;
@@ -233,10 +254,12 @@ function makeGoal(xSide, teamColor){
   sm1.rotation.set(0,0,sAng); sm1.position.set(dir*GD2*1.35, GH2*0.55, -GW2/2); group.add(sm1);
   const sm2=new THREE.Mesh(new THREE.CylinderGeometry(R*0.7,R*0.7,sLen,12),postMat());
   sm2.rotation.set(0,0,sAng); sm2.position.set(dir*GD2*1.35, GH2*0.55,  GW2/2); group.add(sm2);
+  // Post caps
   [[0,-GW2/2],[0,GW2/2],[dir*GD2,-GW2/2],[dir*GD2,GW2/2]].forEach(([px,pz])=>{
     const cap=new THREE.Mesh(new THREE.SphereGeometry(R*1.2,12,8),postMat());
     cap.position.set(px,GH2,pz); group.add(cap);
   });
+  // Net
   const netColor = new THREE.Color(teamColor).lerp(new THREE.Color(0xffffff), 0.55);
   const NR = 0.018, COLS=14, ROWS=9;
   function netWire(px,py,pz, axis, len, opacity, col){
@@ -272,6 +295,7 @@ function makeGoal(xSide, teamColor){
     for(let i=0;i<=ROWS;i++) netWire(dir*GD2/2, i*(GH2/ROWS), pz, 'x', GD2, 0.28, 0xdddddd);
     for(let i=0;i<=COLS;i++) netWire(dir*(i*GD2/COLS), GH2/2, pz, 'y', GH2, 0.28, 0xdddddd);
   });
+  // Glow light inside goal
   const glow = new THREE.PointLight(teamColor, 0.0, 10);
   glow.position.set(dir*GD2*0.5, GH2*0.5, 0);
   group.add(glow);
@@ -293,14 +317,18 @@ function makePlayer(x, z, isMessi){
   function M(geo, color){ return new THREE.Mesh(geo, new THREE.MeshPhongMaterial({color, shininess:40})); }
   function addTo(parent, mesh){ mesh.castShadow=true; parent.add(mesh); return mesh; }
   function add(mesh){ return addTo(group, mesh); }
+  // Shorts
   const shorts = add(M(new THREE.CylinderGeometry(0.32*scale,0.28*scale,0.42*scale,12), shortsColor));
   shorts.position.y = 0.40*scale;
+  // Upper body group
   const upperBody = new THREE.Group();
   upperBody.position.set(0, 0.55*scale, 0);
   group.add(upperBody);
   function addU(mesh){ mesh.castShadow=true; upperBody.add(mesh); return mesh; }
+  // Torso
   const torso = addU(M(new THREE.CylinderGeometry(0.38*scale, 0.30*scale, 0.9*scale, 12), shirtColor));
   torso.position.y = 0.28*scale;
+  // Club details
   if(isMessi){
     const barcaStripes = [0xa50044, 0x004d98, 0xa50044, 0x004d98, 0xa50044];
     for(let s=0;s<5;s++){
@@ -326,6 +354,7 @@ function makePlayer(x, z, isMessi){
       trim.position.set(side*0.55*scale, 0.09*scale, 0);
     });
   }
+  // Arms
   const lShoulder = addU(M(new THREE.SphereGeometry(0.16*scale,8,6), shirtColor));
   lShoulder.position.set(-0.5*scale, 0.57*scale, 0);
   const lArm = addU(M(new THREE.CylinderGeometry(0.10*scale,0.08*scale,0.6*scale,8), skinColor));
@@ -340,6 +369,7 @@ function makePlayer(x, z, isMessi){
   rArm.rotation.z = -0.35;
   const rHand = addU(M(new THREE.SphereGeometry(0.09*scale,8,6), skinColor));
   rHand.position.set(0.62*scale, -0.04*scale, 0.05*scale);
+  // Head
   const headY = 0.85*scale;
   const headR = 0.28*scale;
   const neck = addU(M(new THREE.CylinderGeometry(0.1*scale,0.12*scale,0.18*scale,8), skinColor));
@@ -374,6 +404,7 @@ function makePlayer(x, z, isMessi){
   nose.scale.set(1,0.7,0.8);
   const numPatch = addU(M(new THREE.PlaneGeometry(0.18*scale,0.22*scale), isMessi?0xa50044:0xffd700));
   numPatch.position.set(0, 0.30*scale, -0.31*scale);
+  // Legs
   const legMeshes = [];
   [-0.18*scale, 0.18*scale].forEach((lx)=>{
     const hipPivot = new THREE.Group();
@@ -466,17 +497,18 @@ const keys={};
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
+  if(e.key==='Escape' || e.key==='p' || e.key==='P') togglePause();
   if(e.key==='Enter' && gameOver){
     document.getElementById('over').style.display='none';
     score=[0,0]; updScore();
     resetGame(false); startTimer();
-    gameRunning=true; gameOver=false;
+    gameRunning=true; gameOver=false; gamePaused=false;
   }
 });
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 const SPEED=8, SPRINTSPD=13, SHOOTPOW=0.5, FRIC=0.99;
 const GOAL_HZ=GW2/2+0.3, GOAL_HY=GH2+0.3;
-let score=[0,0], timeLeft=60, gameRunning=false, gameOver=false, timerID=null;
+let score=[0,0], timeLeft=300, gameRunning=false, gameOver=false, timerID=null, gamePaused=false;
 let ball={x:0,y:0.35,z:0,vx:0,vy:0,vz:0};
 let p1,p2;
 function cleanPlayers(){
@@ -489,18 +521,18 @@ function resetGame(ko=false){
   p2 = makePlayer( 6, 0, true);
   ball={x:0,y:0.35,z:0,vx:0,vy:0,vz:0};
   celebratingPlayer=null; celebrationTimer=0;
-  if(!ko){score=[0,0];timeLeft=60;gameOver=false;updScore();updTimer();}
+  if(!ko){score=[0,0];timeLeft=300;gameOver=false;updScore();updTimer();}
 }
 function updScore(){document.getElementById('score').textContent=score[0]+' – '+score[1];}
 function updTimer(){const m=String(Math.floor(timeLeft/60)).padStart(2,'0'),s=String(timeLeft%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s;}
 function startTimer(){
   if(timerID) clearInterval(timerID);
   timerID=setInterval(()=>{
-    if(!gameRunning||gameOver){clearInterval(timerID);return;}
+    if(!gameRunning||gameOver||gamePaused){return;}
     timeLeft--;
     updTimer();
     if(timeLeft<=0){
-      clearInterval(timerID);
+      clearInterval(timerID); timerID=null;
       gameOver=true; gameRunning=false;
       const over=document.getElementById('over');
       const wt=document.getElementById('winner-text');
@@ -510,6 +542,21 @@ function startTimer(){
       over.style.display='flex';
     }
   },1000);
+}
+function togglePause(){
+  if(!gameRunning || gameOver) return;
+  // Don't allow pause during goal celebration or quiz
+  if(goalPause) return;
+  gamePaused = !gamePaused;
+  const btn = document.getElementById('pause-btn');
+  const overlay = document.getElementById('pause-overlay');
+  if(gamePaused){
+    overlay.classList.add('show');
+    btn.textContent = '▶ DOORGAAN';
+  } else {
+    overlay.classList.remove('show');
+    btn.textContent = '⏸ PAUZE';
+  }
 }
 function showGoal(){
   const el=document.getElementById('goal-msg');
@@ -527,13 +574,14 @@ function updatePlayer(p, fwd, bwd, lft, rgt, sht, isP1){
   if(dx&&dz){dx*=0.707;dz*=0.707;}
   p.vx=dx*spd; p.vz=dz*spd;
   p.x+=p.vx; p.z+=p.vz;
+  // Animate legs
   if(dx!==0||dz!==0){
     p.legAngle+=0.28;
     if(p.legs){
       if(p.legs[0] && p.legs[0].hipPivot) p.legs[0].hipPivot.rotation.x =  Math.sin(p.legAngle)*0.55;
       p.legs[1].hipPivot.rotation.x = -Math.sin(p.legAngle)*0.55;
-      p.legs[0].kneePivot.rotation.x = Math.max(0, Math.sin(p.legAngle+0.8)*0.5);
-      p.legs[1].kneePivot.rotation.x = Math.max(0,-Math.sin(p.legAngle+0.8)*0.5);
+      p.legs[0].kneePivot.rotation.x = Math.max(0,  Math.sin(p.legAngle+0.8)*0.5);
+      p.legs[1].kneePivot.rotation.x = Math.max(0, -Math.sin(p.legAngle+0.8)*0.5);
     }
   } else if(p.legs){
     p.legs[0].hipPivot.rotation.x = 0;
@@ -541,11 +589,14 @@ function updatePlayer(p, fwd, bwd, lft, rgt, sht, isP1){
     p.legs[0].kneePivot.rotation.x = 0;
     p.legs[1].kneePivot.rotation.x = 0;
   }
+  // Face direction
   if(dx!==0||dz!==0) p.mesh.rotation.y=Math.atan2(dx,dz);
+  // Boundary
   p.x=Math.max(-FW/2+0.6,Math.min(FW/2-0.6,p.x));
   p.z=Math.max(-FD/2+0.6,Math.min(FD/2-0.6,p.z));
   p.mesh.position.set(p.x,0,p.z);
   if(p.cd>0) p.cd--;
+  // Kick ball
   const d=dist2D(p,ball);
   if(d<p.r+0.35+0.1){
     if(keys[sht]&&p.cd===0){
@@ -664,6 +715,7 @@ function updateCelebration(){
   const t = celebrationTimer;
   const ub = p.upperBody;
   p.mesh.position.y = 0;
+  // Phase 1: t=360->300 — sprint forward
   if(t > 300){
     const f = (360-t)/60;
     p.mesh.position.x += 0.07;
@@ -675,6 +727,7 @@ function updateCelebration(){
     }
     ub.rotation.x = 0;
   }
+  // Phase 2: t=300->230 — kneel
   else if(t > 230){
     const prog = easeInOut((300-t)/70);
     if(p.legs){
@@ -689,6 +742,7 @@ function updateCelebration(){
     ub.rotation.x = lerp(0, 0.15, prog);
     goalLights.forEach(gl=>{ gl.intensity = lerp(0, 2.0, prog); });
   }
+  // Phase 3: t=230->160 — sujood bow
   else if(t > 160){
     const prog = easeInOut((230-t)/70);
     if(p.legs){
@@ -703,6 +757,7 @@ function updateCelebration(){
     ub.position.z = lerp(0, p.scale * 0.3, prog);
     goalLights.forEach(gl=>{ gl.intensity = lerp(2.0, 4.5, prog); });
   }
+  // Phase 4: t=160->70 — hold sujood
   else if(t > 70){
     if(p.legs){
       p.legs[0].hipPivot.rotation.x = 0.6;
@@ -717,6 +772,7 @@ function updateCelebration(){
     ub.position.y = p.scale * 0.20;
     goalLights.forEach(gl=>{ gl.intensity = 4.0 + Math.sin((160-t)*0.1)*0.8; });
   }
+  // Phase 5: t=70->0 — rise
   else {
     const prog = easeInOut((70-t)/70);
     if(p.legs){
@@ -852,21 +908,86 @@ function updateCamera(){
     camera.lookAt(camTarget.x*0.3,0,camTarget.z*0.3);
   }
 }
-// ── Start button & keyboard ───────────────────────────────────────────────────
+// ── Game mode ─────────────────────────────────────────────────────────────────
+let botMode = false;
+function setMode(mode){
+  botMode = (mode === 'bot');
+  document.getElementById('mode-2p').classList.toggle('active', !botMode);
+  document.getElementById('mode-bot').classList.toggle('active', botMode);
+  const info = document.getElementById('bot-info');
+  const keysDisp = document.getElementById('keys-display');
+  if(botMode){
+    info.textContent = '🤖 Barcelona wordt bestuurd door de computer';
+    keysDisp.innerHTML = '<div class="ks r"><h3>⚪ REAL MADRID</h3><p><kbd>W</kbd> Voor &nbsp; <kbd>S</kbd> Achter<br><kbd>A</kbd> Links &nbsp; <kbd>D</kbd> Rechts<br><kbd>Q</kbd> Schieten</p></div><div class="ks b" style="opacity:0.4"><h3>🤖 BARCELONA (BOT)</h3><p>Automatisch bestuurd</p></div>';
+  } else {
+    info.textContent = '';
+    keysDisp.innerHTML = '<div class="ks r"><h3>⚪ REAL MADRID</h3><p><kbd>W</kbd> Voor &nbsp; <kbd>S</kbd> Achter<br><kbd>A</kbd> Links &nbsp; <kbd>D</kbd> Rechts<br><kbd>Q</kbd> Schieten</p></div><div class="ks b"><h3>🔵 BARCELONA</h3><p><kbd>↑</kbd> Voor &nbsp; <kbd>↓</kbd> Achter<br><kbd>←</kbd> Links &nbsp; <kbd>→</kbd> Rechts<br><kbd>O</kbd> Schieten</p></div>';
+  }
+}
+// ── Start button ──────────────────────────────────────────────────────────────
 document.getElementById('btn').onclick = ()=>{
   document.getElementById('start-screen').style.display='none';
+  document.getElementById('pause-btn').style.display='inline-block';
   resetGame(false);
   startTimer();
   gameRunning = true;
 };
+// ── Bot AI ───────────────────────────────────────────────────────────────────
+function updateBot(p){
+  const spd = SPEED * 0.016;
+  const bx = ball.x, bz = ball.z;
+  const px = p.x, pz = p.z;
+  let tx, tz;
+  const distToBall = Math.hypot(bx-px, bz-pz);
+  if(bx > 0){
+    tx = bx; tz = bz;
+  } else {
+    tx = bx * 0.5 + 3;
+    tz = bz * 0.5;
+  }
+  tx = Math.max(-FW/2+1, Math.min(FW/2-1, tx));
+  tz = Math.max(-FD/2+1, Math.min(FD/2-1, tz));
+  let dx = tx - px, dz = tz - pz;
+  const d = Math.hypot(dx, dz);
+  if(d > 0.1){
+    dx = dx/d; dz = dz/d;
+    dx += (Math.random()-0.5)*0.3;
+    dz += (Math.random()-0.5)*0.3;
+  } else { dx=0; dz=0; }
+  p.vx = dx*spd; p.vz = dz*spd;
+  p.x += p.vx; p.z += p.vz;
+  p.x = Math.max(-FW/2+p.r, Math.min(FW/2-p.r, p.x));
+  p.z = Math.max(-FD/2+p.r, Math.min(FD/2-p.r, p.z));
+  if(distToBall < p.r+0.5 && p.cd===0 && bx < 5){
+    const ang = Math.atan2(bz-pz, bx-px);
+    ball.vx += Math.cos(ang)*SHOOTPOW*0.8;
+    ball.vz += Math.sin(ang)*SHOOTPOW*0.8;
+    ball.vy += 0.06;
+    p.cd = 25;
+  }
+  if(p.cd>0) p.cd--;
+  if(dx!==0||dz!==0){
+    p.legAngle+=0.28;
+    if(p.legs){
+      p.legs[0].hipPivot.rotation.x =  Math.sin(p.legAngle)*0.55;
+      p.legs[1].hipPivot.rotation.x = -Math.sin(p.legAngle)*0.55;
+      p.legs[0].kneePivot.rotation.x = Math.max(0, Math.sin(p.legAngle+0.8)*0.5);
+      p.legs[1].kneePivot.rotation.x = Math.max(0,-Math.sin(p.legAngle+0.8)*0.5);
+    }
+  }
+  if(Math.abs(p.vx)>0.01||Math.abs(p.vz)>0.01)
+    p.mesh.rotation.y = Math.atan2(p.vx, p.vz);
+  p.mesh.position.set(p.x, 0, p.z);
+}
 // ── Game loop ─────────────────────────────────────────────────────────────────
 function loop(){
   requestAnimationFrame(loop);
   updateConfetti();
   updateCelebration();
-  if(gameRunning && !gameOver && !goalPause){
+  if(gameRunning && !gameOver && !goalPause && !gamePaused){
     updatePlayer(p1,'w','s','a','d','q',true);
-    updatePlayer(p2,'ArrowUp','ArrowDown','ArrowLeft','ArrowRight','o',false);
+    if(botMode) updateBot(p2);
+    else updatePlayer(p2,'ArrowUp','ArrowDown','ArrowLeft','ArrowRight','o',false);
     updateBall();
     updateCamera();
   }
