@@ -231,7 +231,7 @@ function GameView({ gameKey, onBack }) {
 
 function App() {
   const [page, setPage] = useState('home');
-  const [activeTab, setActiveTab] = useState('lichting1');
+  const [activeTab, setActiveTab] = useState('lichting2');
 
   // Render any game page using the unified GameView
   if (page !== 'home' && gameStyles[page]) {
@@ -395,8 +395,8 @@ function App() {
           marginBottom: '3rem',
         }}>
           {[
-            { key: 'lichting1', label: 'Lichting 1' },
             { key: 'lichting2', label: 'Lichting 2' },
+            { key: 'lichting1', label: 'Lichting 1' },
           ].map((tab) => (
             <button
               key={tab.key}
