@@ -21,6 +21,7 @@ const lichting2 = [
   { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
   { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
   { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
+  { name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate' },
 ];
 
 const rankIcons = {
@@ -53,6 +54,7 @@ const gameStyles = {
   sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
   kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
   stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
+  fifaultimate:     { border: '#c8960a', color: '#c8960a', bg: 'rgba(10,18,8,0.9)', font: '"Arial Black", Arial, sans-serif', src: '/fifaultimate.html', title: 'Fifa Ultimate' },
 };
 
 function GameView({ gameKey, onBack }) {
