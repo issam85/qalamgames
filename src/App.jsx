@@ -23,6 +23,7 @@ const lichting2 = [
   { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
   { name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate' },
   { name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft' },
+  { name: 'Adam El Majidi', game: 'Basketball Islam', klas: 'Groep 7b', playable: 'basketballislam' },
 ];
 
 const rankIcons = {
@@ -57,6 +58,7 @@ const gameStyles = {
   stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
   fifaultimate:     { border: '#c8960a', color: '#c8960a', bg: 'rgba(10,18,8,0.9)', font: '"Arial Black", Arial, sans-serif', src: '/fifaultimate.html', title: 'Fifa Ultimate' },
   mijncraft:        { border: '#6FFFA0', color: '#6FFFA0', bg: 'rgba(7,20,40,0.9)', font: '"VT323", "Courier New", monospace', src: '/mijncraft.html', title: 'MijnCraft' },
+  basketballislam:  { border: '#FDB927', color: '#FDB927', bg: 'rgba(4,4,12,0.95)', font: 'monospace', src: '/basketballislam.html', title: 'Basketball Islam' },
   turborace:        { border: '#ff6600', color: '#ff9933', bg: 'rgba(8,8,16,0.95)', font: 'monospace', src: '/turborace.html', title: 'Turbo Race' },
 };
 

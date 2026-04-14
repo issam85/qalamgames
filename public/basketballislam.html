@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Basketball Islam</title>
+<style>body{margin:0;padding:0;background:#000;overflow:hidden;}</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ─── constants ─── */
+const CW = 960, CH = 580;
+const PR = 14;
+
+const COURTS = [
+  { w: 440, h: 240 },
+  { w: 540, h: 300 },
+  { w: 660, h: 360 },
+  { w: 780, h: 400 },
+  { w: 880, h: 460 },
+];
+
+const TEAMS = [
+  { name: "Lakers",   c1: "#552583", c2: "#FDB927" },
+  { name: "Bulls",    c1: "#CE1141", c2: "#FFFFFF" },
+  { name: "Warriors", c1: "#1D428A", c2: "#FFC72C" },
+  { name: "Celtics",  c1: "#007A33", c2: "#FFFFFF" },
+  { name: "Heat",     c1: "#98002E", c2: "#F9A01B" },
+  { name: "Knicks",   c1: "#006BB6", c2: "#F58426" },
+  { name: "Bucks",    c1: "#00471B", c2: "#EEE1C6" },
+  { name: "Nets",     c1: "#111111", c2: "#FFFFFF" },
+];
+
+const QS = [
+  { q: "Hoeveel pilaren heeft de Islam?", o: ["3","4","5","6"], a: 2 },
+  { q: "Welke engel bracht de Openbaring?", o: ["Mikail","Jibriel","Israfiel","Azrael"], a: 1 },
+  { q: "In welke stad staat de Ka'bah?", o: ["Medina","Jeruzalem","Mekka","Taif"], a: 2 },
+  { q: "Hoeveel keer per dag bidt een moslim?", o: ["3","4","5","6"], a: 2 },
+  { q: "Wat is de eerste soera van de Quran?", o: ["Al-Baqarah","Al-Ikhlas","Al-Fatiha","Yasin"], a: 2 },
+  { q: "Hoeveel rakaat heeft Fajr?", o: ["1","2","3","4"], a: 1 },
+  { q: "Wat betekent het woord Islam?", o: ["Vrede","Overgave","Geloof","Gebed"], a: 1 },
+  { q: "Hoe heet de bedevaart naar Mekka?", o: ["Umrah","Salah","Hajj","Zakat"], a: 2 },
+  { q: "Wat is zakat?", o: ["Vasten","Gebed","Armenbelasting","Bedevaart"], a: 2 },
+  { q: "Hoeveel rakaat heeft Dhuhr?", o: ["2","3","4","6"], a: 2 },
+  { q: "Hoe heet de Nacht van Bestemming?", o: ["Laylat al-Qadr","Laylat al-Miraj","Eid","Mawlid"], a: 0 },
+  { q: "Welke stad is de tweede heiligste?", o: ["Jeruzalem","Medina","Taif","Damascus"], a: 1 },
+  { q: "Hoeveel maanden heeft de islamitische kalender?", o: ["10","11","12","13"], a: 2 },
+  { q: "Wat is de shahada?", o: ["Gebedsoproep","Geloofsbelijdenis","Vasten","Hajj"], a: 1 },
+  { q: "Hoeveel rakaat heeft Isha?", o: ["2","3","4","5"], a: 2 },
+  { q: "Welk gebed heeft 3 rakaat?", o: ["Fajr","Dhuhr","Maghrib","Isha"], a: 2 },
+  { q: "Hoeveel profeten worden in de Quran genoemd?", o: ["15","20","25","30"], a: 2 },
+  { q: "Hoe heet de vader van de Profeet \uFDFA?", o: ["Abu Bakr","Abdullah","Umar","Ali"], a: 1 },
+];
+
+/* ─── helpers ─── */
+function court(lvl) {
+  const c = COURTS[Math.min(lvl, COURTS.length - 1)];
+  return { x: (CW - c.w) / 2, y: (CH - c.h) / 2, w: c.w, h: c.h };
+}
+
+function mkP(x, y, team, idx) {
+  return { x, y, vx: 0, vy: 0, team, idx, hasBall: false, shootTimer: 0 };
+}
+
+function spawn(ct, homeTeam, awayTeam) {
+  const ps = [];
+  const cx = ct.x + ct.w / 2;
+  const cy = ct.y + ct.h / 2;
+  const off = ct.w * 0.18;
+  // home team (5 players)
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2;
+    const r = ct.h * 0.3;
+    ps.push(mkP(cx - off + Math.cos(angle) * r * 0.5, cy + Math.sin(angle) * r, 0, i));
+  }
+  // away team (5 players)
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2;
+    const r = ct.h * 0.3;
+    ps.push(mkP(cx + off + Math.cos(angle) * r * 0.5, cy + Math.sin(angle) * r, 1, i));
+  }
+  ps[0].hasBall = true;
+  return ps;
+}
+
+function drawCourt(ctx, ct, homeColor, awayColor) {
+  // floor
+  ctx.fillStyle = "#1a0f00";
+  ctx.fillRect(0, 0, CW, CH);
+  // court wood
+  const grd = ctx.createLinearGradient(ct.x, ct.y, ct.x, ct.y + ct.h);
+  grd.addColorStop(0, "#c8913a");
+  grd.addColorStop(0.5, "#dba24e");
+  grd.addColorStop(1, "#c8913a");
+  ctx.fillStyle = grd;
+  ctx.fillRect(ct.x, ct.y, ct.w, ct.h);
+  // wood grain lines
+  ctx.strokeStyle = "rgba(139,90,43,0.18)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < ct.h; i += 8) {
+    ctx.beginPath();
+    ctx.moveTo(ct.x, ct.y + i);
+    ctx.lineTo(ct.x + ct.w, ct.y + i);
+    ctx.stroke();
+  }
+  // court lines
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(ct.x, ct.y, ct.w, ct.h);
+  // center line
+  const cx = ct.x + ct.w / 2;
+  const cy = ct.y + ct.h / 2;
+  ctx.beginPath();
+  ctx.moveTo(cx, ct.y);
+  ctx.lineTo(cx, ct.y + ct.h);
+  ctx.stroke();
+  // center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, ct.h * 0.18, 0, Math.PI * 2);
+  ctx.stroke();
+  // 3-point arcs (left)
+  ctx.beginPath();
+  ctx.arc(ct.x, cy, ct.h * 0.45, -Math.PI * 0.42, Math.PI * 0.42);
+  ctx.stroke();
+  // 3-point arcs (right)
+  ctx.beginPath();
+  ctx.arc(ct.x + ct.w, cy, ct.h * 0.45, Math.PI - Math.PI * 0.42, Math.PI + Math.PI * 0.42);
+  ctx.stroke();
+  // free throw areas
+  const ftW = ct.w * 0.1;
+  const ftH = ct.h * 0.4;
+  ctx.strokeRect(ct.x, cy - ftH / 2, ftW, ftH);
+  ctx.strokeRect(ct.x + ct.w - ftW, cy - ftH / 2, ftW, ftH);
+  // hoops
+  ctx.fillStyle = homeColor;
+  ctx.fillRect(ct.x - 6, cy - 12, 6, 24);
+  ctx.fillStyle = "#ff6600";
+  ctx.beginPath();
+  ctx.arc(ct.x + 2, cy, 10, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = awayColor;
+  ctx.fillRect(ct.x + ct.w, cy - 12, 6, 24);
+  ctx.beginPath();
+  ctx.arc(ct.x + ct.w - 2, cy, 10, 0, Math.PI * 2);
+  ctx.stroke();
+  // backboards
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillRect(ct.x - 8, cy - 18, 3, 36);
+  ctx.fillRect(ct.x + ct.w + 5, cy - 18, 3, 36);
+}
+
+function drawPlayer(ctx, p, teamColors, isControlled, ct) {
+  const tc = teamColors[p.team];
+  const r = PR;
+  // shadow
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
+  ctx.beginPath();
+  ctx.ellipse(p.x, p.y + r + 2, r * 0.8, r * 0.3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // body
+  ctx.fillStyle = tc.c1;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+  ctx.fill();
+  // jersey number
+  ctx.fillStyle = tc.c2;
+  ctx.font = "bold 10px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(p.idx + 1, p.x, p.y);
+  // selection ring
+  if (isControlled) {
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r + 4, 0, Math.PI * 2);
+    ctx.stroke();
+    // arrow indicator
+    ctx.fillStyle = "#FFD700";
+    ctx.beginPath();
+    ctx.moveTo(p.x - 5, p.y - r - 8);
+    ctx.lineTo(p.x + 5, p.y - r - 8);
+    ctx.lineTo(p.x, p.y - r - 14);
+    ctx.fill();
+  }
+}
+
+function drawBall(ctx, bx, by) {
+  // shadow
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.beginPath();
+  ctx.ellipse(bx + 2, by + 8, 6, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // ball
+  const bg = ctx.createRadialGradient(bx - 2, by - 2, 1, bx, by, 7);
+  bg.addColorStop(0, "#ff8c00");
+  bg.addColorStop(1, "#c45500");
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.arc(bx, by, 7, 0, Math.PI * 2);
+  ctx.fill();
+  // seams
+  ctx.strokeStyle = "rgba(0,0,0,0.35)";
+  ctx.lineWidth = 0.7;
+  ctx.beginPath();
+  ctx.moveTo(bx - 7, by);
+  ctx.lineTo(bx + 7, by);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(bx, by - 7);
+  ctx.lineTo(bx, by + 7);
+  ctx.stroke();
+}
+
+function drawShotBar(ctx, power) {
+  const bw = 120, bh = 10;
+  const bx = CW / 2 - bw / 2;
+  const by = CH - 50;
+  ctx.fillStyle = "rgba(0,0,0,0.6)";
+  ctx.fillRect(bx - 2, by - 2, bw + 4, bh + 4);
+  ctx.fillStyle = "#333";
+  ctx.fillRect(bx, by, bw, bh);
+  const pct = power / 100;
+  const r = Math.floor(255 * Math.min(pct * 2, 1));
+  const g = Math.floor(255 * Math.min((1 - pct) * 2, 1));
+  ctx.fillStyle = `rgb(${r},${g},0)`;
+  ctx.fillRect(bx, by, bw * pct, bh);
+  // sweet spot marker
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.fillRect(bx + bw * 0.55 - 1, by - 1, 2, bh + 2);
+  ctx.fillRect(bx + bw * 0.75 - 1, by - 1, 2, bh + 2);
+  ctx.fillStyle = "#fff";
+  ctx.font = "9px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("POWER", CW / 2, by - 6);
+}
+
+/* ─── main game component ─── */
+function Game() {
+  const canvasRef = useRef(null);
+  const [phase, setPhase] = useState("menu"); // menu, teamSelect, playing, quiz, gameover
+  const [homeTeamIdx, setHomeTeamIdx] = useState(null);
+  const [awayTeamIdx, setAwayTeamIdx] = useState(null);
+  const [level, setLevel] = useState(0);
+  const [homeScore, setHomeScore] = useState(0);
+  const [awayScore, setAwayScore] = useState(0);
+  const [quizIdx, setQuizIdx] = useState(0);
+  const [quizAnswer, setQuizAnswer] = useState(null);
+  const [quizResult, setQuizResult] = useState(null);
+  const [gameTime, setGameTime] = useState(120);
+  const [quarter, setQuarter] = useState(1);
+  const [message, setMessage] = useState("");
+  const [shotPower, setShotPower] = useState(0);
+  const [isShooting, setIsShooting] = useState(false);
+  const [goalFlash, setGoalFlash] = useState(false);
+  const [totalCorrect, setTotalCorrect] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+
+  const gameState = useRef({
+    players: [],
+    ballX: CW / 2,
+    ballY: CH / 2,
+    ballVx: 0,
+    ballVy: 0,
+    ballFree: false,
+    controlled: 0,
+    keys: {},
+    shotClock: 24,
+    aiTimer: 0,
+    goalScored: false,
+    goalTimer: 0,
+    quizPending: false,
+    quizTeam: -1,
+    usedQs: [],
+    shotBarDir: 1,
+  });
+
+  /* ─── keyboard input ─── */
+  useEffect(() => {
+    const kd = (e) => { gameState.current.keys[e.key.toLowerCase()] = true; };
+    const ku = (e) => { gameState.current.keys[e.key.toLowerCase()] = false; };
+    window.addEventListener("keydown", kd);
+    window.addEventListener("keyup", ku);
+    return () => { window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
+  }, []);
+
+  /* ─── start game ─── */
+  const startGame = useCallback(() => {
+    if (homeTeamIdx === null || awayTeamIdx === null) return;
+    const ct = court(level);
+    const gs = gameState.current;
+    gs.players = spawn(ct, homeTeamIdx, awayTeamIdx);
+    gs.ballX = gs.players[0].x;
+    gs.ballY = gs.players[0].y - PR - 7;
+    gs.ballFree = false;
+    gs.controlled = 0;
+    gs.shotClock = 24;
+    gs.aiTimer = 0;
+    gs.goalScored = false;
+    gs.goalTimer = 0;
+    gs.quizPending = false;
+    gs.usedQs = [];
+    setHomeScore(0);
+    setAwayScore(0);
+    setGameTime(120);
+    setQuarter(1);
+    setLevel(0);
+    setQuizIdx(0);
+    setTotalCorrect(0);
+    setTotalQuestions(0);
+    setPhase("playing");
+  }, [homeTeamIdx, awayTeamIdx, level]);
+
+  /* ─── shoot ─── */
+  const handleShoot = useCallback(() => {
+    if (phase !== "playing") return;
+    const gs = gameState.current;
+    const cp = gs.players[gs.controlled];
+    if (!cp || cp.team !== 0 || gs.ballFree) return;
+    setIsShooting(true);
+    setShotPower(0);
+    gs.shotBarDir = 1;
+  }, [phase]);
+
+  const releaseShot = useCallback(() => {
+    if (!isShooting) return;
+    const gs = gameState.current;
+    const cp = gs.players[gs.controlled];
+    if (!cp) return;
+    setIsShooting(false);
+    const ct = court(level);
+    const hoopX = ct.x + ct.w + 2;
+    const hoopY = ct.y + ct.h / 2;
+    const dist = Math.hypot(cp.x - hoopX, cp.y - hoopY);
+    const maxDist = ct.w * 0.8;
+    const distFactor = 1 - Math.min(dist / maxDist, 1);
+    const sweetSpot = shotPower >= 55 && shotPower <= 75;
+    const accuracy = sweetSpot ? 0.85 : 0.35;
+    const finalChance = accuracy * (0.3 + distFactor * 0.7);
+    const scored = Math.random() < finalChance;
+    // animate ball towards hoop
+    const dx = hoopX - cp.x;
+    const dy = hoopY - cp.y;
+    const d = Math.hypot(dx, dy) || 1;
+    gs.ballFree = true;
+    gs.ballVx = (dx / d) * 12;
+    gs.ballVy = (dy / d) * 12;
+    cp.hasBall = false;
+    if (scored) {
+      const is3pt = dist > ct.h * 0.45;
+      const pts = is3pt ? 3 : 2;
+      setTimeout(() => {
+        setHomeScore(s => s + pts);
+        setGoalFlash(true);
+        setMessage(is3pt ? "DRIEPUNTER!" : "SCORE!");
+        gs.goalScored = true;
+        gs.goalTimer = 90;
+        gs.quizPending = true;
+        gs.quizTeam = 0;
+        setTimeout(() => { setGoalFlash(false); setMessage(""); }, 1500);
+      }, 400);
+    } else {
+      setTimeout(() => {
+        setMessage("Gemist!");
+        setTimeout(() => setMessage(""), 1000);
+      }, 400);
+    }
+    setShotPower(0);
+  }, [isShooting, shotPower, level]);
+
+  /* ─── space bar shoot ─── */
+  useEffect(() => {
+    const kd = (e) => {
+      if (e.code === "Space" && phase === "playing" && !isShooting) {
+        e.preventDefault();
+        handleShoot();
+      }
+    };
+    const ku = (e) => {
+      if (e.code === "Space" && isShooting) {
+        e.preventDefault();
+        releaseShot();
+      }
+    };
+    window.addEventListener("keydown", kd);
+    window.addEventListener("keyup", ku);
+    return () => { window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
+  }, [phase, isShooting, handleShoot, releaseShot]);
+
+  /* ─── pass ─── */
+  const handlePass = useCallback(() => {
+    const gs = gameState.current;
+    const cp = gs.players[gs.controlled];
+    if (!cp || cp.team !== 0 || gs.ballFree) return;
+    // find nearest teammate
+    let best = -1, bestD = Infinity;
+    gs.players.forEach((p, i) => {
+      if (p.team === 0 && i !== gs.controlled) {
+        const d = Math.hypot(p.x - cp.x, p.y - cp.y);
+        if (d < bestD) { bestD = d; best = i; }
+      }
+    });
+    if (best >= 0) {
+      cp.hasBall = false;
+      gs.ballFree = true;
+      const tp = gs.players[best];
+      const dx = tp.x - cp.x;
+      const dy = tp.y - cp.y;
+      const d = Math.hypot(dx, dy) || 1;
+      gs.ballVx = (dx / d) * 10;
+      gs.ballVy = (dy / d) * 10;
+      gs.controlled = best;
+    }
+  }, []);
+
+  /* ─── switch player ─── */
+  const handleSwitch = useCallback(() => {
+    const gs = gameState.current;
+    const cp = gs.players[gs.controlled];
+    if (!cp || cp.team !== 0) return;
+    const teammates = gs.players.map((p, i) => ({ p, i })).filter(x => x.p.team === 0 && x.i !== gs.controlled);
+    if (teammates.length === 0) return;
+    const next = teammates.reduce((a, b) => {
+      const da = Math.hypot(a.p.x - gs.ballX, a.p.y - gs.ballY);
+      const db = Math.hypot(b.p.x - gs.ballX, b.p.y - gs.ballY);
+      return da < db ? a : b;
+    });
+    if (cp.hasBall) {
+      cp.hasBall = false;
+      next.p.hasBall = true;
+    }
+    gs.controlled = next.i;
+  }, []);
+
+  /* ─── E / Q keys for pass/switch ─── */
+  useEffect(() => {
+    const kd = (e) => {
+      if (phase !== "playing") return;
+      if (e.key.toLowerCase() === "e") handlePass();
+      if (e.key.toLowerCase() === "q") handleSwitch();
+    };
+    window.addEventListener("keydown", kd);
+    return () => window.removeEventListener("keydown", kd);
+  }, [phase, handlePass, handleSwitch]);
+
+  /* ─── quiz logic ─── */
+  const openQuiz = useCallback(() => {
+    const gs = gameState.current;
+    // pick unused question
+    let available = QS.map((_, i) => i).filter(i => !gs.usedQs.includes(i));
+    if (available.length === 0) { gs.usedQs = []; available = QS.map((_, i) => i); }
+    const pick = available[Math.floor(Math.random() * available.length)];
+    gs.usedQs.push(pick);
+    setQuizIdx(pick);
+    setQuizAnswer(null);
+    setQuizResult(null);
+    setPhase("quiz");
+  }, []);
+
+  const answerQuiz = useCallback((idx) => {
+    if (quizAnswer !== null) return;
+    const correct = idx === QS[quizIdx].a;
+    setQuizAnswer(idx);
+    setQuizResult(correct);
+    setTotalQuestions(q => q + 1);
+    if (correct) {
+      setTotalCorrect(c => c + 1);
+      setMessage("Mashallah! +1 bonus punt");
+      setHomeScore(s => s + 1);
+    } else {
+      setMessage("Helaas! Tegenstander scoort +2");
+      setAwayScore(s => s + 2);
+    }
+    setTimeout(() => {
+      setMessage("");
+      const gs = gameState.current;
+      gs.quizPending = false;
+      gs.goalScored = false;
+      // reset positions
+      const ct = court(level);
+      gs.players = spawn(ct, homeTeamIdx, awayTeamIdx);
+      gs.ballX = gs.players[0].x;
+      gs.ballY = gs.players[0].y - PR - 7;
+      gs.ballFree = false;
+      gs.controlled = 0;
+      setPhase("playing");
+    }, 2000);
+  }, [quizAnswer, quizIdx, level, homeTeamIdx, awayTeamIdx]);
+
+  /* ─── game timer ─── */
+  useEffect(() => {
+    if (phase !== "playing") return;
+    const iv = setInterval(() => {
+      setGameTime(t => {
+        if (t <= 1) {
+          if (quarter < 4) {
+            setQuarter(q => q + 1);
+            // level up court size each quarter
+            setLevel(l => Math.min(l + 1, COURTS.length - 1));
+            return 120;
+          } else {
+            setPhase("gameover");
+            return 0;
+          }
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [phase, quarter]);
+
+  /* ─── main game loop ─── */
+  useEffect(() => {
+    if (phase !== "playing") return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let raf;
+    const ct = court(level);
+    const homeTeam = TEAMS[homeTeamIdx] || TEAMS[0];
+    const awayTeam = TEAMS[awayTeamIdx] || TEAMS[1];
+    const teamColors = [homeTeam, awayTeam];
+    const SPEED = 2.8;
+    const AI_SPEED = 2.0;
+    const FRICTION = 0.88;
+
+    const loop = () => {
+      const gs = gameState.current;
+      const keys = gs.keys;
+
+      /* ─── player movement ─── */
+      const cp = gs.players[gs.controlled];
+      if (cp && cp.team === 0) {
+        let dx = 0, dy = 0;
+        if (keys["w"] || keys["arrowup"]) dy = -1;
+        if (keys["s"] || keys["arrowdown"]) dy = 1;
+        if (keys["a"] || keys["arrowleft"]) dx = -1;
+        if (keys["d"] || keys["arrowright"]) dx = 1;
+        if (dx || dy) {
+          const len = Math.hypot(dx, dy) || 1;
+          cp.vx += (dx / len) * SPEED * 0.5;
+          cp.vy += (dy / len) * SPEED * 0.5;
+        }
+      }
+
+      /* ─── shot power bar ─── */
+      if (isShooting) {
+        setShotPower(p => {
+          let np = p + gs.shotBarDir * 2;
+          if (np >= 100) { np = 100; gs.shotBarDir = -1; }
+          if (np <= 0) { np = 0; gs.shotBarDir = 1; }
+          return np;
+        });
+      }
+
+      /* ─── AI movement ─── */
+      gs.aiTimer++;
+      if (gs.aiTimer % 3 === 0) {
+        gs.players.forEach((p, i) => {
+          if (p.team === 1) {
+            // simple AI: move towards ball if free, else spread out and defend
+            if (gs.ballFree || !gs.players.some(pl => pl.team === 0 && pl.hasBall)) {
+              // chase ball
+              const dx = gs.ballX - p.x;
+              const dy = gs.ballY - p.y;
+              const d = Math.hypot(dx, dy) || 1;
+              p.vx += (dx / d) * AI_SPEED * 0.3;
+              p.vy += (dy / d) * AI_SPEED * 0.3;
+            } else {
+              // defend: move towards controlled player
+              const target = gs.players[gs.controlled];
+              if (target) {
+                const dx = target.x - p.x + (Math.random() - 0.5) * 60;
+                const dy = target.y - p.y + (Math.random() - 0.5) * 60;
+                const d = Math.hypot(dx, dy) || 1;
+                p.vx += (dx / d) * AI_SPEED * 0.2;
+                p.vy += (dy / d) * AI_SPEED * 0.2;
+              }
+            }
+            // AI shooting attempt
+            if (p.hasBall) {
+              const hoopX = ct.x;
+              const hoopY = ct.y + ct.h / 2;
+              const dist = Math.hypot(p.x - hoopX, p.y - hoopY);
+              if (dist < ct.h * 0.5 && Math.random() < 0.015) {
+                p.hasBall = false;
+                gs.ballFree = true;
+                const ddx = hoopX - p.x;
+                const ddy = hoopY - p.y;
+                const dd = Math.hypot(ddx, ddy) || 1;
+                gs.ballVx = (ddx / dd) * 10;
+                gs.ballVy = (ddy / dd) * 10;
+                const chance = 0.35;
+                if (Math.random() < chance) {
+                  const is3 = dist > ct.h * 0.45;
+                  const pts = is3 ? 3 : 2;
+                  setTimeout(() => {
+                    setAwayScore(s => s + pts);
+                    setGoalFlash(true);
+                    setMessage("Tegenstander scoort!");
+                    gs.goalScored = true;
+                    gs.goalTimer = 90;
+                    gs.quizPending = true;
+                    gs.quizTeam = 1;
+                    setTimeout(() => { setGoalFlash(false); setMessage(""); }, 1500);
+                  }, 400);
+                }
+              }
+            }
+          } else if (i !== gs.controlled) {
+            // home AI teammates: spread and support
+            const cx = ct.x + ct.w * 0.6;
+            const cy = ct.y + ct.h / 2;
+            const angle = (p.idx / 5) * Math.PI * 2 + gs.aiTimer * 0.005;
+            const r = ct.h * 0.32;
+            const tx = cx + Math.cos(angle) * r;
+            const ty = cy + Math.sin(angle) * r;
+            const dx = tx - p.x;
+            const dy = ty - p.y;
+            const d = Math.hypot(dx, dy) || 1;
+            p.vx += (dx / d) * AI_SPEED * 0.15;
+            p.vy += (dy / d) * AI_SPEED * 0.15;
+          }
+        });
+      }
+
+      /* ─── physics update ─── */
+      gs.players.forEach(p => {
+        p.vx *= FRICTION;
+        p.vy *= FRICTION;
+        p.x += p.vx;
+        p.y += p.vy;
+        // court bounds
+        p.x = Math.max(ct.x + PR, Math.min(ct.x + ct.w - PR, p.x));
+        p.y = Math.max(ct.y + PR, Math.min(ct.y + ct.h - PR, p.y));
+      });
+
+      /* ─── ball physics ─── */
+      if (gs.ballFree) {
+        gs.ballX += gs.ballVx;
+        gs.ballY += gs.ballVy;
+        gs.ballVx *= 0.96;
+        gs.ballVy *= 0.96;
+        // check if a player catches the ball
+        gs.players.forEach((p, i) => {
+          const d = Math.hypot(p.x - gs.ballX, p.y - gs.ballY);
+          if (d < PR + 8 && !gs.goalScored) {
+            gs.ballFree = false;
+            p.hasBall = true;
+            gs.ballVx = 0;
+            gs.ballVy = 0;
+            if (p.team === 0) gs.controlled = i;
+          }
+        });
+        // ball out of court bounds
+        if (gs.ballX < ct.x - 30 || gs.ballX > ct.x + ct.w + 30 || gs.ballY < ct.y - 30 || gs.ballY > ct.y + ct.h + 30) {
+          gs.ballFree = false;
+          const holder = gs.players[gs.controlled];
+          if (holder) {
+            holder.hasBall = true;
+            gs.ballX = holder.x;
+            gs.ballY = holder.y - PR - 7;
+          }
+        }
+      } else {
+        // ball follows holder
+        const holder = gs.players.find(p => p.hasBall);
+        if (holder) {
+          gs.ballX = holder.x;
+          gs.ballY = holder.y - PR - 7;
+        }
+      }
+
+      /* ─── steal / collision ─── */
+      gs.players.forEach((p1, i) => {
+        gs.players.forEach((p2, j) => {
+          if (i >= j) return;
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const d = Math.hypot(dx, dy);
+          if (d < PR * 2 && d > 0) {
+            // push apart
+            const overlap = PR * 2 - d;
+            const nx = dx / d;
+            const ny = dy / d;
+            p1.x -= nx * overlap * 0.5;
+            p1.y -= ny * overlap * 0.5;
+            p2.x += nx * overlap * 0.5;
+            p2.y += ny * overlap * 0.5;
+            // steal attempt
+            if (p1.team !== p2.team && !gs.ballFree) {
+              if (p1.hasBall && Math.random() < 0.04) {
+                p1.hasBall = false;
+                p2.hasBall = true;
+                if (p2.team === 0) gs.controlled = j;
+              } else if (p2.hasBall && Math.random() < 0.04) {
+                p2.hasBall = false;
+                p1.hasBall = true;
+                if (p1.team === 0) gs.controlled = i;
+              }
+            }
+          }
+        });
+      });
+
+      /* ─── goal scored → quiz ─── */
+      if (gs.goalScored) {
+        gs.goalTimer--;
+        if (gs.goalTimer <= 0 && gs.quizPending) {
+          openQuiz();
+        }
+      }
+
+      /* ─── draw ─── */
+      ctx.clearRect(0, 0, CW, CH);
+      drawCourt(ctx, ct, homeTeam.c1, awayTeam.c1);
+      // draw players
+      gs.players.forEach((p, i) => {
+        drawPlayer(ctx, p, teamColors, i === gs.controlled, ct);
+      });
+      // draw ball
+      drawBall(ctx, gs.ballX, gs.ballY);
+      // shot power bar
+      if (isShooting) {
+        drawShotBar(ctx, shotPower);
+      }
+
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [phase, level, homeTeamIdx, awayTeamIdx, isShooting, shotPower, openQuiz]);
+
+  /* ─── render ─── */
+  // MENU
+  if (phase === "menu") {
+    return (
+      React.createElement("div", {
+        style: {
+          width: "100vw", height: "100vh", background: "radial-gradient(ellipse at 50% 30%, #1a0f00 0%, #000 100%)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "monospace", color: "#fff"
+        }
+      },
+        React.createElement("div", { style: { fontSize: "10px", letterSpacing: "8px", color: "#FDB927", textTransform: "uppercase", marginBottom: "6px", fontWeight: 700 } }, "QALAM GAMES"),
+        React.createElement("div", { style: { fontSize: "52px", fontWeight: 900, letterSpacing: "-2px", lineHeight: 1 } },
+          "BASKETBALL ",
+          React.createElement("span", { style: { color: "#FDB927" } }, "ISLAM")
+        ),
+        React.createElement("div", { style: { fontSize: "11px", letterSpacing: "5px", color: "#aaa", margin: "8px 0 30px", textTransform: "uppercase" } }, "NBA \u00D7 Islamitische Quiz"),
+        React.createElement("button", {
+          onClick: () => setPhase("teamSelect"),
+          style: {
+            background: "linear-gradient(135deg, #FDB927, #c8960a)", color: "#000", border: "none", borderRadius: "6px",
+            padding: "14px 52px", fontSize: "16px", fontWeight: 900, fontFamily: "monospace", letterSpacing: "3px",
+            textTransform: "uppercase", cursor: "pointer", boxShadow: "0 4px 20px rgba(253,185,39,0.5)"
+          }
+        }, "START")
+      )
+    );
+  }
+
+  // TEAM SELECT
+  if (phase === "teamSelect") {
+    return (
+      React.createElement("div", {
+        style: {
+          width: "100vw", height: "100vh", background: "linear-gradient(135deg, #0a0600 0%, #1a0f00 100%)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "monospace", color: "#fff"
+        }
+      },
+        React.createElement("div", { style: { fontSize: "10px", letterSpacing: "6px", color: "#FDB927", marginBottom: "16px", fontWeight: 800 } }, "KIES JE TEAMS"),
+        React.createElement("div", { style: { display: "flex", gap: "40px", marginBottom: "24px" } },
+          // Home team
+          React.createElement("div", { style: { textAlign: "center" } },
+            React.createElement("div", { style: { fontSize: "9px", letterSpacing: "4px", color: "#7df", marginBottom: "10px" } }, "JOUW TEAM"),
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px" } },
+              TEAMS.map((t, i) =>
+                React.createElement("button", {
+                  key: "h" + i,
+                  onClick: () => setHomeTeamIdx(i),
+                  style: {
+                    background: t.c1, color: t.c2, border: homeTeamIdx === i ? "2.5px solid #7df" : "2px solid rgba(255,255,255,0.2)",
+                    borderRadius: "5px", padding: "8px 14px", fontSize: "11px", fontWeight: 700, fontFamily: "monospace",
+                    cursor: "pointer", letterSpacing: "0.5px", minWidth: "90px",
+                    outline: homeTeamIdx === i ? "2px solid #7df" : "none", outlineOffset: "2px"
+                  }
+                }, t.name)
+              )
+            )
+          ),
+          React.createElement("div", { style: { display: "flex", alignItems: "center", fontSize: "22px", fontWeight: 900, color: "rgba(255,255,255,0.2)" } }, "VS"),
+          // Away team
+          React.createElement("div", { style: { textAlign: "center" } },
+            React.createElement("div", { style: { fontSize: "9px", letterSpacing: "4px", color: "#f99", marginBottom: "10px" } }, "TEGENSTANDER"),
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px" } },
+              TEAMS.map((t, i) =>
+                React.createElement("button", {
+                  key: "a" + i,
+                  onClick: () => setAwayTeamIdx(i),
+                  style: {
+                    background: t.c1, color: t.c2, border: awayTeamIdx === i ? "2.5px solid #f99" : "2px solid rgba(255,255,255,0.2)",
+                    borderRadius: "5px", padding: "8px 14px", fontSize: "11px", fontWeight: 700, fontFamily: "monospace",
+                    cursor: "pointer", letterSpacing: "0.5px", minWidth: "90px",
+                    outline: awayTeamIdx === i ? "2px solid #f99" : "none", outlineOffset: "2px"
+                  }
+                }, t.name)
+              )
+            )
+          )
+        ),
+        React.createElement("button", {
+          onClick: startGame,
+          disabled: homeTeamIdx === null || awayTeamIdx === null || homeTeamIdx === awayTeamIdx,
+          style: {
+            background: (homeTeamIdx !== null && awayTeamIdx !== null && homeTeamIdx !== awayTeamIdx)
+              ? "linear-gradient(135deg, #FDB927, #a07020)" : "rgba(255,255,255,0.1)",
+            color: (homeTeamIdx !== null && awayTeamIdx !== null && homeTeamIdx !== awayTeamIdx) ? "#000" : "#666",
+            border: "none", borderRadius: "6px", padding: "14px 52px", fontSize: "16px", fontWeight: 900,
+            fontFamily: "monospace", letterSpacing: "3px", textTransform: "uppercase",
+            cursor: (homeTeamIdx !== null && awayTeamIdx !== null && homeTeamIdx !== awayTeamIdx) ? "pointer" : "not-allowed",
+            opacity: (homeTeamIdx !== null && awayTeamIdx !== null && homeTeamIdx !== awayTeamIdx) ? 1 : 0.3,
+            boxShadow: (homeTeamIdx !== null && awayTeamIdx !== null && homeTeamIdx !== awayTeamIdx) ? "0 4px 20px rgba(253,185,39,0.5)" : "none"
+          }
+        }, "TIP-OFF")
+      )
+    );
+  }
+
+  // QUIZ
+  if (phase === "quiz") {
+    const q = QS[quizIdx];
+    return (
+      React.createElement("div", {
+        style: {
+          position: "fixed", inset: 0, zIndex: 100, background: "rgba(4,8,18,0.94)", backdropFilter: "blur(12px)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "monospace", color: "#fff"
+        }
+      },
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "12px", marginBottom: "22px" } },
+          React.createElement("span", { style: { fontSize: "28px" } }, "\u2600"),
+          React.createElement("div", null,
+            React.createElement("div", { style: { fontSize: "9px", letterSpacing: "5px", color: "#FDB927", textTransform: "uppercase" } }, "ISLAMITISCHE QUIZ"),
+            React.createElement("div", { style: { fontSize: "20px", fontWeight: 900 } }, "Beantwoord de vraag!")
+          )
+        ),
+        React.createElement("div", {
+          style: {
+            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+            borderTop: "3px solid #FDB927", borderRadius: "5px", padding: "26px 28px", maxWidth: "540px", width: "100%", margin: "0 14px"
+          }
+        },
+          React.createElement("div", { style: { fontSize: "18px", fontWeight: 700, lineHeight: 1.4, marginBottom: "20px" } }, q.q),
+          React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" } },
+            q.o.map((opt, i) =>
+              React.createElement("button", {
+                key: i,
+                onClick: () => answerQuiz(i),
+                disabled: quizAnswer !== null,
+                style: {
+                  background: quizAnswer === null ? "rgba(255,255,255,0.05)"
+                    : i === q.a ? "rgba(0,200,83,0.15)"
+                    : i === quizAnswer ? "rgba(229,57,53,0.15)"
+                    : "rgba(255,255,255,0.03)",
+                  border: quizAnswer === null ? "1.5px solid rgba(255,255,255,0.1)"
+                    : i === q.a ? "1.5px solid #00c853"
+                    : i === quizAnswer ? "1.5px solid #e53935"
+                    : "1.5px solid rgba(255,255,255,0.05)",
+                  borderRadius: "4px", padding: "12px 15px", fontSize: "13px", fontWeight: 700, color: "#fff",
+                  cursor: quizAnswer === null ? "pointer" : "default", textAlign: "left", fontFamily: "monospace",
+                  display: "flex", alignItems: "center", gap: "9px"
+                }
+              },
+                React.createElement("span", {
+                  style: {
+                    width: "20px", height: "20px", borderRadius: "3px",
+                    background: (quizAnswer !== null && i === q.a) ? "#00c853"
+                      : (quizAnswer !== null && i === quizAnswer && i !== q.a) ? "#e53935"
+                      : "rgba(255,255,255,0.07)",
+                    border: "1px solid rgba(255,255,255,0.18)", display: "flex", alignItems: "center",
+                    justifyContent: "center", fontSize: "10px", fontWeight: 900, flexShrink: 0
+                  }
+                }, String.fromCharCode(65 + i)),
+                opt
+              )
+            )
+          ),
+          quizResult !== null && React.createElement("div", {
+            style: {
+              marginTop: "12px", fontSize: "14px", fontWeight: 700, letterSpacing: "1px", textAlign: "center",
+              padding: "8px", borderRadius: "3px",
+              color: quizResult ? "#00c853" : "#e53935",
+              background: quizResult ? "rgba(0,200,83,0.08)" : "rgba(229,57,53,0.08)"
+            }
+          }, quizResult ? "Mashallah! Correct! +1 bonuspunt" : "Helaas fout. Tegenstander +2 punten")
+        )
+      )
+    );
+  }
+
+  // GAME OVER
+  if (phase === "gameover") {
+    const won = homeScore > awayScore;
+    const tie = homeScore === awayScore;
+    return (
+      React.createElement("div", {
+        style: {
+          width: "100vw", height: "100vh", background: "radial-gradient(ellipse at 50%, #0a1a30, #020408)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "monospace", color: "#fff"
+        }
+      },
+        React.createElement("div", { style: { fontSize: "10px", letterSpacing: "6px", color: "#FDB927", marginBottom: "16px" } }, "EINDE WEDSTRIJD"),
+        React.createElement("div", { style: { fontSize: "72px", fontWeight: 900, lineHeight: 1 } },
+          homeScore, React.createElement("span", { style: { color: "rgba(255,255,255,0.2)", margin: "0 16px" } }, "-"), awayScore
+        ),
+        React.createElement("div", { style: { fontSize: "14px", letterSpacing: "2px", margin: "6px 0" } },
+          homeTeamIdx !== null ? TEAMS[homeTeamIdx].name : "", " vs ", awayTeamIdx !== null ? TEAMS[awayTeamIdx].name : ""
+        ),
+        React.createElement("div", {
+          style: { fontSize: "28px", fontWeight: 900, margin: "16px 0", color: won ? "#00c853" : tie ? "#FDB927" : "#e53935" }
+        }, won ? "JE HEBT GEWONNEN!" : tie ? "GELIJKSPEL" : "VERLOREN"),
+        React.createElement("div", { style: { fontSize: "12px", color: "#aaa", marginBottom: "6px" } },
+          "Quiz score: ", totalCorrect, " / ", totalQuestions, " correct"
+        ),
+        React.createElement("div", { style: { fontSize: "12px", color: "#aaa", marginBottom: "24px" } },
+          totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) + "% nauwkeurigheid" : ""
+        ),
+        React.createElement("button", {
+          onClick: () => { setPhase("menu"); setHomeTeamIdx(null); setAwayTeamIdx(null); },
+          style: {
+            background: "linear-gradient(135deg, #FDB927, #a07020)", color: "#000", border: "none", borderRadius: "6px",
+            padding: "14px 52px", fontSize: "16px", fontWeight: 900, fontFamily: "monospace", letterSpacing: "3px",
+            textTransform: "uppercase", cursor: "pointer"
+          }
+        }, "OPNIEUW SPELEN")
+      )
+    );
+  }
+
+  // PLAYING
+  const mins = Math.floor(gameTime / 60);
+  const secs = gameTime % 60;
+  const timeStr = String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+
+  return (
+    React.createElement("div", { style: { width: "100vw", height: "100vh", position: "relative", overflow: "hidden", background: "#000" } },
+      React.createElement("canvas", { ref: canvasRef, width: CW, height: CH, style: { display: "block", position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", maxWidth: "100vw", maxHeight: "100vh" } }),
+      // HUD - Scoreboard
+      React.createElement("div", {
+        style: {
+          position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", display: "flex", height: "52px",
+          filter: "drop-shadow(0 3px 16px rgba(0,0,0,0.6))", zIndex: 10, fontFamily: "monospace"
+        }
+      },
+        // Home
+        React.createElement("div", {
+          style: {
+            display: "flex", alignItems: "center", background: "rgba(6,10,14,0.92)", borderBottom: "2.5px solid #FDB927",
+            padding: "0 12px", flexDirection: "row-reverse", minWidth: "140px"
+          }
+        },
+          React.createElement("div", {
+            style: { width: "28px", height: "32px", borderRadius: "2px", background: homeTeamIdx !== null ? TEAMS[homeTeamIdx].c1 : "#333", margin: "0 8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "7px", fontWeight: 900, color: homeTeamIdx !== null ? TEAMS[homeTeamIdx].c2 : "#fff" }
+          }, "H"),
+          React.createElement("div", { style: { fontSize: "13px", fontWeight: 800, color: "#fff", letterSpacing: "1px", textTransform: "uppercase" } },
+            homeTeamIdx !== null ? TEAMS[homeTeamIdx].name : "HOME"
+          )
+        ),
+        // Score
+        React.createElement("div", {
+          style: {
+            background: "#0c1420", borderBottom: "2.5px solid #FDB927", display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", minWidth: "90px"
+          }
+        },
+          React.createElement("div", { style: { display: "flex", alignItems: "center" } },
+            React.createElement("div", { style: { fontSize: "25px", fontWeight: 900, color: "#fff", width: "28px", textAlign: "center" } }, homeScore),
+            React.createElement("div", { style: { fontSize: "13px", color: "rgba(255,255,255,0.3)", padding: "0 2px" } }, "\u2013"),
+            React.createElement("div", { style: { fontSize: "25px", fontWeight: 900, color: "#fff", width: "28px", textAlign: "center" } }, awayScore)
+          ),
+          React.createElement("div", { style: { fontSize: "9px", color: "#FDB927", letterSpacing: "2px", fontWeight: 700 } },
+            "Q", quarter, " ", timeStr
+          )
+        ),
+        // Away
+        React.createElement("div", {
+          style: {
+            display: "flex", alignItems: "center", background: "rgba(6,10,14,0.92)", borderBottom: "2.5px solid #FDB927",
+            padding: "0 12px", minWidth: "140px"
+          }
+        },
+          React.createElement("div", {
+            style: { width: "28px", height: "32px", borderRadius: "2px", background: awayTeamIdx !== null ? TEAMS[awayTeamIdx].c1 : "#333", margin: "0 8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "7px", fontWeight: 900, color: awayTeamIdx !== null ? TEAMS[awayTeamIdx].c2 : "#fff" }
+          }, "A"),
+          React.createElement("div", { style: { fontSize: "13px", fontWeight: 800, color: "#fff", letterSpacing: "1px", textTransform: "uppercase" } },
+            awayTeamIdx !== null ? TEAMS[awayTeamIdx].name : "AWAY"
+          )
+        )
+      ),
+      // Message
+      message && React.createElement("div", {
+        style: {
+          position: "fixed", top: "68px", left: "50%", transform: "translateX(-50%)", fontSize: "13px", fontWeight: 700,
+          color: "#fff", letterSpacing: "2px", background: "rgba(0,0,0,0.75)", borderRadius: "4px", padding: "6px 16px",
+          fontFamily: "monospace", zIndex: 50, whiteSpace: "nowrap"
+        }
+      }, message),
+      // Goal flash
+      goalFlash && React.createElement("div", {
+        style: {
+          position: "fixed", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          pointerEvents: "none", zIndex: 40
+        }
+      },
+        React.createElement("div", {
+          style: {
+            fontSize: "80px", fontWeight: 900, color: "#fff", lineHeight: 1,
+            textShadow: "0 0 40px rgba(253,185,39,0.9), 0 0 80px rgba(253,185,39,0.5)"
+          }
+        }, "SCORE!")
+      ),
+      // Controls
+      React.createElement("div", {
+        style: {
+          position: "fixed", bottom: "14px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "14px",
+          fontFamily: "monospace", zIndex: 10
+        }
+      },
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "5px", fontSize: "10px", color: "rgba(255,255,255,0.45)", letterSpacing: "1px" } },
+          React.createElement("span", { style: { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 700, color: "#fff" } }, "WASD"),
+          "Bewegen"
+        ),
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "5px", fontSize: "10px", color: "rgba(255,255,255,0.45)", letterSpacing: "1px" } },
+          React.createElement("span", { style: { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 700, color: "#fff" } }, "SPACE"),
+          "Schieten"
+        ),
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "5px", fontSize: "10px", color: "rgba(255,255,255,0.45)", letterSpacing: "1px" } },
+          React.createElement("span", { style: { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 700, color: "#fff" } }, "E"),
+          "Passen"
+        ),
+        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "5px", fontSize: "10px", color: "rgba(255,255,255,0.45)", letterSpacing: "1px" } },
+          React.createElement("span", { style: { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 700, color: "#fff" } }, "Q"),
+          "Wissel"
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Game));
+</script>
+</body>
+</html>
