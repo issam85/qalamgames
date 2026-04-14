@@ -17,7 +17,7 @@ const honorable = [
 
 // Lichting 2 — Tweede ronde gamemakers
 const lichting2 = [
-  { name: 'Abdulahi Abdulkhader', game: 'Granny Horror Game', klas: 'Groep 7c', playable: 'grannyhorrorgame' },
+  { name: 'Abdulahi Abdulkhader', game: "Granny's Nightmare", klas: 'Groep 7c', playable: 'grannyhorrorgame' },
   { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
   { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
   { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
@@ -51,7 +51,7 @@ const gameStyles = {
   turboracer2:   { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer2.html', title: 'Turbo Racer 3D V2' },
   mariospel2:    { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel2.html', title: 'Mario-achtig Spel V2' },
   game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
-  grannyhorrorgame: { border: '#8b0000', color: '#ff4444', bg: 'rgba(0,0,0,0.9)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: 'Granny Horror Game' },
+  grannyhorrorgame: { border: '#cc0000', color: '#ff2200', bg: 'rgba(0,0,0,0.95)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: "Granny's Nightmare" },
   sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
   kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
   stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
