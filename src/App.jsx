@@ -22,6 +22,7 @@ const lichting2 = [
   { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
   { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
   { name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate' },
+  { name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft' },
 ];
 
 const rankIcons = {
@@ -55,6 +56,7 @@ const gameStyles = {
   kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
   stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
   fifaultimate:     { border: '#c8960a', color: '#c8960a', bg: 'rgba(10,18,8,0.9)', font: '"Arial Black", Arial, sans-serif', src: '/fifaultimate.html', title: 'Fifa Ultimate' },
+  mijncraft:        { border: '#6FFFA0', color: '#6FFFA0', bg: 'rgba(7,20,40,0.9)', font: '"VT323", "Courier New", monospace', src: '/mijncraft.html', title: 'MijnCraft' },
 };
 
 function GameView({ gameKey, onBack }) {
