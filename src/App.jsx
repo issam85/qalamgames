@@ -389,6 +389,63 @@ function App() {
           </div>
         </section>
 
+        {/* Legends Section */}
+        <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👑</div>
+          <h2 style={{
+            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: '#d4af37',
+            marginBottom: '0.5rem', letterSpacing: '0.1em',
+            textShadow: '0 0 30px rgba(212, 175, 55, 0.3)',
+          }}>
+            Hall of Legends
+          </h2>
+          <p style={{ fontSize: '1rem', opacity: 0.6, marginBottom: '2rem' }}>
+            De winnaars van elke lichting
+          </p>
+          <div style={{
+            display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap',
+          }}>
+            {[
+              { label: 'Lichting 1', name: 'Saifeddine Boulabkoul', game: 'Banana Storm Survivor', klas: 'Groep 7b', playable: 'bananastorm2' },
+              { label: 'Lichting 2', name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate', score: '9.48' },
+            ].map((legend, i) => (
+              <div key={i} style={{
+                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(58, 35, 20, 0.6))',
+                border: '2px solid rgba(212, 175, 55, 0.5)',
+                borderRadius: '16px', padding: '1.5rem 2rem', minWidth: '260px', maxWidth: '340px',
+                boxShadow: '0 0 30px rgba(212, 175, 55, 0.15)',
+              }}>
+                <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', color: '#d4af37', opacity: 0.7, marginBottom: '0.5rem' }}>
+                  {legend.label.toUpperCase()}
+                </div>
+                <div style={{ fontSize: '2rem', marginBottom: '0.3rem' }}>🏆</div>
+                <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#FFD700', marginBottom: '0.2rem' }}>
+                  {legend.name}
+                </div>
+                <div style={{ fontSize: '0.95rem', opacity: 0.8, marginBottom: '0.2rem' }}>
+                  {legend.game}
+                </div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '0.8rem' }}>
+                  {legend.klas}{legend.score ? ` — ${legend.score}` : ''}
+                </div>
+                <button
+                  onClick={() => setPage(legend.playable)}
+                  style={{
+                    padding: '0.5rem 1.5rem', fontSize: '0.9rem', fontWeight: 700,
+                    border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                    color: '#1a0f0a', cursor: 'pointer', borderRadius: '8px', fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', gap: '0.4rem', transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 25px rgba(212, 175, 55, 0.6)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  <Gamepad2 size={16} /> Speel
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Divider */}
         <div style={{
           width: '60%',
