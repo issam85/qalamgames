@@ -12,7 +12,7 @@ const honorable = [
   { rank: 4, name: 'Marouan El Amrani', game: 'Penalty Shooters Pro', gameSubtitle: 'Toernooi Edition', klas: 'Groep 7c', playable: 'penalty' },
   { rank: 5, name: 'Mahir Tazammourti', game: 'Auto Spel met Islam Vragen', klas: 'Groep 6a', playable: 'autospel', v2: 'autospel2' },
   { rank: 6, name: 'Reda Oruadia', game: 'Turbo Racer 3D - Mega Maps', klas: 'Groep 6c', playable: 'turboracer', v2: 'turboracer2' },
-  { rank: 7, name: 'Junayd Bakkali', game: 'Mario-achtig Spel', klas: 'Groep 6a', playable: 'mariospel', v2: 'mariospel2' },
+  { rank: 7, name: 'Junayd Bakkali', game: 'Turbo Race', klas: 'Groep 6a', playable: 'turborace' },
 ];
 
 // Lichting 2 — Tweede ronde gamemakers
@@ -57,6 +57,7 @@ const gameStyles = {
   stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
   fifaultimate:     { border: '#c8960a', color: '#c8960a', bg: 'rgba(10,18,8,0.9)', font: '"Arial Black", Arial, sans-serif', src: '/fifaultimate.html', title: 'Fifa Ultimate' },
   mijncraft:        { border: '#6FFFA0', color: '#6FFFA0', bg: 'rgba(7,20,40,0.9)', font: '"VT323", "Courier New", monospace', src: '/mijncraft.html', title: 'MijnCraft' },
+  turborace:        { border: '#ff6600', color: '#ff9933', bg: 'rgba(8,8,16,0.95)', font: 'monospace', src: '/turborace.html', title: 'Turbo Race' },
 };
 
 function GameView({ gameKey, onBack }) {
