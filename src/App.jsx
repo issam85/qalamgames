@@ -15,15 +15,18 @@ const honorable = [
   { rank: 7, name: 'Junayd Bakkali', game: 'Turbo Race', klas: 'Groep 6a', playable: 'turborace' },
 ];
 
-// Lichting 2 — Tweede ronde gamemakers
-const lichting2 = [
-  { name: 'Abdulahi Abdulkhader', game: "Granny's Nightmare", klas: 'Groep 7c', playable: 'grannyhorrorgame' },
-  { name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate' },
-  { name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d' },
-  { name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer' },
-  { name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate' },
-  { name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft' },
-  { name: 'Adam El Majidi', game: 'Basketball Islam', klas: 'Groep 7b', playable: 'basketballislam' },
+// Lichting 2 — Tweede ronde gamemakers (gerangschikt op beoordeling)
+const lichting2Top3 = [
+  { rank: 1, name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate', score: '9.48' },
+  { rank: 2, name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate', score: '9.16' },
+  { rank: 3, name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer', score: '9.00' },
+];
+const lichting2Rest = [
+  { rank: 4, name: 'Abdulahi Abdulkhader', game: "Granny's Nightmare", klas: 'Groep 7c', playable: 'grannyhorrorgame', score: '8.63' },
+  { rank: 5, name: 'Junayd Bakkali', game: 'Turbo Race', klas: 'Groep 6a', playable: 'turborace', score: '8.41' },
+  { rank: 6, name: 'Adam El Majidi', game: 'Basketball Islam', klas: 'Groep 7b', playable: 'basketballislam', score: '8.14' },
+  { rank: 7, name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d', score: '7.50' },
+  { rank: 8, name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft', score: '7.19' },
 ];
 
 const rankIcons = {
@@ -712,97 +715,101 @@ function App() {
         {/* Lichting 2 Content */}
         {activeTab === 'lichting2' && (
           <>
-            <section style={{
-              textAlign: 'center',
-              marginBottom: '1.5rem',
-            }}>
-              <p style={{
-                fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
-                opacity: 0.7,
-              }}>
+            <section style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', opacity: 0.7 }}>
                 De nieuwe generatie gamemakers
               </p>
             </section>
 
-            <section style={{
-              textAlign: 'center',
-              marginBottom: '3rem',
-            }}>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-                maxWidth: '600px',
-                margin: '0 auto',
-              }}>
-                {lichting2.map((student, i) => (
-                  <div key={i} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.2rem',
-                    padding: '1.2rem 1.5rem',
+            {/* Top 3 Lichting 2 */}
+            <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
+              <h3 style={{ fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)', color: '#d4af37', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>
+                Top 3 Beste Spellen
+              </h3>
+              <p style={{ fontSize: '1rem', opacity: 0.7, marginBottom: '2.5rem' }}>
+                De leerlingen met het beste zelfgemaakte spel
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>
+                {lichting2Top3.map((student) => (
+                  <div key={student.rank} style={{
+                    display: 'flex', alignItems: 'center', gap: '1.2rem', padding: '1.2rem 1.5rem',
                     background: 'rgba(58, 35, 20, 0.6)',
-                    border: '2px solid rgba(212, 175, 55, 0.3)',
+                    border: `2px solid ${rankColors[student.rank]}40`,
                     borderRadius: '14px',
-                    boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)',
+                    boxShadow: `0 0 20px ${rankColors[student.rank]}15`,
                   }}>
-                    <div style={{
-                      flexShrink: 0,
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      <Gamepad2 size={20} color="#1a0f0a" />
-                    </div>
+                    <div style={{ flexShrink: 0 }}>{rankIcons[student.rank]}</div>
                     <div style={{ textAlign: 'left', flex: 1 }}>
-                      <div style={{
-                        fontSize: '1.2rem',
-                        fontWeight: 700,
-                        color: '#f4e3b5',
-                        marginBottom: '0.2rem',
-                      }}>
+                      <div style={{ fontSize: '1.3rem', fontWeight: 700, color: rankColors[student.rank], marginBottom: '0.2rem' }}>
                         {student.name}
                       </div>
                       <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>
-                        {student.game}{student.klas ? ` — ${student.klas}` : ''}
+                        {student.game} — {student.klas}
                       </div>
                     </div>
-                    {student.playable && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
+                      <span style={{ fontSize: '0.85rem', color: rankColors[student.rank], fontWeight: 700, opacity: 0.7 }}>{student.score}</span>
                       <button
                         onClick={() => setPage(student.playable)}
                         style={{
-                          padding: '0.5rem 1rem',
-                          fontSize: '0.95rem',
-                          fontWeight: 700,
-                          border: '2px solid #d4af37',
-                          background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                          color: '#1a0f0a',
-                          cursor: 'pointer',
-                          borderRadius: '8px',
-                          fontFamily: 'inherit',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.4rem',
-                          flexShrink: 0,
-                          transition: 'all 0.3s ease',
+                          padding: '0.5rem 1rem', fontSize: '0.95rem', fontWeight: 700,
+                          border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                          color: '#1a0f0a', cursor: 'pointer', borderRadius: '8px', fontFamily: 'inherit',
+                          display: 'flex', alignItems: 'center', gap: '0.4rem', transition: 'all 0.3s ease',
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.08)';
-                          e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                       >
-                        <Gamepad2 size={16} />
-                        Speel
+                        <Gamepad2 size={16} /> Speel
                       </button>
-                    )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Eervolle vermelding Lichting 2 */}
+            <section style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h4 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', color: '#f4e3b5', marginBottom: '1.5rem', letterSpacing: '0.05em', opacity: 0.8 }}>
+                Eervolle vermelding
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+                {lichting2Rest.map((student) => (
+                  <div key={student.rank} style={{
+                    display: 'flex', alignItems: 'center', gap: '1.2rem', padding: '1rem 1.5rem',
+                    background: 'rgba(58, 35, 20, 0.4)',
+                    border: '1px solid rgba(212, 175, 55, 0.2)',
+                    borderRadius: '14px',
+                  }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#d4af37', opacity: 0.5, flexShrink: 0, width: '40px' }}>
+                      #{student.rank}
+                    </div>
+                    <div style={{ textAlign: 'left', flex: 1 }}>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f4e3b5', marginBottom: '0.2rem' }}>
+                        {student.name}
+                      </div>
+                      <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>
+                        {student.game} — {student.klas}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
+                      <span style={{ fontSize: '0.8rem', color: '#d4af37', opacity: 0.5 }}>{student.score}</span>
+                      {student.playable && (
+                        <button
+                          onClick={() => setPage(student.playable)}
+                          style={{
+                            padding: '0.4rem 0.8rem', fontSize: '0.85rem', fontWeight: 700,
+                            border: '2px solid rgba(212, 175, 55, 0.5)', background: 'rgba(212, 175, 55, 0.2)',
+                            color: '#d4af37', cursor: 'pointer', borderRadius: '8px', fontFamily: 'inherit',
+                            display: 'flex', alignItems: 'center', gap: '0.4rem', transition: 'all 0.3s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #d4af37, #f4e3b5)'; e.currentTarget.style.color = '#1a0f0a'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)'; e.currentTarget.style.color = '#d4af37'; }}
+                        >
+                          <Gamepad2 size={14} /> Speel
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
