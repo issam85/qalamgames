@@ -63,6 +63,8 @@ const gameStyles = {
   mijncraft:        { border: '#6FFFA0', color: '#6FFFA0', bg: 'rgba(7,20,40,0.9)', font: '"VT323", "Courier New", monospace', src: '/mijncraft.html', title: 'MijnCraft' },
   basketballislam:  { border: '#FDB927', color: '#FDB927', bg: 'rgba(4,4,12,0.95)', font: 'monospace', src: '/basketballislam.html', title: 'Basketball Islam' },
   turborace:        { border: '#ff6600', color: '#ff9933', bg: 'rgba(8,8,16,0.95)', font: 'monospace', src: '/turborace.html', title: 'Turbo Race' },
+  // Uitgelicht — externe deploy (eigen repo: hajj-simulator-3d), via iframe ingeladen
+  hajj:             { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.85)', font: '"Amiri", serif', src: 'https://hajj-simulator-3d.vercel.app', title: 'Hajj Simulator 3D' },
 };
 
 function GameView({ gameKey, onBack }) {
@@ -225,7 +227,7 @@ function GameView({ gameKey, onBack }) {
       ) : (
         <iframe
           src={style.src}
-          allow="fullscreen"
+          allow="fullscreen; accelerometer; gyroscope; autoplay; xr-spatial-tracking"
           allowFullScreen
           style={{
             width: '100%',
@@ -386,6 +388,44 @@ function App() {
                 {groep}
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Uitgelicht — Hajj Simulator 3D (vlaggenschip, externe deploy) */}
+        <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ fontSize: '0.78rem', letterSpacing: '0.28em', color: '#d4af37', opacity: 0.75, marginBottom: '0.8rem' }}>
+            ⭐ UITGELICHT
+          </div>
+          <div style={{
+            position: 'relative', maxWidth: '660px', margin: '0 auto',
+            background: 'linear-gradient(135deg, rgba(212,175,55,0.18), rgba(26,15,10,0.65))',
+            border: '2px solid rgba(212,175,55,0.6)', borderRadius: '20px',
+            padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(212,175,55,0.18)',
+          }}>
+            <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🕋</div>
+            <h3 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.3rem)', color: '#FFD700', margin: '0 0 0.3rem', letterSpacing: '0.04em' }}>
+              Hajj Simulator 3D
+            </h3>
+            <p dir="rtl" style={{ fontSize: '1.15rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem' }}>
+              لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ
+            </p>
+            <p style={{ fontSize: '1rem', lineHeight: 1.7, opacity: 0.85, maxWidth: '520px', margin: '0 auto 1.5rem' }}>
+              Beleef de hele bedevaart naar Mekka — van de intentie thuis tot de Tawaf rond de Ka'ba,
+              Arafat, de steniging in Mina en het bezoek aan Medina. Met fotorealistische 3D-modellen.
+            </p>
+            <button
+              onClick={() => setPage('hajj')}
+              style={{
+                padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
+                border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                color: '#1a0f0a', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(212, 175, 55, 0.6)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <Gamepad2 size={18} /> Speel nu
+            </button>
           </div>
         </section>
 
