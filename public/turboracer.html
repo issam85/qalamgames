@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ TURBO RACER 3D - MEGA MAPS Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+            backdrop-filter: blur(10px);
+        }
+
+        #speedometer {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #00ff88;
+            text-shadow: 0 0 15px #00ff88;
+        }
+
+        #speedBar {
+            width: 200px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid #00ff88;
+        }
+
+        #speedBarFill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #ff00ff);
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        #stats {
+            font-size: 13px;
+            color: #00ff88;
+            line-height: 1.6;
+        }
+
+        #nextMilestone {
+            font-size: 12px;
+            color: #ffff00;
+            margin-top: 8px;
+            text-shadow: 0 0 8px #ffff00;
+        }
+
+        #mapSelector {
+            position: absolute;
+            top: 300px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 150;
+            color: #00ffff;
+        }
+
+        #mapSelector div {
+            margin: 8px 0;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #00ffff;
+        }
+
+        .map-btn {
+            padding: 8px 12px;
+            background: #0f3460;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            cursor: pointer;
+            border-radius: 6px;
+            margin: 5px 0;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .map-btn:hover {
+            background: #16213e;
+            box-shadow: 0 0 15px rgba(0,255,255,0.5);
+        }
+
+        .map-btn.active {
+            background: linear-gradient(90deg, #00ff88, #00ffff);
+            color: #000;
+            border-color: #ffff00;
+            box-shadow: 0 0 20px rgba(0,255,0,0.6);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #00ff88;
+            font-size: 11px;
+            opacity: 0.9;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #00ff88;
+            max-width: 250px;
+        }
+
+        #fpsDisplay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ff00ff;
+            font-size: 16px;
+            font-family: monospace;
+            text-shadow: 0 0 10px #ff00ff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ff00ff;
+            font-weight: bold;
+        }
+
+        #quizPopup {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1a1a3e 0%, #2d2d5f 100%);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 450px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            box-shadow: 0 0 40px rgba(0,255,255,0.5);
+            z-index: 200;
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        #quizPopup.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .quiz-popup-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffff00;
+            text-shadow: 0 0 8px #ffff00;
+        }
+
+        .quiz-milestone {
+            font-size: 14px;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 10px;
+        }
+
+        .quiz-popup-question {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #00ffff;
+            line-height: 1.5;
+        }
+
+        .popup-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .popup-option-btn {
+            padding: 12px 15px;
+            background: linear-gradient(90deg, #0f3460 0%, #16213e 100%);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .popup-option-btn:hover {
+            background: linear-gradient(90deg, #16213e 0%, #1f2d4a 100%);
+            box-shadow: 0 0 15px rgba(0,255,255,0.5);
+            transform: translateX(5px);
+        }
+
+        .popup-option-btn.correct {
+            background: linear-gradient(90deg, #00aa00 0%, #00dd00 100%);
+            color: #000;
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0,255,0,0.6);
+        }
+
+        .popup-option-btn.incorrect {
+            background: linear-gradient(90deg, #aa0000 0%, #dd0000 100%);
+            color: #ffff00;
+            border-color: #ff0000;
+            box-shadow: 0 0 20px rgba(255,0,0,0.6);
+        }
+
+        .popup-result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .result-correct {
+            background: linear-gradient(90deg, #003300 0%, #005500 100%);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            box-shadow: 0 0 15px rgba(0,255,0,0.4);
+        }
+
+        .result-incorrect {
+            background: linear-gradient(90deg, #330000 0%, #550000 100%);
+            border: 2px solid #ff0000;
+            color: #ffaa00;
+            box-shadow: 0 0 15px rgba(255,0,0,0.4);
+        }
+
+        #quizTimer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #ff00ff;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ff00ff;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 6px;
+            background: #0f3460;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+            border: 1px solid #ff00ff;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        #scoreBoard {
+            position: absolute;
+            top: 150px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ffff00;
+            border-radius: 10px;
+            padding: 15px;
+            color: #ffff00;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ffff00;
+            z-index: 150;
+        }
+
+        #scoreBoard div {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        #currentMap {
+            position: absolute;
+            bottom: 150px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ffff00;
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 0 0 8px #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer"></div>
+
+    <div id="hud">
+        <div id="speedometer">SPEED: 0 km/h</div>
+        <div id="speedBar">
+            <div id="speedBarFill"></div>
+        </div>
+        <div id="stats">
+            <div>DISTANCE: 0 m</div>
+            <div id="gear">GEAR: N</div>
+            <div id="rpm">RPM: 0</div>
+        </div>
+        <div id="nextMilestone">📍 Next Quiz: 1000 m</div>
+    </div>
+
+    <div id="currentMap">🗺️ FOREST MAP</div>
+
+    <div id="mapSelector">
+        <div>🗺️ SWITCH MAP (1/2/3)</div>
+        <button class="map-btn active" onclick="switchMap(0)">🌲 FOREST</button>
+        <button class="map-btn" onclick="switchMap(1)">🏜️ DESERT</button>
+        <button class="map-btn" onclick="switchMap(2)">⛰️ MOUNTAIN</button>
+    </div>
+
+    <div id="scoreBoard">
+        <div>📚 QUIZ SCORE</div>
+        <div id="correctAnswers">✓ Correct: 0</div>
+        <div id="totalQuestions">📋 Total: 0</div>
+        <div id="percentage">📊 Score: 0%</div>
+    </div>
+
+    <div id="fpsDisplay">FPS: 0</div>
+    <div id="controls">
+        ⬆️ W/ARROWS: Drive | SPACE: Brake | R: Reset | 1/2/3: Maps
+    </div>
+
+    <div id="quizPopup">
+        <div class="quiz-milestone" id="milestoneInfo">🎯 MILESTONE 1000m</div>
+        <div class="quiz-popup-title">🕌 QUIZ QUESTION 🕌</div>
+        <div class="quiz-popup-question" id="popupQuestion">Loading...</div>
+        <div class="popup-options" id="popupOptions"></div>
+        <div id="popupResult" class="popup-result" style="display: none;"></div>
+        <div id="quizTimer">
+            <div>Time left: <span id="timerSeconds">45</span>s</div>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== COMPREHENSIVE ISLAM QUIZ DATA =====
+        const quizData = [
+            { question: "What is the holy book of Islam called?", options: ["Quran", "Bible", "Torah", "Vedas"], correct: 0 },
+            { question: "How many pillars of Islam are there?", options: ["3", "5", "7", "10"], correct: 1 },
+            { question: "What is the Islamic concept of the oneness of God?", options: ["Shirk", "Tawheed", "Hadith", "Sunnah"], correct: 1 },
+            { question: "Who is the greatest Islamic prophet?", options: ["Jesus", "Muhammad", "Moses", "Abraham"], correct: 1 },
+            { question: "In what language was the Quran revealed?", options: ["Turkish", "Persian", "Arabic", "Hebrew"], correct: 2 },
+            { question: "What is the pilgrimage to Mecca called?", options: ["Hajj", "Umrah", "Salah", "Zakat"], correct: 0 },
+            { question: "What does 'Salah' refer to?", options: ["Charity", "Greeting", "Prayer", "Fasting"], correct: 2 },
+            { question: "What does 'Zakat' mean?", options: ["Prayer", "Charity", "Pilgrimage", "Fasting"], correct: 1 },
+            { question: "What is the fasting month called?", options: ["Hajj", "Rajab", "Ramadan", "Shawwal"], correct: 2 },
+            { question: "What is the declaration of faith?", options: ["Kalima", "Zikr", "Fatwa", "Hadith"], correct: 0 },
+            { question: "In what city was Prophet Muhammad born?", options: ["Medina", "Mecca", "Jerusalem", "Damascus"], correct: 1 },
+            { question: "In what year was Prophet Muhammad born?", options: ["550 CE", "570 CE", "590 CE", "610 CE"], correct: 1 },
+            { question: "To which city did Prophet Muhammad migrate?", options: ["Mecca", "Medina", "Cairo", "Baghdad"], correct: 1 },
+            { question: "What is the night of revelation called?", options: ["Laylat al-Qadr", "Laylat al-Isra", "Laylat al-Badr", "Laylat al-Aqaba"], correct: 0 },
+            { question: "How many children did Prophet Muhammad have?", options: ["2", "3", "4", "6"], correct: 3 },
+            { question: "How many Surahs are in the Quran?", options: ["100", "114", "120", "144"], correct: 1 },
+            { question: "What is the first chapter called?", options: ["Al-Baqarah", "Al-Fatihah", "Al-Ikhlas", "Al-Nas"], correct: 1 },
+            { question: "How many Ayahs are in the Quran?", options: ["5,000", "6,000", "7,000", "8,000"], correct: 2 },
+            { question: "What does 'Surah' mean?", options: ["Verse", "Chapter", "Word", "Letter"], correct: 1 },
+            { question: "What is 'Hadith'?", options: ["Verses", "Sayings of Prophet", "Islamic law", "History"], correct: 1 },
+            { question: "Who was the first Caliph?", options: ["Umar", "Abu Bakr", "Uthman", "Ali"], correct: 1 },
+            { question: "Who was the second Caliph?", options: ["Abu Bakr", "Umar ibn al-Khattab", "Uthman", "Ali"], correct: 1 },
+            { question: "What was Prophet's first wife's name?", options: ["Aisha", "Khadijah", "Hafsa", "Zainab"], correct: 1 },
+            { question: "When was the Battle of Badr?", options: ["610 CE", "620 CE", "625 CE", "630 CE"], correct: 2 },
+            { question: "What does 'Hijrah' mean?", options: ["Prayer", "Migration", "Pilgrimage", "Fasting"], correct: 1 },
+            { question: "What is 'Shariah'?", options: ["Prayer", "Islamic law", "History", "Poetry"], correct: 1 },
+            { question: "How many times daily do Muslims pray?", options: ["3", "4", "5", "7"], correct: 2 },
+            { question: "What is 'Fiqh'?", options: ["Hadith", "Islamic jurisprudence", "Tafsir", "Sunnah"], correct: 1 },
+            { question: "What does 'Haram' mean?", options: ["Holy", "Forbidden", "Permitted", "Required"], correct: 1 },
+            { question: "What does 'Halal' mean?", options: ["Forbidden", "Holy", "Permitted", "Required"], correct: 2 },
+            { question: "What is an Islamic place of worship?", options: ["Temple", "Mosque", "Synagogue", "Church"], correct: 1 },
+            { question: "What is the prayer tower called?", options: ["Minbar", "Mihrab", "Minaret", "Qibla"], correct: 2 },
+            { question: "Which direction do Muslims face in prayer?", options: ["North", "South", "East", "Towards Mecca"], correct: 3 },
+            { question: "When does the Islamic calendar start from?", options: ["Birth of Muhammad", "Hijrah", "Quran revelation", "Battle of Badr"], correct: 1 },
+            { question: "What is Islamic modesty in dress?", options: ["Hijab", "Burka", "Niqab", "Abaya"], correct: 0 },
+            { question: "What is striving in Islam called?", options: ["Jihad", "Fatwa", "Hadith", "Tafsir"], correct: 0 },
+            { question: "What does 'Tawakkul' mean?", options: ["Prayer", "Trust in God", "Charity", "Fasting"], correct: 1 },
+            { question: "What is Islamic community called?", options: ["Ummah", "Khalifa", "Fatwa", "Hadith"], correct: 0 },
+            { question: "What greeting do Muslims use?", options: ["Namaste", "Assalamu alaikum", "Shalom", "Bonjour"], correct: 1 },
+            { question: "How many times do pilgrims circle the Kaaba?", options: ["5", "7", "10", "14"], correct: 1 },
+            { question: "What is the Eid after Ramadan called?", options: ["Eid al-Adha", "Eid al-Fitr", "Eid Milad-un-Nabi", "Isra and Mi'raj"], correct: 1 },
+            { question: "What is the festival of sacrifice called?", options: ["Eid al-Fitr", "Eid al-Adha", "Eid Milad-un-Nabi", "Ashura"], correct: 1 },
+            { question: "What does 'Tafsir' mean?", options: ["Law", "Interpretation", "Hadith", "Fatwa"], correct: 1 },
+            { question: "How many times is Quran recited in Ramadan?", options: ["Once", "Twice", "Three times", "Varies"], correct: 0 },
+            { question: "What is the smallest charity?", options: ["Zakat", "Sadaqah", "Waqf", "Ushr"], correct: 1 },
+            { question: "Who compiled famous Hadith collections?", options: ["Al-Bukhari and Muslim", "At-Tirmidhi", "Abu Dawud", "An-Nasa'i"], correct: 0 },
+            { question: "What is the last chapter called?", options: ["Al-Ikhlas", "Al-Falaq", "Al-Nas", "An-Nas"], correct: 2 },
+            { question: "What is 'Istighfar'?", options: ["Prayer", "Seeking forgiveness", "Fasting", "Charity"], correct: 1 },
+            { question: "What does 'Dhikr' mean?", options: ["Remembrance of God", "Prayer", "Charity", "Pilgrimage"], correct: 0 },
+            { question: "What is the month before Ramadan?", options: ["Rajab", "Sha'ban", "Rabi' al-Thani", "Jumada"], correct: 1 },
+            { question: "How many years for Quran revelation?", options: ["10", "15", "20", "23"], correct: 3 },
+            { question: "What is the central sanctuary in Mecca?", options: ["Masjid al-Haram", "Masjid an-Nabawi", "Masjid al-Aqsa", "Kaaba"], correct: 0 }
+        ];
+
+        // ===== MILESTONE-BASED QUIZ SYSTEM =====
+        class MilestoneQuizSystem {
+            constructor() {
+                this.currentQuestion = 0;
+                this.score = 0;
+                this.answered = false;
+                this.totalAnswered = 0;
+                this.shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+                this.quizTimer = 45;
+                this.nextMilestone = 1000;
+                this.milestoneInterval = 1000;
+                this.quizActive = false;
+                this.quizTimerInterval = null;
+            }
+
+            getCurrentQuestion() {
+                return this.shuffledQuestions[this.currentQuestion];
+            }
+
+            answerQuestion(optionIndex) {
+                if (this.answered) return null;
+                this.answered = true;
+                this.totalAnswered++;
+
+                const correct = optionIndex === this.getCurrentQuestion().correct;
+                if (correct) this.score++;
+
+                return correct;
+            }
+
+            nextQuestion() {
+                this.currentQuestion++;
+                this.answered = false;
+                if (this.currentQuestion >= this.shuffledQuestions.length) {
+                    this.currentQuestion = 0;
+                    this.shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+                }
+            }
+
+            resetTimer() {
+                this.quizTimer = 45;
+            }
+
+            updateTimer() {
+                this.quizTimer--;
+                if (this.quizTimer <= 0) {
+                    this.endQuiz();
+                }
+                return this.quizTimer;
+            }
+
+            checkMilestone(distance) {
+                const absoluteDistance = Math.abs(distance);
+                if (absoluteDistance >= this.nextMilestone && !this.quizActive) {
+                    this.startQuiz();
+                    this.nextMilestone += this.milestoneInterval;
+                }
+            }
+
+            startQuiz() {
+                this.quizActive = true;
+                this.resetTimer();
+                showMilestoneQuiz();
+            }
+
+            endQuiz() {
+                this.quizActive = false;
+                quizPopup.classList.remove('show');
+                this.nextQuestion();
+                if (this.quizTimerInterval) clearInterval(this.quizTimerInterval);
+            }
+
+            getPercentage() {
+                return this.totalAnswered === 0 ? 0 : Math.round((this.score / this.totalAnswered) * 100);
+            }
+        }
+
+        const quizSystem = new MilestoneQuizSystem();
+
+        // ===== QUIZ UI =====
+        const quizPopup = document.getElementById('quizPopup');
+        const popupQuestion = document.getElementById('popupQuestion');
+        const popupOptions = document.getElementById('popupOptions');
+        const popupResult = document.getElementById('popupResult');
+        const timerBar = document.getElementById('timerBar');
+        const timerSeconds = document.getElementById('timerSeconds');
+        const milestoneInfo = document.getElementById('milestoneInfo');
+
+        function showMilestoneQuiz() {
+            const question = quizSystem.getCurrentQuestion();
+            const milestone = Math.round(quizSystem.nextMilestone - quizSystem.milestoneInterval);
+
+            milestoneInfo.textContent = `🎯 MILESTONE ${milestone}m`;
+            popupQuestion.textContent = question.question;
+
+            let html = '';
+            question.options.forEach((option, idx) => {
+                html += `<button class="popup-option-btn" onclick="handleGameQuizAnswer(${idx})">${option}</button>`;
+            });
+
+            popupOptions.innerHTML = html;
+            popupResult.style.display = 'none';
+            quizPopup.classList.add('show');
+
+            // Start timer
+            if (quizSystem.quizTimerInterval) clearInterval(quizSystem.quizTimerInterval);
+
+            quizSystem.quizTimerInterval = setInterval(() => {
+                if (!quizSystem.quizActive) {
+                    clearInterval(quizSystem.quizTimerInterval);
+                    return;
+                }
+
+                const timeLeft = quizSystem.updateTimer();
+                timerSeconds.textContent = timeLeft;
+                const percentage = (timeLeft / 45) * 100;
+                timerBar.style.width = percentage + '%';
+
+                if (timeLeft <= 0) {
+                    quizSystem.endQuiz();
+                }
+            }, 1000);
+        }
+
+        function handleGameQuizAnswer(optionIndex) {
+            const question = quizSystem.getCurrentQuestion();
+            const isCorrect = quizSystem.answerQuestion(optionIndex);
+
+            if (isCorrect === null) return;
+
+            const options = document.querySelectorAll('.popup-option-btn');
+            options.forEach((btn, idx) => {
+                if (idx === question.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === optionIndex && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            popupResult.style.display = 'block';
+            if (isCorrect) {
+                popupResult.className = 'popup-result result-correct';
+                popupResult.textContent = '✓ CORRECT! Alhamdulillah!';
+            } else {
+                popupResult.className = 'popup-result result-incorrect';
+                popupResult.textContent = '✗ INCORRECT! Answer: ' + question.options[question.correct];
+            }
+
+            updateScoreboard();
+            setTimeout(() => {
+                quizSystem.endQuiz();
+            }, 2500);
+        }
+
+        function updateScoreboard() {
+            document.getElementById('correctAnswers').textContent = `✓ Correct: ${quizSystem.score}`;
+            document.getElementById('totalQuestions').textContent = `📋 Total: ${quizSystem.totalAnswered}`;
+            document.getElementById('percentage').textContent = `📊 Score: ${quizSystem.getPercentage()}%`;
+        }
+
+        // ===== MAP SYSTEM =====
+        let currentMapIndex = 0;
+        const mapNames = ['🌲 FOREST MAP', '🏜️ DESERT MAP', '⛰️ MOUNTAIN MAP'];
+
+        function switchMap(mapIndex) {
+            currentMapIndex = mapIndex;
+
+            document.querySelectorAll('.map-btn').forEach((btn, idx) => {
+                if (idx === mapIndex) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            document.getElementById('currentMap').textContent = '🗺️ ' + mapNames[mapIndex].toUpperCase();
+
+            track.updateEnvironment(mapIndex);
+
+            car.group.position.set(0, 0.5, 0);
+            car.maxVelocity = 0;
+            car.rotation = 0;
+            quizSystem.nextMilestone = 1000;
+            updateMilestoneDisplay();
+        }
+
+        window.addEventListener('keydown', e => {
+            if (e.key === '1') switchMap(0);
+            if (e.key === '2') switchMap(1);
+            if (e.key === '3') switchMap(2);
+        });
+
+        function updateMilestoneDisplay() {
+            const nextM = quizSystem.nextMilestone;
+            document.getElementById('nextMilestone').textContent = `📍 Next Quiz: ${nextM} m`;
+        }
+
+        // ===== GAME CONFIG =====
+        let gameRunning = true;
+
+        // ===== SETUP =====
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+        scene.fog = new THREE.Fog(0x1a1a2e, 800, 2500);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera.position.set(0, 8, -30);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: false, precision: 'lowp', powerPreference: 'high-performance' });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        renderer.shadowMap.enabled = false;
+        document.getElementById('gameContainer').appendChild(renderer.domElement);
+
+        // ===== LIGHTING =====
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+        dirLight.position.set(150, 150, 75);
+        scene.add(dirLight);
+
+        // ===== PARTICLES =====
+        const particleGeom = new THREE.BufferGeometry();
+        const particleCount = 150;
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 300;
+            positions[i + 1] = Math.random() * 150;
+            positions[i + 2] = (Math.random() - 0.5) * 1500;
+        }
+
+        particleGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 2, sizeAttenuation: true, transparent: true, opacity: 0.6 });
+        const particles = new THREE.Points(particleGeom, particleMat);
+        scene.add(particles);
+
+        // ===== CAR OBJECT =====
+        class Car {
+            constructor() {
+                this.group = new THREE.Group();
+
+                const bodyGeom = new THREE.BoxGeometry(2, 1.5, 4.5);
+                const bodyMat = new THREE.MeshPhongMaterial({ color: 0xff00ff });
+                const body = new THREE.Mesh(bodyGeom, bodyMat);
+                body.position.y = 0.75;
+                this.group.add(body);
+
+                const windowGeom = new THREE.BoxGeometry(1.8, 0.8, 1.2);
+                const windowMat = new THREE.MeshPhongMaterial({ color: 0x00ffff, emissive: 0x00aaff });
+                const window = new THREE.Mesh(windowGeom, windowMat);
+                window.position.set(0, 1.4, -0.5);
+                this.group.add(window);
+
+                this.wheels = [];
+                const wheelPos = [[-1, 0.5, 1.2], [1, 0.5, 1.2], [-1, 0.5, -1.2], [1, 0.5, -1.2]];
+
+                wheelPos.forEach(pos => {
+                    const wheel = this.createWheel();
+                    wheel.position.set(...pos);
+                    this.group.add(wheel);
+                    this.wheels.push(wheel);
+                });
+
+                scene.add(this.group);
+
+                this.velocity = new THREE.Vector3();
+                this.acceleration = 1.2;
+                this.maxVelocity = 0;
+                this.friction = 0.88;
+                this.maxSpeed = 300;
+                this.rotation = 0;
+                this.angularVelocity = 0;
+                this.angularFriction = 0.82;
+            }
+
+            createWheel() {
+                const geom = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 12);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x111111 });
+                const wheel = new THREE.Mesh(geom, mat);
+                wheel.rotation.z = Math.PI / 2;
+                return wheel;
+            }
+
+            update(input, deltaTime) {
+                const dtClamp = Math.min(deltaTime, 0.016);
+
+                if (input.forward) {
+                    this.maxVelocity = Math.min(this.maxVelocity + this.acceleration * 2, this.maxSpeed);
+                } else if (input.backward) {
+                    this.maxVelocity = Math.max(this.maxVelocity - this.acceleration * 1.5, -this.maxSpeed * 0.6);
+                } else if (input.brake) {
+                    this.maxVelocity *= 0.7;
+                } else {
+                    this.maxVelocity *= this.friction;
+                }
+
+                this.velocity.z = this.maxVelocity;
+
+                const maxAngular = 0.12;
+                if (input.left) this.angularVelocity = Math.max(this.angularVelocity - 0.18, -maxAngular);
+                if (input.right) this.angularVelocity = Math.min(this.angularVelocity + 0.18, maxAngular);
+                this.angularVelocity *= this.angularFriction;
+
+                this.rotation += this.angularVelocity;
+
+                this.group.position.x += Math.sin(this.rotation) * this.velocity.z * dtClamp;
+                this.group.position.z += Math.cos(this.rotation) * this.velocity.z * dtClamp;
+                this.group.rotation.y = this.rotation;
+
+                this.wheels.forEach(wheel => {
+                    wheel.rotation.x += (this.velocity.z * 0.03) % (Math.PI * 2);
+                });
+
+                if (this.group.position.y < 0.5) {
+                    this.group.position.y = 0.5;
+                }
+            }
+        }
+
+        // ===== HUGE TRACK WITH WALLS =====
+        class Track {
+            constructor() {
+                this.environmentObjects = [];
+                this.updateEnvironment(0);
+            }
+
+            clearEnvironment() {
+                this.environmentObjects.forEach(obj => scene.remove(obj));
+                this.environmentObjects = [];
+            }
+
+            updateEnvironment(mapIndex) {
+                this.clearEnvironment();
+
+                // MASSIVE ROAD
+                const roadGeom = new THREE.PlaneGeometry(50, 5000);
+                let roadColor = 0x222222;
+
+                const road = new THREE.Mesh(roadGeom, new THREE.MeshPhongMaterial({ color: roadColor }));
+                road.rotation.x = -Math.PI / 2;
+                scene.add(road);
+                this.environmentObjects.push(road);
+
+                // MASSIVE WALLS
+                const wallHeight = 15;
+                const wallGeom = new THREE.BoxGeometry(3, wallHeight, 5000);
+                const wallMat = new THREE.MeshPhongMaterial({ color: 0x666666 });
+
+                const leftWall = new THREE.Mesh(wallGeom, wallMat);
+                leftWall.position.set(-27, wallHeight/2, 0);
+                scene.add(leftWall);
+                this.environmentObjects.push(leftWall);
+
+                const rightWall = new THREE.Mesh(wallGeom, wallMat);
+                rightWall.position.set(27, wallHeight/2, 0);
+                scene.add(rightWall);
+                this.environmentObjects.push(rightWall);
+
+                // Add environment based on map
+                if (mapIndex === 0) {
+                    this.addForestEnvironment();
+                } else if (mapIndex === 1) {
+                    this.addDesertEnvironment();
+                } else if (mapIndex === 2) {
+                    this.addMountainEnvironment();
+                }
+            }
+
+            addForestEnvironment() {
+                scene.background = new THREE.Color(0x1a3a1a);
+                scene.fog = new THREE.Fog(0x1a3a1a, 800, 2500);
+
+                for (let z = -2000; z < 3000; z += 100) {
+                    const treeGeom = new THREE.ConeGeometry(8, 50, 12);
+                    const treeMat = new THREE.MeshPhongMaterial({ color: 0x228b22 });
+
+                    const tree1 = new THREE.Mesh(treeGeom, treeMat);
+                    tree1.position.set(-60 + Math.random() * 15, 25, z);
+                    scene.add(tree1);
+                    this.environmentObjects.push(tree1);
+
+                    const tree2 = new THREE.Mesh(treeGeom, treeMat);
+                    tree2.position.set(60 - Math.random() * 15, 25, z);
+                    scene.add(tree2);
+                    this.environmentObjects.push(tree2);
+
+                    const trunkGeom = new THREE.CylinderGeometry(2.5, 3, 30, 10);
+                    const trunkMat = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+
+                    const trunk1 = new THREE.Mesh(trunkGeom, trunkMat);
+                    trunk1.position.set(-60 + Math.random() * 15, 15, z);
+                    scene.add(trunk1);
+                    this.environmentObjects.push(trunk1);
+
+                    const trunk2 = new THREE.Mesh(trunkGeom, trunkMat);
+                    trunk2.position.set(60 - Math.random() * 15, 15, z);
+                    scene.add(trunk2);
+                    this.environmentObjects.push(trunk2);
+                }
+            }
+
+            addDesertEnvironment() {
+                scene.background = new THREE.Color(0xD2B48C);
+                scene.fog = new THREE.Fog(0xD2B48C, 800, 2500);
+
+                for (let z = -2000; z < 3000; z += 120) {
+                    const bushGeom = new THREE.CylinderGeometry(5, 0, 25, 10);
+                    const bushMat = new THREE.MeshPhongMaterial({ color: 0x9ACD32 });
+
+                    const bush1 = new THREE.Mesh(bushGeom, bushMat);
+                    bush1.position.set(-70 + Math.random() * 40, 12.5, z + Math.random() * 80);
+                    scene.add(bush1);
+                    this.environmentObjects.push(bush1);
+
+                    const bush2 = new THREE.Mesh(bushGeom, bushMat);
+                    bush2.position.set(70 - Math.random() * 40, 12.5, z + Math.random() * 80);
+                    scene.add(bush2);
+                    this.environmentObjects.push(bush2);
+
+                    const rockGeom = new THREE.IcosahedronGeometry(5, 2);
+                    const rockMat = new THREE.MeshPhongMaterial({ color: 0xCD853F });
+
+                    const rock1 = new THREE.Mesh(rockGeom, rockMat);
+                    rock1.position.set(-80 + Math.random() * 50, 5, z);
+                    scene.add(rock1);
+                    this.environmentObjects.push(rock1);
+
+                    const rock2 = new THREE.Mesh(rockGeom, rockMat);
+                    rock2.position.set(80 - Math.random() * 50, 5, z);
+                    scene.add(rock2);
+                    this.environmentObjects.push(rock2);
+                }
+            }
+
+            addMountainEnvironment() {
+                scene.background = new THREE.Color(0x4A4A4A);
+                scene.fog = new THREE.Fog(0x4A4A4A, 800, 2500);
+
+                for (let z = -2000; z < 3000; z += 150) {
+                    const mountainGeom = new THREE.ConeGeometry(20, 80, 12);
+                    const mountainMat = new THREE.MeshPhongMaterial({ color: 0x696969 });
+
+                    const mountain1 = new THREE.Mesh(mountainGeom, mountainMat);
+                    mountain1.position.set(-100 + Math.random() * 30, 40, z);
+                    mountain1.rotation.z = (Math.random() - 0.5) * 0.5;
+                    scene.add(mountain1);
+                    this.environmentObjects.push(mountain1);
+
+                    const mountain2 = new THREE.Mesh(mountainGeom, mountainMat);
+                    mountain2.position.set(100 - Math.random() * 30, 40, z);
+                    mountain2.rotation.z = (Math.random() - 0.5) * 0.5;
+                    scene.add(mountain2);
+                    this.environmentObjects.push(mountain2);
+
+                    const snowGeom = new THREE.ConeGeometry(18, 15, 12);
+                    const snowMat = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+
+                    const snow1 = new THREE.Mesh(snowGeom, snowMat);
+                    snow1.position.set(-100 + Math.random() * 30, 65, z);
+                    scene.add(snow1);
+                    this.environmentObjects.push(snow1);
+
+                    const snow2 = new THREE.Mesh(snowGeom, snowMat);
+                    snow2.position.set(100 - Math.random() * 30, 65, z);
+                    scene.add(snow2);
+                    this.environmentObjects.push(snow2);
+                }
+            }
+        }
+
+        // ===== INPUT =====
+        const input = {
+            forward: false,
+            backward: false,
+            left: false,
+            right: false,
+            brake: false
+        };
+
+        window.addEventListener('keydown', e => {
+            const key = e.key.toLowerCase();
+            if (key === 'arrowup' || key === 'w') input.forward = true;
+            if (key === 'arrowdown' || key === 's') input.backward = true;
+            if (key === 'arrowleft' || key === 'a') input.left = true;
+            if (key === 'arrowright' || key === 'd') input.right = true;
+            if (key === ' ') { input.brake = true; e.preventDefault(); }
+            if (key === 'r') { car.group.position.set(0, 0.5, 0); car.maxVelocity = 0; car.rotation = 0; quizSystem.nextMilestone = 1000; updateMilestoneDisplay(); }
+        });
+
+        window.addEventListener('keyup', e => {
+            const key = e.key.toLowerCase();
+            if (key === 'arrowup' || key === 'w') input.forward = false;
+            if (key === 'arrowdown' || key === 's') input.backward = false;
+            if (key === 'arrowleft' || key === 'a') input.left = false;
+            if (key === 'arrowright' || key === 'd') input.right = false;
+            if (key === ' ') input.brake = false;
+        });
+
+        // ===== INITIALIZE =====
+        const car = new Car();
+        const track = new Track();
+
+        // ===== FPS MONITOR =====
+        let frameCount = 0;
+        let lastTime = performance.now();
+
+        function updateFPS() {
+            frameCount++;
+            const now = performance.now();
+            if (now - lastTime >= 1000) {
+                document.getElementById('fpsDisplay').textContent = `FPS: ${frameCount}`;
+                frameCount = 0;
+                lastTime = now;
+            }
+        }
+
+        // ===== CAMERA =====
+        function updateCamera() {
+            const targetPos = new THREE.Vector3(
+                car.group.position.x * 0.5,
+                car.group.position.y + 8,
+                car.group.position.z - 35
+            );
+            camera.position.lerp(targetPos, 0.08);
+            camera.lookAt(car.group.position.x, car.group.position.y + 2, car.group.position.z + 20);
+        }
+
+        // ===== GAME LOOP =====
+        let lastFrameTime = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const now = performance.now();
+            const deltaTime = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            if (gameRunning) {
+                car.update(input, deltaTime);
+                updateCamera();
+
+                const speed = Math.abs(car.velocity.z * 3.6).toFixed(1);
+                const distance = Math.abs(car.group.position.z).toFixed(0);
+                const rpm = Math.floor((Math.abs(car.velocity.z) / 300) * 8000);
+
+                document.getElementById('speedometer').textContent = `SPEED: ${speed} km/h`;
+                document.getElementById('speedBarFill').style.width = (Math.abs(car.velocity.z) / 300) * 100 + '%';
+                document.getElementById('stats').innerHTML = `
+                    <div>DISTANCE: ${distance} m</div>
+                    <div id="gear">${speed < 10 ? 'GEAR: N' : 'GEAR: ' + (1 + Math.floor(speed / 50))}</div>
+                    <div id="rpm">RPM: ${rpm}</div>
+                `;
+
+                particles.position.z = car.group.position.z;
+
+                // Check for milestone quiz
+                quizSystem.checkMilestone(car.group.position.z);
+                updateMilestoneDisplay();
+            }
+
+            renderer.render(scene, camera);
+            updateFPS();
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
