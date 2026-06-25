@@ -242,8 +242,29 @@ function GameView({ gameKey, onBack }) {
 }
 
 function App() {
-  const [page, setPage] = useState('home');
+  // Deep-linkbaar: lees de game-sleutel uit de URL-hash (bv. qalamgames.nl/#hajj → opent direct de game)
+  const pageFromHash = () => {
+    const h = (window.location.hash || '').replace(/^#\/?/, '');
+    return (h && gameStyles[h]) ? h : 'home';
+  };
+  const [page, setPage] = useState(pageFromHash);
   const [activeTab, setActiveTab] = useState('lichting2');
+
+  // Houd de URL-hash in sync met de huidige pagina → elke game heeft een deelbare link, en de back-knop werkt
+  useEffect(() => {
+    const current = (window.location.hash || '').replace(/^#\/?/, '');
+    const target = page === 'home' ? '' : page;
+    if (current === target) return;
+    if (target) window.location.hash = target;                                                 // game openen → history-entry (browser-back keert terug)
+    else window.history.replaceState(null, '', window.location.pathname + window.location.search); // terug naar home → hash netjes weghalen
+  }, [page]);
+
+  // Reageer op browser back/forward én op een direct geplakte/gedeelde link
+  useEffect(() => {
+    const onHash = () => setPage(pageFromHash());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   // Render any game page using the unified GameView
   if (page !== 'home' && gameStyles[page]) {
