@@ -112,6 +112,15 @@ const gameStyles = {
 | 7 | Imran Mestour | Voetbal Legends | Groep 6a | 7.50 | kickoff3d |
 | 8 | Youssef El Mahjoubi | MijnCraft | Groep 6b | 7.19 | mijncraft |
 
+### Lichting 3 (Derde groep)
+| Naam | Spel | Klas | Key |
+|------|------|------|-----|
+| Amr Jahouhi | Fight Night | Groep 7a | fightnight |
+| Al Qalam kids | Hajj Simulator 3D | Al Qalam School | hajj (externe deploy) |
+
+> **Uitgelicht** (homepage, boven Hall of Legends): Hajj Simulator 3D + Fight Night staan als vlaggenschepen naast elkaar.
+> De tab-navigatie toont Lichting 3 (standaard) / Lichting 2 / Lichting 1.
+
 ## Nieuw spel toevoegen — Stappen
 
 ### 1. HTML-bestand opslaan

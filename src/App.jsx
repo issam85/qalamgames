@@ -29,6 +29,12 @@ const lichting2Rest = [
   { rank: 8, name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft', score: '7.19' },
 ];
 
+// Lichting 3 — Derde ronde gamemakers
+const lichting3 = [
+  { name: 'Amr Jahouhi', game: 'Fight Night', klas: 'Groep 7a', playable: 'fightnight', emoji: '🥊' },
+  { name: 'Al Qalam kids', game: 'Hajj Simulator 3D', klas: 'Al Qalam School', playable: 'hajj', emoji: '🕋' },
+];
+
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
   2: <Medal size={36} fill="#C0C0C0" color="#C0C0C0" />,
@@ -65,6 +71,7 @@ const gameStyles = {
   turborace:        { border: '#ff6600', color: '#ff9933', bg: 'rgba(8,8,16,0.95)', font: 'monospace', src: '/turborace.html', title: 'Turbo Race' },
   // Uitgelicht — externe deploy (eigen repo: hajj-simulator-3d), via iframe ingeladen
   hajj:             { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.85)', font: '"Amiri", serif', src: 'https://hajj-simulator-3d.vercel.app', title: 'Hajj Simulator 3D' },
+  fightnight:       { border: '#FAC775', color: '#FAC775', bg: 'rgba(10,8,6,0.92)', font: '"Bebas Neue", sans-serif', src: '/fightnight.html', title: 'Fight Night' },
 };
 
 function GameView({ gameKey, onBack }) {
@@ -248,7 +255,7 @@ function App() {
     return (h && gameStyles[h]) ? h : 'home';
   };
   const [page, setPage] = useState(pageFromHash);
-  const [activeTab, setActiveTab] = useState('lichting2');
+  const [activeTab, setActiveTab] = useState('lichting3');
 
   // Houd de URL-hash in sync met de huidige pagina → elke game heeft een deelbare link, en de back-knop werkt
   useEffect(() => {
@@ -412,41 +419,89 @@ function App() {
           </div>
         </section>
 
-        {/* Uitgelicht — Hajj Simulator 3D (vlaggenschip, externe deploy) */}
+        {/* Uitgelicht — Hajj Simulator 3D + Fight Night (vlaggenschepen) */}
         <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div style={{ fontSize: '0.78rem', letterSpacing: '0.28em', color: '#d4af37', opacity: 0.75, marginBottom: '0.8rem' }}>
+          <div style={{ fontSize: '0.78rem', letterSpacing: '0.28em', color: '#d4af37', opacity: 0.75, marginBottom: '1.2rem' }}>
             ⭐ UITGELICHT
           </div>
           <div style={{
-            position: 'relative', maxWidth: '660px', margin: '0 auto',
-            background: 'linear-gradient(135deg, rgba(212,175,55,0.18), rgba(26,15,10,0.65))',
-            border: '2px solid rgba(212,175,55,0.6)', borderRadius: '20px',
-            padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(212,175,55,0.18)',
+            display: 'flex', justifyContent: 'center', alignItems: 'stretch',
+            gap: '1.5rem', flexWrap: 'wrap',
           }}>
-            <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🕋</div>
-            <h3 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.3rem)', color: '#FFD700', margin: '0 0 0.3rem', letterSpacing: '0.04em' }}>
-              Hajj Simulator 3D
-            </h3>
-            <p dir="rtl" style={{ fontSize: '1.15rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem' }}>
-              لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ
-            </p>
-            <p style={{ fontSize: '1rem', lineHeight: 1.7, opacity: 0.85, maxWidth: '520px', margin: '0 auto 1.5rem' }}>
-              Beleef de hele bedevaart naar Mekka — van de intentie thuis tot de Tawaf rond de Ka'ba,
-              Arafat, de steniging in Mina en het bezoek aan Medina. Met fotorealistische 3D-modellen.
-            </p>
-            <button
-              onClick={() => setPage('hajj')}
-              style={{
-                padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
-                border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                color: '#1a0f0a', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(212, 175, 55, 0.6)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <Gamepad2 size={18} /> Speel nu
-            </button>
+            {/* Hajj Simulator 3D */}
+            <div style={{
+              position: 'relative', flex: '1 1 360px', maxWidth: '480px',
+              display: 'flex', flexDirection: 'column',
+              background: 'linear-gradient(135deg, rgba(212,175,55,0.18), rgba(26,15,10,0.65))',
+              border: '2px solid rgba(212,175,55,0.6)', borderRadius: '20px',
+              padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(212,175,55,0.18)',
+            }}>
+              <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🕋</div>
+              <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', color: '#FFD700', margin: '0 0 0.3rem', letterSpacing: '0.04em' }}>
+                Hajj Simulator 3D
+              </h3>
+              <p dir="rtl" style={{ fontSize: '1.1rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem' }}>
+                لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ
+              </p>
+              <p style={{ fontSize: '0.98rem', lineHeight: 1.7, opacity: 0.85, margin: '0 auto 1.5rem' }}>
+                Beleef de hele bedevaart naar Mekka — van de intentie thuis tot de Tawaf rond de Ka'ba,
+                Arafat, de steniging in Mina en het bezoek aan Medina. Met fotorealistische 3D-modellen.
+              </p>
+              <div style={{ marginTop: 'auto' }}>
+                <button
+                  onClick={() => setPage('hajj')}
+                  style={{
+                    padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
+                    border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                    color: '#1a0f0a', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(212, 175, 55, 0.6)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  <Gamepad2 size={18} /> Speel nu
+                </button>
+              </div>
+            </div>
+
+            {/* Fight Night */}
+            <div style={{
+              position: 'relative', flex: '1 1 360px', maxWidth: '480px',
+              display: 'flex', flexDirection: 'column',
+              background: 'linear-gradient(135deg, rgba(250,199,117,0.16), rgba(10,8,6,0.7))',
+              border: '2px solid rgba(250,199,117,0.6)', borderRadius: '20px',
+              padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(250,199,117,0.18)',
+            }}>
+              <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🥊</div>
+              <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', color: '#FAC775', margin: '0 0 0.3rem', letterSpacing: '0.06em' }}>
+                Fight Night
+              </h3>
+              <p style={{ fontSize: '1.1rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem', letterSpacing: '0.04em' }}>
+                Stap de ring in 🔥
+              </p>
+              <p style={{ fontSize: '0.98rem', lineHeight: 1.7, opacity: 0.85, margin: '0 auto 1.5rem' }}>
+                Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je
+                tegenstander met jabs, combo's en knock-outs. Inclusief coaches, rondes en stats.
+              </p>
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '0.8rem' }}>
+                  Amr Jahouhi — Groep 7a
+                </div>
+                <button
+                  onClick={() => setPage('fightnight')}
+                  style={{
+                    padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
+                    border: '2px solid #FAC775', background: 'linear-gradient(135deg, #FAC775, #C8960C)',
+                    color: '#1a0800', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(250, 199, 117, 0.6)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  <Gamepad2 size={18} /> Speel nu
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -523,6 +578,7 @@ function App() {
           marginBottom: '3rem',
         }}>
           {[
+            { key: 'lichting3', label: 'Lichting 3' },
             { key: 'lichting2', label: 'Lichting 2' },
             { key: 'lichting1', label: 'Lichting 1' },
           ].map((tab) => (
@@ -552,6 +608,54 @@ function App() {
             </button>
           ))}
         </div>
+
+        {/* Lichting 3 Content */}
+        {activeTab === 'lichting3' && (
+          <>
+            <section style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', opacity: 0.7 }}>
+                De nieuwste lichting gamemakers
+              </p>
+            </section>
+            <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                {lichting3.map((student) => (
+                  <div key={student.playable} style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(58, 35, 20, 0.6))',
+                    border: '2px solid rgba(212, 175, 55, 0.5)',
+                    borderRadius: '16px', padding: '1.8rem 2rem', minWidth: '260px', maxWidth: '340px',
+                    boxShadow: '0 0 30px rgba(212, 175, 55, 0.15)',
+                  }}>
+                    <div style={{ fontSize: '2.6rem', marginBottom: '0.4rem' }}>{student.emoji}</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#FFD700', marginBottom: '0.2rem' }}>
+                      {student.game}
+                    </div>
+                    <div style={{ fontSize: '1rem', opacity: 0.85, marginBottom: '0.1rem' }}>
+                      {student.name}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '1rem' }}>
+                      {student.klas}
+                    </div>
+                    <button
+                      onClick={() => setPage(student.playable)}
+                      style={{
+                        padding: '0.5rem 1.5rem', fontSize: '0.9rem', fontWeight: 700,
+                        border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
+                        color: '#1a0f0a', cursor: 'pointer', borderRadius: '8px', fontFamily: 'inherit',
+                        display: 'inline-flex', alignItems: 'center', gap: '0.4rem', transition: 'all 0.3s ease',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 25px rgba(212, 175, 55, 0.6)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    >
+                      <Gamepad2 size={16} /> Speel
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
 
         {/* Lichting 1 Content */}
         {activeTab === 'lichting1' && (
