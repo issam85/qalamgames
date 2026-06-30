@@ -4,15 +4,94 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Qalam Games - سباق السلام - Race of Peace - Islamitisch race spel" />
+
+    <!-- Primaire SEO -->
+    <title>Qalam Games — Spelletjes &amp; games van basisschool Al Qalam Gouda</title>
+    <meta name="description" content="Speel de zelfgemaakte spelletjes en games van leerlingen van islamitische basisschool Al Qalam in Gouda. Leuke games gemaakt met AI — gratis online te spelen." />
+    <meta name="keywords" content="Al Qalam, basisschool Al Qalam, basisschool Gouda, Al Qalam Gouda, islamitische basisschool Gouda, Qalam Games, spelletjes, games, online spelletjes, kinderspelletjes, gratis games, school games, leerlingen games" />
+    <meta name="author" content="Basisschool Al Qalam Gouda" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://www.qalamgames.nl/" />
+    <meta name="theme-color" content="#1a0f0a" />
+
+    <!-- PWA / mobiel -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Qalam Games" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#1a0f0a" />
-    <title>Qalam Games - سباق السلام</title>
+
+    <!-- Open Graph (delen op WhatsApp, Facebook, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Qalam Games" />
+    <meta property="og:title" content="Qalam Games — Spelletjes &amp; games van basisschool Al Qalam Gouda" />
+    <meta property="og:description" content="Speel de zelfgemaakte spelletjes en games van leerlingen van islamitische basisschool Al Qalam in Gouda. Gratis online te spelen." />
+    <meta property="og:url" content="https://www.qalamgames.nl/" />
+    <meta property="og:image" content="https://www.qalamgames.nl/school.png" />
+    <meta property="og:image:width" content="2736" />
+    <meta property="og:image:height" content="1752" />
+    <meta property="og:image:alt" content="Basisschool Al Qalam in Gouda" />
+    <meta property="og:locale" content="nl_NL" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Qalam Games — Spelletjes &amp; games van basisschool Al Qalam Gouda" />
+    <meta name="twitter:description" content="Speel de zelfgemaakte spelletjes en games van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
+    <meta name="twitter:image" content="https://www.qalamgames.nl/school.png" />
+
+    <!-- Gestructureerde data: school + website (helpt Google begrijpen dat dit een basisschool in Gouda is) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "EducationalOrganization",
+          "@id": "https://www.qalamgames.nl/#school",
+          "name": "Basisschool Al Qalam",
+          "alternateName": "Al Qalam Gouda",
+          "description": "Islamitische basisschool Al Qalam in Gouda, waar leerlingen met behulp van AI hun eigen spelletjes en games maken.",
+          "url": "https://www.qalamgames.nl/",
+          "logo": "https://www.qalamgames.nl/school.png",
+          "image": "https://www.qalamgames.nl/school.png",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Gouda",
+            "addressCountry": "NL"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.qalamgames.nl/#website",
+          "name": "Qalam Games",
+          "description": "Zelfgemaakte spelletjes en games van leerlingen van basisschool Al Qalam in Gouda.",
+          "url": "https://www.qalamgames.nl/",
+          "inLanguage": "nl-NL",
+          "publisher": { "@id": "https://www.qalamgames.nl/#school" }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Fallback-inhoud voor zoekmachines/crawlers zonder JavaScript -->
+    <noscript>
+      <h1>Qalam Games — spelletjes van basisschool Al Qalam in Gouda</h1>
+      <p>
+        Welkom bij Qalam Games, de spelletjes- en gameswebsite van islamitische
+        basisschool Al Qalam in Gouda. Leerlingen uit groep 6, 7 en 8 maken met
+        behulp van AI hun eigen games. Speel ze hier gratis online.
+      </p>
+      <h2>Uitgelichte games</h2>
+      <ul>
+        <li><a href="/fightnight.html">Fight Night — Amr Jahouhi (Groep 7a)</a></li>
+        <li><a href="https://hajj-simulator-3d.vercel.app">Hajj Simulator 3D — Al Qalam kids</a></li>
+        <li><a href="/fifaultimate.html">Fifa Ultimate</a></li>
+        <li><a href="/sonicultimate.html">Sonic Ultimate</a></li>
+        <li><a href="/bananastorm2.html">Banana Storm Survivor</a></li>
+      </ul>
+    </noscript>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
