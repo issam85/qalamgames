@@ -1,1 +1,1 @@
-{"frameW": 122, "frameH": 218, "fps": 12, "footX": 61, "footY": 210, "anims": {"cheer": {"frames": 34, "mode": "pingpong"}, "idle": {"frames": 28, "mode": "pingpong"}, "jump": {"frames": 31, "mode": "once"}, "run": {"frames": 10, "mode": "loop"}, "sad": {"frames": 34, "mode": "once"}}}
+{"frameW": 116, "frameH": 218, "fps": 12, "footX": 58, "footY": 210, "anims": {"cheer": {"frames": 34, "mode": "pingpong"}, "idle": {"frames": 28, "mode": "pingpong"}, "jump": {"frames": 31, "mode": "once"}, "run": {"frames": 10, "mode": "loop"}, "sad": {"frames": 34, "mode": "once"}}}
