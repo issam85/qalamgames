@@ -41,9 +41,22 @@
     <canvas id="sprint" width="800" height="360"></canvas>
     <div id="sprint-result" hidden>
       <h2>Uitslag</h2>
-      <ol id="sprint-ranking"></ol>
-      <button id="to-board-btn" class="btn big">Naar de trap ▶</button>
+      <ol id="sprint-ranking" class="ranking"></ol>
+      <button id="to-toad-btn" class="btn big">Verder ▶</button>
     </div>
+  </section>
+
+  <section id="screen-toad" class="screen">
+    <h2>Toad deelt uit</h2>
+    <div id="toad-box"></div>
+    <button id="toad-btn" class="btn big">Naar de trap ▶</button>
+  </section>
+
+  <section id="screen-end" class="screen">
+    <h1>Einde!</h1>
+    <h2 id="winner-label"></h2>
+    <ol id="final-ranking" class="ranking"></ol>
+    <button id="restart-btn" class="btn big">Opnieuw spelen</button>
   </section>
 
   <script type="module" src="game.js"></script>

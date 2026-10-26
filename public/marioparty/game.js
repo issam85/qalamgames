@@ -1,15 +1,14 @@
-// Spelverloop: kiezen → minigame → uitslag → trap → volgende ronde.
-import { CHARACTERS, characterCanvas } from './characters.js';
+// Spelverloop: kiezen → minigame → uitslag → Toad → trap → volgende ronde → einde.
 import { renderBoard, renderHud, applyRoundResult } from './board.js';
 import { startSprint, KEY_LABELS } from './minigame-sprint.js';
+import { renderToad } from './toad.js';
+import { initSetup } from './setup.js';
 
 const ROUNDS = 5;
-const PLAYER_COUNT = 4;
 const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
 
-const state = { humans: 1, picks: [null, null], players: [], round: 1, ranking: [] };
+const state = { players: [], round: 1, ranking: [] };
 
-const startBtn = document.getElementById('start-btn');
 const nextBtn = document.getElementById('next-btn');
 const stairsCanvas = document.getElementById('stairs');
 const sprintCanvas = document.getElementById('sprint');
@@ -19,68 +18,27 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
 }
 
-function buildPicker(picker) {
-  const slot = Number(picker.dataset.slot);
-  CHARACTERS.forEach((ch) => {
-    const card = document.createElement('button');
-    card.className = 'char-card';
-    card.dataset.key = ch.key;
-    card.appendChild(characterCanvas(ch, 5));
-    const name = document.createElement('span');
-    name.textContent = ch.name;
-    card.appendChild(name);
-    card.addEventListener('click', () => {
-      state.picks[slot] = ch.key;
-      refreshSetup();
-    });
-    picker.appendChild(card);
+function fillList(list, lines) {
+  list.innerHTML = '';
+  lines.forEach((text) => {
+    const li = document.createElement('li');
+    li.textContent = text;
+    list.appendChild(li);
   });
-}
-
-function refreshSetup() {
-  document.querySelectorAll('.picker').forEach((picker) => {
-    const slot = Number(picker.dataset.slot);
-    picker.querySelectorAll('.char-card').forEach((card) => {
-      const takenByOther = state.picks.some((key, i) => i !== slot && key === card.dataset.key);
-      card.classList.toggle('selected', state.picks[slot] === card.dataset.key);
-      card.disabled = takenByOther;
-    });
-  });
-  document.querySelectorAll('.mode-btn').forEach((btn) => {
-    btn.classList.toggle('selected', Number(btn.dataset.humans) === state.humans);
-  });
-  document.getElementById('pick-block-2').hidden = state.humans < 2;
-  startBtn.disabled = !state.picks.slice(0, state.humans).every(Boolean);
-}
-
-function makePlayer(key, control) {
-  const character = CHARACTERS.find((ch) => ch.key === key);
-  return { character, control, step: 0, stars: 0, points: 0 };
-}
-
-function createPlayers() {
-  const humanKeys = state.picks.slice(0, state.humans);
-  const players = humanKeys.map((key, i) => makePlayer(key, `Speler ${i + 1}`));
-  const free = CHARACTERS.filter((ch) => !humanKeys.includes(ch.key));
-  while (players.length < PLAYER_COUNT) {
-    const [pick] = free.splice(Math.floor(Math.random() * free.length), 1);
-    players.push(makePlayer(pick.key, 'CPU'));
-  }
-  return players;
 }
 
 function showBoard() {
   const done = state.round > ROUNDS;
   const label = done ? 'Alle rondes gespeeld!' : `Ronde ${state.round} van ${ROUNDS}`;
   document.getElementById('round-label').textContent = label;
-  nextBtn.hidden = done;
+  nextBtn.textContent = done ? 'Bekijk de winnaar ▶' : 'Speel minigame ▶';
   renderBoard(stairsCanvas, state.players);
   renderHud(hud, state.players);
   showScreen('screen-board');
 }
 
-function startGame() {
-  state.players = createPlayers();
+function startGame(players) {
+  state.players = players;
   state.round = 1;
   showBoard();
 }
@@ -96,15 +54,15 @@ function startMinigame() {
 
 function showResult(ranking) {
   state.ranking = ranking;
-  const list = document.getElementById('sprint-ranking');
-  list.innerHTML = '';
-  ranking.forEach((p, i) => {
-    const li = document.createElement('li');
-    li.textContent = `${PLACE_LABELS[i]} ${p.character.name}`;
-    list.appendChild(li);
-  });
+  const lines = ranking.map((p, i) => `${PLACE_LABELS[i]} ${p.character.name}`);
+  fillList(document.getElementById('sprint-ranking'), lines);
   document.getElementById('sprint-status').textContent = 'Finish!';
   document.getElementById('sprint-result').hidden = false;
+}
+
+function showToad() {
+  renderToad(document.getElementById('toad-box'), state.ranking);
+  showScreen('screen-toad');
 }
 
 function endRound() {
@@ -113,15 +71,17 @@ function endRound() {
   showBoard();
 }
 
-document.querySelectorAll('.mode-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    state.humans = Number(btn.dataset.humans);
-    if (state.humans === 1) state.picks[1] = null;
-    refreshSetup();
-  });
-});
-document.querySelectorAll('.picker').forEach(buildPicker);
-startBtn.addEventListener('click', startGame);
-nextBtn.addEventListener('click', startMinigame);
-document.getElementById('to-board-btn').addEventListener('click', endRound);
-refreshSetup();
+function showEnd() {
+  const order = [...state.players]
+    .sort((a, b) => b.step - a.step || b.stars - a.stars || b.points - a.points);
+  document.getElementById('winner-label').textContent = `${order[0].character.name} wint!`;
+  const lines = order.map((p, i) => `${PLACE_LABELS[i]} ${p.character.name} — trede ${p.step}, ⭐ ${p.stars}, 🍄 ${p.points}`);
+  fillList(document.getElementById('final-ranking'), lines);
+  showScreen('screen-end');
+}
+
+initSetup(startGame);
+nextBtn.addEventListener('click', () => (state.round > ROUNDS ? showEnd() : startMinigame()));
+document.getElementById('to-toad-btn').addEventListener('click', showToad);
+document.getElementById('toad-btn').addEventListener('click', endRound);
+document.getElementById('restart-btn').addEventListener('click', () => showScreen('screen-setup'));

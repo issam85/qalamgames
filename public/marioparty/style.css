@@ -196,8 +196,27 @@ canvas {
   box-shadow: 6px 6px 0 #000;
 }
 
-#sprint-ranking {
+.ranking {
   list-style: none;
   font-size: 14px;
   line-height: 2;
+}
+
+#toad-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.bubble {
+  background: #fff;
+  color: #222;
+  border: 4px solid #000;
+  box-shadow: 6px 6px 0 #000;
+  padding: 16px 24px;
+  max-width: 640px;
+  font-size: 12px;
+  line-height: 1.9;
 }
