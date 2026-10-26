@@ -1,9 +1,10 @@
 // Spelverloop: kiezen → minigame → uitslag → Toad → trap → volgende ronde → einde.
 import { renderBoard, renderHud, applyRoundResult, loadBoardAssets } from './board.js';
-import { startSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
+import { startSprint, stopSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
 import { renderToad } from './toad.js';
 import { initSetup } from './setup.js';
-import { loadCharacters } from './characters.js';
+import { CHARACTERS, loadCharacters } from './characters.js';
+import { loadSprites } from './sprites.js';
 
 const ROUNDS = 5;
 const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
@@ -57,11 +58,11 @@ function showResult(ranking) {
   state.ranking = ranking;
   const lines = ranking.map((p, i) => `${PLACE_LABELS[i]} ${p.character.name}`);
   fillList(document.getElementById('sprint-ranking'), lines);
-  document.getElementById('sprint-status').textContent = 'Finish!';
   document.getElementById('sprint-result').hidden = false;
 }
 
 function showToad() {
+  stopSprint();
   renderToad(document.getElementById('toad-box'), state.ranking);
   showScreen('screen-toad');
 }
@@ -81,7 +82,9 @@ function showEnd() {
   showScreen('screen-end');
 }
 
-const ready = Promise.all([loadCharacters(), loadBoardAssets(), loadSprintAssets()]);
+const ready = Promise.all([
+  loadCharacters(), loadBoardAssets(), loadSprintAssets(), loadSprites(CHARACTERS.map((ch) => ch.key)),
+]);
 initSetup((players) => ready.then(() => startGame(players)).catch(console.error));
 nextBtn.addEventListener('click', () => (state.round > ROUNDS ? showEnd() : startMinigame()));
 document.getElementById('to-toad-btn').addEventListener('click', showToad);

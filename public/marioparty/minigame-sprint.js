@@ -1,34 +1,50 @@
 // Minigame 1: Sprint. Snel drukken om vooruit te komen.
-import { drawCharacter } from './characters.js';
-import { loadImage, getImage } from './assets.js';
+import { createSprite, play, update } from './sprites.js';
+import { createParticles, dust, confetti, updateParticles } from './effects.js';
+import { drawRace, loadTrack, laneFootY, trackX, finishX } from './sprint-draw.js';
 
-const BG_URL = 'img/bg-track.jpg';
 const FINISH = 40;
-const SPRITE_H = 64;
-const LANE_H = 80;
-const LANE_TOP = 20;
-const TRACK_X = 60;
 const COUNTDOWN_MS = 3000;
 const GRACE_MS = 4000;
+// zonder druk binnen deze tijd (s) staat een loper stil
+const IDLE_AFTER = 0.45;
 const KEYS = { 'Speler 1': 'Space', 'Speler 2': 'ArrowUp' };
 export const KEY_LABELS = { 'Speler 1': 'SPATIE', 'Speler 2': 'PIJL OMHOOG' };
 
 let race = null;
 
 export function loadSprintAssets() {
-  return loadImage(BG_URL);
+  return loadTrack();
 }
 
 function cpuDelay() {
   return 120 + Math.random() * 120;
 }
 
+function setStatus(text) {
+  const el = race.statusEl;
+  if (el.textContent === text) return;
+  el.textContent = text;
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+
 function press(idx) {
-  if (race.progress[idx] >= FINISH) return;
-  race.progress[idx] += 1;
-  if (race.progress[idx] < FINISH) return;
+  const r = race.runners[idx];
+  if (r.progress >= FINISH) return;
+  r.progress += 1;
+  r.lastPress = race.time;
+  r.presses.push(race.time);
+  if (r.progress % 2 === 0) dust(race.particles, r.x - 16, laneFootY(idx) - 4);
+  if (r.progress < FINISH) return;
   race.order.push(race.players[idx]);
-  if (race.firstFinish === null) race.firstFinish = performance.now();
+  play(r.sprite, 'cheer');
+  confetti(race.particles, finishX(race.canvas), laneFootY(idx) - 30, 30);
+  if (race.firstFinish === null) {
+    race.firstFinish = performance.now();
+    race.shake = 10;
+  }
 }
 
 function onKey(e) {
@@ -47,74 +63,45 @@ function tickCpu(now) {
   });
 }
 
-function drawFinish(ctx, x, y) {
-  const size = LANE_H / 8;
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 2; col++) {
-      ctx.fillStyle = (row + col) % 2 ? '#222' : '#fff';
-      ctx.fillRect(x + col * size, y + row * size, size, size);
-    }
+// beweegt de loper soepel naar zijn plek; hoe sneller er gedrukt wordt,
+// hoe sneller de renanimatie
+function updateRunner(r, dt) {
+  // finishers lopen door tot net voorbij de finishvlag
+  const target = r.progress >= FINISH ? finishX(race.canvas) + 34 : trackX(race.canvas, r.progress / FINISH);
+  r.x += (target - r.x) * Math.min(1, dt * 10);
+  r.presses = r.presses.filter((t) => race.time - t < 0.6);
+  if (race.phase === 'running' && r.progress < FINISH) {
+    const moving = race.time - r.lastPress < IDLE_AFTER;
+    play(r.sprite, moving ? 'run' : 'idle');
+    r.sprite.speed = moving ? Math.min(2.4, 0.6 + r.presses.length * 0.25) : 1;
+  } else {
+    r.sprite.speed = 1;
   }
-}
-
-function drawLane(ctx, i, width) {
-  const y = LANE_TOP + i * LANE_H;
-  ctx.fillStyle = i % 2 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.08)';
-  ctx.fillRect(0, y, width, LANE_H);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-  ctx.lineWidth = 3;
-  ctx.setLineDash([18, 12]);
-  ctx.beginPath();
-  ctx.moveTo(0, y + LANE_H);
-  ctx.lineTo(width, y + LANE_H);
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function drawLabel(ctx, text, x, y) {
-  ctx.font = '700 16px Fredoka, sans-serif';
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
-  ctx.strokeText(text, x, y);
-  ctx.fillStyle = '#fff';
-  ctx.fillText(text, x, y);
-}
-
-function draw() {
-  const { canvas, players, progress, phase } = race;
-  const ctx = canvas.getContext('2d');
-  const trackW = canvas.width - TRACK_X * 2;
-  ctx.drawImage(getImage(BG_URL), 0, 0, canvas.width, canvas.height);
-  players.forEach((p, i) => {
-    const y = LANE_TOP + i * LANE_H;
-    drawLane(ctx, i, canvas.width);
-    drawFinish(ctx, TRACK_X + trackW, y);
-    const x = TRACK_X + (progress[i] / FINISH) * trackW;
-    // wippen bij elke druk zolang de race loopt
-    const bob = phase === 'running' && progress[i] < FINISH ? Math.abs(Math.sin(progress[i] * 2.2)) * 8 : 0;
-    drawCharacter(ctx, p.character, x, y + LANE_H - 6 - bob, SPRITE_H);
-    drawLabel(ctx, `${p.character.name} (${p.control})`, 10, y + 22);
-  });
+  update(r.sprite, dt);
 }
 
 function finish() {
   race.phase = 'done';
-  const progressOf = (p) => race.progress[race.players.indexOf(p)];
+  const progressOf = (p) => race.runners[race.players.indexOf(p)].progress;
   const rest = race.players
     .filter((p) => !race.order.includes(p))
     .sort((a, b) => progressOf(b) - progressOf(a));
   const ranking = [...race.order, ...rest];
-  const { onFinish } = race;
-  draw();
-  stopSprint();
-  onFinish(ranking);
+  ranking.forEach((p, place) => {
+    play(race.runners[race.players.indexOf(p)].sprite, place < 2 ? 'cheer' : 'sad');
+  });
+  setStatus('Finish!');
+  race.onFinish(ranking);
 }
 
 function frame(now) {
+  const time = now / 1000;
+  const dt = Math.min(0.05, time - race.time);
+  race.time = time;
   const elapsed = now - race.t0;
   if (race.phase === 'countdown') {
     const left = Math.ceil((COUNTDOWN_MS - elapsed) / 1000);
-    race.statusEl.textContent = left > 0 ? String(left) : 'GO!';
+    setStatus(left > 0 ? String(left) : 'GO!');
     if (elapsed >= COUNTDOWN_MS) {
       race.phase = 'running';
       race.cpuNext = race.players.map(() => now + cpuDelay());
@@ -123,12 +110,12 @@ function frame(now) {
     tickCpu(now);
     const allDone = race.order.length === race.players.length;
     const timeUp = race.firstFinish !== null && now - race.firstFinish > GRACE_MS;
-    if (allDone || timeUp) {
-      finish();
-      return;
-    }
+    if (allDone || timeUp) finish();
   }
-  draw();
+  race.runners.forEach((r) => updateRunner(r, dt));
+  updateParticles(race.particles, dt);
+  race.shake = Math.max(0, race.shake - dt * 30);
+  drawRace(race);
   race.raf = requestAnimationFrame(frame);
 }
 
@@ -139,14 +126,20 @@ export function startSprint(canvas, statusEl, players, onFinish) {
     statusEl,
     players,
     onFinish,
-    progress: players.map(() => 0),
+    runners: players.map((p) => ({
+      sprite: createSprite(p.character.key), progress: 0, x: trackX(canvas, 0), lastPress: -1, presses: [],
+    })),
+    particles: createParticles(),
     cpuNext: players.map(() => 0),
     order: [],
     firstFinish: null,
     phase: 'countdown',
+    shake: 0,
     t0: performance.now(),
+    time: performance.now() / 1000,
     raf: 0,
   };
+  statusEl.textContent = '';
   if (document.activeElement) document.activeElement.blur();
   window.focus();
   window.addEventListener('keydown', onKey);
