@@ -24,15 +24,27 @@ const GAMES = {
   mijncraft:        { src: '/mijncraft.html',        accent: '#16a34a', title: 'MijnCraft' },
   // Lichting 3
   hajj:        { src: '/hajj/index.html', accent: '#d4af37', title: 'Hajj Simulator 3D' },
+  // Lichting 4
+  marioparty:  { src: '/marioparty/index.html', accent: '#e53935', title: 'Mario Party' },
 };
 
 // ============================================================
 //  LICHTINGEN — per cohort: subtitel + leerlingen (met/zonder cijfer)
 // ============================================================
 const LICHTINGEN = {
+  lichting4: {
+    label: 'Lichting 4',
+    subtitle: 'De nieuwste lichting — oktober 2026',
+    heading: 'Nieuw spel',
+    headingSub: 'Vers van de pers — meer spellen volgen binnenkort',
+    scored: false,
+    students: [
+      { rank: 1, name: 'Mario Party', game: 'Klim de trap op met sterren en minigames', playable: 'marioparty' },
+    ],
+  },
   lichting3: {
     label: 'Lichting 3',
-    subtitle: 'De nieuwste lichting',
+    subtitle: 'De derde lichting gamemakers',
     heading: 'Nieuw spel',
     headingSub: 'Vers van de pers — meer spellen volgen binnenkort',
     scored: false,
@@ -74,7 +86,7 @@ const LICHTINGEN = {
     ],
   },
 };
-const TAB_ORDER = ['lichting3', 'lichting2', 'lichting1'];
+const TAB_ORDER = ['lichting4', 'lichting3', 'lichting2', 'lichting1'];
 
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
@@ -125,7 +137,7 @@ function GameView({ gameKey, onBack }) {
 
 function App() {
   const [page, setPage] = useState('home');
-  const [lichting, setLichting] = useState('lichting3');
+  const [lichting, setLichting] = useState('lichting4');
 
   if (page !== 'home') {
     return <GameView gameKey={page} onBack={() => setPage('home')} />;

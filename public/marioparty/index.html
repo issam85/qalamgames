@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario Party — spel van Al Qalam Gouda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="setup.css">
+  <link rel="stylesheet" href="play.css">
+  <link rel="stylesheet" href="toad.css">
+  <link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+  <section id="screen-setup" class="screen active">
+    <h1>Mario Party</h1>
+    <div class="row">
+      <span>Spelers:</span>
+      <button class="btn mode-btn selected" data-humans="1">1 speler</button>
+      <button class="btn mode-btn" data-humans="2">2 spelers</button>
+    </div>
+    <div class="pick-block">
+      <h2>Speler 1 — kies je karakter</h2>
+      <div class="picker" data-slot="0"></div>
+    </div>
+    <div class="pick-block" id="pick-block-2" hidden>
+      <h2>Speler 2 — kies je karakter</h2>
+      <div class="picker" data-slot="1"></div>
+    </div>
+    <button id="start-btn" class="btn big" disabled>Start!</button>
+  </section>
+
+  <section id="screen-board" class="screen">
+    <h2 id="round-label"></h2>
+    <canvas id="stairs" width="800" height="480"></canvas>
+    <div id="hud"></div>
+    <button id="next-btn" class="btn big">Speel minigame ▶</button>
+  </section>
+
+  <section id="screen-minigame" class="screen">
+    <h2>Sprint! Druk zo snel mogelijk</h2>
+    <p id="sprint-hint"></p>
+    <div id="sprint-status"></div>
+    <canvas id="sprint" width="800" height="360"></canvas>
+    <div id="sprint-result" hidden>
+      <h2>Uitslag</h2>
+      <ol id="sprint-ranking" class="ranking"></ol>
+      <button id="to-toad-btn" class="btn big">Verder ▶</button>
+    </div>
+  </section>
+
+  <section id="screen-toad" class="screen">
+    <h2>Toad deelt uit</h2>
+    <div id="toad-box">
+      <canvas id="toad-canvas" width="240" height="280"></canvas>
+      <div id="toad-bubble" class="bubble"></div>
+      <div id="toad-cards"></div>
+    </div>
+    <button id="toad-btn" class="btn big">Naar de trap ▶</button>
+  </section>
+
+  <section id="screen-end" class="screen">
+    <h1>Einde!</h1>
+    <h2 id="winner-label"></h2>
+    <ol id="final-ranking" class="ranking"></ol>
+    <button id="restart-btn" class="btn big">Opnieuw spelen</button>
+  </section>
+
+  <div id="cutscene" hidden>
+    <video id="cutscene-video" playsinline preload="auto"></video>
+    <button id="cutscene-skip" class="btn">Overslaan ▶</button>
+  </div>
+  <div id="wipe" hidden></div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

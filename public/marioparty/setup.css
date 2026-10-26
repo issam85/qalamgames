@@ -1,0 +1,48 @@
+/* Keuzescherm: karakterkaarten. */
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.char-card {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--card);
+  border: 4px solid transparent;
+  border-radius: 20px;
+  padding: 10px 8px 6px;
+  width: 112px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.char-card img {
+  height: 96px;
+  width: auto;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+}
+
+.char-card:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.char-card.selected {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(255, 212, 59, 0.45), 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.char-card:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

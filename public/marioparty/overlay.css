@@ -1,0 +1,60 @@
+/* Lagen boven het spel: cutscenes, de sterwipe en vliegende sterren. */
+
+#cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#cutscene[hidden] {
+  display: none;
+}
+
+#cutscene video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#cutscene-skip {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  font-size: 16px;
+  padding: 8px 18px;
+  opacity: 0.85;
+}
+
+#cutscene-skip:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ster die het hele scherm bedekt bij scale(1) */
+#wipe {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 400vmax;
+  height: 400vmax;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(circle, #1565c0 0%, #0d2c6e 70%);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.fly-star {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  z-index: 30;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(255, 220, 80, 0.9));
+}

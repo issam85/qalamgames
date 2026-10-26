@@ -1,0 +1,1 @@
+{"frameW": 114, "frameH": 232, "fps": 12, "footX": 57, "footY": 224, "anims": {"cheer": {"frames": 34, "mode": "pingpong"}, "idle": {"frames": 28, "mode": "pingpong"}, "jump": {"frames": 31, "mode": "once"}, "run": {"frames": 7, "mode": "loop"}, "sad": {"frames": 34, "mode": "once"}}}
