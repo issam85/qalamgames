@@ -1,13 +1,20 @@
-// Stenen trap in Minecraft-stijl en de sterren-/tredelogica.
+// Stenen trap in vooraanzicht (zoals in de Mario-games) en de sterren-/tredelogica.
 import { drawCharacter, characterImage } from './characters.js';
+import { loadImage, getImage } from './assets.js';
 
 export const STEPS = 10;
-const BLOCK = 16;
-const STEP_W = BLOCK * 4;
-const STEP_H = BLOCK * 2;
-const STAIR_X = BLOCK * 3;
-const GROUND_Y = BLOCK * 27;
-const SPRITE_H = 72;
+const STONE_URL = 'img/stone.jpg';
+const BG_URL = 'img/bg-stairs.jpg';
+const STAR_URL = 'img/star.png';
+
+const CENTER_X = 400;
+const GROUND_Y = 446;
+const STEP_H = 34;
+const TREAD_H = 8;
+const WIDTH_BOTTOM = 560;
+const WIDTH_SHRINK = 20;
+const SPRITE_BOTTOM = 80;
+const SPRITE_SHRINK = 2.4;
 
 export const AWARDS = {
   first: { stars: 2, points: 10 },
@@ -15,85 +22,95 @@ export const AWARDS = {
 };
 const LOSER_STEP = -1;
 
-const STONE = ['#8a8a8a', '#666666', '#a6a6a6'];
-const DIRT = ['#8b5a2b', '#6b4420', '#a06a35'];
-const GRASS = ['#5aa832', '#3f7f22', '#7cc648'];
-
-function drawBlock(ctx, x, y, [base, dark, light]) {
-  ctx.fillStyle = base;
-  ctx.fillRect(x, y, BLOCK, BLOCK);
-  const sub = BLOCK / 4;
-  for (let py = 0; py < 4; py++) {
-    for (let px = 0; px < 4; px++) {
-      // deterministische ruis zodat de textuur niet flikkert bij hertekenen
-      const seed = Math.sin(x * 12.9898 + y * 78.233 + px * 37.719 + py * 3.17) * 43758.5453;
-      const v = Math.abs(seed % 1) * 100;
-      if (v < 15) ctx.fillStyle = dark;
-      else if (v < 30) ctx.fillStyle = light;
-      else continue;
-      ctx.fillRect(x + px * sub, y + py * sub, sub, sub);
-    }
-  }
-  ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(x + 0.5, y + 0.5, BLOCK - 1, BLOCK - 1);
+export function loadBoardAssets() {
+  return Promise.all([STONE_URL, BG_URL, STAR_URL].map(loadImage));
 }
 
-function fillBlocks(ctx, x0, y0, x1, y1, colors) {
-  for (let y = y0; y < y1; y += BLOCK) {
-    for (let x = x0; x < x1; x += BLOCK) drawBlock(ctx, x, y, colors);
-  }
-}
-
-function drawGround(ctx, width, height) {
-  fillBlocks(ctx, 0, GROUND_Y, width, GROUND_Y + BLOCK, GRASS);
-  fillBlocks(ctx, 0, GROUND_Y + BLOCK, width, height, DIRT);
-}
-
-function drawStairs(ctx) {
-  for (let step = 1; step <= STEPS; step++) {
-    const x = STAIR_X + step * STEP_W;
-    fillBlocks(ctx, x, GROUND_Y - step * STEP_H, x + STEP_W, GROUND_Y, STONE);
-  }
-}
-
-function drawStar(ctx, cx, cy, r) {
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const rad = i % 2 === 0 ? r : r / 2.2;
-    const a = -Math.PI / 2 + (i * Math.PI) / 5;
-    ctx.lineTo(cx + Math.cos(a) * rad, cy + Math.sin(a) * rad);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#ffd400';
-  ctx.fill();
-  ctx.strokeStyle = '#b8860b';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
-
-function stepFootY(step) {
+function treadY(step) {
   return GROUND_Y - step * STEP_H;
 }
 
-function stepCenterX(step) {
-  return STAIR_X + step * STEP_W + STEP_W / 2;
+function stepWidth(step) {
+  return WIDTH_BOTTOM - step * WIDTH_SHRINK;
+}
+
+function spriteHeight(step) {
+  return SPRITE_BOTTOM - step * SPRITE_SHRINK;
+}
+
+function stonePattern(ctx) {
+  const pattern = ctx.createPattern(getImage(STONE_URL), 'repeat');
+  pattern.setTransform(new DOMMatrix().scale(0.4));
+  return pattern;
+}
+
+function drawStep(ctx, pattern, step) {
+  const top = treadY(step);
+  const wTop = stepWidth(step);
+  const wBottom = stepWidth(step - 1);
+  // stootrand: loopt uit naar de bredere trede eronder
+  ctx.beginPath();
+  ctx.moveTo(CENTER_X - wTop / 2, top + TREAD_H);
+  ctx.lineTo(CENTER_X + wTop / 2, top + TREAD_H);
+  ctx.lineTo(CENTER_X + wBottom / 2, top + STEP_H);
+  ctx.lineTo(CENTER_X - wBottom / 2, top + STEP_H);
+  ctx.closePath();
+  ctx.fillStyle = pattern;
+  ctx.fill();
+  const shade = ctx.createLinearGradient(0, top + TREAD_H, 0, top + STEP_H);
+  shade.addColorStop(0, 'rgba(0, 0, 0, 0.05)');
+  shade.addColorStop(1, 'rgba(0, 0, 0, 0.38)');
+  ctx.fillStyle = shade;
+  ctx.fill();
+  // bovenkant van de trede: lichte strook
+  ctx.fillStyle = pattern;
+  ctx.fillRect(CENTER_X - wTop / 2, top, wTop, TREAD_H);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.fillRect(CENTER_X - wTop / 2, top, wTop, TREAD_H);
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(CENTER_X - wTop / 2, top, wTop, TREAD_H);
+}
+
+function drawGround(ctx, pattern, width, height) {
+  ctx.fillStyle = pattern;
+  ctx.fillRect(0, GROUND_Y, width, height - GROUND_Y);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.fillRect(0, GROUND_Y, width, height - GROUND_Y);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.fillRect(0, GROUND_Y, width, 3);
+}
+
+function drawStar(ctx) {
+  const size = 76;
+  const cx = CENTER_X;
+  const cy = treadY(STEPS) - 66;
+  const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 70);
+  glow.addColorStop(0, 'rgba(255, 230, 100, 0.6)');
+  glow.addColorStop(1, 'rgba(255, 230, 100, 0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(cx - 70, cy - 70, 140, 140);
+  ctx.drawImage(getImage(STAR_URL), cx - size / 2, cy - size / 2, size, size);
 }
 
 function drawPlayers(ctx, players) {
-  players.forEach((player) => {
-    const group = players.filter((p) => p.step === player.step);
-    const dx = (group.indexOf(player) - (group.length - 1) / 2) * 22;
-    drawCharacter(ctx, player.character, stepCenterX(player.step) + dx, stepFootY(player.step), SPRITE_H);
-  });
+  for (let step = STEPS; step >= 0; step--) {
+    const group = players.filter((p) => p.step === step);
+    const height = spriteHeight(step);
+    group.forEach((player, k) => {
+      const dx = (k - (group.length - 1) / 2) * height * 0.75;
+      drawCharacter(ctx, player.character, CENTER_X + dx, treadY(step) + TREAD_H, height);
+    });
+  }
 }
 
 export function renderBoard(canvas, players) {
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawGround(ctx, canvas.width, canvas.height);
-  drawStairs(ctx);
-  drawStar(ctx, stepCenterX(STEPS), stepFootY(STEPS) - 64, 18);
+  ctx.drawImage(getImage(BG_URL), 0, 0, canvas.width, canvas.height);
+  const pattern = stonePattern(ctx);
+  drawGround(ctx, pattern, canvas.width, canvas.height);
+  for (let step = STEPS; step >= 1; step--) drawStep(ctx, pattern, step);
+  drawStar(ctx);
   drawPlayers(ctx, players);
 }
 

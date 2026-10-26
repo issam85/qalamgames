@@ -1,5 +1,7 @@
 // De 7 karakters: naam, accentkleur en afbeelding (img/<key>.png, 512px hoog,
 // uitgesneden 3D-render met transparante achtergrond).
+import { loadImage, getImage } from './assets.js';
+
 export const CHARACTERS = [
   { key: 'mario', name: 'Mario', color: '#e52521' },
   { key: 'luigi', name: 'Luigi', color: '#2faf4e' },
@@ -10,28 +12,18 @@ export const CHARACTERS = [
   { key: 'bowser', name: 'Bowser', color: '#f7d03c' },
 ];
 
-const images = new Map();
-
 function imageUrl(character) {
   return `img/${character.key}.png`;
 }
 
 export function loadCharacters() {
-  return Promise.all(CHARACTERS.map((character) => new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      images.set(character.key, img);
-      resolve();
-    };
-    img.onerror = () => reject(new Error(`Kan ${imageUrl(character)} niet laden`));
-    img.src = imageUrl(character);
-  })));
+  return Promise.all(CHARACTERS.map((character) => loadImage(imageUrl(character))));
 }
 
 // Tekent het karakter `height` px hoog met de voeten op (cx, footY),
 // met een zachte schaduw op de grond.
 export function drawCharacter(ctx, character, cx, footY, height) {
-  const img = images.get(character.key);
+  const img = getImage(imageUrl(character));
   const width = (img.width * height) / img.height;
   ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
   ctx.beginPath();
