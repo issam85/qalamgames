@@ -35,6 +35,17 @@ const lichting3 = [
   { name: 'Al Qalam kids', game: 'Hajj Simulator 3D', klas: 'Al Qalam School', playable: 'hajj', emoji: '🕋' },
 ];
 
+// Lichting 4 — Vierde ronde gamemakers (oktober 2026)
+const lichting4 = [
+  { name: 'Al Qalam kids', game: 'Mario Party', klas: 'Al Qalam School', playable: 'marioparty', emoji: '⭐' },
+];
+
+// Lichtingen met speelkaarten (zonder ranglijst): kaarten + subtitel per tab
+const cardLichtingen = {
+  lichting4: { students: lichting4, subtitle: 'De nieuwste lichting — oktober 2026' },
+  lichting3: { students: lichting3, subtitle: 'De derde lichting gamemakers' },
+};
+
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
   2: <Medal size={36} fill="#C0C0C0" color="#C0C0C0" />,
@@ -72,6 +83,7 @@ const gameStyles = {
   // Uitgelicht — externe deploy (eigen repo: hajj-simulator-3d), via iframe ingeladen
   hajj:             { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.85)', font: '"Amiri", serif', src: 'https://hajj-simulator-3d.vercel.app', title: 'Hajj Simulator 3D' },
   fightnight:       { border: '#FAC775', color: '#FAC775', bg: 'rgba(10,8,6,0.92)', font: '"Bebas Neue", sans-serif', src: '/fightnight.html', title: 'Fight Night' },
+  marioparty:       { border: '#e53935', color: '#ffd43b', bg: 'rgba(21,101,192,0.9)', font: '"Fredoka", sans-serif', src: '/marioparty/index.html', title: 'Mario Party' },
 };
 
 function GameView({ gameKey, onBack }) {
@@ -255,7 +267,7 @@ function App() {
     return (h && gameStyles[h]) ? h : 'home';
   };
   const [page, setPage] = useState(pageFromHash);
-  const [activeTab, setActiveTab] = useState('lichting3');
+  const [activeTab, setActiveTab] = useState('lichting4');
 
   // Houd de URL-hash in sync met de huidige pagina → elke game heeft een deelbare link, en de back-knop werkt
   useEffect(() => {
@@ -578,6 +590,7 @@ function App() {
           marginBottom: '3rem',
         }}>
           {[
+            { key: 'lichting4', label: 'Lichting 4' },
             { key: 'lichting3', label: 'Lichting 3' },
             { key: 'lichting2', label: 'Lichting 2' },
             { key: 'lichting1', label: 'Lichting 1' },
@@ -609,17 +622,17 @@ function App() {
           ))}
         </div>
 
-        {/* Lichting 3 Content */}
-        {activeTab === 'lichting3' && (
+        {/* Lichting 4 en 3 Content */}
+        {cardLichtingen[activeTab] && (
           <>
             <section style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
               <p style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', opacity: 0.7 }}>
-                De nieuwste lichting gamemakers
+                {cardLichtingen[activeTab].subtitle}
               </p>
             </section>
             <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                {lichting3.map((student) => (
+                {cardLichtingen[activeTab].students.map((student) => (
                   <div key={student.playable} style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                     background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(58, 35, 20, 0.6))',
