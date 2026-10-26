@@ -7,7 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="base.css">
-  <link rel="stylesheet" href="screens.css">
+  <link rel="stylesheet" href="setup.css">
+  <link rel="stylesheet" href="play.css">
+  <link rel="stylesheet" href="toad.css">
+  <link rel="stylesheet" href="overlay.css">
 </head>
 <body>
   <section id="screen-setup" class="screen active">
@@ -49,7 +52,11 @@
 
   <section id="screen-toad" class="screen">
     <h2>Toad deelt uit</h2>
-    <div id="toad-box"></div>
+    <div id="toad-box">
+      <canvas id="toad-canvas" width="240" height="280"></canvas>
+      <div id="toad-bubble" class="bubble"></div>
+      <div id="toad-cards"></div>
+    </div>
     <button id="toad-btn" class="btn big">Naar de trap ▶</button>
   </section>
 
@@ -59,6 +66,12 @@
     <ol id="final-ranking" class="ranking"></ol>
     <button id="restart-btn" class="btn big">Opnieuw spelen</button>
   </section>
+
+  <div id="cutscene" hidden>
+    <video id="cutscene-video" playsinline preload="auto"></video>
+    <button id="cutscene-skip" class="btn">Overslaan ▶</button>
+  </div>
+  <div id="wipe" hidden></div>
 
   <script type="module" src="game.js"></script>
 </body>

@@ -1,12 +1,15 @@
-// Spelverloop: kiezen → minigame → uitslag → Toad → trap → volgende ronde → einde.
+// Spelverloop: kiezen → intro → trap → minigame → uitslag → Toad → trap →
+// volgende ronde → overwinning en finale → einde. Cutscenes op vaste momenten.
 import { applyRoundResult, loadBoardAssets } from './board.js';
 import { renderHud } from './hud.js';
 import { startBoard, stopBoard } from './board-anim.js';
 import { startSprint, stopSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
-import { renderToad } from './toad.js';
+import { startToad, stopToad } from './toad.js';
 import { initSetup } from './setup.js';
 import { CHARACTERS, loadCharacters } from './characters.js';
 import { loadSprites } from './sprites.js';
+import { playCutscene, playCutscenes } from './cutscene.js';
+import { withWipe } from './transition.js';
 
 const ROUNDS = 5;
 const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
@@ -18,8 +21,12 @@ const stairsCanvas = document.getElementById('stairs');
 const sprintCanvas = document.getElementById('sprint');
 const hud = document.getElementById('hud');
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+// wisselt van scherm achter de sterwipe; onSwitch draait op het moment van wisselen
+function showScreen(id, onSwitch) {
+  return withWipe(() => {
+    document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+    if (onSwitch) onSwitch();
+  });
 }
 
 function fillList(list, lines) {
@@ -37,25 +44,26 @@ function showBoard(moves = []) {
   const label = done ? 'Alle rondes gespeeld!' : `Ronde ${state.round} van ${ROUNDS}`;
   document.getElementById('round-label').textContent = label;
   nextBtn.textContent = done ? 'Bekijk de winnaar ▶' : 'Speel minigame ▶';
-  startBoard(stairsCanvas, state.players, moves);
   renderHud(hud, state.players);
-  showScreen('screen-board');
+  return showScreen('screen-board', () => startBoard(stairsCanvas, state.players, moves));
 }
 
-function startGame(players) {
+async function startGame(players) {
   state.players = players;
   state.round = 1;
-  showBoard();
+  await playCutscene('intro');
+  return showBoard();
 }
 
-function startMinigame() {
+async function startMinigame() {
   const humans = state.players.filter((p) => p.control !== 'CPU');
   const hint = humans.map((p) => `${p.control}: ${KEY_LABELS[p.control]}`).join('   ');
   document.getElementById('sprint-hint').textContent = hint;
   document.getElementById('sprint-result').hidden = true;
   stopBoard();
-  showScreen('screen-minigame');
-  startSprint(sprintCanvas, document.getElementById('sprint-status'), state.players, showResult);
+  await playCutscene('race-start');
+  const statusEl = document.getElementById('sprint-status');
+  return showScreen('screen-minigame', () => startSprint(sprintCanvas, statusEl, state.players, showResult));
 }
 
 function showResult(ranking) {
@@ -65,33 +73,50 @@ function showResult(ranking) {
   document.getElementById('sprint-result').hidden = false;
 }
 
-function showToad() {
+async function showToad() {
   stopSprint();
-  renderToad(document.getElementById('toad-box'), state.ranking);
-  showScreen('screen-toad');
+  await playCutscene('toad-stars');
+  return showScreen('screen-toad', () => startToad(state.ranking, state.players));
 }
 
-function endRound() {
+async function endRound() {
+  stopToad();
   const moves = applyRoundResult(state.players, state.ranking);
   state.round += 1;
-  showBoard(moves);
+  await playCutscene('stairs');
+  return showBoard(moves);
 }
 
-function showEnd() {
+async function showEnd() {
+  stopBoard();
   const order = [...state.players]
     .sort((a, b) => b.step - a.step || b.stars - a.stars || b.points - a.points);
+  await playCutscenes([`win-${order[0].character.key}`, 'finale']);
   document.getElementById('winner-label').textContent = `${order[0].character.name} wint!`;
   const lines = order.map((p, i) => `${PLACE_LABELS[i]} ${p.character.name} — trede ${p.step}, ⭐ ${p.stars}, 🍄 ${p.points}`);
   fillList(document.getElementById('final-ranking'), lines);
-  stopBoard();
-  showScreen('screen-end');
+  return showScreen('screen-end');
+}
+
+// voorkomt dat een dubbele klik een stap twee keer start
+let busy = false;
+function guarded(step) {
+  return async (...args) => {
+    if (busy) return;
+    busy = true;
+    try {
+      await step(...args);
+    } finally {
+      busy = false;
+    }
+  };
 }
 
 const ready = Promise.all([
   loadCharacters(), loadBoardAssets(), loadSprintAssets(), loadSprites(CHARACTERS.map((ch) => ch.key)),
 ]);
-initSetup((players) => ready.then(() => startGame(players)).catch(console.error));
-nextBtn.addEventListener('click', () => (state.round > ROUNDS ? showEnd() : startMinigame()));
-document.getElementById('to-toad-btn').addEventListener('click', showToad);
-document.getElementById('toad-btn').addEventListener('click', endRound);
-document.getElementById('restart-btn').addEventListener('click', () => showScreen('screen-setup'));
+initSetup(guarded((players) => ready.then(() => startGame(players)).catch(console.error)));
+nextBtn.addEventListener('click', guarded(() => (state.round > ROUNDS ? showEnd() : startMinigame())));
+document.getElementById('to-toad-btn').addEventListener('click', guarded(showToad));
+document.getElementById('toad-btn').addEventListener('click', guarded(endRound));
+document.getElementById('restart-btn').addEventListener('click', guarded(() => showScreen('screen-setup')));
