@@ -172,3 +172,32 @@ canvas {
   font-size: 8px;
   opacity: 0.7;
 }
+
+#sprint-hint {
+  font-size: 10px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+#sprint-status {
+  font-size: 36px;
+  height: 48px;
+  color: var(--gold);
+  text-shadow: 3px 3px 0 var(--red);
+  margin-bottom: 8px;
+}
+
+#sprint {
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 800 / 360;
+  background: #4caf50;
+  border: 4px solid #000;
+  box-shadow: 6px 6px 0 #000;
+}
+
+#sprint-ranking {
+  list-style: none;
+  font-size: 14px;
+  line-height: 2;
+}

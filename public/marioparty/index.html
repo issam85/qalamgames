@@ -31,6 +31,19 @@
     <h2 id="round-label"></h2>
     <canvas id="stairs" width="800" height="480"></canvas>
     <div id="hud"></div>
+    <button id="next-btn" class="btn big">Speel minigame ▶</button>
+  </section>
+
+  <section id="screen-minigame" class="screen">
+    <h2>Sprint! Druk zo snel mogelijk</h2>
+    <p id="sprint-hint"></p>
+    <div id="sprint-status"></div>
+    <canvas id="sprint" width="800" height="360"></canvas>
+    <div id="sprint-result" hidden>
+      <h2>Uitslag</h2>
+      <ol id="sprint-ranking"></ol>
+      <button id="to-board-btn" class="btn big">Naar de trap ▶</button>
+    </div>
   </section>
 
   <script type="module" src="game.js"></script>

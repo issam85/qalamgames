@@ -1,14 +1,18 @@
-// Spelverloop. Stap 1: spelers kiezen en de trap tonen.
+// Spelverloop: kiezen → minigame → uitslag → trap → volgende ronde.
 import { CHARACTERS, characterCanvas } from './characters.js';
-import { renderBoard, renderHud } from './board.js';
+import { renderBoard, renderHud, applyRoundResult } from './board.js';
+import { startSprint, KEY_LABELS } from './minigame-sprint.js';
 
 const ROUNDS = 5;
 const PLAYER_COUNT = 4;
+const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
 
-const state = { humans: 1, picks: [null, null], players: [], round: 1 };
+const state = { humans: 1, picks: [null, null], players: [], round: 1, ranking: [] };
 
 const startBtn = document.getElementById('start-btn');
+const nextBtn = document.getElementById('next-btn');
 const stairsCanvas = document.getElementById('stairs');
+const sprintCanvas = document.getElementById('sprint');
 const hud = document.getElementById('hud');
 
 function showScreen(id) {
@@ -66,7 +70,10 @@ function createPlayers() {
 }
 
 function showBoard() {
-  document.getElementById('round-label').textContent = `Ronde ${state.round} van ${ROUNDS}`;
+  const done = state.round > ROUNDS;
+  const label = done ? 'Alle rondes gespeeld!' : `Ronde ${state.round} van ${ROUNDS}`;
+  document.getElementById('round-label').textContent = label;
+  nextBtn.hidden = done;
   renderBoard(stairsCanvas, state.players);
   renderHud(hud, state.players);
   showScreen('screen-board');
@@ -75,6 +82,34 @@ function showBoard() {
 function startGame() {
   state.players = createPlayers();
   state.round = 1;
+  showBoard();
+}
+
+function startMinigame() {
+  const humans = state.players.filter((p) => p.control !== 'CPU');
+  const hint = humans.map((p) => `${p.control}: ${KEY_LABELS[p.control]}`).join('   ');
+  document.getElementById('sprint-hint').textContent = hint;
+  document.getElementById('sprint-result').hidden = true;
+  showScreen('screen-minigame');
+  startSprint(sprintCanvas, document.getElementById('sprint-status'), state.players, showResult);
+}
+
+function showResult(ranking) {
+  state.ranking = ranking;
+  const list = document.getElementById('sprint-ranking');
+  list.innerHTML = '';
+  ranking.forEach((p, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${PLACE_LABELS[i]} ${p.character.name}`;
+    list.appendChild(li);
+  });
+  document.getElementById('sprint-status').textContent = 'Finish!';
+  document.getElementById('sprint-result').hidden = false;
+}
+
+function endRound() {
+  applyRoundResult(state.players, state.ranking);
+  state.round += 1;
   showBoard();
 }
 
@@ -87,4 +122,6 @@ document.querySelectorAll('.mode-btn').forEach((btn) => {
 });
 document.querySelectorAll('.picker').forEach(buildPicker);
 startBtn.addEventListener('click', startGame);
+nextBtn.addEventListener('click', startMinigame);
+document.getElementById('to-board-btn').addEventListener('click', endRound);
 refreshSetup();
