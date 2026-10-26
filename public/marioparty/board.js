@@ -1,5 +1,5 @@
 // Stenen trap in vooraanzicht (zoals in de Mario-games) en de sterren-/tredelogica.
-import { drawCharacter, characterImage } from './characters.js';
+// De spelers op de trap worden getekend en geanimeerd in board-anim.js.
 import { loadImage, getImage } from './assets.js';
 
 export const STEPS = 10;
@@ -34,9 +34,17 @@ function stepWidth(step) {
   return WIDTH_BOTTOM - step * WIDTH_SHRINK;
 }
 
-function spriteHeight(step) {
+// voetpositie en karaktergrootte op een (eventueel tussenliggende) trede
+export function footY(step) {
+  return treadY(step) + TREAD_H;
+}
+
+export function spriteHeight(step) {
   return SPRITE_BOTTOM - step * SPRITE_SHRINK;
 }
+
+export const CENTER = CENTER_X;
+export const STAR_POS = { x: CENTER_X, y: GROUND_Y - STEPS * STEP_H - 66 };
 
 function stonePattern(ctx) {
   const pattern = ctx.createPattern(getImage(STONE_URL), 'repeat');
@@ -81,62 +89,53 @@ function drawGround(ctx, pattern, width, height) {
   ctx.fillRect(0, GROUND_Y, width, 3);
 }
 
-function drawStar(ctx) {
+// de ster dobbert, wiebelt en gloeit; t in seconden
+export function drawStar(ctx, t) {
   const size = 76;
-  const cx = CENTER_X;
-  const cy = treadY(STEPS) - 66;
-  const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 70);
-  glow.addColorStop(0, 'rgba(255, 230, 100, 0.6)');
+  const cx = STAR_POS.x;
+  const cy = STAR_POS.y + Math.sin(t * 2) * 5;
+  const r = 70 + Math.sin(t * 3) * 10;
+  const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, r);
+  glow.addColorStop(0, 'rgba(255, 230, 100, 0.65)');
   glow.addColorStop(1, 'rgba(255, 230, 100, 0)');
   ctx.fillStyle = glow;
-  ctx.fillRect(cx - 70, cy - 70, 140, 140);
-  ctx.drawImage(getImage(STAR_URL), cx - size / 2, cy - size / 2, size, size);
+  ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.sin(t * 1.5) * 0.12);
+  ctx.drawImage(getImage(STAR_URL), -size / 2, -size / 2, size, size);
+  ctx.restore();
 }
 
-function drawPlayers(ctx, players) {
-  for (let step = STEPS; step >= 0; step--) {
-    const group = players.filter((p) => p.step === step);
-    const height = spriteHeight(step);
-    group.forEach((player, k) => {
-      const dx = (k - (group.length - 1) / 2) * height * 0.75;
-      drawCharacter(ctx, player.character, CENTER_X + dx, treadY(step) + TREAD_H, height);
-    });
+// achtergrond, grond en treden veranderen niet: één keer tekenen en hergebruiken
+let sceneCache = null;
+
+export function drawScene(ctx, canvas) {
+  if (!sceneCache) {
+    sceneCache = document.createElement('canvas');
+    sceneCache.width = canvas.width;
+    sceneCache.height = canvas.height;
+    const c = sceneCache.getContext('2d');
+    c.drawImage(getImage(BG_URL), 0, 0, canvas.width, canvas.height);
+    const pattern = stonePattern(c);
+    drawGround(c, pattern, canvas.width, canvas.height);
+    for (let step = STEPS; step >= 1; step--) drawStep(c, pattern, step);
   }
+  ctx.drawImage(sceneCache, 0, 0);
 }
 
-export function renderBoard(canvas, players) {
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(getImage(BG_URL), 0, 0, canvas.width, canvas.height);
-  const pattern = stonePattern(ctx);
-  drawGround(ctx, pattern, canvas.width, canvas.height);
-  for (let step = STEPS; step >= 1; step--) drawStep(ctx, pattern, step);
-  drawStar(ctx);
-  drawPlayers(ctx, players);
-}
-
-// ranking: spelers gesorteerd van winnaar naar laatste
+// ranking: spelers gesorteerd van winnaar naar laatste; geeft per speler
+// de beweging op de trap terug ({ player, from, to, place })
 export function applyRoundResult(players, ranking) {
-  ranking.forEach((player, place) => {
+  return ranking.map((player, place) => {
     const award = place === 0 ? AWARDS.first : place === 1 ? AWARDS.second : null;
     const delta = award ? award.stars : LOSER_STEP;
+    const from = player.step;
     player.step = Math.max(0, Math.min(STEPS, player.step + delta));
-    if (!award) return;
-    player.stars += award.stars;
-    player.points += award.points;
-  });
-}
-
-export function renderHud(container, players) {
-  container.innerHTML = '';
-  players.forEach((player) => {
-    const card = document.createElement('div');
-    card.className = 'hud-card';
-    card.style.borderColor = player.character.color;
-    card.appendChild(characterImage(player.character, 56));
-    const info = document.createElement('div');
-    info.innerHTML = `<b>${player.character.name}</b><small>${player.control}</small>`
-      + `<span>⭐ ${player.stars}</span><span>🍄 ${player.points}</span>`;
-    card.appendChild(info);
-    container.appendChild(card);
+    if (award) {
+      player.stars += award.stars;
+      player.points += award.points;
+    }
+    return { player, from, to: player.step, place };
   });
 }

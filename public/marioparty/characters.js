@@ -1,6 +1,7 @@
 // De 7 karakters: naam, accentkleur en afbeelding (img/<key>.png, 512px hoog,
-// uitgesneden 3D-render met transparante achtergrond).
-import { loadImage, getImage } from './assets.js';
+// uitgesneden 3D-render met transparante achtergrond) voor kaarten en Toad.
+// Op het speelveld worden de geanimeerde sprites gebruikt (sprites.js).
+import { loadImage } from './assets.js';
 
 export const CHARACTERS = [
   { key: 'mario', name: 'Mario', color: '#e52521' },
@@ -18,18 +19,6 @@ function imageUrl(character) {
 
 export function loadCharacters() {
   return Promise.all(CHARACTERS.map((character) => loadImage(imageUrl(character))));
-}
-
-// Tekent het karakter `height` px hoog met de voeten op (cx, footY),
-// met een zachte schaduw op de grond.
-export function drawCharacter(ctx, character, cx, footY, height) {
-  const img = getImage(imageUrl(character));
-  const width = (img.width * height) / img.height;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
-  ctx.beginPath();
-  ctx.ellipse(cx, footY - 2, width * 0.38, height * 0.05, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.drawImage(img, cx - width / 2, footY - height, width, height);
 }
 
 export function characterImage(character, height) {

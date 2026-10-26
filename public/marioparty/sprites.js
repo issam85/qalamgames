@@ -64,17 +64,19 @@ export function isDone(sprite) {
 }
 
 // tekent het karakter met de voeten op (x, footY); height = staande hoogte
-export function drawSprite(ctx, sprite, x, footY, height) {
+export function drawSprite(ctx, sprite, x, footY, height, shadow = true) {
   const { m, anim, a } = current(sprite);
   const s = height / STAND;
   const w = m.frameW * s;
   const h = m.frameH * s;
   // een stilstaande pose krijgt een rustige ademhaling
   const breathe = a.frames === 1 ? 1 + Math.sin(sprite.t * 3) * 0.025 : 1;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
-  ctx.beginPath();
-  ctx.ellipse(x, footY - 2, height * 0.3, height * 0.06, 0, 0, Math.PI * 2);
-  ctx.fill();
+  if (shadow) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(x, footY - 2, height * 0.3, height * 0.06, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
   const i = frameIndex(sprite.t, a, m.fps);
   ctx.drawImage(getImage(sheetUrl(sprite.key, anim)), i * m.frameW, 0, m.frameW, m.frameH,
     x - m.footX * s, footY - m.footY * s * breathe, w, h * breathe);

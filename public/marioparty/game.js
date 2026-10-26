@@ -1,5 +1,7 @@
 // Spelverloop: kiezen → minigame → uitslag → Toad → trap → volgende ronde → einde.
-import { renderBoard, renderHud, applyRoundResult, loadBoardAssets } from './board.js';
+import { applyRoundResult, loadBoardAssets } from './board.js';
+import { renderHud } from './hud.js';
+import { startBoard, stopBoard } from './board-anim.js';
 import { startSprint, stopSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
 import { renderToad } from './toad.js';
 import { initSetup } from './setup.js';
@@ -29,12 +31,13 @@ function fillList(list, lines) {
   });
 }
 
-function showBoard() {
+// moves: de bewegingen op de trap van de laatste ronde (leeg bij de start)
+function showBoard(moves = []) {
   const done = state.round > ROUNDS;
   const label = done ? 'Alle rondes gespeeld!' : `Ronde ${state.round} van ${ROUNDS}`;
   document.getElementById('round-label').textContent = label;
   nextBtn.textContent = done ? 'Bekijk de winnaar ▶' : 'Speel minigame ▶';
-  renderBoard(stairsCanvas, state.players);
+  startBoard(stairsCanvas, state.players, moves);
   renderHud(hud, state.players);
   showScreen('screen-board');
 }
@@ -50,6 +53,7 @@ function startMinigame() {
   const hint = humans.map((p) => `${p.control}: ${KEY_LABELS[p.control]}`).join('   ');
   document.getElementById('sprint-hint').textContent = hint;
   document.getElementById('sprint-result').hidden = true;
+  stopBoard();
   showScreen('screen-minigame');
   startSprint(sprintCanvas, document.getElementById('sprint-status'), state.players, showResult);
 }
@@ -68,9 +72,9 @@ function showToad() {
 }
 
 function endRound() {
-  applyRoundResult(state.players, state.ranking);
+  const moves = applyRoundResult(state.players, state.ranking);
   state.round += 1;
-  showBoard();
+  showBoard(moves);
 }
 
 function showEnd() {
@@ -79,6 +83,7 @@ function showEnd() {
   document.getElementById('winner-label').textContent = `${order[0].character.name} wint!`;
   const lines = order.map((p, i) => `${PLACE_LABELS[i]} ${p.character.name} — trede ${p.step}, ⭐ ${p.stars}, 🍄 ${p.points}`);
   fillList(document.getElementById('final-ranking'), lines);
+  stopBoard();
   showScreen('screen-end');
 }
 
