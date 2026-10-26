@@ -1,6 +1,8 @@
 // Minigame 1: Sprint. Snel drukken om vooruit te komen.
 import { drawCharacter } from './characters.js';
+import { loadImage, getImage } from './assets.js';
 
+const BG_URL = 'img/bg-track.jpg';
 const FINISH = 40;
 const SPRITE_H = 64;
 const LANE_H = 80;
@@ -12,6 +14,10 @@ const KEYS = { 'Speler 1': 'Space', 'Speler 2': 'ArrowUp' };
 export const KEY_LABELS = { 'Speler 1': 'SPATIE', 'Speler 2': 'PIJL OMHOOG' };
 
 let race = null;
+
+export function loadSprintAssets() {
+  return loadImage(BG_URL);
+}
 
 function cpuDelay() {
   return 120 + Math.random() * 120;
@@ -45,27 +51,49 @@ function drawFinish(ctx, x, y) {
   const size = LANE_H / 8;
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 2; col++) {
-      ctx.fillStyle = (row + col) % 2 ? '#000' : '#fff';
+      ctx.fillStyle = (row + col) % 2 ? '#222' : '#fff';
       ctx.fillRect(x + col * size, y + row * size, size, size);
     }
   }
 }
 
+function drawLane(ctx, i, width) {
+  const y = LANE_TOP + i * LANE_H;
+  ctx.fillStyle = i % 2 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.08)';
+  ctx.fillRect(0, y, width, LANE_H);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([18, 12]);
+  ctx.beginPath();
+  ctx.moveTo(0, y + LANE_H);
+  ctx.lineTo(width, y + LANE_H);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawLabel(ctx, text, x, y) {
+  ctx.font = '700 16px Fredoka, sans-serif';
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(text, x, y);
+}
+
 function draw() {
-  const { canvas, players, progress } = race;
+  const { canvas, players, progress, phase } = race;
   const ctx = canvas.getContext('2d');
   const trackW = canvas.width - TRACK_X * 2;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = '10px "Press Start 2P", monospace';
+  ctx.drawImage(getImage(BG_URL), 0, 0, canvas.width, canvas.height);
   players.forEach((p, i) => {
     const y = LANE_TOP + i * LANE_H;
-    ctx.fillStyle = i % 2 ? '#c98a4b' : '#b87a3f';
-    ctx.fillRect(0, y, canvas.width, LANE_H);
+    drawLane(ctx, i, canvas.width);
     drawFinish(ctx, TRACK_X + trackW, y);
     const x = TRACK_X + (progress[i] / FINISH) * trackW;
-    drawCharacter(ctx, p.character, x, y + LANE_H - 6, SPRITE_H);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(`${p.character.name} (${p.control})`, 8, y + 16);
+    // wippen bij elke druk zolang de race loopt
+    const bob = phase === 'running' && progress[i] < FINISH ? Math.abs(Math.sin(progress[i] * 2.2)) * 8 : 0;
+    drawCharacter(ctx, p.character, x, y + LANE_H - 6 - bob, SPRITE_H);
+    drawLabel(ctx, `${p.character.name} (${p.control})`, 10, y + 22);
   });
 }
 

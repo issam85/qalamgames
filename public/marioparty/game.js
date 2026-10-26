@@ -1,6 +1,6 @@
 // Spelverloop: kiezen → minigame → uitslag → Toad → trap → volgende ronde → einde.
 import { renderBoard, renderHud, applyRoundResult, loadBoardAssets } from './board.js';
-import { startSprint, KEY_LABELS } from './minigame-sprint.js';
+import { startSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
 import { renderToad } from './toad.js';
 import { initSetup } from './setup.js';
 import { loadCharacters } from './characters.js';
@@ -81,7 +81,7 @@ function showEnd() {
   showScreen('screen-end');
 }
 
-const ready = Promise.all([loadCharacters(), loadBoardAssets()]);
+const ready = Promise.all([loadCharacters(), loadBoardAssets(), loadSprintAssets()]);
 initSetup((players) => ready.then(() => startGame(players)).catch(console.error));
 nextBtn.addEventListener('click', () => (state.round > ROUNDS ? showEnd() : startMinigame()));
 document.getElementById('to-toad-btn').addEventListener('click', showToad);
