@@ -1,5 +1,5 @@
 // Toad deelt na elke minigame de sterren en punten uit.
-import { CHARACTERS, characterCanvas } from './characters.js';
+import { CHARACTERS, characterImage } from './characters.js';
 import { AWARDS } from './board.js';
 
 const TOAD = CHARACTERS.find((ch) => ch.key === 'toad');
@@ -14,7 +14,7 @@ function awardLine(player, award) {
 
 export function renderToad(container, ranking) {
   container.innerHTML = '';
-  container.appendChild(characterCanvas(TOAD, 8));
+  container.appendChild(characterImage(TOAD, 240));
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   const losers = ranking.slice(2).map((p) => p.character.name).join(' en ');

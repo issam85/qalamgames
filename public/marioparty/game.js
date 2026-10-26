@@ -3,6 +3,7 @@ import { renderBoard, renderHud, applyRoundResult } from './board.js';
 import { startSprint, KEY_LABELS } from './minigame-sprint.js';
 import { renderToad } from './toad.js';
 import { initSetup } from './setup.js';
+import { loadCharacters } from './characters.js';
 
 const ROUNDS = 5;
 const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
@@ -80,7 +81,8 @@ function showEnd() {
   showScreen('screen-end');
 }
 
-initSetup(startGame);
+const ready = loadCharacters();
+initSetup((players) => ready.then(() => startGame(players)).catch(console.error));
 nextBtn.addEventListener('click', () => (state.round > ROUNDS ? showEnd() : startMinigame()));
 document.getElementById('to-toad-btn').addEventListener('click', showToad);
 document.getElementById('toad-btn').addEventListener('click', endRound);

@@ -1,5 +1,5 @@
 // Stenen trap in Minecraft-stijl en de sterren-/tredelogica.
-import { SPRITE_W, SPRITE_H, drawCharacter, characterCanvas } from './characters.js';
+import { drawCharacter, characterImage } from './characters.js';
 
 export const STEPS = 10;
 const BLOCK = 16;
@@ -7,7 +7,7 @@ const STEP_W = BLOCK * 4;
 const STEP_H = BLOCK * 2;
 const STAIR_X = BLOCK * 3;
 const GROUND_Y = BLOCK * 27;
-const SPRITE_SCALE = 3;
+const SPRITE_H = 72;
 
 export const AWARDS = {
   first: { stars: 2, points: 10 },
@@ -81,13 +81,10 @@ function stepCenterX(step) {
 }
 
 function drawPlayers(ctx, players) {
-  const w = SPRITE_W * SPRITE_SCALE;
-  const h = SPRITE_H * SPRITE_SCALE;
   players.forEach((player) => {
     const group = players.filter((p) => p.step === player.step);
-    const dx = (group.indexOf(player) - (group.length - 1) / 2) * 16;
-    const x = stepCenterX(player.step) - w / 2 + dx;
-    drawCharacter(ctx, player.character, x, stepFootY(player.step) - h, SPRITE_SCALE);
+    const dx = (group.indexOf(player) - (group.length - 1) / 2) * 22;
+    drawCharacter(ctx, player.character, stepCenterX(player.step) + dx, stepFootY(player.step), SPRITE_H);
   });
 }
 
@@ -118,7 +115,7 @@ export function renderHud(container, players) {
     const card = document.createElement('div');
     card.className = 'hud-card';
     card.style.borderColor = player.character.color;
-    card.appendChild(characterCanvas(player.character, 3));
+    card.appendChild(characterImage(player.character, 56));
     const info = document.createElement('div');
     info.innerHTML = `<b>${player.character.name}</b><small>${player.control}</small>`
       + `<span>⭐ ${player.stars}</span><span>🍄 ${player.points}</span>`;

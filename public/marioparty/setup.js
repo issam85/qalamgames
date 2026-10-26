@@ -1,5 +1,5 @@
 // Keuzescherm: aantal spelers en karakters; levert de 4 deelnemers op.
-import { CHARACTERS, characterCanvas } from './characters.js';
+import { CHARACTERS, characterImage } from './characters.js';
 
 const PLAYER_COUNT = 4;
 const picks = [null, null];
@@ -13,7 +13,7 @@ function buildPicker(picker) {
     const card = document.createElement('button');
     card.className = 'char-card';
     card.dataset.key = ch.key;
-    card.appendChild(characterCanvas(ch, 5));
+    card.appendChild(characterImage(ch, 96));
     const name = document.createElement('span');
     name.textContent = ch.name;
     card.appendChild(name);

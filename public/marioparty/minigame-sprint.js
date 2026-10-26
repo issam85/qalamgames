@@ -1,8 +1,8 @@
 // Minigame 1: Sprint. Snel drukken om vooruit te komen.
-import { SPRITE_W, SPRITE_H, drawCharacter } from './characters.js';
+import { drawCharacter } from './characters.js';
 
 const FINISH = 40;
-const SCALE = 3;
+const SPRITE_H = 64;
 const LANE_H = 80;
 const LANE_TOP = 20;
 const TRACK_X = 60;
@@ -63,7 +63,7 @@ function draw() {
     ctx.fillRect(0, y, canvas.width, LANE_H);
     drawFinish(ctx, TRACK_X + trackW, y);
     const x = TRACK_X + (progress[i] / FINISH) * trackW;
-    drawCharacter(ctx, p.character, x - (SPRITE_W * SCALE) / 2, y + LANE_H - SPRITE_H * SCALE - 8, SCALE);
+    drawCharacter(ctx, p.character, x, y + LANE_H - 6, SPRITE_H);
     ctx.fillStyle = '#fff';
     ctx.fillText(`${p.character.name} (${p.control})`, 8, y + 16);
   });
