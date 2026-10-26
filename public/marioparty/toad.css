@@ -1,0 +1,46 @@
+/* Toad-scherm: geanimeerde Toad, tekstballon en spelerskaarten. */
+
+#toad-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0;
+}
+
+#toad-canvas {
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.3));
+}
+
+#toad-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.bubble {
+  position: relative;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 24px;
+  padding: 18px 28px;
+  max-width: 640px;
+  font-size: 20px;
+  line-height: 1.6;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+.bubble::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  margin-left: -16px;
+  border: 16px solid transparent;
+  border-top: 0;
+  border-bottom-color: var(--card);
+}
