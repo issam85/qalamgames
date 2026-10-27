@@ -16,7 +16,8 @@ Qalam Games is het game-ontwikkelprogramma van **Al Qalam School**. Leerlingen u
 ```
 qalamgames/
 ├── public/
-│   ├── school.png              # Hero afbeelding
+│   ├── school.webp             # Foto van het schoolgebouw
+│   ├── og/                     # Deelbeelden 1200×630 (og:image) per spel
 │   ├── bananastorm2.html       # Saifeddine - Banana Storm Survivor V2
 │   ├── vicecity.html           # Yahya - Vice City Racing 3D
 │   ├── vicecity2.html          # Yahya - Vice City V2

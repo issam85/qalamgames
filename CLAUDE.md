@@ -29,8 +29,10 @@ HTML-pagina in `public/`, geopend in een iframe (`components/GameView.jsx`).
 - Nieuw spel toevoegen: bestand in `public/`, regel in `data/games.js`, leerling in
   `data/lichtingen.js`, thumbnail `public/thumbs/<sleutel>.webp` (960×540), plus
   `<noscript>`, `sitemap.xml` en het SEO-blok.
-- `public/school.png` is een screenshot van de schoolsite mét browserbalk en bladwijzers;
-  gebruik `public/school.webp` (alleen de foto van het gebouw).
+- Schoolfoto: `public/school.webp` (alleen het gebouw). Het oude `school.png` was een
+  screenshot mét browserbalk en bladwijzers en is verwijderd. Deelbeelden (og:image,
+  twitter:image, JSON-LD) staan in `public/og/` als 1200×630 JPG: `home.jpg` en één per
+  spel; nieuw spel = ook een `og/<sleutel>.jpg`.
 - De Hajj-game draait extern (`https://hajj-simulator-3d.vercel.app`, eigen repo).
 - SEO staat al: meta, Open Graph, JSON-LD en `<noscript>` in `index.html`, een
   `<!-- qalam-seo -->`-blok per spelpagina, `public/robots.txt` en `public/sitemap.xml`.
@@ -126,7 +128,7 @@ Opdracht van de gebruiker: "de website moet geüpgraded worden. Gebruik Higgsfie
 mogelijk. Structuur, professionalisering en duidelijkheid van het huidige actuele project
 van Mario moeten herkenbaar zijn."
 
-Huidige site: donker bruin/goud thema, serif-lettertype Amiri, hero met `school.png`,
+Oude site: donker bruin/goud thema, serif-lettertype Amiri, hero met de schoolfoto,
 blok "Wat is Qalam Games?" (groep 6, 7 en 8 maken met AI hun eigen spellen; "Geen
 ervaring nodig — alleen creativiteit en nieuwsgierigheid!"), tabs Lichting 4 → 1, per
 lichting top 3 en eervolle vermeldingen, uitgelichte spellen (Fight Night, Hajj) en
