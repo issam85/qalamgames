@@ -78,6 +78,13 @@
   margin-top: 8px;
 }
 
+/* Tablet en smalle laptop: de tekst valt over de figuren, dus een breder verloop */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .hero-shade {
+    background: linear-gradient(90deg, rgba(13, 71, 161, 0.95) 0%, rgba(13, 71, 161, 0.85) 50%, rgba(13, 71, 161, 0.2) 80%, rgba(13, 71, 161, 0) 100%);
+  }
+}
+
 /* Mobiel: uitsnede met de kinderen bovenaan, tekst eronder op blauw */
 @media (max-width: 767px) {
   .hero {
