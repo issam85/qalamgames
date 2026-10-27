@@ -1,7 +1,6 @@
 /* Speelvelden: trap, race en spelerskaarten. */
 
-#stairs,
-#sprint {
+#stairs {
   width: 100%;
   max-width: 800px;
   border: 4px solid #fff;
@@ -12,11 +11,6 @@
 #stairs {
   aspect-ratio: 800 / 480;
   background: linear-gradient(180deg, #5ec8ff, #d9f2ff);
-}
-
-#sprint {
-  aspect-ratio: 800 / 360;
-  background: #4caf50;
 }
 
 #hud {
@@ -62,20 +56,4 @@
 .hud-card small {
   font-size: 12px;
   opacity: 0.7;
-}
-
-#sprint-hint {
-  font-size: 18px;
-  color: var(--gold);
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  margin-bottom: 6px;
-}
-
-#sprint-status {
-  font-size: 48px;
-  font-weight: 700;
-  height: 60px;
-  color: var(--gold);
-  text-shadow: 0 4px 0 #c62828, 0 8px 16px rgba(0, 0, 0, 0.35);
-  margin-bottom: 6px;
 }

@@ -1,0 +1,69 @@
+// Camera-regie voor de sprint: openingsshot tijdens het aftellen, de kopgroep
+// volgen met zoom op de afstand tussen de lopers, en inzoomen bij de finish.
+import * as THREE from './vendor/three.module.min.js';
+
+const look = new THREE.Vector3();
+const wantPos = new THREE.Vector3();
+const wantLook = new THREE.Vector3();
+
+function ease(t) {
+  return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+}
+
+export function createDirector(camera) {
+  return { camera, pos: new THREE.Vector3(-16, 18, 36), look: new THREE.Vector3(12, 0.4, 0), fov: 40 };
+}
+
+// openingsshot: van hoog en breed naar laag bij de startlijn
+function introShot(t) {
+  const k = ease(Math.min(1, t));
+  wantPos.set(-16 + k * 10.5, 18 - k * 12.2, 36 - k * 24.5);
+  wantLook.set(12 - k * 8, 0.4 + k * 0.4, -k * 1);
+  return 40 - k * 8;
+}
+
+function followShot(xs) {
+  const lead = Math.max(...xs);
+  const last = Math.min(...xs);
+  const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
+  const focus = lead * 0.5 + mean * 0.5 + 2;
+  const spread = lead - last;
+  const dist = Math.min(30, 11.5 + spread * 0.75);
+  wantPos.set(focus - 6, 3 + dist * 0.24, dist);
+  wantLook.set(focus + 1.5, 0.6, -1);
+  return 32;
+}
+
+function finishShot(x, z) {
+  wantPos.set(x - 5.5, 3, z + 9);
+  wantLook.set(x + 0.5, 1.1, z);
+  return 30;
+}
+
+// shot: { mode: 'intro' | 'follow' | 'finish', t, xs, x, z }; shake in wereldeenheden
+export function updateDirector(d, dt, shot, shake = 0) {
+  let fov;
+  let rate = 3;
+  if (shot.mode === 'intro') {
+    fov = introShot(shot.t);
+    rate = 12;
+  } else if (shot.mode === 'finish') {
+    fov = finishShot(shot.x, shot.z);
+    rate = 5;
+  } else {
+    fov = followShot(shot.xs);
+  }
+  const k = 1 - Math.exp(-dt * rate);
+  d.pos.lerp(wantPos, k);
+  d.look.lerp(wantLook, k);
+  d.fov += (fov - d.fov) * k;
+  const cam = d.camera;
+  cam.position.copy(d.pos);
+  if (shake > 0) cam.position.add(new THREE.Vector3((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0));
+  look.copy(d.look);
+  cam.lookAt(look);
+  if (Math.abs(cam.fov - d.fov) > 0.01) {
+    cam.fov = d.fov;
+    cam.updateProjectionMatrix();
+  }
+}

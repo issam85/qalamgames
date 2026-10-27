@@ -57,6 +57,12 @@ function frameIndex(t, a, fps) {
   return Math.min(f, n - 1);
 }
 
+// huidige frame van een sprite: welke strip, welk frame en de maten (voor de 3D-sprint)
+export function frameOf(sprite) {
+  const { m, anim, a } = current(sprite);
+  return { m, url: sheetUrl(sprite.key, anim), index: frameIndex(sprite.t, a, m.fps), frames: a.frames, stand: STAND };
+}
+
 // true zodra een eenmalige animatie (springen, sip) is afgelopen
 export function isDone(sprite) {
   const { m, a } = current(sprite);
