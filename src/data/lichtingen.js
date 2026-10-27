@@ -42,3 +42,10 @@ export const cardLichtingen = {
   lichting4: { students: lichting4, subtitle: 'De nieuwste lichting — oktober 2026' },
   lichting3: { students: lichting3, subtitle: 'De derde lichting gamemakers' },
 };
+
+// Uitgelicht: eerste = brede kaart bovenaan
+export const FEATURED = [
+  { game: 'marioparty', lichting: 'Lichting 4', maker: 'Al Qalam kids', tags: ['1–2 spelers', 'Toetsenbord'] },
+  { game: 'fightnight', maker: 'Amr Jahouhi — Groep 7a' },
+  { game: 'hajj', maker: 'Al Qalam kids — Al Qalam School' },
+];

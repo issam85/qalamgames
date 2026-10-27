@@ -1,0 +1,97 @@
+/* Desktop: illustratie over de volle breedte, tekst links op een blauw verloop */
+.hero {
+  position: relative;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  background: var(--blue);
+  border-radius: 0 0 48px 48px;
+  overflow: hidden;
+}
+
+.hero-media, .hero-shade {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+
+.hero-shade {
+  background: linear-gradient(90deg, rgba(13, 71, 161, 0.94) 0%, rgba(13, 71, 161, 0.78) 34%, rgba(13, 71, 161, 0) 58%);
+}
+
+.hero-content {
+  position: relative;
+  padding-block: 72px 88px;
+}
+
+.hero-text {
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero-badge {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.hero-title {
+  font-size: clamp(48px, 7vw, 76px);
+  line-height: 1;
+  color: var(--white);
+  text-shadow: 0 5px 0 #0a3a85;
+}
+
+.hero-sub {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(25px, 3.4vw, 34px);
+  color: var(--yellow);
+  text-shadow: 0 3px 0 var(--red);
+}
+
+.hero-lead {
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--white);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Mobiel: uitsnede met de kinderen bovenaan, tekst eronder op blauw */
+@media (max-width: 767px) {
+  .hero {
+    display: block;
+    min-height: 0;
+    border-radius: 0 0 32px 32px;
+    background: linear-gradient(180deg, var(--sky) 0%, var(--blue) 55%, var(--blue-dark) 100%);
+  }
+
+  .hero-media { position: relative; height: 300px; }
+  .hero-shade { display: none; }
+  .hero-content { padding-block: 20px 36px; }
+  .hero-text { gap: 14px; }
+  .hero-lead { font-size: 17px; }
+  .hero-actions { flex-direction: column; gap: 14px; }
+  .hero-actions .btn { width: 100%; }
+}

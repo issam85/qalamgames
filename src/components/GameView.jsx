@@ -2,11 +2,12 @@ import { useRef } from 'react';
 import { ArrowLeft, Maximize, Minimize } from 'lucide-react';
 import IslamicRacingGame from '../IslamicRacingGame';
 import useFullscreen from '../hooks/useFullscreen';
-import { gameStyles } from '../data/games';
+import { GAMES } from '../data/games';
 
 export default function GameView({ gameKey, onBack }) {
   const containerRef = useRef(null);
-  const style = gameStyles[gameKey];
+  const game = GAMES[gameKey];
+  const style = { ...game.bar, src: game.src, title: game.title };
   const { isFullscreen, showControls, toggleFullscreen, exitFullscreen, handleTap } = useFullscreen(containerRef);
 
   const handleBack = () => {

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Star, Trophy, Medal, Award, Gamepad2, Code, Sparkles } from 'lucide-react';
 import GameView from './components/GameView';
+import NavBar from './components/NavBar';
+import Hero from './components/Hero';
+import About from './components/About';
+import Featured from './components/Featured';
 import useHashPage from './hooks/useHashPage';
-import { gameStyles } from './data/games';
+import { GAMES } from './data/games';
 import { top3, honorable, lichting2Top3, lichting2Rest, cardLichtingen } from './data/lichtingen';
 
-const isGamePage = (key) => !!gameStyles[key];
+const isGamePage = (key) => !!GAMES[key];
 
 const rankIcons = {
   1: <Trophy size={40} fill="#FFD700" color="#FFD700" />,
@@ -24,237 +28,29 @@ function App() {
   const [activeTab, setActiveTab] = useState('lichting4');
 
   // Render any game page using the unified GameView
-  if (page !== 'home' && gameStyles[page]) {
+  if (page !== 'home' && GAMES[page]) {
     return <GameView gameKey={page} onBack={() => setPage('home')} />;
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(180deg, #1a0f0a 0%, #2d1a10 50%, #1a0f0a 100%)',
-      fontFamily: '"Amiri", "Scheherazade New", serif',
-      color: '#f4e3b5',
-    }}>
-      {/* Hero Section with School Image */}
-      <header style={{
-        position: 'relative',
-        width: '100%',
-        height: '60vh',
-        minHeight: '400px',
-        overflow: 'hidden',
-      }}>
-        <img
-          className="hero-img"
-          src="/school.png"
-          alt="Al Qalam School"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center 20%',
-          }}
-        />
-        {/* Dark overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(180deg, rgba(26,15,10,0.3) 0%, rgba(26,15,10,0.7) 70%, #1a0f0a 100%)',
-        }} />
-        {/* Hero text */}
-        <div className="hero-text" style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textAlign: 'center',
-          width: '90%',
-          maxWidth: '800px',
-        }}>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #d4af37, #f4e3b5, #d4af37)',
-            backgroundSize: '200% 200%',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '0.5rem',
-            letterSpacing: '0.05em',
-          }}>
-            Qalam Games
-          </h1>
-          <p style={{
-            fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
-            color: '#f4e3b5',
-            opacity: 0.9,
-            letterSpacing: '0.1em',
-          }}>
-            Programmeren met AI
-          </p>
-        </div>
-      </header>
+    <>
+      <NavBar />
+      <Hero />
+      <About />
+      <Featured />
 
-      {/* Main Content */}
+      {/* Oude onderkant (wordt in de volgende stap vervangen) */}
+      <div style={{
+        background: 'linear-gradient(180deg, #1a0f0a 0%, #2d1a10 50%, #1a0f0a 100%)',
+        fontFamily: '"Amiri", "Scheherazade New", serif',
+        color: '#f4e3b5',
+        marginTop: '96px',
+      }}>
       <main style={{
         maxWidth: '900px',
         margin: '0 auto',
         padding: '3rem 1.5rem',
       }}>
-        {/* Intro Section */}
-        <section style={{
-          textAlign: 'center',
-          marginBottom: '4rem',
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '1rem',
-            marginBottom: '2rem',
-          }}>
-            <Code size={32} color="#d4af37" />
-            <Sparkles size={32} color="#d4af37" />
-            <Gamepad2 size={32} color="#d4af37" />
-          </div>
-
-          <h2 style={{
-            fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
-            color: '#d4af37',
-            marginBottom: '1.5rem',
-            letterSpacing: '0.05em',
-          }}>
-            Wat is Qalam Games?
-          </h2>
-
-          <p style={{
-            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            lineHeight: 1.8,
-            maxWidth: '700px',
-            margin: '0 auto 1.5rem',
-            opacity: 0.9,
-          }}>
-            Bij Qalam Games leren leerlingen van <strong style={{ color: '#d4af37' }}>groep 6, 7 en 8</strong> hoe
-            ze hun eigen spellen kunnen maken met behulp van <strong style={{ color: '#d4af37' }}>kunstmatige intelligentie (AI)</strong>.
-          </p>
-          <p style={{
-            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            lineHeight: 1.8,
-            maxWidth: '700px',
-            margin: '0 auto 1.5rem',
-            opacity: 0.9,
-          }}>
-            Leerlingen ontdekken hoe ze met AI kunnen samenwerken om echte, werkende games te bouwen.
-            Geen ervaring nodig — alleen creativiteit en nieuwsgierigheid!
-          </p>
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '2rem',
-            flexWrap: 'wrap',
-            marginTop: '2rem',
-          }}>
-            {['Groep 6', 'Groep 7', 'Groep 8'].map((groep) => (
-              <div key={groep} style={{
-                padding: '1rem 2rem',
-                border: '2px solid rgba(212, 175, 55, 0.4)',
-                borderRadius: '12px',
-                background: 'rgba(212, 175, 55, 0.1)',
-                fontSize: '1.2rem',
-                fontWeight: 600,
-                color: '#d4af37',
-                letterSpacing: '0.1em',
-              }}>
-                {groep}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Uitgelicht — Hajj Simulator 3D + Fight Night (vlaggenschepen) */}
-        <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div style={{ fontSize: '0.78rem', letterSpacing: '0.28em', color: '#d4af37', opacity: 0.75, marginBottom: '1.2rem' }}>
-            ⭐ UITGELICHT
-          </div>
-          <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'stretch',
-            gap: '1.5rem', flexWrap: 'wrap',
-          }}>
-            {/* Hajj Simulator 3D */}
-            <div style={{
-              position: 'relative', flex: '1 1 360px', maxWidth: '480px',
-              display: 'flex', flexDirection: 'column',
-              background: 'linear-gradient(135deg, rgba(212,175,55,0.18), rgba(26,15,10,0.65))',
-              border: '2px solid rgba(212,175,55,0.6)', borderRadius: '20px',
-              padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(212,175,55,0.18)',
-            }}>
-              <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🕋</div>
-              <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', color: '#FFD700', margin: '0 0 0.3rem', letterSpacing: '0.04em' }}>
-                Hajj Simulator 3D
-              </h3>
-              <p dir="rtl" style={{ fontSize: '1.1rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem' }}>
-                لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ
-              </p>
-              <p style={{ fontSize: '0.98rem', lineHeight: 1.7, opacity: 0.85, margin: '0 auto 1.5rem' }}>
-                Beleef de hele bedevaart naar Mekka — van de intentie thuis tot de Tawaf rond de Ka'ba,
-                Arafat, de steniging in Mina en het bezoek aan Medina. Met fotorealistische 3D-modellen.
-              </p>
-              <div style={{ marginTop: 'auto' }}>
-                <button
-                  onClick={() => setPage('hajj')}
-                  style={{
-                    padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
-                    border: '2px solid #d4af37', background: 'linear-gradient(135deg, #d4af37, #f4e3b5)',
-                    color: '#1a0f0a', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
-                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(212, 175, 55, 0.6)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
-                >
-                  <Gamepad2 size={18} /> Speel nu
-                </button>
-              </div>
-            </div>
-
-            {/* Fight Night */}
-            <div style={{
-              position: 'relative', flex: '1 1 360px', maxWidth: '480px',
-              display: 'flex', flexDirection: 'column',
-              background: 'linear-gradient(135deg, rgba(250,199,117,0.16), rgba(10,8,6,0.7))',
-              border: '2px solid rgba(250,199,117,0.6)', borderRadius: '20px',
-              padding: '2.2rem 1.6rem', boxShadow: '0 0 45px rgba(250,199,117,0.18)',
-            }}>
-              <div style={{ fontSize: '3.4rem', marginBottom: '0.4rem' }}>🥊</div>
-              <h3 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', color: '#FAC775', margin: '0 0 0.3rem', letterSpacing: '0.06em' }}>
-                Fight Night
-              </h3>
-              <p style={{ fontSize: '1.1rem', color: '#f4e3b5', opacity: 0.9, margin: '0 0 0.6rem', letterSpacing: '0.04em' }}>
-                Stap de ring in 🔥
-              </p>
-              <p style={{ fontSize: '0.98rem', lineHeight: 1.7, opacity: 0.85, margin: '0 auto 1.5rem' }}>
-                Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je
-                tegenstander met jabs, combo's en knock-outs. Inclusief coaches, rondes en stats.
-              </p>
-              <div style={{ marginTop: 'auto' }}>
-                <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '0.8rem' }}>
-                  Amr Jahouhi — Groep 7a
-                </div>
-                <button
-                  onClick={() => setPage('fightnight')}
-                  style={{
-                    padding: '0.7rem 1.8rem', fontSize: '1.05rem', fontWeight: 700,
-                    border: '2px solid #FAC775', background: 'linear-gradient(135deg, #FAC775, #C8960C)',
-                    color: '#1a0800', cursor: 'pointer', borderRadius: '10px', fontFamily: 'inherit',
-                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 28px rgba(250, 199, 117, 0.6)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
-                >
-                  <Gamepad2 size={18} /> Speel nu
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Legends Section */}
         <section style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👑</div>
@@ -803,21 +599,8 @@ function App() {
         Qalam Games — Al Qalam School
       </footer>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap');
-
-        @media (max-width: 600px) {
-          .hero-img {
-            object-position: 30% 35% !important;
-            transform: scale(1.4);
-            transform-origin: 30% 35%;
-          }
-          .hero-text {
-            top: 40% !important;
-          }
-        }
-      `}</style>
-    </div>
+      </div>
+    </>
   );
 }
 
