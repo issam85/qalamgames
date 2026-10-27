@@ -2,7 +2,7 @@ import { Play } from 'lucide-react';
 import LoopVideo from './LoopVideo';
 import { GAMES, thumbOf } from '../data/games';
 import { FEATURED } from '../data/lichtingen';
-import '../styles/sections.css';
+import '../styles/featured.css';
 
 function Media({ gameKey }) {
   const game = GAMES[gameKey];

@@ -1,5 +1,5 @@
 import { Sparkles, Code, Gamepad2 } from 'lucide-react';
-import '../styles/sections.css';
+import '../styles/about.css';
 
 const STEPS = [
   { Icon: Sparkles, tone: 'gold', label: 'Stap 1', title: 'Bedenk je spel', text: 'Een race, een quiz of een avontuur: de leerling kiest het idee en de regels.' },

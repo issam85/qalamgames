@@ -1,51 +1,61 @@
-// Lichtingen: leerlingen en hun spellen per cohort
-export const top3 = [
-  { rank: 1, name: 'Saifeddine Boulabkoul', game: 'Banana Storm Survivor', klas: 'Groep 7b', playable: 'bananastorm', v2: 'bananastorm2' },
-  { rank: 2, name: 'Yahya Essanousi', game: 'Vice City Racing 3D', klas: 'Groep 6b', playable: 'vicecity', v2: 'vicecity2' },
-  { rank: 3, name: 'Zakaria El Aamim', game: 'سباق السلام', gameSubtitle: 'Race of Peace', klas: 'Groep 6b', playable: 'game' },
+// Lichtingen: per cohort de leerlingen en hun spel (sleutel uit data/games.js).
+// `top` met rang = Top 3, `rest` = eervolle vermeldingen; zonder rang = badge "Nieuw".
+// Optioneel: `title`/`sub` (afwijkende naam op de kaart), `score`, `v2` (sleutel van versie 2).
+export const LICHTINGEN = [
+  {
+    id: 'lichting4', label: 'Lichting 4', subtitle: 'De nieuwste lichting — oktober 2026',
+    top: [{ game: 'marioparty', student: 'Al Qalam kids', klas: 'Al Qalam School' }],
+    rest: [],
+  },
+  {
+    id: 'lichting3', label: 'Lichting 3', subtitle: 'De derde lichting gamemakers',
+    top: [
+      { game: 'fightnight', student: 'Amr Jahouhi', klas: 'Groep 7a' },
+      { game: 'hajj', student: 'Al Qalam kids', klas: 'Al Qalam School' },
+    ],
+    rest: [],
+  },
+  {
+    id: 'lichting2', label: 'Lichting 2', subtitle: 'De tweede lichting, gerangschikt op beoordeling',
+    top: [
+      { rank: 1, game: 'fifaultimate', student: 'Mohamed Fatehi', klas: 'Groep 7c', score: '9.48' },
+      { rank: 2, game: 'sonicultimate', student: 'Abdoerrahmaan Ezzarfani', klas: 'Groep 7c', score: '9.16' },
+      { rank: 3, game: 'stuntracer', student: 'Amin van Ee', klas: 'Groep 6b', score: '9.00' },
+    ],
+    rest: [
+      { rank: 4, game: 'grannyhorrorgame', student: 'Abdulahi Abdulkhader', klas: 'Groep 7c', score: '8.63' },
+      { rank: 5, game: 'turborace', student: 'Junayd Bakkali', klas: 'Groep 6a', score: '8.41' },
+      { rank: 6, game: 'basketballislam', student: 'Adam El Majidi', klas: 'Groep 7b', score: '8.14' },
+      { rank: 7, game: 'kickoff3d', student: 'Imran Mestour', klas: 'Groep 6a', score: '7.50' },
+      { rank: 8, game: 'mijncraft', student: 'Youssef El Mahjoubi', klas: 'Groep 6b', score: '7.19' },
+    ],
+  },
+  {
+    id: 'lichting1', label: 'Lichting 1', subtitle: 'De eerste lichting gamemakers',
+    top: [
+      { rank: 1, game: 'bananastorm', v2: 'bananastorm2', student: 'Saifeddine Boulabkoul', klas: 'Groep 7b' },
+      { rank: 2, game: 'vicecity', v2: 'vicecity2', student: 'Yahya Essanousi', klas: 'Groep 6b' },
+      { rank: 3, game: 'game', sub: 'Race of Peace', student: 'Zakaria El Aamim', klas: 'Groep 6b' },
+    ],
+    rest: [
+      { rank: 4, game: 'penalty', sub: 'Toernooi Edition', student: 'Marouan El Amrani', klas: 'Groep 7c' },
+      { rank: 5, game: 'autospel', v2: 'autospel2', student: 'Mahir Tazammourti', klas: 'Groep 6a' },
+      { rank: 6, game: 'turboracer', v2: 'turboracer2', title: 'Turbo Racer 3D - Mega Maps', student: 'Reda Oruadia', klas: 'Groep 6c' },
+      { rank: 7, game: 'turborace', student: 'Junayd Bakkali', klas: 'Groep 6a' },
+    ],
+  },
 ];
-
-export const honorable = [
-  { rank: 4, name: 'Marouan El Amrani', game: 'Penalty Shooters Pro', gameSubtitle: 'Toernooi Edition', klas: 'Groep 7c', playable: 'penalty' },
-  { rank: 5, name: 'Mahir Tazammourti', game: 'Auto Spel met Islam Vragen', klas: 'Groep 6a', playable: 'autospel', v2: 'autospel2' },
-  { rank: 6, name: 'Reda Oruadia', game: 'Turbo Racer 3D - Mega Maps', klas: 'Groep 6c', playable: 'turboracer', v2: 'turboracer2' },
-  { rank: 7, name: 'Junayd Bakkali', game: 'Turbo Race', klas: 'Groep 6a', playable: 'turborace' },
-];
-
-// Lichting 2 — Tweede ronde gamemakers (gerangschikt op beoordeling)
-export const lichting2Top3 = [
-  { rank: 1, name: 'Mohamed Fatehi', game: 'Fifa Ultimate', klas: 'Groep 7c', playable: 'fifaultimate', score: '9.48' },
-  { rank: 2, name: 'Abdoerrahmaan Ezzarfani', game: 'Sonic Ultimate', klas: 'Groep 7c', playable: 'sonicultimate', score: '9.16' },
-  { rank: 3, name: 'Amin van Ee', game: 'Stunt Racer', klas: 'Groep 6b', playable: 'stuntracer', score: '9.00' },
-];
-export const lichting2Rest = [
-  { rank: 4, name: 'Abdulahi Abdulkhader', game: "Granny's Nightmare", klas: 'Groep 7c', playable: 'grannyhorrorgame', score: '8.63' },
-  { rank: 5, name: 'Junayd Bakkali', game: 'Turbo Race', klas: 'Groep 6a', playable: 'turborace', score: '8.41' },
-  { rank: 6, name: 'Adam El Majidi', game: 'Basketball Islam', klas: 'Groep 7b', playable: 'basketballislam', score: '8.14' },
-  { rank: 7, name: 'Imran Mestour', game: 'Voetbal Legends', klas: 'Groep 6a', playable: 'kickoff3d', score: '7.50' },
-  { rank: 8, name: 'Youssef El Mahjoubi', game: 'MijnCraft', klas: 'Groep 6b', playable: 'mijncraft', score: '7.19' },
-];
-
-// Lichting 3 — Derde ronde gamemakers
-export const lichting3 = [
-  { name: 'Amr Jahouhi', game: 'Fight Night', klas: 'Groep 7a', playable: 'fightnight', emoji: '🥊' },
-  { name: 'Al Qalam kids', game: 'Hajj Simulator 3D', klas: 'Al Qalam School', playable: 'hajj', emoji: '🕋' },
-];
-
-// Lichting 4 — Vierde ronde gamemakers (oktober 2026)
-export const lichting4 = [
-  { name: 'Al Qalam kids', game: 'Mario Party', klas: 'Al Qalam School', playable: 'marioparty', emoji: '⭐' },
-];
-
-// Lichtingen met speelkaarten (zonder ranglijst): kaarten + subtitel per tab
-export const cardLichtingen = {
-  lichting4: { students: lichting4, subtitle: 'De nieuwste lichting — oktober 2026' },
-  lichting3: { students: lichting3, subtitle: 'De derde lichting gamemakers' },
-};
 
 // Uitgelicht: eerste = brede kaart bovenaan
 export const FEATURED = [
   { game: 'marioparty', lichting: 'Lichting 4', maker: 'Al Qalam kids', tags: ['1–2 spelers', 'Toetsenbord'] },
   { game: 'fightnight', maker: 'Amr Jahouhi — Groep 7a' },
   { game: 'hajj', maker: 'Al Qalam kids — Al Qalam School' },
+];
+
+// Hall of Legends: de winnaar van elke lichting
+export const LEGENDS = [
+  { label: 'Lichting 1', name: 'Saifeddine Boulabkoul', game: 'bananastorm2', meta: 'Groep 7b' },
+  { label: 'Lichting 2', name: 'Mohamed Fatehi', game: 'fifaultimate', meta: 'Groep 7c — cijfer 9.48' },
+  { label: 'Lichting 3', name: 'Al Qalam kids', game: 'hajj', meta: 'Namens de hele groep — Al Qalam School' },
 ];
