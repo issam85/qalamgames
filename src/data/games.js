@@ -1,0 +1,27 @@
+// Spellen: sleutel → iframe-bron en stijl van de spelbalk (src: null = React-component)
+export const gameStyles = {
+  turboracer:    { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer.html', title: 'Turbo Racer 3D' },
+  mariospel:     { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel.html', title: 'Mario-achtig Spel' },
+  autospel:      { border: '#f5576c', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/autospel.html', title: 'Auto Spel met Islam Vragen' },
+  bananastorm:   { border: '#667eea', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/bananastorm.html', title: 'Banana Storm Survivor' },
+  vicecity:      { border: '#ff00ff', color: '#ff00ff', bg: 'rgba(0,0,0,0.8)', font: 'Impact, sans-serif', src: '/vicecity.html', title: 'Vice City Racing 3D' },
+  penalty:       { border: '#4caf50', color: '#4caf50', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/penalty.html', title: 'Penalty Shooters Pro' },
+  bananastorm2:  { border: '#667eea', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/bananastorm2.html', title: 'Banana Storm Survivor V2' },
+  vicecity2:     { border: '#ff00ff', color: '#ff00ff', bg: 'rgba(0,0,0,0.8)', font: 'Impact, sans-serif', src: '/vicecity2.html', title: 'Vice City Racing 3D V2' },
+  autospel2:     { border: '#f5576c', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/autospel2.html', title: 'Auto Spel V2' },
+  turboracer2:   { border: '#00ff88', color: '#00ff88', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/turboracer2.html', title: 'Turbo Racer 3D V2' },
+  mariospel2:    { border: '#e52521', color: '#fff', bg: 'rgba(0,0,0,0.8)', font: 'sans-serif', src: '/mariospel2.html', title: 'Mario-achtig Spel V2' },
+  game:          { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.8)', font: '"Amiri", serif', src: null, title: 'سباق السلام' },
+  grannyhorrorgame: { border: '#cc0000', color: '#ff2200', bg: 'rgba(0,0,0,0.95)', font: '"Creepster", cursive, sans-serif', src: '/grannyhorrorgame.html', title: "Granny's Nightmare" },
+  sonicultimate:    { border: '#0066ff', color: '#00ccff', bg: 'rgba(0,0,30,0.9)', font: '"Press Start 2P", monospace, sans-serif', src: '/sonicultimate.html', title: 'Sonic Ultimate' },
+  kickoff3d:        { border: '#ffd700', color: '#ffd700', bg: 'rgba(10,10,15,0.9)', font: '"Bebas Neue", sans-serif', src: '/kickoff3d.html', title: 'Voetbal Legends' },
+  stuntracer:       { border: '#ff6600', color: '#ffcc00', bg: 'rgba(10,5,0,0.9)', font: '"Orbitron", sans-serif', src: '/stuntracer.html', title: 'Stunt Racer' },
+  fifaultimate:     { border: '#c8960a', color: '#c8960a', bg: 'rgba(10,18,8,0.9)', font: '"Arial Black", Arial, sans-serif', src: '/fifaultimate.html', title: 'Fifa Ultimate' },
+  mijncraft:        { border: '#6FFFA0', color: '#6FFFA0', bg: 'rgba(7,20,40,0.9)', font: '"VT323", "Courier New", monospace', src: '/mijncraft.html', title: 'MijnCraft' },
+  basketballislam:  { border: '#FDB927', color: '#FDB927', bg: 'rgba(4,4,12,0.95)', font: 'monospace', src: '/basketballislam.html', title: 'Basketball Islam' },
+  turborace:        { border: '#ff6600', color: '#ff9933', bg: 'rgba(8,8,16,0.95)', font: 'monospace', src: '/turborace.html', title: 'Turbo Race' },
+  // Uitgelicht — externe deploy (eigen repo: hajj-simulator-3d), via iframe ingeladen
+  hajj:             { border: '#d4af37', color: '#d4af37', bg: 'rgba(26,15,10,0.85)', font: '"Amiri", serif', src: 'https://hajj-simulator-3d.vercel.app', title: 'Hajj Simulator 3D' },
+  fightnight:       { border: '#FAC775', color: '#FAC775', bg: 'rgba(10,8,6,0.92)', font: '"Bebas Neue", sans-serif', src: '/fightnight.html', title: 'Fight Night' },
+  marioparty:       { border: '#e53935', color: '#ffd43b', bg: 'rgba(21,101,192,0.9)', font: '"Fredoka", sans-serif', src: '/marioparty/index.html', title: 'Mario Party' },
+};
