@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Higgsfield-bronbeelden voor Mario Party (groot); alleen het manifest gaat in git
+game-assets/*
+!game-assets/manifest.tsv
