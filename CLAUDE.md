@@ -1,8 +1,8 @@
 # Qalam Games
 
 Website van basisschool Al Qalam (Gouda) met spellen die leerlingen uit groep 6, 7 en 8
-met AI maken. React 18 + Vite 5, één pagina zonder router (`src/App.jsx`). Elk spel is
-een losse HTML-pagina in `public/`, geopend in een iframe (`GameView`).
+met AI maken. React 18 + Vite 5, één pagina zonder router. Elk spel is een losse
+HTML-pagina in `public/`, geopend in een iframe (`components/GameView.jsx`).
 
 ## Repo en draaien
 
@@ -12,12 +12,25 @@ een losse HTML-pagina in `public/`, geopend in een iframe (`GameView`).
   en bouw nooit verder op een eigen versie (zie "Herstel 26 oktober" hieronder).
 - `npm install`, dan `npm run dev` → Vite (lokaal via `.claude/launch.json` op poort
   3099). Mario Party direct: `/marioparty/index.html` of `/#marioparty`.
-- Lint: `npx eslint public/marioparty` moet groen zijn. `src/App.jsx` heeft 7 bestaande
-  ESLint-meldingen die al op `main` stonden.
-- `src/App.jsx` (1086 regels): `gameStyles` (sleutel → iframe-bron en stijl), per
-  lichting een array (`top3`/`honorable` = Lichting 1, `lichting2Top3`/`lichting2Rest`,
-  `lichting3`, `lichting4`), `cardLichtingen` (Lichting 4 en 3 delen één kaartblok) en
-  de tabknoppen. Deep links via de URL-hash (`#marioparty`).
+- Lint: `npx eslint public/marioparty` moet groen zijn. In `src/` staan alleen
+  `react/prop-types`-meldingen (het project gebruikt geen PropTypes) en bestaande
+  meldingen in `IslamicRacingGame.jsx`.
+- Opbouw `src/` (elk bestand < 150 regels, behalve `IslamicRacingGame.jsx`):
+  - `App.jsx` kiest homepage of spel via `hooks/useHashPage.js` (deep link `#sleutel`,
+    terug naar home herstelt de scrollpositie).
+  - `data/games.js`: per spel titel, `src` (null = React-component), accentkleur,
+    optioneel `video`, `blurb`, `controls`, `howto`; `thumbOf()` → `public/thumbs/`.
+  - `data/lichtingen.js`: `LICHTINGEN` (top/rest per lichting), `FEATURED`, `LEGENDS`,
+    `findEntry()`, `moreGames()`.
+  - `components/`: NavBar, Hero, About, Featured, Lichtingen + GameCard, Legends, Footer,
+    GameView + GameInfo, LoopVideo (video alleen ≥768 px en zonder "minder beweging").
+  - `styles/`: `tokens.css` (kleuren, letters, vormen), `base.css`, `buttons.css` en
+    per onderdeel een eigen bestand, geïmporteerd door het component.
+- Nieuw spel toevoegen: bestand in `public/`, regel in `data/games.js`, leerling in
+  `data/lichtingen.js`, thumbnail `public/thumbs/<sleutel>.webp` (960×540), plus
+  `<noscript>`, `sitemap.xml` en het SEO-blok.
+- `public/school.png` is een screenshot van de schoolsite mét browserbalk en bladwijzers;
+  gebruik `public/school.webp` (alleen de foto van het gebouw).
 - De Hajj-game draait extern (`https://hajj-simulator-3d.vercel.app`, eigen repo).
 - SEO staat al: meta, Open Graph, JSON-LD en `<noscript>` in `index.html`, een
   `<!-- qalam-seo -->`-blok per spelpagina, `public/robots.txt` en `public/sitemap.xml`.
@@ -123,13 +136,38 @@ Richting: de heldere structuur en huisstijl van Mario Party (zie Huisstijl hierb
 doorvoeren op de hele site, met het goud van Al Qalam als accent. Duidelijke secties,
 één kaartensysteem voor alle spellen, consistente knoppen, goed op telefoon.
 
-Voorgestelde stappen (elk eerst voorleggen):
-1. Ontwerp maken: desktop-homepage, spelpagina (bijv. Mario Party) en mobiele homepage.
-   Er staat al een leeg Design-canvas klaar:
-   https://claude.ai/artifact/7wcxC1rz83yokZzQ4f9efs
-2. Met Higgsfield (`nano_banana_pro`, zelfde 3D-cartoonstijl): een hero-illustratie en
-   per spel een thumbnail; de intro-keyframe hierboven voor de Mario Party-kaart.
-3. `src/App.jsx` (1086 regels) eerst opsplitsen in componenten (hero, tabs,
-   spelkaart, GameView, Hall of Legends, data), dan de nieuwe stijl bouwen. Deep links,
-   SEO-meta in `index.html`, `<noscript>` en de SEO-blokken per spel behouden.
-4. Thumbnails in `public/thumbs/`; `og:image` per spel kan dan naar de thumbnail.
+Stappen (elk eerst voorleggen):
+1. Klaar (27 okt): ontwerp op het Design-canvas
+   https://claude.ai/artifact/7wcxC1rz83yokZzQ4f9efs: homepage desktop, spelpagina
+   Mario Party, homepage mobiel. Witte navigatiebalk, hero als illustratie over de volle
+   breedte met donkerblauw verloop links achter de tekst, schoolfoto bij "Wat is Qalam
+   Games?", Mario Party als brede kaart, één kaartensysteem (thumbnail 16:9, badge
+   Nieuw/#rang, cijfer, Speel + Versie 2), Hall of Legends met 3 winnaars (Lichting 3 =
+   Hajj, namens de hele groep). Letters: Fredoka (koppen) + Nunito (tekst). Knoppen groen
+   `#2e7d32`/`#1b5e20`, blauw `#1565c0`/`#0d47a1`, goud `#ffd43b`/`#c9a400`.
+2. Klaar (27 okt): beelden in `public/thumbs/` (17 spellen, WebP 960×540),
+   `public/hero/` (A/B/C, desktop 21:9 en `-mobile` uitsnede) en `public/video/`
+   (hero-a/b/c, fightnight, hajj; zonder geluid, `marioparty.mp4` is een montage van de
+   game-cutscenes). Nog niet gecommit. Gekozen hero is nog open (canvas: Tweaks → Hero;
+   A = kinderen aan laptops is de standaard).
+3. Klaar (27 okt), op branch `website-upgrade`: App.jsx opgesplitst en de nieuwe stijl
+   gebouwd (hero A gekozen). Nog niet gemerged/gepusht; wacht op akkoord gebruiker.
+4. `og:image` per spel naar de thumbnail. Video's alleen op desktop afspelen
+   (`muted`, `playsinline`, `loop`), op mobiel het stilstaande beeld.
+
+Higgsfield-ID's website-beelden (`nano_banana_pro`, 2k; video `kling4_0` 1080p met
+dezelfde start- en eindframe voor een naadloze loop). Thumbnails zijn gemaakt met een
+screenshot van het startscherm van elk spel als `image_references`; Sonic werd met
+screenshot geweigerd en is zonder referentie (zonder figuur) gemaakt.
+
+| Wat | ID |
+|---|---|
+| Hero A (zonder logo's) / B / C | `b43eef1c-1f9c-4609-b448-6df4e83c982a` / `d1cc0456-2f4d-4081-b21b-80a84b614fd4` / `9d093655-5e82-4b45-b556-4111cd46d4ef` |
+| Fight Night / Hajj / Fifa Ultimate | `07e49b0c-2564-4b20-9873-7a54842d39a2` / `15f542e8-d6c3-49b5-955b-da041293199c` / `03a96326-4c6c-44dc-b252-4b962ff64955` |
+| Sonic / Stunt Racer / Granny | `38e00cad-d513-405e-8fd1-d5c0b711fb14` / `efcc4cd3-2b72-4b0c-944a-00b4b5a4e88c` / `46c0a2d7-c9b4-4da2-939b-feec57d3b125` |
+| Turbo Race / Basketball Islam / Voetbal Legends | `322368b8-c469-47a1-9ab7-48cd24135709` / `0a2f35e7-26a0-40ec-ad10-82e943d4817c` / `a6515259-efab-4a99-b819-261f35b3ce4d` |
+| MijnCraft / Banana Storm / Vice City | `e156562c-e71e-4cc9-9d41-2fefaea0002b` / `3fc67245-4272-4f04-8999-d9e1c96b1c8d` / `16857310-51c8-4e7d-9699-c9a148672557` |
+| Penalty / Auto Spel / Turbo Racer 3D | `2e0fa1e6-e961-4a25-b17e-2f95c47f658a` / `3dcfa57b-5b10-4bbd-92fd-5af7de90320a` / `9b194f15-c439-4592-887c-51b557b1a694` |
+| سباق السلام (Race of Peace) | `9b9be001-db78-4c1e-a355-7f9bb22b9d61` |
+| Video hero A / B / C | `fe2d198b-7ee7-49bd-b0a4-bf67523ccd81` / `a4170df9-d86e-42d7-aa4e-02b419d974b8` / `821a1284-d2ab-42bd-8fd5-bafa13fc6bbf` |
+| Video Fight Night / Hajj | `9c9c2e01-4955-499d-85c4-2d98d05ed975` / `edab91e8-1953-4ded-92a3-2bd82fd2c764` |
