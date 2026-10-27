@@ -1,0 +1,54 @@
+/* Huisstijl: Mario Party (blauwe lucht, Fredoka, bolle knoppen) met het goud van Al Qalam */
+:root {
+  /* Lucht en ondergrond */
+  --sky-light: #8ee0ff;
+  --sky: #35a7f0;
+  --blue: #1565c0;
+  --blue-dark: #0d47a1;
+  --navy: #0d2a5c;
+  --navy-deep: #081d42;
+  --ground: #f3f9ff;
+  --white: #ffffff;
+  --line: #dcebfa;
+  --line-strong: #b9d6f2;
+  --tint-blue: #e3f2fd;
+  --tint-gold: #fff6d6;
+  --tint-green: #e8f5e9;
+
+  /* Tekst */
+  --ink: #0d3b78;
+  --text: #24476b;
+  --text-soft: #3e5f80;
+  --text-muted: #4a6785;
+
+  /* Accenten */
+  --gold: #d4af37;
+  --gold-dark: #a8871f;
+  --gold-text: #8a6d12;
+  --gold-ink: #6b5410;
+  --yellow: #ffd43b;
+  --yellow-edge: #c9a400;
+  --yellow-ink: #3a2c05;
+  --red: #c62828;
+  --green: #2e7d32;
+  --green-edge: #1b5e20;
+
+  /* Letters */
+  --font-display: 'Fredoka', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-arabic: 'Amiri', serif;
+
+  /* Vorm */
+  --radius-s: 12px;
+  --radius-m: 16px;
+  --radius-l: 24px;
+  --radius-xl: 28px;
+  --shadow-card: 0 10px 30px rgba(13, 59, 120, 0.10);
+  --shadow-raised: 0 14px 40px rgba(13, 59, 120, 0.14);
+  --container: 1200px;
+  --gutter: 32px;
+}
+
+@media (max-width: 600px) {
+  :root { --gutter: 16px; }
+}

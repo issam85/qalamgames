@@ -1,0 +1,43 @@
+/* Bolle knoppen met een 3D-onderrand, zoals in Mario Party */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-m);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(3px);
+}
+
+.btn-lg {
+  min-height: 56px;
+  padding: 0 28px;
+  border-radius: 18px;
+  font-size: 21px;
+}
+
+.btn-green { background: var(--green); color: var(--white); box-shadow: 0 5px 0 var(--green-edge); }
+.btn-blue { background: var(--blue); color: var(--white); box-shadow: 0 5px 0 var(--blue-dark); }
+.btn-gold { background: var(--yellow); color: var(--yellow-ink); box-shadow: 0 5px 0 var(--yellow-edge); }
+.btn-white { background: var(--white); color: var(--ink); box-shadow: 0 5px 0 var(--line-strong); }
+.btn-outline { background: var(--white); color: var(--ink); border: 2px solid var(--line-strong); }
+
+.btn-green:hover, .btn-blue:hover { color: var(--white); }
+.btn-gold:hover { color: var(--yellow-ink); }
+.btn-white:hover, .btn-outline:hover { color: var(--ink); }
+.btn-green:active, .btn-blue:active, .btn-gold:active, .btn-white:active { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
