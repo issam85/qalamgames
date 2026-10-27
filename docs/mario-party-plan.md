@@ -105,9 +105,15 @@ het Higgsfield-ID in `game-assets/manifest.tsv`:
 - `menu/`: titel-desktop, titel-mobiel, podium, trofee-ceremonie, partykamer,
   minigame-rad, wereldkaart, schatkist-bonus
 - `titelkaarten/`: alle 12 nieuwe minigames (§5)
-- `skills/`: keyframes Mario, Luigi, Peach, Daisy, Toad, Yoshi. **Bowser** was nog aan
-  het renderen: ophalen met job-ID `4f770e60-99b1-4798-a139-639f953d90ad`.
+- `skills/`: keyframes van alle 7 karakters (Bowser: `bowser-schokgolf.png`)
 - `effecten/`: vuurbal, ei, roze schild, superpaddenstoel, effectenblad (3×3)
+- `bron-spel-26okt/`: de bronbestanden van het huidige spel (26 okt): `renders/`
+  (karakters, achtergronden; bekende ID's met naam, de rest op tijd + ID) en `clips/`
+  (de Kling-clips voor sprites en cutscenes)
+- `website/`: originelen van de website-beelden (`beelden/`) en -video's (`videos/`)
+
+Alle 156 Higgsfield-bestanden staan in het manifest; kolom 3 is de bron-URL of het
+originele bestand in Downloads.
 
 Daarna was het tegoed op (account terug op het gratis plan). Alles hieronder is klaar om
 te draaien zodra er weer credits zijn.
