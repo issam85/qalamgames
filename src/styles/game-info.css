@@ -1,0 +1,102 @@
+/* Onder het spel: maker, besturing, uitleg, deellink en meer spellen */
+.gv-info { padding-top: 32px; }
+
+.gv-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.gv-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-radius: var(--radius-l);
+  background: var(--white);
+  box-shadow: var(--shadow-card);
+}
+
+.gv-fact-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+}
+
+.gv-fact-main { font-family: var(--font-display); font-weight: 700; font-size: 26px; color: var(--ink); }
+.gv-fact-text { font-size: 17px; line-height: 1.55; color: var(--text-soft); }
+
+.gv-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.gv-control kbd {
+  min-width: 120px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--line-strong);
+  background: #eef5fc;
+  box-shadow: 0 3px 0 var(--line-strong);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.gv-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.gv-link { font-size: 15px; color: var(--text-muted); }
+
+.gv-more-title { margin: 56px 0 20px; font-size: 32px; }
+
+.gv-more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.gv-more-card {
+  display: flex;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--white);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  transition: transform 0.12s ease;
+}
+
+.gv-more-card:hover { transform: translateY(-3px); }
+
+.gv-more-card img {
+  width: 150px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-right: 5px solid var(--accent, var(--gold));
+}
+
+.gv-more-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 18px 20px;
+  min-width: 0;
+}
+
+.gv-more-name { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: var(--ink); }
+.gv-more-meta { font-size: 14px; color: var(--text-muted); }

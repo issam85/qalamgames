@@ -36,7 +36,7 @@ export default function useHashPage(isPage) {
     const onHash = () => goTo(pageFromHash(isPage));
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
-  }, [isPage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isPage]);
 
   return [page, goTo];
 }

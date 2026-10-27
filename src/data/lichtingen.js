@@ -59,3 +59,16 @@ export const LEGENDS = [
   { label: 'Lichting 2', name: 'Mohamed Fatehi', game: 'fifaultimate', meta: 'Groep 7c — cijfer 9.48' },
   { label: 'Lichting 3', name: 'Al Qalam kids', game: 'hajj', meta: 'Namens de hele groep — Al Qalam School' },
 ];
+
+// Alle leerlingen op één rij, met hun lichting erbij (nieuwste eerst)
+const ALL = LICHTINGEN.flatMap((l) => [...l.top, ...l.rest].map((e) => ({ ...e, lichting: l.label })));
+
+// De leerling bij een spel (ook voor een versie 2)
+export const findEntry = (key) => ALL.find((e) => e.game === key || e.v2 === key);
+
+// Drie andere spellen voor onder de spelpagina
+export const moreGames = (key) => {
+  const own = findEntry(key)?.game;
+  const seen = new Set([key, own]);
+  return ALL.filter((e) => !seen.has(e.game) && seen.add(e.game)).slice(0, 3);
+};

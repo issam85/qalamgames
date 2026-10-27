@@ -1,0 +1,124 @@
+/* Spelpagina: balk, spel in een 16:9-kader (zo groot als het scherm toelaat), info eronder */
+.gv {
+  min-height: 100vh;
+  background: var(--ground);
+  padding-bottom: 72px;
+}
+
+.gv-bar { background: var(--navy); }
+
+.gv-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 14px;
+}
+
+.gv-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.gv-title {
+  font-size: 28px;
+  color: var(--yellow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gv-chip {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 10px;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.gv-icon-btn { width: 44px; padding: 0; }
+
+.gv-stage { padding-top: 32px; }
+
+.gv-frame {
+  position: relative;
+  width: min(100%, calc((100vh - 140px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  border: 6px solid var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 50px rgba(13, 59, 120, 0.22);
+  background: #000;
+  overflow: hidden;
+}
+
+.gv-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Knoppen over het spel: alleen bij volledig scherm, op mobiel en bij de React-game */
+.gv-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 100;
+  display: none;
+  justify-content: space-between;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.gv-overlay .btn { pointer-events: auto; }
+.gv-overlay.is-hidden { opacity: 0; }
+.gv-overlay.is-hidden .btn { pointer-events: none; }
+
+.gv-frame:fullscreen { border: 0; border-radius: 0; width: 100%; }
+.gv-frame:fullscreen .gv-overlay { display: flex; }
+
+/* Schermvullend: mobiel en de React-game */
+.gv-immersive { padding: 0; }
+
+.gv-immersive .gv-bar, .gv-immersive .gv-info { display: none; }
+
+.gv-immersive .gv-stage, .gv-immersive .gv-frame {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.gv-immersive .gv-frame {
+  height: 100vh;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.gv-immersive .gv-overlay { display: flex; }
+
+@media (max-width: 767px) {
+  .gv { padding: 0; }
+  .gv-bar, .gv-info { display: none; }
+  .gv-stage { width: 100%; padding: 0; }
+
+  .gv-frame {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    aspect-ratio: auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .gv-overlay { display: flex; }
+}
