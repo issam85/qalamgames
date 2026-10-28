@@ -36,13 +36,9 @@ function press(idx) {
   if (r.finishTime === undefined) boost(r.momentum);
 }
 
-// seconden sinds GO
-function raceTime(now) {
-  return Math.max(0, (now - race.t0 - COUNTDOWN_MS) / 1000);
-}
-
-function crossLine(r, idx, now) {
-  r.finishTime = raceTime(now);
+// t = exacte speltijd (s sinds GO) waarop de loper de finish passeerde
+function crossLine(r, idx, now, t) {
+  r.finishTime = t;
   race.order.push(race.players[idx]);
   play(r.sprite, 'cheer');
   const p = toScreen(race.view, TRACK_LEN, 2, laneOf(race.view, idx));
@@ -55,9 +51,12 @@ function crossLine(r, idx, now) {
   }
 }
 
-function finish(now) {
+function finishOf(player) {
+  return race.runners[race.players.indexOf(player)].finishTime;
+}
+
+function finish() {
   race.phase = 'done';
-  race.doneTime = raceTime(now);
   const xOf = (p) => race.runners[race.players.indexOf(p)].x;
   const rest = race.players
     .filter((p) => !race.order.includes(p))
@@ -70,15 +69,10 @@ function finish(now) {
   race.onFinish(ranking);
 }
 
-function hudTime(now) {
-  if (race.phase === 'countdown') return 0;
-  return race.phase === 'done' ? race.doneTime : raceTime(now);
-}
-
 function frame(now) {
   const time = now / 1000;
   const slow = race.firstFinish !== null && now - race.firstFinish < SLOWMO_MS;
-  const realDt = Math.min(0.05, time - race.time);
+  const realDt = Math.min(0.1, time - race.time);
   const dt = realDt * (slow ? 0.3 : 1);
   race.time = time;
   const elapsed = now - race.t0;
@@ -94,15 +88,22 @@ function frame(now) {
     race.input.tick(now);
     const allDone = race.order.length === race.players.length;
     const timeUp = race.firstFinish !== null && now - race.firstFinish > GRACE_MS;
-    if (allDone || timeUp) finish(now);
+    if (allDone || timeUp) finish();
   }
+  // speltijd loopt alleen tijdens de race, en ook langzamer tijdens de slow motion
+  if (race.phase === 'running') race.clock += dt;
+  const hadWinner = race.firstFinish !== null;
   race.runners.forEach((r, i) => {
-    if (moveRunner(race, r, i, dt)) crossLine(r, i, now);
+    const t = moveRunner(race, r, i, dt);
+    if (t !== null) crossLine(r, i, now, t);
   });
+  // wie in hetzelfde frame finishen, krijgen de volgorde van hun exacte tijd
+  race.order.sort((a, b) => finishOf(a) - finishOf(b));
+  if (!hadWinner && race.firstFinish !== null) race.focus = race.players.indexOf(race.order[0]);
   updateParticles(race.particles, dt);
   race.shake = Math.max(0, race.shake - dt * 30);
   race.flash = Math.max(0, (race.flash || 0) - realDt * 3);
-  updateHud(race.hud, race.runners, hudTime(now), race.phase === 'done');
+  updateHud(race.hud, race.runners, race.clock, race.phase === 'done');
   renderView(race.view, race, realDt, shotFor(race, now, elapsed / COUNTDOWN_MS));
   race.raf = requestAnimationFrame(frame);
 }
@@ -117,6 +118,7 @@ export function startSprint(canvas, statusEl, players, onFinish) {
     firstFinish: null,
     focus: null,
     phase: 'countdown',
+    clock: 0,
     shake: 0,
     t0: performance.now(),
     time: performance.now() / 1000,

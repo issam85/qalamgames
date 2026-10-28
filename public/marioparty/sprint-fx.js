@@ -28,3 +28,46 @@ export function flash(ctx, w, h, amount) {
   ctx.fillRect(0, 0, w, h);
   ctx.restore();
 }
+
+// "P1"-labeltje met een puntje naar beneden boven de eigen loper
+export function playerMarker(ctx, x, y, tag, color) {
+  ctx.save();
+  ctx.font = '700 18px Fredoka, sans-serif';
+  const w = ctx.measureText(tag).width + 18;
+  ctx.fillStyle = color === '#ffffff' ? '#e53935' : color;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.roundRect(x - w / 2, y - 30, w, 26, 10);
+  ctx.moveTo(x - 7, y - 5);
+  ctx.lineTo(x, y + 4);
+  ctx.lineTo(x + 7, y - 5);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.fillText(tag, x, y - 11);
+  ctx.restore();
+}
+
+// pijl aan de rand van het beeld als de eigen loper buiten beeld is
+export function edgeArrow(ctx, side, y, width, tag, color) {
+  const x = side === 'left' ? 34 : width - 34;
+  const dir = side === 'left' ? -1 : 1;
+  ctx.save();
+  ctx.fillStyle = color === '#ffffff' ? '#e53935' : color;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x + dir * 22, y);
+  ctx.lineTo(x - dir * 4, y - 20);
+  ctx.lineTo(x - dir * 4, y + 20);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.font = '700 16px Fredoka, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(tag, x - dir * 14, y + 38);
+  ctx.restore();
+}

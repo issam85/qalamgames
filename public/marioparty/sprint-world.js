@@ -34,20 +34,49 @@ function addHills(scene) {
 function addTrees(scene, length) {
   const trunk = new THREE.MeshLambertMaterial({ color: '#8d5a32' });
   const leaves = [new THREE.MeshLambertMaterial({ color: '#43a047' }), new THREE.MeshLambertMaterial({ color: '#66bb35' })];
+  const trunkGeo = new THREE.CylinderGeometry(0.25, 0.35, 2, 8);
+  const crownGeo = new THREE.SphereGeometry(1.6, 16, 12);
   for (let x = -16; x < length + 30; x += 7 + (x % 3)) {
     const z = -17 - (x % 4) * 1.5;
-    const t = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 2, 8), trunk);
+    const t = new THREE.Mesh(trunkGeo, trunk);
     t.position.set(x, 1, z);
-    const crown = new THREE.Mesh(new THREE.SphereGeometry(1.6 + (x % 2) * 0.4, 16, 12), leaves[Math.abs(x) % 2]);
+    const crown = new THREE.Mesh(crownGeo, leaves[Math.abs(x) % 2]);
+    crown.scale.setScalar(1 + (x % 2) * 0.25);
     crown.position.set(x, 3, z);
     scene.add(t, crown);
   }
 }
 
+// één renderer voor het hele spel: elke ronde een nieuwe zou dezelfde GL-context
+// hergebruiken en de oude texturen laten rondslingeren
+let shared = null;
+
+function getRenderer(canvas) {
+  if (shared && shared.domElement === canvas) return shared;
+  const dpr = window.devicePixelRatio || 1;
+  // scherpte begrensd voor trage schoolcomputers; anti-aliasing alleen op gewone schermen
+  shared = new THREE.WebGLRenderer({ canvas, antialias: dpr < 1.5, alpha: false });
+  shared.setPixelRatio(Math.min(1.5, dpr));
+  shared.outputColorSpace = THREE.SRGBColorSpace;
+  return shared;
+}
+
+// ruimt geometrie, materialen en texturen van een ronde op (gedeelde strips blijven)
+export function disposeScene(scene) {
+  const textures = new Set();
+  scene.traverse((obj) => {
+    if (obj.geometry) obj.geometry.dispose();
+    [].concat(obj.material || []).forEach((mat) => {
+      Object.values(mat).forEach((v) => { if (v && v.isTexture) textures.add(v); });
+      mat.dispose();
+    });
+  });
+  if (scene.background && scene.background.isTexture) textures.add(scene.background);
+  textures.forEach((tex) => { if (!tex.userData.keep) tex.dispose(); });
+}
+
 export function createWorld(canvas, length) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const renderer = getRenderer(canvas);
   const scene = new THREE.Scene();
   scene.background = skyTexture();
   scene.fog = new THREE.Fog('#cfefff', 60, 140);
@@ -68,5 +97,5 @@ export function createWorld(canvas, length) {
     camera.updateProjectionMatrix();
   };
   resize();
-  return { THREE, renderer, scene, camera, resize };
+  return { renderer, scene, camera, resize };
 }

@@ -3,6 +3,7 @@
 import * as THREE from './vendor/three.module.min.js';
 
 const look = new THREE.Vector3();
+const jitter = new THREE.Vector3();
 const wantPos = new THREE.Vector3();
 const wantLook = new THREE.Vector3();
 
@@ -22,14 +23,14 @@ function introShot(t) {
   return 40 - k * 8;
 }
 
-function followShot(xs) {
+// volgt de kopgroep, maar houdt de menselijke spelers in beeld: zoomt uit tot de
+// langzaamste speler erin past; is dat te ver, dan blijft de speler in beeld
+function followShot(xs, humans) {
   const lead = Math.max(...xs);
-  const last = Math.min(...xs);
-  const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
-  const focus = lead * 0.6 + mean * 0.4 + 2;
-  const spread = lead - last;
-  // uitzoomen bij afstand tussen de lopers, maar de kopgroep blijft groot in beeld
-  const dist = Math.min(22, 11.5 + spread * 0.6);
+  const back = Math.min(lead - 3, ...humans);
+  const spread = lead - back;
+  const focus = spread > 26 ? back + 10 : (lead + back) / 2 + 2;
+  const dist = Math.min(24, 11.5 + spread * 0.55);
   wantPos.set(focus - 6, 3 + dist * 0.2, dist);
   wantLook.set(focus + 1.5, 0.6, -1.5);
   return 32;
@@ -53,7 +54,7 @@ export function updateDirector(d, dt, shot, shake = 0) {
     fov = finishShot(shot.x, shot.z);
     rate = 5;
   } else {
-    fov = followShot(shot.xs);
+    fov = followShot(shot.xs, shot.humans || []);
   }
   const k = 1 - Math.exp(-dt * rate);
   d.pos.lerp(wantPos, k);
@@ -61,7 +62,7 @@ export function updateDirector(d, dt, shot, shake = 0) {
   d.fov += (fov - d.fov) * k;
   const cam = d.camera;
   cam.position.copy(d.pos);
-  if (shake > 0) cam.position.add(new THREE.Vector3((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0));
+  if (shake > 0) cam.position.add(jitter.set((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake, 0));
   look.copy(d.look);
   cam.lookAt(look);
   if (Math.abs(cam.fov - d.fov) > 0.01) {

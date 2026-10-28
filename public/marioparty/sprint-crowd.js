@@ -21,7 +21,7 @@ export function buildCrowd(scene, trackWidth) {
       fan.mesh.material.color.set(TINTS[Math.floor(Math.random() * TINTS.length)]);
       fan.x = x + (Math.random() - 0.5) * 1.2 + rowNr * 1.1;
       fan.z = back - rowNr * 1.6 - Math.random() * 0.4;
-      fan.lift = STAND_TOPS[rowNr];
+      fan.base = STAND_TOPS[rowNr];
       fan.favourite = Math.random() < 0.5 ? 'cheer' : 'clap';
       fan.speed = 0.8 + Math.random() * 0.5;
       fans.push(fan);
@@ -45,6 +45,6 @@ export function updateCrowd(crowd, dt, mood, camera) {
     update(fan.sprite, dt);
     // na een sprong weer gewoon juichen
     if (fan.sprite.anim === 'jump' && fan.sprite.t > 2.6) play(fan.sprite, 'cheer');
-    updateRunner3d(fan, fan.x, fan.z, camera, fan.lift);
+    updateRunner3d(fan, fan.x, fan.z, camera, { base: fan.base });
   });
 }
