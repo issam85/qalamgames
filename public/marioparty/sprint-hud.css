@@ -1,0 +1,115 @@
+/* Sprint-HUD: portret, tijd en power bar per speler, links in beeld. */
+
+.shud {
+  position: absolute;
+  top: 3%;
+  left: 2%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: clamp(170px, 24%, 250px);
+  pointer-events: none;
+}
+
+.shud-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shud-face {
+  flex-shrink: 0;
+  width: clamp(36px, 4.4vw, 52px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  background: radial-gradient(circle at 50% 35%, #ffffff, #bfe6ff);
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.shud-face img {
+  width: 100%;
+  height: 230%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.shud-info {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 10px 7px;
+  border-radius: 12px;
+  background: rgba(20, 30, 60, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.shud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.shud-name {
+  font-size: clamp(11px, 1.1vw, 14px);
+  opacity: 0.85;
+}
+
+.shud-time {
+  font-size: clamp(15px, 1.7vw, 22px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.shud-bar {
+  position: relative;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.shud-fill {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 100% 0 0);
+  background: linear-gradient(90deg, #43d14a 0%, #ffd43b 60%, #ff5a3c 100%);
+}
+
+.shud-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #fff;
+  opacity: 0.8;
+}
+
+.shud-row.is-turbo .shud-info {
+  background: rgba(198, 40, 40, 0.75);
+  box-shadow: 0 0 14px rgba(255, 120, 40, 0.9);
+}
+
+.shud-row.is-turbo .shud-fill {
+  animation: shud-flash 0.25s linear infinite alternate;
+}
+
+.shud-row.is-done .shud-info {
+  background: rgba(46, 125, 50, 0.8);
+}
+
+.shud-row.is-out {
+  opacity: 0.55;
+}
+
+@keyframes shud-flash {
+  to { filter: brightness(1.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shud-row.is-turbo .shud-fill { animation: none; }
+}

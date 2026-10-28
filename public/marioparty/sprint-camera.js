@@ -35,8 +35,9 @@ function followShot(xs) {
 }
 
 function finishShot(x, z) {
-  wantPos.set(x - 5.5, 3, z + 9);
-  wantLook.set(x + 0.5, 1.1, z);
+  // voorbij de finish, terugkijkend: de palen staan dan niet tussen camera en winnaar
+  wantPos.set(x + 5, 3, z + 9);
+  wantLook.set(x - 0.5, 1.1, z);
   return 30;
 }
 
