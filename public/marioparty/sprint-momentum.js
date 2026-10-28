@@ -1,9 +1,9 @@
 // Momentum van een loper: elke druk geeft een stoot energie (power 0–1) die vanzelf
-// wegzakt. De snelheid volgt de power; wie lang genoeg boven de turbogrens blijft,
-// gaat in turbo en loopt nog harder. Zo telt volhouden, niet alleen snel tikken.
+// wegzakt. De snelheid volgt de power (≈ 0,13 × drukken per seconde); wie een hoog tempo
+// (≈ 6 per seconde) even vasthoudt, gaat in turbo en loopt nog harder.
 
 export const MAX_SPEED = 10; // wereldeenheden per seconde bij volle power
-export const TURBO_AT = 0.85;
+export const TURBO_AT = 0.75;
 const BOOST = 0.12; // power per druk
 const DECAY = 0.95; // power-verlies per seconde (evenredig)
 const TURBO_DELAY = 0.6; // zo lang (s) boven de grens voordat turbo aangaat

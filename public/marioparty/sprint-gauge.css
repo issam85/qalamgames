@@ -1,0 +1,57 @@
+/* Grote power bar onderin voor de eigen speler(s) */
+.shud-gauge {
+  position: absolute;
+  bottom: 4%;
+  width: min(38%, 360px);
+  padding: 8px 12px 10px;
+  border-radius: 16px;
+  border: 3px solid var(--accent);
+  background: rgba(20, 30, 60, 0.6);
+  color: #fff;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.shud-gauge.is-left { left: 2%; }
+.shud-gauge.is-right { right: 2%; }
+
+.shud-gauge-label {
+  font-size: clamp(11px, 1.2vw, 15px);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.shud-gauge-bar {
+  position: relative;
+  height: clamp(12px, 1.6vw, 20px);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.shud-turbo {
+  position: absolute;
+  right: 12px;
+  top: -0.9em;
+  font-size: clamp(20px, 2.6vw, 34px);
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 3px 0 #c62828;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.shud-gauge.is-turbo {
+  background: rgba(198, 40, 40, 0.75);
+  box-shadow: 0 0 18px rgba(255, 120, 40, 0.9);
+}
+
+.shud-gauge.is-turbo .shud-turbo {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.shud-gauge.is-done {
+  opacity: 0;
+}

@@ -17,6 +17,8 @@
   overflow: hidden;
   background: #7fd3ff;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  touch-action: manipulation;
+  user-select: none;
 }
 
 #sprint3d,

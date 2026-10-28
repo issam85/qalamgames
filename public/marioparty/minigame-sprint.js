@@ -17,6 +17,8 @@ const GRACE_MS = 4000;
 const SLOWMO_MS = 1300;
 
 let race = null;
+// "minder beweging": geen schudden, flits of slow motion
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function loadSprintAssets() {
   return Promise.resolve();
@@ -46,8 +48,8 @@ function crossLine(r, idx, now, t) {
   if (race.firstFinish === null) {
     race.firstFinish = now;
     race.focus = idx;
-    race.shake = 10;
-    race.flash = 1;
+    race.shake = REDUCE ? 0 : 10;
+    race.flash = REDUCE ? 0 : 1;
   }
 }
 
@@ -71,7 +73,7 @@ function finish() {
 
 function frame(now) {
   const time = now / 1000;
-  const slow = race.firstFinish !== null && now - race.firstFinish < SLOWMO_MS;
+  const slow = !REDUCE && race.firstFinish !== null && now - race.firstFinish < SLOWMO_MS;
   const realDt = Math.min(0.1, time - race.time);
   const dt = realDt * (slow ? 0.3 : 1);
   race.time = time;
@@ -104,7 +106,7 @@ function frame(now) {
   race.shake = Math.max(0, race.shake - dt * 30);
   race.flash = Math.max(0, (race.flash || 0) - realDt * 3);
   updateHud(race.hud, race.runners, race.clock, race.phase === 'done');
-  renderView(race.view, race, realDt, shotFor(race, now, elapsed / COUNTDOWN_MS));
+  renderView(race.view, race, realDt, shotFor(race, now, REDUCE ? 1 : elapsed / COUNTDOWN_MS));
   race.raf = requestAnimationFrame(frame);
 }
 
@@ -129,7 +131,7 @@ export function startSprint(canvas, statusEl, players, onFinish) {
   statusEl.textContent = '';
   if (document.activeElement) document.activeElement.blur();
   window.focus();
-  race.input = createInput(players, press, () => race && race.phase === 'running');
+  race.input = createInput(players, document.getElementById('sprint-stage'), press, () => race && race.phase === 'running');
   race.input.attach();
   race.raf = requestAnimationFrame(frame);
 }
