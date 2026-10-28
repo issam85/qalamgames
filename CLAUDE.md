@@ -89,7 +89,9 @@ bekend.
 - `sprites.js` sprite sheets afspelen · `effects.js` stof, confetti, sterretjes
 - `cutscene.js` video's met "Overslaan" · `transition.js` sterwipe tussen schermen
 - `characters.js`, `assets.js` plaatjes en cache
-- CSS: `base.css`, `setup.css`, `play.css`, `toad.css`, `overlay.css`
+- CSS: `base.css`, `setup.css`, `play.css`, `toad.css`, `overlay.css`; schermindeling
+  in `layout.css` (elk scherm één schermhoogte, grote knop altijd in beeld),
+  `layout-phone.css` (staand) en `layout-low.css` (liggend)
 - Beeld: `img/` (renders, achtergronden), `sprites/` (3,8 MB), `video/` (12 cutscenes, 16 MB)
 
 **Huisstijl van de game** (basis voor de website-upgrade): blauwe lucht als radiaal

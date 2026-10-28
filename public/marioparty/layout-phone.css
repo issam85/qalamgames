@@ -1,0 +1,69 @@
+/* Telefoon staand (smal): compacter, zodat alles zonder scrollen in beeld past.
+   Liggend staat in layout-low.css. */
+
+/* staand: 4 karakters naast elkaar, de onderste rij van 3 in het midden */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+
+  #screen-setup {
+    --rows: 2;
+  }
+
+  .picker {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .picker .char-card {
+    grid-column: span 2;
+    font-size: 14px;
+    padding: 6px 4px 4px;
+    gap: 2px;
+  }
+
+  .picker .char-card:nth-child(5) {
+    grid-column: 2 / span 2;
+  }
+
+  #hud,
+  #toad-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .hud-card {
+    min-width: 0;
+    padding: 6px 8px 6px 6px;
+    gap: 6px;
+  }
+
+  .hud-card img {
+    height: 44px;
+  }
+
+  .bubble {
+    font-size: 16px;
+    line-height: 1.45;
+    padding: 12px 16px;
+  }
+
+  /* het speelveld is staand klein: tip om de telefoon te draaien */
+  #screen-minigame::after {
+    content: '↻ Draai je telefoon voor een groter beeld';
+    margin: 10px 0 auto;
+    font-size: 15px;
+    opacity: 0.85;
+  }
+}
+
+/* klein staand scherm met twee spelers: de titel maakt plaats voor de karakters */
+@media (max-width: 600px) and (max-height: 700px) {
+  #screen-setup:has(#pick-block-2:not([hidden])) h1 {
+    display: none;
+  }
+}

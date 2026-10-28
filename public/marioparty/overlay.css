@@ -22,8 +22,8 @@
 
 #cutscene-skip {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
   font-size: 16px;
   padding: 8px 18px;
   opacity: 0.85;

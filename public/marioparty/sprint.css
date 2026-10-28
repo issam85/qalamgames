@@ -9,7 +9,6 @@
 
 #sprint-stage {
   position: relative;
-  width: min(100%, 1100px, calc((100vh - 150px) * 16 / 9));
   aspect-ratio: 16 / 9;
   margin: 0 auto;
   border: 4px solid #fff;

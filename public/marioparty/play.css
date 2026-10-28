@@ -1,8 +1,6 @@
 /* Speelvelden: trap, race en spelerskaarten. */
 
 #stairs {
-  width: 100%;
-  max-width: 800px;
   border: 4px solid #fff;
   border-radius: 20px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);

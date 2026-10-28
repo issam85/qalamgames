@@ -1,0 +1,101 @@
+/* Telefoon liggend (of een laag venster): kleinere koppen, knoppen en kaarten, zodat
+   alles zonder scrollen in beeld past. */
+@media (max-height: 520px) {
+  h1 {
+    font-size: 30px;
+    margin-bottom: 4px;
+  }
+
+  h2 {
+    font-size: 17px;
+    margin: 4px 0;
+  }
+
+  #screen-setup h1,
+  #screen-minigame > h2 {
+    display: none;
+  }
+
+  .row {
+    margin-bottom: 4px;
+  }
+
+  .btn {
+    font-size: 15px;
+    padding: 6px 18px;
+  }
+
+  .btn.big {
+    font-size: 19px;
+    padding: 8px 30px;
+    margin-top: 10px;
+  }
+
+  .picker .char-card {
+    font-size: 13px;
+    padding: 4px 4px 2px;
+    gap: 2px;
+    border-width: 3px;
+  }
+
+  #sprint-hint {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  #hud,
+  #toad-cards {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .hud-card {
+    min-width: 0;
+    padding: 4px 10px 4px 4px;
+    gap: 6px;
+    border-width: 3px;
+  }
+
+  .hud-card img {
+    height: 38px;
+  }
+
+  .hud-card div {
+    font-size: 13px;
+  }
+
+  .hud-card b {
+    font-size: 14px;
+  }
+
+  /* Toad links, ballon en kaarten rechts */
+  #toad-box {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    gap: 8px 16px;
+    width: 100%;
+  }
+
+  #toad-canvas {
+    grid-row: 1 / 3;
+    height: 100%;
+    max-height: none;
+  }
+
+  .bubble {
+    font-size: 15px;
+    line-height: 1.4;
+    padding: 10px 16px;
+  }
+
+  .bubble::before {
+    display: none;
+  }
+
+  .ranking {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+}

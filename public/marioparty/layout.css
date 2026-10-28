@@ -1,0 +1,123 @@
+/* Schermindeling: elk scherm is precies één schermhoogte, met de grote knop altijd
+   onderin beeld. Karakters, trap, speelveld en Toad krimpen mee met de ruimte. */
+
+body {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  margin: 0 auto;
+  overflow-y: auto; /* noodgreep op heel kleine schermen */
+}
+
+.screen > * {
+  flex-shrink: 0;
+}
+
+/* veilig centreren: bij te weinig ruimte valt de bovenkant niet weg */
+.screen > :first-child {
+  margin-top: auto;
+}
+
+.screen > .btn.big,
+#sprint-stage {
+  margin-bottom: auto;
+}
+
+/* keuzescherm: de karakters vullen de ruimte tussen kop en startknop */
+#screen-setup {
+  --rows: 1;
+}
+
+.pick-block {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(var(--rows) * 150px + 50px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pick-block[hidden] {
+  display: none;
+}
+
+.picker {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 112px));
+  grid-auto-rows: minmax(0, 1fr);
+  justify-content: center;
+  gap: 10px;
+}
+
+.picker .char-card {
+  width: auto;
+  min-height: 0;
+}
+
+.char-card img {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  object-fit: contain;
+}
+
+/* trap en speelveld houden hun verhouding en nemen de hoogte die over is */
+#stairs {
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
+  max-height: min(480px, calc((100vw - 24px) * 0.6));
+}
+
+#sprint-stage {
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
+  max-height: min(506px, calc((100vw - 24px) * 0.5625));
+}
+
+/* uitslag als kaart over het speelveld, zodat "Verder" altijd in beeld is */
+#screen-minigame {
+  position: relative;
+}
+
+#sprint-result {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: rgba(13, 44, 110, 0.85);
+  backdrop-filter: blur(3px);
+}
+
+#sprint-result[hidden] {
+  display: none;
+}
+
+#toad-box {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+#toad-canvas {
+  flex: 1 1 0;
+  min-height: 60px;
+  width: auto;
+  max-height: 280px;
+}
