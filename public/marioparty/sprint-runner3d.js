@@ -34,10 +34,11 @@ function textureFor(cache, url, frames) {
   return cache.get(url);
 }
 
-export function createRunner3d(scene, sprite) {
+// height = staande hoogte in wereldeenheden (publiek is kleiner dan de lopers)
+export function createRunner3d(scene, sprite, height = RUNNER_H) {
   const info = frameOf(sprite);
   const { m } = info;
-  const s = RUNNER_H / info.stand;
+  const s = height / info.stand;
   const w = m.frameW * s;
   const h = m.frameH * s;
   const geo = new THREE.PlaneGeometry(w, h);
@@ -46,7 +47,7 @@ export function createRunner3d(scene, sprite) {
   const mat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.35, side: THREE.DoubleSide });
   const mesh = new THREE.Mesh(geo, mat);
   const shadow = new THREE.Mesh(
-    new THREE.PlaneGeometry(RUNNER_H * 0.75, RUNNER_H * 0.3),
+    new THREE.PlaneGeometry(height * 0.75, height * 0.3),
     new THREE.MeshBasicMaterial({ map: blobShadow(), transparent: true, depthWrite: false }),
   );
   shadow.rotation.x = -Math.PI / 2;

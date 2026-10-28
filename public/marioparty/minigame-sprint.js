@@ -51,6 +51,7 @@ function crossLine(r, idx, now) {
     race.firstFinish = now;
     race.focus = idx;
     race.shake = 10;
+    race.flash = 1;
   }
 }
 
@@ -100,6 +101,7 @@ function frame(now) {
   });
   updateParticles(race.particles, dt);
   race.shake = Math.max(0, race.shake - dt * 30);
+  race.flash = Math.max(0, (race.flash || 0) - realDt * 3);
   updateHud(race.hud, race.runners, hudTime(now), race.phase === 'done');
   renderView(race.view, race, realDt, shotFor(race, now, elapsed / COUNTDOWN_MS));
   race.raf = requestAnimationFrame(frame);

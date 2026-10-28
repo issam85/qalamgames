@@ -26,11 +26,12 @@ function followShot(xs) {
   const lead = Math.max(...xs);
   const last = Math.min(...xs);
   const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
-  const focus = lead * 0.5 + mean * 0.5 + 2;
+  const focus = lead * 0.6 + mean * 0.4 + 2;
   const spread = lead - last;
-  const dist = Math.min(30, 11.5 + spread * 0.75);
-  wantPos.set(focus - 6, 3 + dist * 0.24, dist);
-  wantLook.set(focus + 1.5, 0.6, -1);
+  // uitzoomen bij afstand tussen de lopers, maar de kopgroep blijft groot in beeld
+  const dist = Math.min(22, 11.5 + spread * 0.6);
+  wantPos.set(focus - 6, 3 + dist * 0.2, dist);
+  wantLook.set(focus + 1.5, 0.6, -1.5);
   return 32;
 }
 
