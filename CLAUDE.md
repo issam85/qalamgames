@@ -74,7 +74,17 @@ bekend.
 **Bestanden:**
 - `game.js` spelverloop · `setup.js` keuzescherm · `hud.js` spelerskaarten
 - `board.js` trap, ster, sterrenlogica · `board-anim.js` springen/zakken op de trap
-- `minigame-sprint.js` race-logica · `sprint-draw.js` race tekenen
+- Sprint in 3D (three.js 0.186.1, lokaal in `vendor/`, uitgesloten van ESLint):
+  `minigame-sprint.js` raceverloop en spelklok · `sprint-input.js` toetsen, aanraken
+  en CPU-tempo (volgt het tempo van de spelers) · `sprint-momentum.js` power/turbo ·
+  `sprint-runners.js` lopers bewegen · `sprint-view.js` scène + 2D-overlay (logisch
+  960×540) · `sprint-world.js` gedeelde renderer, lucht, heuvels, opruimen per ronde ·
+  `sprint-track.js` baan · `sprint-decor.js` tribune, borden · `sprint-crowd.js`
+  Toad-publiek · `sprint-runner3d.js` sprites als billboards (één GPU-textuur per strip)
+  · `sprint-camera.js` camerashots · `sprint-particles.js` wolken, confetti in 3D ·
+  `sprint-hud.js` + `sprint-hud.css`/`sprint-gauge.css` portret, tijd, power bars ·
+  `sprint-fx.js` snelheidslijnen, flits, P1/P2-markering · `sprint-tex.js` ·
+  `sprint.css` speelveld
 - `toad.js` Toad wijst/klapt, sterren vliegen naar de kaarten
 - `sprites.js` sprite sheets afspelen · `effects.js` stof, confetti, sterretjes
 - `cutscene.js` video's met "Overslaan" · `transition.js` sterwipe tussen schermen
@@ -120,7 +130,11 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
 - Per ronde drie cutscenes van 6 s (racestart, Toad, trap); misschien te lang. Optie: de
   trap-clip alleen na ronde 1.
 - Yoshi heeft geen rust-animatie (stilstaande pose met ademhaling in de code).
-- `minigame-sprint.js` is 154 regels.
+- Sprint: de karakters rennen nog met de bestaande sprites; driewieler-sprites zoals in
+  "Trike Harder" kunnen met Higgsfield (zie `docs/mario-party-plan.md`, §9.4) zodra er
+  credits zijn. Nog open uit de review: finishlint die knapt; sprite-strips breder dan
+  4096 px (Bowser cheer/sad, 4828 px) opsplitsen in rijen; testen op een echte
+  Chromebook (framerate).
 
 ## Volgende opdracht: website-upgrade
 

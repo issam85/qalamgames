@@ -63,7 +63,7 @@ Later ook aanraken op tablet.
 
 | # | Minigame | Spelregel | Toetsen | Titelkaart | Speelveld |
 |---|---|---|---|---|---|
-| 1 | Sprint (bestaat) | Ram de knop, eerste over de finish | ram | — | bestaat |
+| 1 | Sprint (3D, okt) | Momentum opbouwen, turbo bij volhouden, eerste over de finish | ram | — | bestaat |
 | 2 | Muntenregen | Vang munten, ontwijk bommen, 30 s | links/rechts | ✓ | te maken |
 | 3 | Ballonnen knallen | Pomp tot de ballon knalt | ram | ✓ | te maken |
 | 4 | Springtouw | Spring op tijd, wie het langst volhoudt | timing | ✓ | te maken |
