@@ -98,4 +98,24 @@
     font-size: 17px;
     line-height: 1.5;
   }
+
+  /* smallere sprint-HUD, zodat de lopers achterin niet onder de rijen vallen */
+  .shud {
+    width: clamp(124px, 24%, 250px);
+    gap: 4px;
+  }
+
+  .shud-face {
+    width: 28px;
+    border-width: 2px;
+  }
+
+  .shud-info {
+    padding: 3px 7px 4px;
+  }
+
+  .shud-bar {
+    height: 6px;
+    margin-top: 2px;
+  }
 }

@@ -104,7 +104,8 @@ export function renderView(view, race, dt, shot) {
 function drawNames(view, ctx, race) {
   race.runners.forEach((r, i) => {
     const player = view.players[i];
-    const p = toScreen(view, r.x, RUNNER_H + 0.5, laneOf(view, i));
+    // dicht bij de camera zou een grote marge de markering ver boven het hoofd zetten
+    const p = toScreen(view, r.x, RUNNER_H + 0.15, laneOf(view, i));
     if (race.phase === 'countdown') {
       if (!p.behind) drawLabel(ctx, player.character.name, p.x, p.y, 16);
       return;

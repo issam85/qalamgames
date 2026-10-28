@@ -1,6 +1,8 @@
 // Camera-regie voor de sprint: openingsshot tijdens het aftellen, de kopgroep
-// volgen met zoom op de afstand tussen de lopers, en inzoomen bij de finish.
+// schuin van voren volgen met zoom op de afstand tussen de lopers, en inzoomen bij
+// de finish. De lopers rennen op de camera af, zoals bij een tv-registratie.
 import * as THREE from './vendor/three.module.min.js';
+import { TRACK_LEN } from './sprint-track.js';
 
 const look = new THREE.Vector3();
 const jitter = new THREE.Vector3();
@@ -15,26 +17,28 @@ export function createDirector(camera) {
   return { camera, pos: new THREE.Vector3(-16, 18, 36), look: new THREE.Vector3(12, 0.4, 0), fov: 40 };
 }
 
-// openingsshot: van hoog en breed naar laag bij de startlijn
+// openingsshot: van hoog en breed naar laag vóór de startlijn, terugkijkend
 function introShot(t) {
   const k = ease(Math.min(1, t));
-  wantPos.set(-16 + k * 10.5, 18 - k * 12.2, 36 - k * 24.5);
-  wantLook.set(12 - k * 8, 0.4 + k * 0.4, -k * 1);
-  return 40 - k * 8;
+  wantPos.set(-16 + k * 25.9, 18 - k * 14.705, 36 - k * 28.54);
+  wantLook.set(12 - k * 16.15, 0.4 + k * 0.6, -k * 1);
+  return 40 - k * 5;
 }
 
-// volgt de kopgroep, maar houdt de menselijke spelers in beeld: zoomt uit tot de
-// langzaamste speler erin past; is dat te ver, dan blijft de speler in beeld
+// hangt vóór de kopgroep en kijkt terug, zodat de lopers op de camera af rennen; zoomt
+// uit tot de langzaamste speler erin past. Is die te ver achter, dan blijft de speler
+// in beeld en mag de kop eruit lopen
 function followShot(xs, humans, turbo) {
   const lead = Math.max(...xs);
   const back = Math.min(lead - 3, ...humans);
-  const spread = lead - back;
-  const focus = spread > 26 ? back + 10 : (lead + back) / 2 + 2;
-  const dist = Math.min(24, 11.5 + spread * 0.55);
-  wantPos.set(focus - 6, 3 + dist * 0.2, dist);
-  wantLook.set(focus + 1.5, 0.6, -1.5);
+  const front = lead - back > 26 ? back + 16 : lead;
+  const span = front - back;
+  const dist = Math.min(15, 6.5 + span * 0.32);
+  wantPos.set(Math.min(front + 9 + span * 0.3, TRACK_LEN + 6), 2.4 + dist * 0.12, dist);
+  // iets voor het midden van de groep: de achterste loper blijft rechts van de HUD
+  wantLook.set(front - span * 0.55 - 2.5, 1, -1);
   // bij turbo een iets wijdere blik: voelt sneller
-  return turbo ? 37 : 32;
+  return turbo ? 40 : 35;
 }
 
 function finishShot(x, z) {
