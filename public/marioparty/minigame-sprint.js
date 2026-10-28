@@ -1,9 +1,9 @@
 // Minigame 1: Sprint. Blijf drukken om momentum op te bouwen; wie het tempo vasthoudt,
 // gaat in turbo. Eerste over de finish wint.
 import { play } from './sprites.js';
-import { createParticles, confetti, updateParticles } from './effects.js';
-import { createView, renderView, disposeView, toScreen, laneOf, shotFor } from './sprint-view.js';
-import { TRACK_LEN } from './sprint-track.js';
+import { spawnConfetti, updateParticles3d } from './sprint-particles.js';
+import { createView, renderView, disposeView, shotFor } from './sprint-view.js';
+import { TRACK_LEN, laneZ } from './sprint-track.js';
 import { createInput } from './sprint-input.js';
 import { boost } from './sprint-momentum.js';
 import { createRunner, moveRunner } from './sprint-runners.js';
@@ -19,10 +19,6 @@ const SLOWMO_MS = 1300;
 let race = null;
 // "minder beweging": geen schudden, flits of slow motion
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-export function loadSprintAssets() {
-  return Promise.resolve();
-}
 
 function setStatus(text) {
   const el = race.statusEl;
@@ -43,8 +39,7 @@ function crossLine(r, idx, now, t) {
   r.finishTime = t;
   race.order.push(race.players[idx]);
   play(r.sprite, 'cheer');
-  const p = toScreen(race.view, TRACK_LEN, 2, laneOf(race.view, idx));
-  confetti(race.particles, p.x, p.y, 30);
+  spawnConfetti(race.particles, TRACK_LEN, 2, laneZ(idx, race.players.length), 30);
   if (race.firstFinish === null) {
     race.firstFinish = now;
     race.focus = idx;
@@ -102,7 +97,7 @@ function frame(now) {
   // wie in hetzelfde frame finishen, krijgen de volgorde van hun exacte tijd
   race.order.sort((a, b) => finishOf(a) - finishOf(b));
   if (!hadWinner && race.firstFinish !== null) race.focus = race.players.indexOf(race.order[0]);
-  updateParticles(race.particles, dt);
+  updateParticles3d(race.particles, dt);
   race.shake = Math.max(0, race.shake - dt * 30);
   race.flash = Math.max(0, (race.flash || 0) - realDt * 3);
   updateHud(race.hud, race.runners, race.clock, race.phase === 'done');
@@ -113,9 +108,9 @@ function frame(now) {
 export function startSprint(canvas, statusEl, players, onFinish) {
   stopSprint();
   race = {
-    canvas, statusEl, players, onFinish,
+    statusEl, players, onFinish,
     runners: players.map(createRunner),
-    particles: createParticles(),
+    particles: [],
     order: [],
     firstFinish: null,
     focus: null,

@@ -1,5 +1,5 @@
-// Publiek langs de baan: Toads in twee rijen achter de randstenen. Ze wachten tijdens
-// het aftellen, juichen en klappen tijdens de race en springen bij de finish.
+// Publiek langs de baan: Toads in twee rijen op een tribune. Ze wachten tijdens het
+// aftellen, juichen en klappen tijdens de race en springen op als de kopgroep langskomt.
 import { createSprite, play, update } from './sprites.js';
 import { createRunner3d, updateRunner3d } from './sprint-runner3d.js';
 import { TRACK_LEN } from './sprint-track.js';
@@ -30,21 +30,25 @@ export function buildCrowd(scene, trackWidth) {
   return { fans, mood: '' };
 }
 
-// mood: 'wait' (aftellen), 'race' of 'finish'
-export function updateCrowd(crowd, dt, mood, camera) {
+// mood: 'wait' (aftellen), 'race' of 'finish'; leaderX = positie van de koploper:
+// fans springen op als de kopgroep langskomt, daarna juichen ze weer
+export function updateCrowd(crowd, dt, mood, camera, leaderX) {
   if (crowd.mood !== mood) {
     crowd.mood = mood;
     crowd.fans.forEach((fan) => {
-      const anim = mood === 'wait' ? 'idle' : mood === 'finish' && Math.random() < 0.6 ? 'jump' : fan.favourite;
-      play(fan.sprite, anim, true);
+      play(fan.sprite, mood === 'wait' ? 'idle' : fan.favourite, true);
       fan.sprite.t = Math.random() * 0.8;
+      fan.jumped = false;
     });
   }
   crowd.fans.forEach((fan) => {
+    if (mood !== 'wait' && !fan.jumped && Math.abs(fan.x - leaderX) < 1.6) {
+      fan.jumped = true;
+      play(fan.sprite, 'jump', true);
+    }
+    if (fan.sprite.anim === 'jump' && fan.sprite.t > 2.6) play(fan.sprite, fan.favourite);
     fan.sprite.speed = fan.speed;
     update(fan.sprite, dt);
-    // na een sprong weer gewoon juichen
-    if (fan.sprite.anim === 'jump' && fan.sprite.t > 2.6) play(fan.sprite, 'cheer');
     updateRunner3d(fan, fan.x, fan.z, camera, { base: fan.base });
   });
 }

@@ -1,8 +1,7 @@
 // Lopers van de sprint: momentum omzetten in afstand, stofwolkjes en renanimatie.
 import { createSprite, play, update } from './sprites.js';
-import { cloud } from './effects.js';
-import { toScreen, laneOf } from './sprint-view.js';
-import { TRACK_LEN } from './sprint-track.js';
+import { spawnCloud } from './sprint-particles.js';
+import { TRACK_LEN, laneZ } from './sprint-track.js';
 import { createMomentum, stepMomentum, speedFraction } from './sprint-momentum.js';
 
 // elke zoveel afgelegde meter een stofwolkje
@@ -30,8 +29,8 @@ export function moveRunner(race, r, idx, dt) {
     }
     if (r.dustLeft <= 0 && r.momentum.speed > 2) {
       r.dustLeft = DUST_EVERY;
-      const p = toScreen(race.view, r.x - 0.5, 0.15, laneOf(race.view, idx));
-      cloud(race.particles, p.x, p.y, r.momentum.turbo ? 1.5 : 0.6 + speedFraction(r.momentum) * 0.6);
+      const size = r.momentum.turbo ? 1.5 : 0.6 + speedFraction(r.momentum) * 0.6;
+      spawnCloud(race.particles, r.x - 0.5, laneZ(idx, race.players.length), size);
     }
   } else {
     r.x += (TRACK_LEN + 2.5 - r.x) * Math.min(1, dt * 3);

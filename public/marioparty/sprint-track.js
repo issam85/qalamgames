@@ -1,6 +1,7 @@
 // De atletiekbaan: blauw asfalt met witte banen, start, finish, randstenen en gras.
 // Wereldassen: X = langs de baan (start 0, finish TRACK_LEN), Z = naar de camera toe.
 import * as THREE from './vendor/three.module.min.js';
+import { canvasTexture } from './sprint-tex.js';
 
 export const TRACK_LEN = 60;
 export const LANE_W = 2.4;
@@ -10,15 +11,6 @@ const PX = 24; // pixels per wereldeenheid in de baantextuur
 // baan i (0 = dichtst bij de camera) → Z-positie van het midden van de baan
 export function laneZ(i, lanes) {
   return ((lanes - 1) / 2 - i) * LANE_W;
-}
-
-function canvasTex(c, repeatX = 1) {
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.repeat.x = repeatX;
-  return tex;
 }
 
 // korrelig oppervlak, zodat het niet als een plat vlak oogt
@@ -49,7 +41,7 @@ function trackTexture(lanes) {
       ctx.fillRect(fx + col * sq, row * sq, sq, sq);
     }
   }
-  return canvasTex(c);
+  return canvasTexture(c);
 }
 
 function checkerTexture() {
@@ -63,7 +55,7 @@ function checkerTexture() {
       ctx.fillRect(x * 16, y * 16, 16, 16);
     }
   }
-  return canvasTex(c);
+  return canvasTexture(c);
 }
 
 function curbTexture() {
@@ -75,7 +67,7 @@ function curbTexture() {
     ctx.fillStyle = i % 2 ? '#f4f4f4' : '#d84343';
     ctx.fillRect(i * 64, 0, 64, 32);
   }
-  return canvasTex(c, (TRACK_LEN + RUNUP * 4) / 4);
+  return canvasTexture(c, (TRACK_LEN + RUNUP * 4) / 4);
 }
 
 function grassTexture() {
@@ -85,7 +77,7 @@ function grassTexture() {
   ctx.fillStyle = '#6fbf4a';
   ctx.fillRect(0, 0, 256, 256);
   speckle(ctx, 256, 256, 2500, ['#62b13f', '#7cca55', '#5aa63a']);
-  const tex = canvasTex(c, 40);
+  const tex = canvasTexture(c, 40);
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(40, 20);
   return tex;

@@ -25,7 +25,7 @@ function introShot(t) {
 
 // volgt de kopgroep, maar houdt de menselijke spelers in beeld: zoomt uit tot de
 // langzaamste speler erin past; is dat te ver, dan blijft de speler in beeld
-function followShot(xs, humans) {
+function followShot(xs, humans, turbo) {
   const lead = Math.max(...xs);
   const back = Math.min(lead - 3, ...humans);
   const spread = lead - back;
@@ -33,7 +33,8 @@ function followShot(xs, humans) {
   const dist = Math.min(24, 11.5 + spread * 0.55);
   wantPos.set(focus - 6, 3 + dist * 0.2, dist);
   wantLook.set(focus + 1.5, 0.6, -1.5);
-  return 32;
+  // bij turbo een iets wijdere blik: voelt sneller
+  return turbo ? 37 : 32;
 }
 
 function finishShot(x, z) {
@@ -54,7 +55,7 @@ export function updateDirector(d, dt, shot, shake = 0) {
     fov = finishShot(shot.x, shot.z);
     rate = 5;
   } else {
-    fov = followShot(shot.xs, shot.humans || []);
+    fov = followShot(shot.xs, shot.humans || [], shot.turbo);
   }
   const k = 1 - Math.exp(-dt * rate);
   d.pos.lerp(wantPos, k);

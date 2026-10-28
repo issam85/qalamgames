@@ -3,7 +3,7 @@
 import { applyRoundResult, loadBoardAssets } from './board.js';
 import { renderHud } from './hud.js';
 import { startBoard, stopBoard } from './board-anim.js';
-import { startSprint, stopSprint, KEY_LABELS, loadSprintAssets } from './minigame-sprint.js';
+import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
 import { startToad, stopToad } from './toad.js';
 import { initSetup } from './setup.js';
 import { CHARACTERS, loadCharacters } from './characters.js';
@@ -113,7 +113,7 @@ function guarded(step) {
 }
 
 const ready = Promise.all([
-  loadCharacters(), loadBoardAssets(), loadSprintAssets(), loadSprites(CHARACTERS.map((ch) => ch.key)),
+  loadCharacters(), loadBoardAssets(), loadSprites(CHARACTERS.map((ch) => ch.key)),
 ]);
 initSetup(guarded((players) => ready.then(() => startGame(players)).catch(console.error)));
 nextBtn.addEventListener('click', guarded(() => (state.round > ROUNDS ? showEnd() : startMinigame())));

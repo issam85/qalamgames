@@ -2,20 +2,10 @@
 // finishbord met geruite vlaggen. Alles getekend op canvas-texturen.
 import * as THREE from './vendor/three.module.min.js';
 import { TRACK_LEN } from './sprint-track.js';
+import { drawnTexture } from './sprint-tex.js';
 
 // hoogte van de bovenkant van de twee tribunetreden (het publiek staat erop)
 export const STAND_TOPS = [0.2, 1.1];
-
-function canvasTex(draw, w, h) {
-  const c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
-  draw(c.getContext('2d'), w, h);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
-  return tex;
-}
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -24,7 +14,7 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 // blauw bord met drie witte pijlen naar rechts (looprichting)
-const arrowTex = () => canvasTex((ctx, w, h) => {
+const arrowTex = () => drawnTexture((ctx, w, h) => {
   ctx.fillStyle = '#4f86c6';
   roundRect(ctx, 0, 0, w, h, 18);
   ctx.fillStyle = '#ffffff';
@@ -42,7 +32,7 @@ const arrowTex = () => canvasTex((ctx, w, h) => {
 }, 280, 110);
 
 // geel bord met twee gekruiste geruite vlaggen
-const finishTex = () => canvasTex((ctx, w, h) => {
+const finishTex = () => drawnTexture((ctx, w, h) => {
   ctx.fillStyle = '#f5c518';
   roundRect(ctx, 0, 0, w, h, 18);
   [[w / 2 - 50, -0.35], [w / 2 + 10, 0.35]].forEach(([x, rot]) => {

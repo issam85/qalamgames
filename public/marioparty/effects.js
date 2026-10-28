@@ -28,17 +28,6 @@ export function puff(list, x, y, size = 1) {
   }
 }
 
-// witte, bolle stofwolk zoals in Mario Party (achter een snelle loper)
-export function cloud(list, x, y, size = 1) {
-  for (let i = 0; i < 3; i++) {
-    list.push({
-      kind: 'cloud', x: x - i * 6 * size, y: y - Math.random() * 6 * size,
-      vx: (-50 - Math.random() * 40) * size, vy: (-12 - Math.random() * 18) * size,
-      r: (5 + Math.random() * 5) * size, life: 0.5, age: 0,
-    });
-  }
-}
-
 // twinkelend sterretje
 export function sparkle(list, x, y) {
   list.push({ kind: 'sparkle', x, y, vx: 0, vy: -10, r: 5 + Math.random() * 5, life: 0.7, age: 0 });
@@ -71,9 +60,8 @@ export function updateParticles(list, dt) {
       p.vy += 380 * dt;
       p.vx *= 0.99;
       p.rot += p.spin * dt;
-    } else if (p.kind === 'dust' || p.kind === 'cloud') {
-      p.r += (p.kind === 'cloud' ? 26 : 18) * dt;
-      if (p.kind === 'cloud') p.vx *= 0.94;
+    } else if (p.kind === 'dust') {
+      p.r += 18 * dt;
     }
     p.x += p.vx * dt;
     p.y += p.vy * dt;
@@ -103,14 +91,6 @@ export function drawParticles(ctx, list) {
       ctx.quadraticCurveTo(0, 0, -s, 0);
       ctx.quadraticCurveTo(0, 0, 0, -s);
       ctx.fill();
-    } else if (p.kind === 'cloud') {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.strokeStyle = 'rgba(160, 175, 200, 0.6)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
     } else {
       ctx.fillStyle = 'rgba(214, 190, 150, 0.8)';
       ctx.beginPath();

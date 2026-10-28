@@ -5,7 +5,7 @@ import { createWorld, disposeScene } from './sprint-world.js';
 import { buildTrack, laneZ, TRACK_LEN } from './sprint-track.js';
 import { createRunner3d, updateRunner3d, preloadStrips, RUNNER_H } from './sprint-runner3d.js';
 import { createDirector, updateDirector } from './sprint-camera.js';
-import { drawParticles } from './effects.js';
+import { drawParticles3d } from './sprint-particles.js';
 import { buildCrowd, updateCrowd } from './sprint-crowd.js';
 import { buildDecor } from './sprint-decor.js';
 import { speedLines, flash, playerMarker, edgeArrow } from './sprint-fx.js';
@@ -14,7 +14,8 @@ import { speedFraction } from './sprint-momentum.js';
 const tmp = new THREE.Vector3();
 // zo lang blijft de camera op de eerste finisher
 const FOCUS_MS = 2400;
-// vaste interne resolutie van het overlay (deeltjes zijn hierop afgestemd)
+// het overlay tekent in een vaste logische maat van 960×540 en wordt geschaald naar de
+// echte schermresolutie, zodat het overal even groot en scherp is
 const OVERLAY_W = 960;
 const OVERLAY_H = 540;
 
@@ -27,7 +28,7 @@ export function createView(overlay, canvas3d, players, runners) {
   // alle strips die tijdens de race nodig zijn alvast naar de GPU
   preloadStrips(world.renderer, runners.map((r) => r.sprite), ['idle', 'run', 'cheer', 'sad']);
   preloadStrips(world.renderer, [crowd.fans[0].sprite], ['idle', 'cheer', 'clap', 'jump']);
-  const view = { world, overlay, players, meshes, crowd, director: createDirector(world.camera), cssScale: 1 };
+  const view = { world, overlay, players, meshes, crowd, director: createDirector(world.camera) };
   view.onResize = () => resizeView(view);
   window.addEventListener('resize', view.onResize);
   resizeView(view);
@@ -37,9 +38,9 @@ export function createView(overlay, canvas3d, players, runners) {
 function resizeView(view) {
   view.world.resize();
   const { overlay } = view;
-  overlay.width = OVERLAY_W;
-  overlay.height = OVERLAY_H;
-  view.cssScale = OVERLAY_W / Math.max(1, overlay.clientWidth);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  overlay.width = Math.max(1, Math.round(overlay.clientWidth * dpr));
+  overlay.height = Math.max(1, Math.round(overlay.clientHeight * dpr));
 }
 
 export function laneOf(view, i) {
@@ -49,7 +50,7 @@ export function laneOf(view, i) {
 // wereldpunt → pixel op het overlay-canvas
 export function toScreen(view, x, y, z) {
   tmp.set(x, y, z).project(view.world.camera);
-  return { x: (tmp.x + 1) / 2 * view.overlay.width, y: (1 - tmp.y) / 2 * view.overlay.height, behind: tmp.z > 1 };
+  return { x: (tmp.x + 1) / 2 * OVERLAY_W, y: (1 - tmp.y) / 2 * OVERLAY_H, behind: tmp.z > 1 };
 }
 
 export function drawLabel(ctx, text, x, y, size) {
@@ -69,7 +70,8 @@ export function shotFor(race, now, introT) {
     return { mode: 'finish', x: race.runners[race.focus].x, z: laneOf(race.view, race.focus) };
   }
   const humans = race.players.map((p, i) => (p.control === 'CPU' ? null : race.runners[i].x)).filter((x) => x !== null);
-  return { mode: 'follow', xs: race.runners.map((r) => r.x), humans };
+  const turbo = race.players.some((p, i) => p.control !== 'CPU' && race.runners[i].momentum.turbo);
+  return { mode: 'follow', xs: race.runners.map((r) => r.x), humans, turbo };
 }
 
 // race: runners met x (wereld) en lift; shot voor de camera; labels tijdens het aftellen
@@ -79,18 +81,20 @@ export function renderView(view, race, dt, shot) {
     lean: race.phase === 'running' && r.finishTime === undefined ? speedFraction(r.momentum) : 0,
   }));
   const mood = race.phase === 'countdown' ? 'wait' : race.firstFinish !== null ? 'finish' : 'race';
-  updateCrowd(view.crowd, dt, mood, view.world.camera);
+  updateCrowd(view.crowd, dt, mood, view.world.camera, Math.max(...race.runners.map((r) => r.x)));
   view.world.renderer.render(view.world.scene, view.world.camera);
 
   const ctx = view.overlay.getContext('2d');
-  ctx.clearRect(0, 0, OVERLAY_W, OVERLAY_H);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, view.overlay.width, view.overlay.height);
+  ctx.setTransform(view.overlay.width / OVERLAY_W, 0, 0, view.overlay.height / OVERLAY_H, 0, 0);
   race.runners.forEach((r, i) => {
     if (!r.momentum.turbo || r.finishTime !== undefined) return;
     const feet = toScreen(view, r.x, 0, laneOf(view, i));
     const head = toScreen(view, r.x, RUNNER_H, laneOf(view, i));
     speedLines(ctx, feet.x, feet.y, feet.y - head.y, race.time);
   });
-  drawParticles(ctx, race.particles);
+  drawParticles3d(ctx, race.particles, (x, y, z) => toScreen(view, x, y, z));
   flash(ctx, OVERLAY_W, OVERLAY_H, race.flash || 0);
   drawNames(view, ctx, race);
 }
@@ -102,7 +106,7 @@ function drawNames(view, ctx, race) {
     const player = view.players[i];
     const p = toScreen(view, r.x, RUNNER_H + 0.5, laneOf(view, i));
     if (race.phase === 'countdown') {
-      if (!p.behind) drawLabel(ctx, player.character.name, p.x, p.y, 16 * view.cssScale);
+      if (!p.behind) drawLabel(ctx, player.character.name, p.x, p.y, 16);
       return;
     }
     if (player.control === 'CPU') return;
