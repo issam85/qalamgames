@@ -1,58 +1,10 @@
-// Springtouw tekenen: schoolplein met rubbervloer, twee Toads die draaien, het touw
-// (achter of vóór de springers, afhankelijk van de fase), de springers en de stand.
+// Springtouw tekenen: het touw (achter of vóór de springers, afhankelijk van de fase),
+// de aanwijzing, de springers (met salto) en de stand. Plein en Toads: springtouw-scene.js.
 import { drawSprite } from './sprites.js';
-import { W, H, drawLabel } from './stage2d.js';
-import { GROUND } from './springtouw-world.js';
-
-const HAND_Y = GROUND - 58;
-const LEFT = 152;
-const RIGHT = 808;
-
-function yard(ctx) {
-  const g = ctx.createLinearGradient(0, 0, 0, GROUND);
-  g.addColorStop(0, '#4fb3f5');
-  g.addColorStop(1, '#cdeeff');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, GROUND);
-  ctx.fillStyle = '#ffe36b';
-  ctx.beginPath();
-  ctx.arc(860, 80, 42, 0, Math.PI * 2);
-  ctx.fill();
-  // bomen en een glijbaan op de achtergrond
-  [[70, 1], [250, 0.8], [700, 0.9], [900, 1.1]].forEach(([x, s]) => {
-    ctx.fillStyle = '#8d5a32';
-    ctx.fillRect(x - 7 * s, GROUND - 90 * s, 14 * s, 90 * s);
-    ctx.fillStyle = '#43a047';
-    ctx.beginPath();
-    ctx.arc(x, GROUND - 120 * s, 48 * s, 0, Math.PI * 2);
-    ctx.arc(x - 30 * s, GROUND - 95 * s, 34 * s, 0, Math.PI * 2);
-    ctx.arc(x + 30 * s, GROUND - 95 * s, 34 * s, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.fillStyle = '#1e88e5';
-  ctx.beginPath();
-  ctx.moveTo(470, GROUND - 120);
-  ctx.lineTo(500, GROUND - 120);
-  ctx.lineTo(600, GROUND - 10);
-  ctx.lineTo(570, GROUND - 10);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#ffd43b';
-  ctx.fillRect(455, GROUND - 125, 18, 125);
-  ctx.fillStyle = '#b23a3a';
-  ctx.fillRect(0, GROUND - 4, W, H - GROUND + 4);
-  ctx.fillStyle = '#c94b4b';
-  ctx.fillRect(0, GROUND - 4, W, 8);
-}
-
-function turners(ctx, toads) {
-  drawSprite(ctx, toads[0], LEFT - 24, GROUND, 96);
-  ctx.save();
-  ctx.translate(RIGHT + 24, 0);
-  ctx.scale(-1, 1);
-  drawSprite(ctx, toads[1], 0, GROUND, 96);
-  ctx.restore();
-}
+import { W, drawLabel } from './stage2d.js';
+import { drawSpinning, drawPopups } from './fx2d.js';
+import { GROUND, duration, cueStrength } from './springtouw-world.js';
+import { yard, turners, HAND_Y, LEFT, RIGHT } from './springtouw-scene.js';
 
 // het touw hangt tussen de handen; het midden draait rond: laag (fase 0) tot hoog
 // over de hoofden (fase 0,5). inFront = het touw is aan de kant van de kijker
@@ -83,9 +35,40 @@ function ropeShadow(ctx, { midY }) {
   ctx.fill();
 }
 
+// aanwijzing wanneer je moet springen: gloed op de vloer en "SPRING!"
+function cue(ctx, rope) {
+  const k = cueStrength(rope);
+  if (k <= 0) return;
+  ctx.fillStyle = `rgba(255, 212, 59, ${0.35 * k})`;
+  ctx.beginPath();
+  ctx.ellipse(W / 2, GROUND, 260, 16, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = k;
+  drawLabel(ctx, 'SPRING!', W / 2, 200, 52, '#ffd43b');
+  ctx.globalAlpha = 1;
+}
+
+function hearts(ctx, j, x, y) {
+  for (let i = 0; i < 2; i++) {
+    drawLabel(ctx, '♥', x + i * 16, y, 15, i < j.lives ? '#ff5a3c' : 'rgba(255, 255, 255, 0.3)', 'left');
+  }
+}
+
+// in de lucht komt de figuur iets naar voren (groter); bij een salto draait hij rond
 function jumper(ctx, j) {
   ctx.globalAlpha = j.out ? 0.55 : 1;
-  drawSprite(ctx, j.sprite, j.x, GROUND, 100);
+  const k = j.jumpT < 0 ? 0 : Math.sin(Math.PI * Math.min(1, j.jumpT / duration(j)));
+  const lift = j.trick ? k * 55 : 0;
+  const draw = () => {
+    ctx.save();
+    ctx.translate(j.x, GROUND - lift);
+    ctx.scale(1 + k * 0.1, 1 + k * 0.1);
+    drawSprite(ctx, j.sprite, 0, 0, 100, !j.trick);
+    ctx.restore();
+  };
+  const turn = j.trick ? Math.max(0, Math.min(1, (j.jumpT - 0.1) / (duration(j) - 0.22))) : 0;
+  if (turn > 0 && turn < 1) drawSpinning(ctx, draw, j.x, GROUND - lift - 60, turn);
+  else draw();
   ctx.globalAlpha = 1;
   const p = j.player;
   const tag = p.control === 'CPU' ? '' : `${p.control.replace('Speler ', 'P')} `;
@@ -108,17 +91,21 @@ function board(ctx, jumpers, rope) {
     ctx.fill();
     ctx.stroke();
     drawLabel(ctx, j.player.character.name, x + 40, 87, 15, j.cpu ? '#fff' : '#ffd43b', 'left');
-    drawLabel(ctx, j.out ? `${j.place}e` : '✓', x + 160, 88, 16, j.out ? '#ffb3a7' : '#8cff7a', 'right');
+    if (!j.out) hearts(ctx, j, x + 104, 88);
+    const right = j.out ? `${j.place}e` : j.style > 0 ? `${j.style}×🌀` : '';
+    drawLabel(ctx, right, x + 162, 88, 15, j.out ? '#ffb3a7' : '#ffd43b', 'right');
   });
 }
 
 export function drawSpringtouw(ctx, game) {
   const rope = ropeState(game.rope);
   yard(ctx);
+  cue(ctx, game.rope);
   ropeShadow(ctx, rope);
   turners(ctx, game.toads);
   if (!rope.inFront) ropeLine(ctx, rope);
   game.jumpers.forEach((j) => jumper(ctx, j));
   if (rope.inFront) ropeLine(ctx, rope);
+  drawPopups(ctx, game.popups);
   board(ctx, game.jumpers, game.rope);
 }

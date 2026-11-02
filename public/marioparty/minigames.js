@@ -4,6 +4,7 @@ import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
 import { startMijnkar, stopMijnkar } from './minigame-mijnkar.js';
 import { startSterren, stopSterren, MOVE_LABELS } from './minigame-sterren.js';
 import { startSpringtouw, stopSpringtouw } from './minigame-springtouw.js';
+import { JUMP_LABELS } from './jump-input.js';
 import { TOUCH } from './sprint-input.js';
 
 // three: gebruikt het 3D-canvas · clip: filmpje vooraf (alleen in ronde 1)
@@ -21,8 +22,8 @@ export const MINIGAMES = [
   {
     key: 'mijnkar',
     title: 'Mijnkar',
-    blurb: 'Je karretje rijdt vanzelf door de grot. Spring op tijd over de rotsen, kristallen en gaten. Wie het eerst bij de finish is, wint!',
-    keys: KEY_LABELS,
+    blurb: 'Je karretje rijdt vanzelf door de grot. Spring op tijd over de rotsen, kristallen en gaten. Een salto in de lucht geeft turbo! Wie het eerst bij de finish is, wint.',
+    keys: JUMP_LABELS,
     three: false,
     clip: null,
     start: startMijnkar,
@@ -41,8 +42,8 @@ export const MINIGAMES = [
   {
     key: 'springtouw',
     title: 'Springtouw',
-    blurb: 'Twee Toads draaien het touw, steeds sneller. Druk om te springen als het touw eraan komt. Raak je het touw, dan lig je eruit. De laatste wint!',
-    keys: KEY_LABELS,
+    blurb: 'Twee Toads draaien het touw, steeds sneller. Spring als het touw eraan komt; in de lucht nog een knop is een salto. Raak je het touw, dan lig je eruit. De laatste wint!',
+    keys: JUMP_LABELS,
     three: false,
     clip: null,
     start: startSpringtouw,
