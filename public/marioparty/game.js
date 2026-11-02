@@ -54,10 +54,10 @@ function roundClip(name) {
   return state.round === 1 ? playCutscene(name) : Promise.resolve();
 }
 
-async function startGame(players) {
+async function startGame(players, { clips }) {
   state.players = players;
   state.round = 1;
-  resetCutscenes();
+  resetCutscenes(clips);
   await playCutscene('intro');
   return showBoard();
 }
@@ -122,7 +122,7 @@ function guarded(step) {
 const ready = Promise.all([
   loadCharacters(), loadBoardAssets(), loadSprites(CHARACTERS.map((ch) => ch.key)),
 ]);
-initSetup(guarded((players) => ready.then(() => startGame(players)).catch(console.error)));
+initSetup(guarded((players, options) => ready.then(() => startGame(players, options)).catch(console.error)));
 nextBtn.addEventListener('click', guarded(() => (state.round > ROUNDS ? showEnd() : startMinigame())));
 document.getElementById('to-toad-btn').addEventListener('click', guarded(showToad));
 document.getElementById('toad-btn').addEventListener('click', guarded(endRound));

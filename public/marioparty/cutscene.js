@@ -6,7 +6,7 @@ const skipBtn = document.getElementById('cutscene-skip');
 const skipAllBtn = document.getElementById('cutscene-skip-all');
 
 let finish = null;
-// na "Alle filmpjes overslaan" speelt er tot het volgende spel geen filmpje meer
+// uit via het keuzescherm, of na "Alle filmpjes overslaan" tot het volgende spel
 let skipAll = false;
 
 function end() {
@@ -32,9 +32,9 @@ skipAllBtn.addEventListener('click', () => {
   end();
 });
 
-// aan het begin van een spel: filmpjes weer aan
-export function resetCutscenes() {
-  skipAll = false;
+// aan het begin van een spel: filmpjes aan of uit volgens de keuze op het keuzescherm
+export function resetCutscenes(enabled) {
+  skipAll = !enabled;
 }
 
 // speelt een cutscene af; de promise is klaar als hij is afgelopen of overgeslagen

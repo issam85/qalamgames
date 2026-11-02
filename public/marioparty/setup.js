@@ -1,9 +1,28 @@
-// Keuzescherm: aantal spelers en karakters; levert de 4 deelnemers op.
+// Keuzescherm: aantal spelers, filmpjes aan/uit en karakters; levert de 4
+// deelnemers op. De filmpjeskeuze wordt onthouden op dit apparaat.
 import { CHARACTERS, characterImage } from './characters.js';
 
 const PLAYER_COUNT = 4;
+const CLIPS_KEY = 'marioparty-clips';
 const picks = [null, null];
 let humans = 1;
+let clips = true;
+
+function loadClips() {
+  try {
+    clips = localStorage.getItem(CLIPS_KEY) !== '0';
+  } catch {
+    clips = true;
+  }
+}
+
+function saveClips() {
+  try {
+    localStorage.setItem(CLIPS_KEY, clips ? '1' : '0');
+  } catch {
+    // privémodus of opslag geblokkeerd: dan alleen voor dit bezoek
+  }
+}
 
 const startBtn = document.getElementById('start-btn');
 
@@ -37,6 +56,9 @@ function refreshSetup() {
   document.querySelectorAll('.mode-btn').forEach((btn) => {
     btn.classList.toggle('selected', Number(btn.dataset.humans) === humans);
   });
+  document.querySelectorAll('.clip-btn').forEach((btn) => {
+    btn.classList.toggle('selected', Boolean(Number(btn.dataset.clips)) === clips);
+  });
   document.getElementById('pick-block-2').hidden = humans < 2;
   startBtn.disabled = !picks.slice(0, humans).every(Boolean);
 }
@@ -57,7 +79,9 @@ function createPlayers() {
   return players;
 }
 
+// onStart(players, { clips }): clips = of de filmpjes mogen spelen
 export function initSetup(onStart) {
+  loadClips();
   document.querySelectorAll('.mode-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       humans = Number(btn.dataset.humans);
@@ -65,7 +89,14 @@ export function initSetup(onStart) {
       refreshSetup();
     });
   });
+  document.querySelectorAll('.clip-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      clips = Boolean(Number(btn.dataset.clips));
+      saveClips();
+      refreshSetup();
+    });
+  });
   document.querySelectorAll('.picker').forEach(buildPicker);
-  startBtn.addEventListener('click', () => onStart(createPlayers()));
+  startBtn.addEventListener('click', () => onStart(createPlayers(), { clips }));
   refreshSetup();
 }

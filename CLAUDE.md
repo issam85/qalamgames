@@ -70,6 +70,10 @@ bekend.
 - Toad deelt uit: winnaar 2 sterren + 10 punten, tweede 1 ster + 5 punten, verliezers
   een trede omlaag op een stenen trap van 10 treden (vooraanzicht, ster bovenaan).
 - Einde: overwinningsclip van de winnaar, finale, eindscherm met "Opnieuw spelen".
+- Filmpjes: de rondefilmpjes (racestart, Toad, trap) alleen in ronde 1. Tijdens een
+  filmpje grote knoppen "Overslaan" en "Alle filmpjes overslaan" (rest van dit spel);
+  op het keuzescherm "Filmpjes: Aan/Uit", onthouden in `localStorage`
+  (`marioparty-clips`).
 
 **Bestanden:**
 - `game.js` spelverloop · `setup.js` keuzescherm · `hud.js` spelerskaarten
@@ -129,8 +133,6 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
 
 ## Open punten Mario Party
 
-- Per ronde drie cutscenes van 6 s (racestart, Toad, trap); misschien te lang. Optie: de
-  trap-clip alleen na ronde 1.
 - Yoshi heeft geen rust-animatie (stilstaande pose met ademhaling in de code).
 - Sprint: de karakters rennen nog met de bestaande sprites; driewieler-sprites zoals in
   "Trike Harder" kunnen met Higgsfield (zie `docs/mario-party-plan.md`, §9.4) zodra er
