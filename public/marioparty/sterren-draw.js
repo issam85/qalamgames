@@ -2,7 +2,8 @@
 // staart, de karakters met een lichtkring, puntjes die opstijgen en de scores.
 import { drawSprite } from './sprites.js';
 import { W, H, drawLabel } from './stage2d.js';
-import { GROUND } from './sterren-world.js';
+import { drawSpinning, drawPopups } from './fx2d.js';
+import { GROUND, JUMP_T } from './sterren-world.js';
 
 export function makeSky() {
   return Array.from({ length: 70 }, () => ({
@@ -85,28 +86,32 @@ function fallingStars(ctx, stars) {
 }
 
 function hunter(ctx, h) {
+  const feet = GROUND - h.lift;
   // lichtkring: het is donker, maar om jou heen is het licht
-  const g = ctx.createRadialGradient(h.x, GROUND - 50, 10, h.x, GROUND - 50, 120 + h.glow * 40);
+  const g = ctx.createRadialGradient(h.x, feet - 50, 10, h.x, feet - 50, 120 + h.glow * 40);
   g.addColorStop(0, `rgba(255, 240, 180, ${0.22 + h.glow * 0.3})`);
   g.addColorStop(1, 'rgba(255, 240, 180, 0)');
   ctx.fillStyle = g;
-  ctx.fillRect(h.x - 170, GROUND - 220, 340, 230);
-  ctx.save();
-  ctx.translate(h.x, 0);
-  ctx.scale(h.facing, 1);
-  drawSprite(ctx, h.sprite, 0, GROUND, 100);
-  ctx.restore();
+  ctx.fillRect(h.x - 170, feet - 220, 340, 230);
+  if (h.lift > 2) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(h.x, GROUND - 2, 30 - h.lift * 0.1, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const draw = () => {
+    ctx.save();
+    ctx.translate(h.x, feet);
+    ctx.scale(h.facing, 1);
+    drawSprite(ctx, h.sprite, 0, 0, 100, h.lift <= 2);
+    ctx.restore();
+  };
+  const turn = h.trick ? Math.max(0, Math.min(1, (h.jumpT - 0.05) / (JUMP_T - 0.15))) : 0;
+  if (turn > 0 && turn < 1) drawSpinning(ctx, draw, h.x, feet - 55, turn, h.facing);
+  else draw();
   const p = h.player;
   const tag = p.control === 'CPU' ? '' : `${p.control.replace('Speler ', 'P')} `;
-  drawLabel(ctx, `${tag}${p.character.name}`, h.x, GROUND - 118, 15, p.control === 'CPU' ? '#fff' : '#ffd43b');
-}
-
-function popups(ctx, list) {
-  list.forEach((p) => {
-    ctx.globalAlpha = 1 - p.age / p.life;
-    drawLabel(ctx, p.text, p.x, p.y - p.age * 60, 26, '#ffd43b');
-  });
-  ctx.globalAlpha = 1;
+  drawLabel(ctx, `${tag}${p.character.name}`, h.x, feet - 118, 15, p.control === 'CPU' ? '#fff' : '#ffd43b');
 }
 
 function scores(ctx, hunters, left) {
@@ -135,6 +140,6 @@ export function drawSterren(ctx, game) {
   hills(ctx);
   [...game.hunters].sort((a, b) => a.x - b.x).forEach((h) => hunter(ctx, h));
   fallingStars(ctx, game.stars);
-  popups(ctx, game.popups);
+  drawPopups(ctx, game.popups);
   scores(ctx, game.hunters, game.left);
 }

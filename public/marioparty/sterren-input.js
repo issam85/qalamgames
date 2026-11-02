@@ -7,7 +7,8 @@ const KEYS = {
 };
 export const MOVE_LABELS = { 'Speler 1': 'A / D', 'Speler 2': '← / →' };
 
-export function createMoveInput(players, stage) {
+// ignoreTop: tikken in dit bovenste deel van het veld zijn voor springen (jump-input.js)
+export function createMoveInput(players, stage, ignoreTop = 0) {
   const humans = players.map((p, i) => (p.control === 'CPU' ? -1 : i)).filter((i) => i >= 0);
   // met twee spelers gebruikt speler 1 alleen A/D, zodat de pijltjes van speler 2 zijn
   const keymap = players.map((p) => {
@@ -38,6 +39,8 @@ export function createMoveInput(players, stage) {
   };
   const onPointerDown = (e) => {
     if (humans.length === 0) return;
+    const box = stage.getBoundingClientRect();
+    if (ignoreTop && (e.clientY - box.top) / box.height < ignoreTop) return;
     e.preventDefault();
     pointers.set(e.pointerId, sideOf(e));
   };

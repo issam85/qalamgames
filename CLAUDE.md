@@ -71,17 +71,24 @@ bekend.
   grote kaart (`img/cards/<sleutel>.webp`, 960×540) toont uitleg en toetsen. Speler 1
   gebruikt spatie, speler 2 pijltje omhoog; op een tablet tik je op je helft.
   - Sprint (3D): momentum opbouwen, turbo bij volhouden, eerste over de finish.
-  - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring over rotsen,
-    kristallen en gaten (botsing = 0,9 s stil). CPU's missen soms, vaker als ze ver
-    voor de spelers liggen.
+  - Salto (`jump-input.js`, `fx2d.js`): springen = spatie / pijl omhoog; in de lucht
+    A/D (speler 1) of ←/→ (speler 2) = salto; op een tablet nog een tik. Alleen = beide
+    sets. De figuur draait rond met vaagspoor (`drawSpinning`), "Salto!" springt op.
+  - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring (boog
+    vooruit, in de lucht ×1,15) over rotsen, kristallen en gaten (botsing = 0,9 s
+    stil). Salto = na de landing 1 s turbo ×1,5 met vonken. CPU's missen soms, vaker
+    als ze ver voor de spelers liggen, en doen in 35% een salto.
   - Sterrenjacht (2D): 30 s, sterren vallen, loop links/rechts (speler 1 A/D, speler 2
-    pijltjes; tikken op je helft, links/rechts). Gewone ster 1, grote ster 3 punten;
-    gelijke stand = wie het eerst zoveel had. CPU's kiezen elk een andere ster en
-    worden trager als ze 4 punten voorliggen.
+    pijltjes; tikken op je helft, links/rechts, onderste 55% van het veld) en spring
+    (bovenste 45%) voor hoge sterren. Gewone ster 1, grote ster 3 punten, tijdens een
+    salto dubbel; gelijke stand = wie het eerst zoveel had. CPU's kiezen elk een andere
+    ster, springen soms en worden trager als ze 4 punten voorliggen.
   - Springtouw (2D): twee Toads draaien, omlooptijd 1,5 s → ×0,95 per ronde tot 0,62 s.
-    Druk = sprong van 0,55 s (in de lucht van 0,06 tot 0,48 s). Op de grond als het
-    touw langskomt = uit; laatste wint, afvallers in omgekeerde volgorde. CPU's missen
-    vaker naarmate het sneller gaat, en veel vaker zodra alle spelers eruit liggen.
+    Druk = sprong van 0,55 s, salto = 0,8 s en een stijlpunt (in de lucht tot 0,07 s
+    voor de landing). Iedereen twee levens (hartjes). "SPRING!" + gloed op de vloer als
+    aanwijzing, vol tot ronde 3, weg vanaf ronde 8. Laatste wint; wie tegelijk afvalt,
+    staat hoger met meer salto's. CPU's missen vaker naarmate het sneller gaat, en veel
+    vaker zodra alle spelers eruit liggen.
 - Toad deelt uit: winnaar 2 sterren + 10 punten, tweede 1 ster + 5 punten, verliezers
   een trede omlaag op een stenen trap van 10 treden (vooraanzicht, ster bovenaan).
 - Einde: overwinningsclip van de winnaar, finale, eindscherm met "Opnieuw spelen".
@@ -108,9 +115,10 @@ bekend.
   `minigame-mijnkar.js` verloop · `mijnkar-course.js` parcours, karretjes, CPU ·
   `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang ·
   `minigame-sterren.js` verloop · `sterren-input.js` links/rechts vasthouden ·
-  `sterren-world.js` sterren, vangen, CPU · `sterren-draw.js` hemel, heuvels, scores ·
-  `minigame-springtouw.js` verloop · `springtouw-world.js` touw, springen, afvallen,
-  CPU · `springtouw-draw.js` schoolplein, Toads, touw, stand.
+  `sterren-world.js` sterren, lopen, springen, vangen · `sterren-cpu.js` ·
+  `sterren-draw.js` hemel, heuvels, scores · `minigame-springtouw.js` verloop ·
+  `springtouw-world.js` touw, springen, levens, CPU · `springtouw-scene.js` plein en
+  Toads · `springtouw-draw.js` touw, aanwijzing, springers, stand.
   Nieuwe minigame = regel in `minigames.js` (`start(canvas, statusEl, players,
   onFinish)` en `stop()`), kaart in `img/cards/`, en `three: true` als hij het
   3D-canvas gebruikt.

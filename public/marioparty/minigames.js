@@ -2,7 +2,7 @@
 // minigames aan de beurt zijn geweest. Vult ook de titelkaart vóór een minigame.
 import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
 import { startMijnkar, stopMijnkar } from './minigame-mijnkar.js';
-import { startSterren, stopSterren, MOVE_LABELS } from './minigame-sterren.js';
+import { startSterren, stopSterren, STAR_LABELS } from './minigame-sterren.js';
 import { startSpringtouw, stopSpringtouw } from './minigame-springtouw.js';
 import { JUMP_LABELS } from './jump-input.js';
 import { TOUCH } from './sprint-input.js';
@@ -32,8 +32,8 @@ export const MINIGAMES = [
   {
     key: 'sterrenjacht',
     title: 'Sterrenjacht',
-    blurb: 'Het is nacht en er vallen sterren! Loop links en rechts om ze te vangen. Een grote ster is 3 punten. Wie na 30 seconden de meeste heeft, wint!',
-    keys: MOVE_LABELS,
+    blurb: 'Het is nacht en er vallen sterren! Loop links en rechts om ze te vangen en spring voor de hoge. Een grote ster is 3 punten, een salto-vangst telt dubbel. Wie na 30 seconden de meeste heeft, wint!',
+    keys: STAR_LABELS,
     three: false,
     clip: null,
     start: startSterren,
