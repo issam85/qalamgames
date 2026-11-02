@@ -1,13 +1,13 @@
 /* Sprint: 3D-speelveld in 16:9 met deeltjes en aftellen erboven. */
 
-#sprint-hint {
+#stage-hint {
   font-size: 18px;
   color: var(--gold);
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
   margin-bottom: 6px;
 }
 
-#sprint-stage {
+#stage {
   position: relative;
   aspect-ratio: 16 / 9;
   margin: 0 auto;
@@ -20,8 +20,8 @@
   user-select: none;
 }
 
-#sprint3d,
-#sprint {
+#stage-3d,
+#stage-2d {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -29,7 +29,12 @@
   display: block;
 }
 
-#sprint-status {
+/* 2D-minigames gebruiken alleen het bovenste canvas */
+#stage-3d[hidden] {
+  display: none;
+}
+
+#stage-status {
   position: absolute;
   top: 8%;
   left: 0;

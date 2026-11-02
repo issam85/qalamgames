@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="sprint.css">
   <link rel="stylesheet" href="sprint-hud.css">
   <link rel="stylesheet" href="sprint-gauge.css">
+  <link rel="stylesheet" href="card.css">
   <link rel="stylesheet" href="layout.css">
   <link rel="stylesheet" href="layout-phone.css">
   <link rel="stylesheet" href="layout-low.css">
@@ -70,17 +71,29 @@
     <button id="next-btn" class="btn big">Speel minigame ▶</button>
   </section>
 
-  <section id="screen-minigame" class="screen">
-    <h2>Sprint! Druk zo snel mogelijk</h2>
-    <p id="sprint-hint"></p>
-    <div id="sprint-stage">
-      <canvas id="sprint3d"></canvas>
-      <canvas id="sprint"></canvas>
-      <div id="sprint-status"></div>
+  <section id="screen-card" class="screen">
+    <h2 id="card-title"></h2>
+    <div id="card-frame">
+      <img id="card-img" alt="">
+      <div id="card-text">
+        <p id="card-blurb"></p>
+        <p id="card-keys"></p>
+      </div>
     </div>
-    <div id="sprint-result" hidden>
+    <button id="card-btn" class="btn big">Start! ▶</button>
+  </section>
+
+  <section id="screen-minigame" class="screen">
+    <h2 id="minigame-title"></h2>
+    <p id="stage-hint"></p>
+    <div id="stage">
+      <canvas id="stage-3d"></canvas>
+      <canvas id="stage-2d"></canvas>
+      <div id="stage-status"></div>
+    </div>
+    <div id="minigame-result" hidden>
       <h2>Uitslag</h2>
-      <ol id="sprint-ranking" class="ranking"></ol>
+      <ol id="minigame-ranking" class="ranking"></ol>
       <button id="to-toad-btn" class="btn big">Verder ▶</button>
     </div>
   </section>

@@ -121,12 +121,12 @@ export function startSprint(canvas, statusEl, players, onFinish) {
     time: performance.now() / 1000,
     raf: 0,
   };
-  race.view = createView(canvas, document.getElementById('sprint3d'), players, race.runners);
-  race.hud = createHud(document.getElementById('sprint-stage'), players);
+  race.view = createView(canvas, document.getElementById('stage-3d'), players, race.runners);
+  race.hud = createHud(document.getElementById('stage'), players);
   statusEl.textContent = '';
   if (document.activeElement) document.activeElement.blur();
   window.focus();
-  race.input = createInput(players, document.getElementById('sprint-stage'), press, () => race && race.phase === 'running');
+  race.input = createInput(players, document.getElementById('stage'), press, () => race && race.phase === 'running');
   race.input.attach();
   race.raf = requestAnimationFrame(frame);
 }

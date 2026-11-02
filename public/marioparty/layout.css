@@ -28,7 +28,8 @@ body {
 }
 
 .screen > .btn.big,
-#sprint-stage {
+#stage,
+#card-frame {
   margin-bottom: auto;
 }
 
@@ -80,7 +81,8 @@ body {
   max-height: min(480px, calc((100vw - 24px) * 0.6));
 }
 
-#sprint-stage {
+#stage,
+#card-frame {
   flex: 1 1 0;
   min-height: 0;
   width: auto;
@@ -92,7 +94,7 @@ body {
   position: relative;
 }
 
-#sprint-result {
+#minigame-result {
   position: absolute;
   inset: 0;
   z-index: 5;
@@ -106,7 +108,7 @@ body {
   backdrop-filter: blur(3px);
 }
 
-#sprint-result[hidden] {
+#minigame-result[hidden] {
   display: none;
 }
 
