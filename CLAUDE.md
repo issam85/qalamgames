@@ -77,6 +77,10 @@ bekend.
     pijltjes; tikken op je helft, links/rechts). Gewone ster 1, grote ster 3 punten;
     gelijke stand = wie het eerst zoveel had. CPU's kiezen elk een andere ster en
     worden trager als ze 4 punten voorliggen.
+  - Springtouw (2D): twee Toads draaien, omlooptijd 1,5 s → ×0,95 per ronde tot 0,62 s.
+    Druk = sprong van 0,55 s (in de lucht van 0,06 tot 0,48 s). Op de grond als het
+    touw langskomt = uit; laatste wint, afvallers in omgekeerde volgorde. CPU's missen
+    vaker naarmate het sneller gaat, en veel vaker zodra alle spelers eruit liggen.
 - Toad deelt uit: winnaar 2 sterren + 10 punten, tweede 1 ster + 5 punten, verliezers
   een trede omlaag op een stenen trap van 10 treden (vooraanzicht, ster bovenaan).
 - Einde: overwinningsclip van de winnaar, finale, eindscherm met "Opnieuw spelen".
@@ -103,7 +107,9 @@ bekend.
   `minigame-mijnkar.js` verloop · `mijnkar-course.js` parcours, karretjes, CPU ·
   `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang ·
   `minigame-sterren.js` verloop · `sterren-input.js` links/rechts vasthouden ·
-  `sterren-world.js` sterren, vangen, CPU · `sterren-draw.js` hemel, heuvels, scores.
+  `sterren-world.js` sterren, vangen, CPU · `sterren-draw.js` hemel, heuvels, scores ·
+  `minigame-springtouw.js` verloop · `springtouw-world.js` touw, springen, afvallen,
+  CPU · `springtouw-draw.js` schoolplein, Toads, touw, stand.
   Nieuwe minigame = regel in `minigames.js` (`start(canvas, statusEl, players,
   onFinish)` en `stop()`), kaart in `img/cards/`, en `three: true` als hij het
   3D-canvas gebruikt.
@@ -157,8 +163,8 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
   credits zijn. Nog open uit de review: finishlint die knapt; sprite-strips breder dan
   4096 px (Bowser cheer/sad, 4828 px) opsplitsen in rijen; testen op een echte
   Chromebook (framerate).
-- Nieuwe minigames gepland (volgorde van de gebruiker): Mijnkar (klaar), Sterrenjacht
-  (klaar), Springtouw. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
+- Nieuwe minigames (volgorde van de gebruiker): Mijnkar, Sterrenjacht en Springtouw
+  zijn klaar. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
   staan in `docs/mario-party-plan.md` §9.1 voor als er credits zijn.
 
 ## Volgende opdracht: website-upgrade

@@ -3,6 +3,7 @@
 import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
 import { startMijnkar, stopMijnkar } from './minigame-mijnkar.js';
 import { startSterren, stopSterren, MOVE_LABELS } from './minigame-sterren.js';
+import { startSpringtouw, stopSpringtouw } from './minigame-springtouw.js';
 import { TOUCH } from './sprint-input.js';
 
 // three: gebruikt het 3D-canvas · clip: filmpje vooraf (alleen in ronde 1)
@@ -36,6 +37,16 @@ export const MINIGAMES = [
     clip: null,
     start: startSterren,
     stop: stopSterren,
+  },
+  {
+    key: 'springtouw',
+    title: 'Springtouw',
+    blurb: 'Twee Toads draaien het touw, steeds sneller. Druk om te springen als het touw eraan komt. Raak je het touw, dan lig je eruit. De laatste wint!',
+    keys: KEY_LABELS,
+    three: false,
+    clip: null,
+    start: startSpringtouw,
+    stop: stopSpringtouw,
   },
 ];
 
