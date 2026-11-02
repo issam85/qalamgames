@@ -12,8 +12,20 @@
   }
 
   #screen-setup h1,
+  #screen-card > h2,
   #screen-minigame > h2 {
     display: none;
+  }
+
+  #card-picks {
+    gap: 6px;
+    margin-bottom: 6px;
+    max-width: 440px;
+  }
+
+  .pick {
+    border-width: 3px;
+    padding: 3px 3px 2px;
   }
 
   .row {

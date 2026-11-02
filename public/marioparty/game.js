@@ -63,17 +63,22 @@ async function startGame(players, { clips }) {
   return showBoard();
 }
 
-// kiest de minigame van deze ronde en toont eerst de titelkaart met de uitleg
+// stelt een minigame voor (willekeurig, zonder herhaling) op het keuzescherm, waar
+// de spelers ook een andere kunnen kiezen
+function chooseMinigame(minigame) {
+  state.minigame = minigame;
+  fillCard(minigame, state.players, chooseMinigame);
+}
+
 async function startMinigame() {
   stopBoard();
-  state.minigame = pickMinigame();
-  if (state.minigame.clip) await roundClip(state.minigame.clip);
-  fillCard(state.minigame, state.players);
+  chooseMinigame(pickMinigame());
   return showScreen('screen-card');
 }
 
-function playMinigame() {
+async function playMinigame() {
   const mg = state.minigame;
+  if (mg.clip) await roundClip(mg.clip);
   document.getElementById('minigame-title').textContent = mg.title;
   document.getElementById('stage-hint').textContent = keyHint(mg, state.players);
   document.getElementById('minigame-result').hidden = true;

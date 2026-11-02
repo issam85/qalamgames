@@ -66,8 +66,9 @@ bekend.
 **Spel** (`public/marioparty/`, ES-modules zonder build):
 - 1 of 2 spelers kiezen uit Mario, Luigi, Peach, Daisy, Toad, Yoshi en Bowser; de rest
   is CPU, 4 deelnemers. 5 rondes.
-- Per ronde een minigame, willekeurig zonder herhaling (`minigames.js`), met vooraf een
-  titelkaart (`img/cards/<sleutel>.webp`, 960×540) met uitleg en toetsen. Speler 1
+- Per ronde een keuzescherm met alle minigames (`minigames.js`): er is er al een
+  voorgesteld (willekeurig, zonder herhaling), de spelers kunnen een andere kiezen. De
+  grote kaart (`img/cards/<sleutel>.webp`, 960×540) toont uitleg en toetsen. Speler 1
   gebruikt spatie, speler 2 pijltje omhoog; op een tablet tik je op je helft.
   - Sprint (3D): momentum opbouwen, turbo bij volhouden, eerste over de finish.
   - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring over rotsen,

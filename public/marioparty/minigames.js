@@ -80,9 +80,23 @@ export function keyHint(minigame, players) {
   return parts.join('   ');
 }
 
-export function fillCard(minigame, players) {
+// de grote kaart van de gekozen minigame, en de rij met alle minigames erboven;
+// onPick(minigame) bij een klik op een andere
+export function fillCard(minigame, players, onPick) {
   document.getElementById('card-title').textContent = minigame.title;
   document.getElementById('card-img').src = `img/cards/${minigame.key}.webp`;
   document.getElementById('card-blurb').textContent = minigame.blurb;
   document.getElementById('card-keys').textContent = keyHint(minigame, players);
+  const picks = document.getElementById('card-picks');
+  picks.innerHTML = '';
+  MINIGAMES.forEach((mg) => {
+    const btn = document.createElement('button');
+    btn.className = mg === minigame ? 'pick selected' : 'pick';
+    const img = document.createElement('img');
+    img.src = `img/cards/${mg.key}.webp`;
+    img.alt = '';
+    btn.append(img, mg.title);
+    btn.addEventListener('click', () => onPick(mg));
+    picks.appendChild(btn);
+  });
 }
