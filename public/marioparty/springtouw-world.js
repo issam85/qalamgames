@@ -48,8 +48,9 @@ export function jump(j) {
   j.sprite.speed = 3;
 }
 
-// geeft true terug als de salto is ingezet
+// vanaf de grond meteen een salto-sprong; geeft true terug als de salto is ingezet
 export function trick(j) {
+  if (j.jumpT < 0) jump(j);
   if (j.out || j.jumpT < 0 || j.trick || j.jumpT > TRICK_UNTIL) return false;
   j.trick = true;
   j.style += 1;

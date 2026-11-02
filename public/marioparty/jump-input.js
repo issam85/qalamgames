@@ -1,12 +1,14 @@
-// Springen en salto's: speler 1 springt met spatie en doet in de lucht een salto met
-// A of D; speler 2 met pijl omhoog en ← of →. Alleen: dan tellen beide sets.
+// Springen en salto's: speler 1 springt met spatie en doet een salto met A of D;
+// speler 2 met pijl omhoog en ← of →. De salto-knop werkt vanaf de grond (meteen een
+// salto-sprong) en in de lucht. Alleen: dan tellen beide sets.
 // Aanraken: tik op je helft = springen, in de lucht nog een keer tikken = salto.
 const JUMP_KEYS = { 'Speler 1': ['Space'], 'Speler 2': ['ArrowUp'] };
 const TRICK_KEYS = { 'Speler 1': ['KeyA', 'KeyD'], 'Speler 2': ['ArrowLeft', 'ArrowRight'] };
-export const JUMP_LABELS = { 'Speler 1': 'SPATIE, salto A of D', 'Speler 2': 'PIJL OMHOOG, salto ← of →' };
+export const JUMP_LABELS = { 'Speler 1': 'SPATIE springen, A of D salto', 'Speler 2': 'PIJL OMHOOG springen, ← of → salto' };
 
-// jump(i), trick(i): acties; canPress(): spel loopt; inAir(i): speler i zweeft.
-// topZone: alleen tikken in dit bovenste deel van het veld telt (0 = overal)
+// jump(i), trick(i): acties (trick ook vanaf de grond); canPress(): spel loopt;
+// inAir(i): speler i zweeft (voor het tikken). topZone: alleen tikken in dit bovenste
+// deel van het veld telt (0 = overal)
 export function createJumpInput(players, stage, { jump, trick, canPress, inAir, topZone = 0 }) {
   const humans = players.map((p, i) => (p.control === 'CPU' ? -1 : i)).filter((i) => i >= 0);
   const keysOf = (set, i) => {
@@ -25,10 +27,8 @@ export function createJumpInput(players, stage, { jump, trick, canPress, inAir, 
         e.preventDefault();
         jump(i);
       } else if (trickKeys[i].includes(e.code)) {
-        if (inAir(i)) {
-          e.preventDefault();
-          trick(i);
-        }
+        e.preventDefault();
+        trick(i);
       }
     });
   };

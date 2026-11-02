@@ -43,9 +43,11 @@ export function jump(h) {
   h.sprite.speed = 3;
 }
 
-// salto: alleen vroeg genoeg in de sprong; geeft true terug als hij is ingezet
+// salto: vanaf de grond meteen een salto-sprong, of vroeg genoeg in de sprong;
+// geeft true terug als hij is ingezet
 export function trick(h) {
-  if (h.jumpT < 0.05 || h.jumpT > JUMP_T - 0.2 || h.trick) return false;
+  if (h.jumpT < 0) jump(h);
+  if (h.jumpT < 0 || h.jumpT > JUMP_T - 0.2 || h.trick) return false;
   h.trick = true;
   return true;
 }

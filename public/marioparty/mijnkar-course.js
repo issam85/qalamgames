@@ -52,9 +52,11 @@ export function jump(cart) {
   cart.trick = false;
 }
 
-// salto: alleen vroeg genoeg in de sprong; geeft true terug als hij is ingezet
+// salto: vanaf de grond meteen een salto-sprong, of vroeg genoeg in de sprong;
+// geeft true terug als hij is ingezet
 export function trick(cart) {
-  if (cart.jumpT < 0.05 || cart.jumpT > JUMP_T - 0.2 || cart.trick) return false;
+  if (cart.jumpT < 0) jump(cart);
+  if (cart.jumpT < 0 || cart.jumpT > JUMP_T - 0.2 || cart.trick) return false;
   cart.trick = true;
   return true;
 }

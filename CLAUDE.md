@@ -71,9 +71,11 @@ bekend.
   grote kaart (`img/cards/<sleutel>.webp`, 960×540) toont uitleg en toetsen. Speler 1
   gebruikt spatie, speler 2 pijltje omhoog; op een tablet tik je op je helft.
   - Sprint (3D): momentum opbouwen, turbo bij volhouden, eerste over de finish.
-  - Salto (`jump-input.js`, `fx2d.js`): springen = spatie / pijl omhoog; in de lucht
-    A/D (speler 1) of ←/→ (speler 2) = salto; op een tablet nog een tik. Alleen = beide
-    sets. De figuur draait rond met vaagspoor (`drawSpinning`), "Salto!" springt op.
+  - Salto (`jump-input.js`, `fx2d.js`): springen = spatie / pijl omhoog; A/D (speler 1)
+    of ←/→ (speler 2) = salto, vanaf de grond meteen een salto-sprong of in de lucht
+    (Sterrenjacht: alleen in de lucht, op de grond loop je ermee); op een tablet in de
+    lucht nog een tik. Alleen = beide sets. De figuur draait rond met vaagspoor
+    (`drawSpinning`), "Salto!" springt op.
   - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring (boog
     vooruit, in de lucht ×1,15) over rotsen, kristallen en gaten (botsing = 0,9 s
     stil). Salto = na de landing 1 s turbo ×1,5 met vonken. CPU's missen soms, vaker

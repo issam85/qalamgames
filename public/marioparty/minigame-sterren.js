@@ -9,7 +9,7 @@ import { pushPopup, updatePopups } from './fx2d.js';
 import { createHunter, spawnStar, stepHunters, stepStars, jump, trick, SPAWN_EVERY, GROUND } from './sterren-world.js';
 import { drawSterren, makeSky } from './sterren-draw.js';
 
-export const STAR_LABELS = { 'Speler 1': 'A / D lopen, SPATIE springen', 'Speler 2': '← / → lopen, PIJL OMHOOG springen' };
+export const STAR_LABELS = { 'Speler 1': 'A / D lopen, SPATIE springen, in de lucht A / D salto', 'Speler 2': '← / → lopen, PIJL OMHOOG springen, in de lucht ← / → salto' };
 // tikken in het bovenste deel van het veld = springen, eronder = lopen
 const JUMP_ZONE = 0.45;
 
@@ -96,7 +96,11 @@ export function startSterren(canvas, statusEl, players, onFinish) {
   game.input.attach();
   game.jumpInput = createJumpInput(players, stage, {
     jump: (idx) => jump(game.hunters[idx]),
-    trick: (idx) => { if (trick(game.hunters[idx])) pushPopup(game.popups, 'Salto!', game.hunters[idx].x, GROUND - 200); },
+    // alleen in de lucht: op de grond zijn A/D en de pijltjes om te lopen
+    trick: (idx) => {
+      const h = game.hunters[idx];
+      if (h.jumpT >= 0 && trick(h)) pushPopup(game.popups, 'Salto!', h.x, GROUND - 200);
+    },
     canPress: () => game && game.phase === 'running',
     inAir: (idx) => game.hunters[idx].jumpT >= 0,
     topZone: JUMP_ZONE,
