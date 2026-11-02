@@ -1,5 +1,6 @@
 // Spelverloop: kiezen → intro → trap → minigame → uitslag → Toad → trap →
-// volgende ronde → overwinning en finale → einde. Cutscenes op vaste momenten.
+// volgende ronde → overwinning en finale → einde. Cutscenes op vaste momenten;
+// de rondefilmpjes alleen in ronde 1, daarna gaat het spel meteen door.
 import { applyRoundResult, loadBoardAssets } from './board.js';
 import { renderHud } from './hud.js';
 import { startBoard, stopBoard } from './board-anim.js';
@@ -48,6 +49,11 @@ function showBoard(moves = []) {
   return showScreen('screen-board', () => startBoard(stairsCanvas, state.players, moves));
 }
 
+// racestart, Toad en trap: alleen de eerste keer, anders duurt een spel te lang
+function roundClip(name) {
+  return state.round === 1 ? playCutscene(name) : Promise.resolve();
+}
+
 async function startGame(players) {
   state.players = players;
   state.round = 1;
@@ -61,7 +67,7 @@ async function startMinigame() {
   document.getElementById('sprint-hint').textContent = hint;
   document.getElementById('sprint-result').hidden = true;
   stopBoard();
-  await playCutscene('race-start');
+  await roundClip('race-start');
   const statusEl = document.getElementById('sprint-status');
   return showScreen('screen-minigame', () => startSprint(sprintCanvas, statusEl, state.players, showResult));
 }
@@ -75,15 +81,15 @@ function showResult(ranking) {
 
 async function showToad() {
   stopSprint();
-  await playCutscene('toad-stars');
+  await roundClip('toad-stars');
   return showScreen('screen-toad', () => startToad(state.ranking, state.players));
 }
 
 async function endRound() {
   stopToad();
   const moves = applyRoundResult(state.players, state.ranking);
+  await roundClip('stairs');
   state.round += 1;
-  await playCutscene('stairs');
   return showBoard(moves);
 }
 
