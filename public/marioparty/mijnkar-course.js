@@ -1,6 +1,7 @@
 // Mijnkar: het parcours (voor alle karretjes gelijk), de karretjes en de CPU.
 // Afstand d loopt in eenheden langs het spoor; een karretje rijdt vanzelf en springt
-// op een druk. Raak je een rots, kristal of gat, dan sta je even stil.
+// op een druk. Raak je een rots, kristal of gat, dan sta je even stil. Een salto in de
+// lucht geeft na de landing een turbo.
 import { createSprite, play } from './sprites.js';
 
 export const COURSE_LEN = 2600;
@@ -11,6 +12,9 @@ export const GAP_W = 90;
 const STUN = 0.9; // stilstaan na een botsing (s)
 const HIT_RANGE = 34; // zo dicht bij een obstakel kun je het raken
 const CLEAR_LIFT = 26; // hoger dan dit spring je eroverheen
+const TURBO_S = 1; // turbo na een salto (s)
+const TURBO = 1.5; // zoveel sneller tijdens de turbo
+const AIR_BOOST = 1.15; // in de lucht ga je iets harder: de sprong is een boog vooruit
 const TYPES = ['rock', 'gap', 'crystal', 'rock', 'crystal'];
 
 export function buildCourse() {
@@ -28,11 +32,11 @@ export function buildCourse() {
 export function createCart(player, lane) {
   // elke CPU mist af en toe: hoe vaak verschilt per karretje
   const cpu = player.control === 'CPU'
-    ? { miss: 0.08 + Math.random() * 0.14, planned: -1, jumpAt: 0 }
+    ? { miss: 0.08 + Math.random() * 0.14, planned: -1, jumpAt: 0, wantTrick: false }
     : null;
   return {
-    player, lane, cpu, d: 0, speed: 0, lift: 0, jumpT: -1, stun: 0, next: 0, hit: 0,
-    finishTime: undefined, sprite: createSprite(player.character.key),
+    player, lane, cpu, d: 0, speed: 0, lift: 0, jumpT: -1, trick: false, turbo: 0, stun: 0,
+    next: 0, hit: 0, finishTime: undefined, sprite: createSprite(player.character.key),
   };
 }
 
@@ -45,6 +49,14 @@ export function canJump(cart) {
 export function jump(cart) {
   if (!canJump(cart)) return;
   cart.jumpT = 0;
+  cart.trick = false;
+}
+
+// salto: alleen vroeg genoeg in de sprong; geeft true terug als hij is ingezet
+export function trick(cart) {
+  if (cart.jumpT < 0.05 || cart.jumpT > JUMP_T - 0.2 || cart.trick) return false;
+  cart.trick = true;
+  return true;
 }
 
 function bump(cart) {
@@ -62,9 +74,11 @@ function cpuThink(cart, ob, leadOnHumans) {
   if (cart.cpu.planned !== cart.next) {
     cart.cpu.planned = cart.next;
     const miss = leadOnHumans > 350 ? cart.cpu.miss * 2 : leadOnHumans < -350 ? 0.02 : cart.cpu.miss;
-    cart.cpu.jumpAt = Math.random() < miss
+    const willMiss = Math.random() < miss;
+    cart.cpu.jumpAt = willMiss
       ? SPEED * (0.85 + Math.random() * 0.3)
       : SPEED * (0.2 + Math.random() * 0.14);
+    cart.cpu.wantTrick = !willMiss && Math.random() < 0.35;
   }
   if (ob.d - cart.d <= cart.cpu.jumpAt && canJump(cart)) jump(cart);
 }
@@ -77,15 +91,23 @@ export function stepCart(cart, course, dt, clock, leadOnHumans) {
   }
   cart.stun = Math.max(0, cart.stun - dt);
   cart.hit = Math.max(0, cart.hit - dt * 2);
-  const target = cart.stun > 0 ? 0 : SPEED;
+  cart.turbo = Math.max(0, cart.turbo - dt);
+  const boost = cart.jumpT >= 0 ? AIR_BOOST : cart.turbo > 0 ? TURBO : 1;
+  const target = cart.stun > 0 ? 0 : SPEED * boost;
   cart.speed += (target - cart.speed) * Math.min(1, dt * 6);
   cart.d += cart.speed * dt;
   if (cart.jumpT >= 0) {
     cart.jumpT += dt;
     cart.lift = Math.sin(Math.PI * Math.min(1, cart.jumpT / JUMP_T)) * JUMP_H;
+    if (cart.cpu && cart.cpu.wantTrick && cart.jumpT >= 0.12) {
+      cart.cpu.wantTrick = false;
+      trick(cart);
+    }
     if (cart.jumpT >= JUMP_T) {
       cart.jumpT = -1;
       cart.lift = 0;
+      if (cart.trick) cart.turbo = TURBO_S;
+      cart.trick = false;
     }
   } else if (cart.stun <= 0 && cart.sprite.anim === 'sad') {
     play(cart.sprite, 'idle');

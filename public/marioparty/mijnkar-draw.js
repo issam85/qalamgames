@@ -2,7 +2,8 @@
 // erin, vonken en de voortgangsbalk bovenin.
 import { drawSprite } from './sprites.js';
 import { drawLabel } from './stage2d.js';
-import { COURSE_LEN } from './mijnkar-course.js';
+import { drawSpinning, drawPopups } from './fx2d.js';
+import { COURSE_LEN, JUMP_T } from './mijnkar-course.js';
 import { CART_X, railY, background, lane, finishPost } from './mijnkar-scene.js';
 
 export { CART_X, railY, makeDeco } from './mijnkar-scene.js';
@@ -34,24 +35,30 @@ function cartBody(ctx, bx, top, bottom, color) {
   ctx.fill();
 }
 
+// de sprong is een boog vooruit; bij een salto draait het hele karretje rond
 function drawCart(ctx, cart) {
   const ground = railY(cart.lane);
   const y = ground - cart.lift;
-  const bx = CART_X + (cart.hit > 0 ? (Math.random() - 0.5) * 6 * cart.hit : 0);
+  const bx = CART_X + cart.lift * 0.3 + (cart.hit > 0 ? (Math.random() - 0.5) * 6 * cart.hit : 0);
   const top = y - 52;
   if (cart.lift > 2) {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.beginPath();
-    ctx.ellipse(CART_X, ground - 4, 36 - cart.lift * 0.12, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(bx, ground - 4, 36 - cart.lift * 0.12, 6, 0, 0, Math.PI * 2);
     ctx.fill();
   }
-  wheel(ctx, bx - 24, y - 9, cart.d / 9);
-  wheel(ctx, bx + 24, y - 9, cart.d / 9);
-  // het karakter zit in het karretje: de voorkant verbergt de benen
-  drawSprite(ctx, cart.sprite, bx, top + 30, 72, false);
-  cartBody(ctx, bx, top, y - 14, '#8d5a32');
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
-  [top + 12, top + 25].forEach((ly) => ctx.fillRect(bx - 37, ly, 74, 3));
+  const body = () => {
+    wheel(ctx, bx - 24, y - 9, cart.d / 9);
+    wheel(ctx, bx + 24, y - 9, cart.d / 9);
+    // het karakter zit in het karretje: de voorkant verbergt de benen
+    drawSprite(ctx, cart.sprite, bx, top + 30, 72, false);
+    cartBody(ctx, bx, top, y - 14, cart.turbo > 0 ? '#b8743f' : '#8d5a32');
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+    [top + 12, top + 25].forEach((ly) => ctx.fillRect(bx - 37, ly, 74, 3));
+  };
+  const turn = cart.trick ? Math.max(0, Math.min(1, (cart.jumpT - 0.05) / (JUMP_T - 0.12))) : 0;
+  if (turn > 0 && turn < 1) drawSpinning(ctx, body, bx, y - 30, turn);
+  else body();
   // naam links van het spoor, zodat hij niet over het spoor erboven valt
   const p = cart.player;
   const tag = p.control === 'CPU' ? '' : `${p.control.replace('Speler ', 'P')} `;
@@ -96,5 +103,6 @@ export function drawMijnkar(ctx, game) {
   game.carts.forEach((c, i) => lane(ctx, c, game.course, i));
   game.carts.forEach((c) => drawCart(ctx, c));
   sparks(ctx, game.sparks);
+  drawPopups(ctx, game.popups);
   progress(ctx, game.carts, game.clock);
 }
