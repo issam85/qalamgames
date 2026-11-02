@@ -2,6 +2,7 @@
 // minigames aan de beurt zijn geweest. Vult ook de titelkaart vóór een minigame.
 import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
 import { startMijnkar, stopMijnkar } from './minigame-mijnkar.js';
+import { startSterren, stopSterren, MOVE_LABELS } from './minigame-sterren.js';
 import { TOUCH } from './sprint-input.js';
 
 // three: gebruikt het 3D-canvas · clip: filmpje vooraf (alleen in ronde 1)
@@ -25,6 +26,16 @@ export const MINIGAMES = [
     clip: null,
     start: startMijnkar,
     stop: stopMijnkar,
+  },
+  {
+    key: 'sterrenjacht',
+    title: 'Sterrenjacht',
+    blurb: 'Het is nacht en er vallen sterren! Loop links en rechts om ze te vangen. Een grote ster is 3 punten. Wie na 30 seconden de meeste heeft, wint!',
+    keys: MOVE_LABELS,
+    three: false,
+    clip: null,
+    start: startSterren,
+    stop: stopSterren,
   },
 ];
 

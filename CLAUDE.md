@@ -73,6 +73,10 @@ bekend.
   - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring over rotsen,
     kristallen en gaten (botsing = 0,9 s stil). CPU's missen soms, vaker als ze ver
     voor de spelers liggen.
+  - Sterrenjacht (2D): 30 s, sterren vallen, loop links/rechts (speler 1 A/D, speler 2
+    pijltjes; tikken op je helft, links/rechts). Gewone ster 1, grote ster 3 punten;
+    gelijke stand = wie het eerst zoveel had. CPU's kiezen elk een andere ster en
+    worden trager als ze 4 punten voorliggen.
 - Toad deelt uit: winnaar 2 sterren + 10 punten, tweede 1 ster + 5 punten, verliezers
   een trede omlaag op een stenen trap van 10 treden (vooraanzicht, ster bovenaan).
 - Einde: overwinningsclip van de winnaar, finale, eindscherm met "Opnieuw spelen".
@@ -97,7 +101,9 @@ bekend.
   `sprint.css` speelveld
 - Minigames 2D: `stage2d.js` (canvas op logisch 960×540, status, labels) ·
   `minigame-mijnkar.js` verloop · `mijnkar-course.js` parcours, karretjes, CPU ·
-  `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang.
+  `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang ·
+  `minigame-sterren.js` verloop · `sterren-input.js` links/rechts vasthouden ·
+  `sterren-world.js` sterren, vangen, CPU · `sterren-draw.js` hemel, heuvels, scores.
   Nieuwe minigame = regel in `minigames.js` (`start(canvas, statusEl, players,
   onFinish)` en `stop()`), kaart in `img/cards/`, en `three: true` als hij het
   3D-canvas gebruikt.
@@ -151,8 +157,8 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
   credits zijn. Nog open uit de review: finishlint die knapt; sprite-strips breder dan
   4096 px (Bowser cheer/sad, 4828 px) opsplitsen in rijen; testen op een echte
   Chromebook (framerate).
-- Nieuwe minigames gepland (volgorde van de gebruiker): Mijnkar (klaar), Sterrenjacht,
-  Springtouw. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
+- Nieuwe minigames gepland (volgorde van de gebruiker): Mijnkar (klaar), Sterrenjacht
+  (klaar), Springtouw. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
   staan in `docs/mario-party-plan.md` §9.1 voor als er credits zijn.
 
 ## Volgende opdracht: website-upgrade
