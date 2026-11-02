@@ -66,7 +66,13 @@ bekend.
 **Spel** (`public/marioparty/`, ES-modules zonder build):
 - 1 of 2 spelers kiezen uit Mario, Luigi, Peach, Daisy, Toad, Yoshi en Bowser; de rest
   is CPU, 4 deelnemers. 5 rondes.
-- Minigame "Sprint": speler 1 ramt op spatie, speler 2 op pijltje omhoog.
+- Per ronde een minigame, willekeurig zonder herhaling (`minigames.js`), met vooraf een
+  titelkaart (`img/cards/<sleutel>.webp`, 960×540) met uitleg en toetsen. Speler 1
+  gebruikt spatie, speler 2 pijltje omhoog; op een tablet tik je op je helft.
+  - Sprint (3D): momentum opbouwen, turbo bij volhouden, eerste over de finish.
+  - Mijnkar (2D): vier sporen boven elkaar, karretje rijdt vanzelf, spring over rotsen,
+    kristallen en gaten (botsing = 0,9 s stil). CPU's missen soms, vaker als ze ver
+    voor de spelers liggen.
 - Toad deelt uit: winnaar 2 sterren + 10 punten, tweede 1 ster + 5 punten, verliezers
   een trede omlaag op een stenen trap van 10 treden (vooraanzicht, ster bovenaan).
 - Einde: overwinningsclip van de winnaar, finale, eindscherm met "Opnieuw spelen".
@@ -89,11 +95,17 @@ bekend.
   `sprint-hud.js` + `sprint-hud.css`/`sprint-gauge.css` portret, tijd, power bars ·
   `sprint-fx.js` snelheidslijnen, flits, P1/P2-markering · `sprint-tex.js` ·
   `sprint.css` speelveld
+- Minigames 2D: `stage2d.js` (canvas op logisch 960×540, status, labels) ·
+  `minigame-mijnkar.js` verloop · `mijnkar-course.js` parcours, karretjes, CPU ·
+  `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang.
+  Nieuwe minigame = regel in `minigames.js` (`start(canvas, statusEl, players,
+  onFinish)` en `stop()`), kaart in `img/cards/`, en `three: true` als hij het
+  3D-canvas gebruikt.
 - `toad.js` Toad wijst/klapt, sterren vliegen naar de kaarten
 - `sprites.js` sprite sheets afspelen · `effects.js` stof, confetti, sterretjes
 - `cutscene.js` video's met "Overslaan" · `transition.js` sterwipe tussen schermen
 - `characters.js`, `assets.js` plaatjes en cache
-- CSS: `base.css`, `setup.css`, `play.css`, `toad.css`, `overlay.css`; schermindeling
+- CSS: `base.css`, `setup.css`, `play.css`, `toad.css`, `overlay.css`, `card.css`; schermindeling
   in `layout.css` (elk scherm één schermhoogte, grote knop altijd in beeld),
   `layout-phone.css` (staand) en `layout-low.css` (liggend)
 - Beeld: `img/` (renders, achtergronden), `sprites/` (3,8 MB), `video/` (12 cutscenes, 16 MB)
@@ -139,6 +151,9 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
   credits zijn. Nog open uit de review: finishlint die knapt; sprite-strips breder dan
   4096 px (Bowser cheer/sad, 4828 px) opsplitsen in rijen; testen op een echte
   Chromebook (framerate).
+- Nieuwe minigames gepland (volgorde van de gebruiker): Mijnkar (klaar), Sterrenjacht,
+  Springtouw. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
+  staan in `docs/mario-party-plan.md` §9.1 voor als er credits zijn.
 
 ## Volgende opdracht: website-upgrade
 

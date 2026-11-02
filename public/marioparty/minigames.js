@@ -1,6 +1,7 @@
 // De minigames en de keuze per ronde: willekeurig, zonder herhaling tot alle
 // minigames aan de beurt zijn geweest. Vult ook de titelkaart vóór een minigame.
 import { startSprint, stopSprint, KEY_LABELS } from './minigame-sprint.js';
+import { startMijnkar, stopMijnkar } from './minigame-mijnkar.js';
 import { TOUCH } from './sprint-input.js';
 
 // three: gebruikt het 3D-canvas · clip: filmpje vooraf (alleen in ronde 1)
@@ -14,6 +15,16 @@ export const MINIGAMES = [
     clip: 'race-start',
     start: startSprint,
     stop: stopSprint,
+  },
+  {
+    key: 'mijnkar',
+    title: 'Mijnkar',
+    blurb: 'Je karretje rijdt vanzelf door de grot. Spring op tijd over de rotsen, kristallen en gaten. Wie het eerst bij de finish is, wint!',
+    keys: KEY_LABELS,
+    three: false,
+    clip: null,
+    start: startMijnkar,
+    stop: stopMijnkar,
   },
 ];
 
