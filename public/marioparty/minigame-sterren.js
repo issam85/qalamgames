@@ -1,15 +1,21 @@
 // Minigame 3: Sterrenjacht. Sterren vallen uit de nachthemel; loop links en rechts om
-// ze te vangen, spring voor de hoge. Gewone ster 1 punt, grote ster 3; gevangen tijdens
-// een salto telt dubbel. Na 30 seconden wint wie de meeste punten heeft.
+// ze te vangen, spring voor de hoge, en duw een ander opzij zodat hij een ster laat
+// vallen. Gewone ster 1 punt, grote ster 3; gevangen tijdens een salto telt dubbel.
+// Na 30 seconden wint wie de meeste punten heeft.
 import { update as updateSprite, play } from './sprites.js';
 import { createMoveInput } from './sterren-input.js';
-import { createJumpInput } from './jump-input.js';
+import { createJumpInput, STAR_KEYS } from './jump-input.js';
+import { addTouchButtons } from './touch-buttons.js';
 import { setupStage, statusSetter } from './stage2d.js';
 import { pushPopup, updatePopups } from './fx2d.js';
 import { createHunter, spawnStar, stepHunters, stepStars, jump, trick, SPAWN_EVERY, GROUND } from './sterren-world.js';
+import { push } from './sterren-push.js';
 import { drawSterren, makeSky } from './sterren-draw.js';
 
-export const STAR_LABELS = { 'Speler 1': 'A / D lopen, SPATIE springen, in de lucht A / D salto', 'Speler 2': '← / → lopen, PIJL OMHOOG springen, in de lucht ← / → salto' };
+export const STAR_LABELS = {
+  'Speler 1': 'A / D lopen · SPATIE springen · W salto · S duwen',
+  'Speler 2': '← / → lopen · ↑ springen · ENTER salto · ↓ duwen',
+};
 // tikken in het bovenste deel van het veld = springen, eronder = lopen
 const JUMP_ZONE = 0.45;
 
@@ -18,6 +24,12 @@ const DURATION = 30; // seconden spelen
 const END_MS = 2200; // zo lang blijft "Klaar!" staan
 
 let game = null;
+
+function shove(idx) {
+  const h = game.hunters[idx];
+  const target = push(h, game.hunters, game.stars);
+  if (target) pushPopup(game.popups, 'Duw!', target.x, GROUND - 150, '#ff5a3c');
+}
 
 function finish() {
   game.phase = 'done';
@@ -96,16 +108,18 @@ export function startSterren(canvas, statusEl, players, onFinish) {
   game.input.attach();
   game.jumpInput = createJumpInput(players, stage, {
     jump: (idx) => jump(game.hunters[idx]),
-    // alleen in de lucht: op de grond zijn A/D en de pijltjes om te lopen
     trick: (idx) => {
       const h = game.hunters[idx];
-      if (h.jumpT >= 0 && trick(h)) pushPopup(game.popups, 'Salto!', h.x, GROUND - 200);
+      if (trick(h)) pushPopup(game.popups, 'Salto!', h.x, GROUND - 200);
     },
+    push: shove,
     canPress: () => game && game.phase === 'running',
     inAir: (idx) => game.hunters[idx].jumpT >= 0,
     topZone: JUMP_ZONE,
+    keys: STAR_KEYS,
   });
   game.jumpInput.attach();
+  game.buttons = addTouchButtons(stage, players, 'DUW', shove, () => game && game.phase === 'running');
   game.raf = requestAnimationFrame(frame);
 }
 
@@ -114,6 +128,7 @@ export function stopSterren() {
   cancelAnimationFrame(game.raf);
   game.input.detach();
   game.jumpInput.detach();
+  game.buttons.forEach((b) => b.remove());
   game.stage.dispose();
   game = null;
 }

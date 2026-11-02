@@ -3,7 +3,8 @@
 // Springen vangt sterren hoger; een ster gevangen tijdens een salto telt dubbel.
 import { createSprite, play } from './sprites.js';
 import { W } from './stage2d.js';
-import { cpuDir, cpuJump } from './sterren-cpu.js';
+import { cpuDir, cpuJump, cpuPush } from './sterren-cpu.js';
+import { stepPush } from './sterren-push.js';
 
 export const GROUND = 470;
 export const SPEED = 330; // looptempo (px/s)
@@ -21,7 +22,8 @@ export function createHunter(player, i) {
     : null;
   return {
     player, cpu, x: 180 + i * 200, dir: 0, facing: 1, score: 0, lastCatch: 0,
-    jumpT: -1, lift: 0, trick: false, glow: 0, sprite: createSprite(player.character.key),
+    jumpT: -1, lift: 0, trick: false, glow: 0, cool: 0, shove: 0, daze: 0, knock: null,
+    sprite: createSprite(player.character.key),
   };
 }
 
@@ -35,7 +37,7 @@ export function spawnStar(stars, time, n) {
 }
 
 export function jump(h) {
-  if (h.jumpT >= 0) return;
+  if (h.jumpT >= 0 || h.daze > 0) return;
   h.jumpT = 0;
   h.trick = false;
   play(h.sprite, 'jump', true);
@@ -54,10 +56,14 @@ export function trick(h) {
 
 // dir: -1..1 (CPU's een eigen tempo); zet positie, richting, hoogte en animatie
 export function moveHunter(h, dir, dt) {
+  stepPush(h, dt);
+  if (h.daze > 0) dir = 0;
   h.dir = dir;
   h.x = Math.max(MARGIN, Math.min(W - MARGIN, h.x + dir * SPEED * dt));
   if (dir !== 0) h.facing = dir < 0 ? -1 : 1;
-  if (h.jumpT >= 0) {
+  if (h.daze > 0) {
+    play(h.sprite, 'sad');
+  } else if (h.jumpT >= 0) {
     h.jumpT += dt;
     h.lift = Math.sin(Math.PI * Math.min(1, h.jumpT / JUMP_T)) * JUMP_H;
     if (h.jumpT >= JUMP_T) {
@@ -78,7 +84,10 @@ export function stepHunters(hunters, stars, input, dt) {
   const top = humans.length ? Math.max(...humans) : 0;
   hunters.forEach((h, i) => {
     const dir = h.cpu ? cpuDir(h, stars, dt, h.score - top, hunters) : input.dir(i);
-    if (h.cpu) cpuJump(h);
+    if (h.cpu) {
+      cpuJump(h);
+      cpuPush(h, hunters, stars, dt);
+    }
     if (h.cpu && h.cpu.wantTrick && h.jumpT >= 0.12) {
       h.cpu.wantTrick = false;
       trick(h);
@@ -89,7 +98,7 @@ export function stepHunters(hunters, stars, input, dt) {
 
 // kan h deze ster nu vangen: dichtbij, en tussen zijn voeten en zijn reikhoogte
 function canCatch(h, s) {
-  return Math.abs(h.x - s.x) < CATCH_W && s.y > GROUND - h.lift - CATCH_H && s.y < GROUND - h.lift + 10;
+  return h.daze <= 0 && Math.abs(h.x - s.x) < CATCH_W && s.y > GROUND - h.lift - CATCH_H && s.y < GROUND - h.lift + 10;
 }
 
 // laat de sterren vallen; gevangen sterren tellen voor de dichtstbijzijnde vanger.

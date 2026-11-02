@@ -32,7 +32,7 @@ export const MINIGAMES = [
   {
     key: 'sterrenjacht',
     title: 'Sterrenjacht',
-    blurb: 'Het is nacht en er vallen sterren! Loop links en rechts om ze te vangen en spring voor de hoge. Een grote ster is 3 punten, een salto-vangst telt dubbel. Wie na 30 seconden de meeste heeft, wint!',
+    blurb: 'Het is nacht en er vallen sterren! Loop, spring en vang ze; een grote ster is 3 punten en een salto-vangst telt dubbel. Geef een ander een duw, dan laat hij een ster vallen. Wie na 30 seconden de meeste heeft, wint!',
     keys: STAR_LABELS,
     three: false,
     clip: null,

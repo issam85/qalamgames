@@ -1,6 +1,18 @@
 // Sterrenjacht: de CPU-spelers. Ze kiezen een ster, lopen er met hun eigen tempo
-// heen, springen soms naar een hoge ster en doen af en toe een salto.
+// heen, springen soms naar een hoge ster, doen af en toe een salto en geven af en toe
+// een duw aan wie naast ze staat.
 import { GROUND, SPEED, CATCH_H, jump } from './sterren-world.js';
+import { push, canPush } from './sterren-push.js';
+
+// geeft de geduwde terug, of null
+export function cpuPush(h, hunters, stars, dt) {
+  if (!canPush(h) || Math.random() > dt * 0.5) return null;
+  const near = hunters.some((o) => o !== h && o.jumpT < 0 && Math.abs(o.x - h.x) < 70);
+  if (!near) return null;
+  const o = hunters.find((o) => o !== h && Math.abs(o.x - h.x) < 70);
+  h.facing = o.x < h.x ? -1 : 1;
+  return push(h, hunters, stars);
+}
 
 // de CPU kiest de ster die het snelst op de grond is en nog te halen valt, en loopt
 // er met zijn eigen tempo heen; soms een korte pauze, en wie ver voorligt wordt trager.

@@ -80,11 +80,15 @@ bekend.
     vooruit, in de lucht ×1,15) over rotsen, kristallen en gaten (botsing = 0,9 s
     stil). Salto = na de landing 1 s turbo ×1,5 met vonken. CPU's missen soms, vaker
     als ze ver voor de spelers liggen, en doen in 35% een salto.
-  - Sterrenjacht (2D): 30 s, sterren vallen, loop links/rechts (speler 1 A/D, speler 2
-    pijltjes; tikken op je helft, links/rechts, onderste 55% van het veld) en spring
-    (bovenste 45%) voor hoge sterren. Gewone ster 1, grote ster 3 punten, tijdens een
-    salto dubbel; gelijke stand = wie het eerst zoveel had. CPU's kiezen elk een andere
-    ster, springen soms en worden trager als ze 4 punten voorliggen.
+  - Sterrenjacht (2D): 30 s, sterren vallen. Speler 1: A/D lopen, spatie springen, W
+    salto, S duwen; speler 2: ←/→, ↑, Enter, ↓ (`STAR_KEYS` in `jump-input.js`). Tablet:
+    onderste 55% vasthouden = lopen, bovenste 45% tikken = springen/salto, DUW-knop per
+    speler (`touch-buttons.js`). Duw (`sterren-push.js`): bereik 80 px in de
+    kijkrichting, geduwde vliegt 150 px opzij, 0,6 s duizelig (niet lopen, springen,
+    vangen) en laat 1 ster vallen; 1,2 s wachttijd. Gewone ster 1, grote ster 3 punten,
+    tijdens een salto dubbel; gelijke stand = wie het eerst zoveel had. CPU's kiezen
+    elk een andere ster, springen soms, duwen soms wie naast ze staat en worden trager
+    als ze 4 punten voorliggen.
   - Springtouw (2D): twee Toads draaien, omlooptijd 1,5 s → ×0,95 per ronde tot 0,62 s.
     Druk = sprong van 0,55 s, salto = 0,8 s en een stijlpunt (in de lucht tot 0,07 s
     voor de landing). Iedereen twee levens (hartjes). "SPRING!" + gloed op de vloer als
@@ -117,8 +121,9 @@ bekend.
   `minigame-mijnkar.js` verloop · `mijnkar-course.js` parcours, karretjes, CPU ·
   `mijnkar-scene.js` grot en sporen · `mijnkar-draw.js` karretjes, vonken, voortgang ·
   `minigame-sterren.js` verloop · `sterren-input.js` links/rechts vasthouden ·
-  `sterren-world.js` sterren, lopen, springen, vangen · `sterren-cpu.js` ·
-  `sterren-draw.js` hemel, heuvels, scores · `minigame-springtouw.js` verloop ·
+  `sterren-world.js` sterren, lopen, springen, vangen · `sterren-push.js` duwen ·
+  `sterren-cpu.js` · `sterren-scene.js` hemel, heuvels · `sterren-draw.js` sterren,
+  figuren, scores · `touch-buttons.js` knoppen op het veld voor tablets · `minigame-springtouw.js` verloop ·
   `springtouw-world.js` touw, springen, levens, CPU · `springtouw-scene.js` plein en
   Toads · `springtouw-draw.js` touw, aanwijzing, springers, stand.
   Nieuwe minigame = regel in `minigames.js` (`start(canvas, statusEl, players,
