@@ -1,10 +1,13 @@
-// Cutscenes: korte video's (video/<naam>.mp4) schermvullend, met een knop
-// om over te slaan. Enter en Escape slaan ook over.
+// Cutscenes: korte video's (video/<naam>.mp4) schermvullend, met knoppen om dit
+// filmpje of alle filmpjes van dit spel over te slaan. Enter en Escape slaan ook over.
 const overlay = document.getElementById('cutscene');
 const video = document.getElementById('cutscene-video');
 const skipBtn = document.getElementById('cutscene-skip');
+const skipAllBtn = document.getElementById('cutscene-skip-all');
 
 let finish = null;
+// na "Alle filmpjes overslaan" speelt er tot het volgende spel geen filmpje meer
+let skipAll = false;
 
 function end() {
   if (!finish) return;
@@ -24,10 +27,20 @@ function onKey(e) {
 video.addEventListener('ended', end);
 video.addEventListener('error', end);
 skipBtn.addEventListener('click', end);
+skipAllBtn.addEventListener('click', () => {
+  skipAll = true;
+  end();
+});
+
+// aan het begin van een spel: filmpjes weer aan
+export function resetCutscenes() {
+  skipAll = false;
+}
 
 // speelt een cutscene af; de promise is klaar als hij is afgelopen of overgeslagen
 export function playCutscene(name) {
   end();
+  if (skipAll) return Promise.resolve();
   return new Promise((resolve) => {
     finish = () => {
       window.removeEventListener('keydown', onKey);

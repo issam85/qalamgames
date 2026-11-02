@@ -9,7 +9,7 @@ import { startToad, stopToad } from './toad.js';
 import { initSetup } from './setup.js';
 import { CHARACTERS, loadCharacters } from './characters.js';
 import { loadSprites } from './sprites.js';
-import { playCutscene, playCutscenes } from './cutscene.js';
+import { playCutscene, playCutscenes, resetCutscenes } from './cutscene.js';
 import { withWipe } from './transition.js';
 
 const ROUNDS = 5;
@@ -57,6 +57,7 @@ function roundClip(name) {
 async function startGame(players) {
   state.players = players;
   state.round = 1;
+  resetCutscenes();
   await playCutscene('intro');
   return showBoard();
 }
