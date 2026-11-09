@@ -8,6 +8,12 @@ export const GAMES = {
     controls: [['Speler 1', 'Spatie'], ['Speler 2', 'Pijltje omhoog']],
     howto: 'Vijf rondes. Ram zo snel je kan in de sprint. De winnaar krijgt twee sterren van Toad; wie verliest, zakt een trede op de trap.',
   },
+  mijnleven: {
+    title: 'Mijn Leven', src: '/mijnleven/index.html', accent: '#c2419a',
+    blurb: "Kleed je eigen meisje aan: hoofddoeken, jurken en abaya's, schoenen, tassen en sieraden in allerlei kleuren. Maak een foto van je outfit en verdien sterren. Er komen nog meer kamers bij!",
+    controls: [['Muis of vinger', 'Klik of tik']],
+    howto: 'Ga naar de Kledingkast, kies een soort kleding en een kleur, en druk op Klaar. Je outfit wordt bewaard op je eigen apparaat.',
+  },
   fightnight: {
     title: 'Fight Night', src: '/fightnight.html', accent: '#FAC775', video: '/video/fightnight.mp4',
     blurb: "Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je tegenstander met jabs, combo's en knock-outs.",

@@ -4,7 +4,10 @@
 export const LICHTINGEN = [
   {
     id: 'lichting4', label: 'Lichting 4', subtitle: 'De nieuwste lichting — oktober 2026',
-    top: [{ game: 'marioparty', student: 'Al Qalam kids', klas: 'Al Qalam School' }],
+    top: [
+      { game: 'marioparty', student: 'Al Qalam kids', klas: 'Al Qalam School' },
+      { game: 'mijnleven', student: 'Al Qalam kids', klas: 'Al Qalam School' },
+    ],
     rest: [],
   },
   {

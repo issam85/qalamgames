@@ -187,9 +187,11 @@ kinderen), moskee en Mekka, slaapkamer (slapen, liedjes) en een winkel. Werktite
 https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis).
 
 - Staat in `public/mijnleven/` (ES-modules zonder build), direct te openen op
-  `/mijnleven/index.html`. Nog NIET op de homepage: daarvoor ontbreken naam, maker,
-  `thumbs/mijnleven.webp`, `og/mijnleven.jpg`, de regel in `data/games.js` en
-  `data/lichtingen.js`, `<noscript>`, `sitemap.xml` en het SEO-blok.
+  `/mijnleven/index.html` of `/#mijnleven`. Op de homepage in Lichting 4 met badge
+  "Nieuw", maker voorlopig "Al Qalam kids" (vervang zodra de leerling bekend is).
+  `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
+  van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
+  headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
 - Klaar: het huis (overzicht, alleen de Kledingkast is open) en de Kledingkast: 6
   categorieën × 6 soorten × 8 kleuren, "Verras me!", "Foto" (PNG 720×960 om op te
   slaan) en "Klaar!" (eerste keer per dag 2 sterren). Alles wordt bewaard in
