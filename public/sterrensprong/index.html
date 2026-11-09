@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="menu.css">
 </head>
 <body>
   <canvas id="view"></canvas>
@@ -14,11 +15,24 @@
     <div class="bar"><div id="bar-fill"></div></div>
     <div class="hud-row"><span id="percent">0%</span><span id="attempt">Poging 1</span></div>
   </div>
+  <button id="to-menu" class="pill" type="button">Kleuren</button>
   <div id="flash"></div>
-  <div id="overlay" class="overlay">
-    <h1 id="overlay-title">Sterrensprong</h1>
-    <p id="overlay-text">Druk op spatie of tik om te beginnen</p>
+  <div id="overlay" class="overlay" hidden>
+    <h1 id="overlay-title"></h1>
+    <p id="overlay-text"></p>
   </div>
+  <section id="menu" class="menu" hidden>
+    <h1>Sterrensprong</h1>
+    <div class="menu-scroll">
+      <h2>Kleurencombinaties</h2>
+      <div id="combos" class="swatches"></div>
+      <h2>Of kies zelf: licht</h2>
+      <div id="bodies" class="swatches"></div>
+      <h2>Dak en rand</h2>
+      <div id="metals" class="swatches"></div>
+    </div>
+    <button id="start" class="start" type="button">Start</button>
+  </section>
   <script type="module" src="game.js"></script>
 </body>
 </html>

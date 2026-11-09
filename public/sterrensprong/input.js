@@ -19,7 +19,8 @@ export function createInput(onPress) {
     press();
   });
   window.addEventListener('keyup', (e) => keys.delete(e.code));
-  window.addEventListener('pointerdown', () => {
+  window.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button, .menu')) return; // knoppen zijn geen sprong
     pointers++;
     press();
   });

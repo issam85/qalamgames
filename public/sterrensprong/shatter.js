@@ -21,6 +21,7 @@ export function createShatter(scene) {
   let time = 0;
 
   return {
+    setColor: (color) => mesh.material.color.set(color),
     burst(x, y) {
       time = LIFE;
       mesh.visible = true;

@@ -60,6 +60,18 @@ export function cellTexture() {
   return toTexture(canvas);
 }
 
+// één raam van de lantaarn; wit, zodat het de gekozen kleur aanneemt
+export function lanternTexture() {
+  const { canvas, ctx } = makeCanvas(128);
+  ctx.fillStyle = '#c8c8c8';
+  ctx.fillRect(0, 0, 128, 128);
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#7a7a7a';
+  ctx.lineWidth = 5;
+  star(ctx, 64, 64, 52);
+  return toTexture(canvas, 8, 1);
+}
+
 let glowMap = null;
 
 // zachte lichtvlek die optelt bij wat erachter staat

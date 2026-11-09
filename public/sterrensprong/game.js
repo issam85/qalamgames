@@ -1,4 +1,4 @@
-// Spelverloop: starten, spelen, botsen en meteen opnieuw, finish.
+// Spelverloop: kleuren kiezen, spelen, botsen en meteen opnieuw, finish.
 import { PHYS, DEATH_PAUSE } from './config.js';
 import { TEST_LEVEL } from './levels.js';
 import { createRun, stepRun } from './physics.js';
@@ -9,10 +9,12 @@ import { createBoosts } from './boosts3d.js';
 import { createPlayer } from './player3d.js';
 import { createShatter } from './shatter.js';
 import { createFx } from './fx.js';
+import { loadSkin, saveSkin } from './skins.js';
+import { createMenu } from './menu.js';
+import { updateHud, showOverlay, hideOverlay, flash } from './hud.js';
 
-const $ = (id) => document.getElementById(id);
 const level = TEST_LEVEL;
-const world = createWorld($('view'), level);
+const world = createWorld(document.getElementById('view'), level);
 buildObstacles(world.scene, level);
 const boosts = createBoosts(world.scene, level);
 const player = createPlayer(world.scene);
@@ -25,32 +27,48 @@ let mode = 'ready';
 let attempt = 1;
 let pause = 0;
 let spare = 0;
-let cheer = 0;
 let last = performance.now();
 
-function showOverlay(title, text) {
-  $('overlay-title').textContent = title;
-  $('overlay-text').textContent = text;
-  $('overlay').hidden = false;
+function applySkin(skin) {
+  player.setSkin(skin);
+  shatter.setColor(skin.body);
+  fx.setSpark(skin.body);
 }
 
-function updateHud() {
-  const percent = Math.min(100, Math.floor((run.x / level.length) * 100));
-  $('bar-fill').style.width = `${percent}%`;
-  $('percent').textContent = `${percent}%`;
-  $('attempt').textContent = `Poging ${attempt}`;
-}
+const firstSkin = loadSkin();
+applySkin(firstSkin);
+const menu = createMenu(firstSkin, {
+  onChange(skin) {
+    applySkin(skin);
+    saveSkin(skin);
+  },
+  onStart: restart,
+});
+menu.show(true);
 
-function restart() {
+function clearRun() {
   run = createRun(level);
-  mode = 'run';
   spare = 0;
   input.takePress();
   player.reset();
   player.setVisible(true);
   shatter.hide();
-  $('overlay').hidden = true;
+  hideOverlay();
 }
+
+function restart() {
+  clearRun();
+  mode = 'run';
+  menu.show(false);
+}
+
+function backToMenu() {
+  clearRun();
+  mode = 'ready';
+  attempt = 1;
+  menu.show(true);
+}
+document.getElementById('to-menu').addEventListener('click', backToMenu);
 
 function onPress() {
   if (mode === 'ready') {
@@ -67,10 +85,7 @@ function crash() {
   player.setVisible(false);
   shatter.burst(run.x, run.y);
   world.kick(0.55);
-  const flash = $('flash');
-  flash.classList.remove('on');
-  void flash.offsetWidth; // laat de animatie opnieuw beginnen
-  flash.classList.add('on');
+  flash();
 }
 
 function playEvents() {
@@ -96,19 +111,10 @@ function simulate(dt) {
   if (run.state === 'dead') crash();
   if (run.state === 'won') {
     mode = 'won';
-    cheer = 0;
     showOverlay('Gehaald!', 'Druk op spatie of tik om nog een keer te spelen');
   } else if (run.state === 'run') {
     fx.trail(run, dt);
   }
-}
-
-function celebrate(dt) {
-  cheer -= dt;
-  if (cheer > 0) return;
-  cheer = 0.22;
-  const color = Math.random() < 0.5 ? '#ffd43b' : '#5cf2d6';
-  fx.burst(level.length + (Math.random() - 0.5) * 3, 4 + Math.random() * 3, color, 24, 9);
 }
 
 function frame(now) {
@@ -123,15 +129,16 @@ function frame(now) {
       restart();
     }
   } else if (mode === 'won') {
-    celebrate(dt);
+    fx.finale(level.length, dt);
   }
-  player.update(run, dt);
+  const inMenu = mode === 'ready';
+  player.update(run, dt, inMenu);
   boosts.update(run, dt);
   shatter.update(dt);
   fx.update(dt);
-  world.follow(run, dt);
+  world.follow(run, dt, inMenu);
   world.render();
-  updateHud();
+  updateHud(run, attempt);
   requestAnimationFrame(frame);
 }
 

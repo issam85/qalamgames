@@ -5,7 +5,6 @@ const COUNT = 240;
 const GRAVITY = 16;
 const TRAIL_EVERY = 0.028;
 const FLOOR_SPARK = '#5cf2d6';
-const AIR_SPARK = '#ffcf6b';
 
 export function createFx(scene) {
   const mesh = new THREE.InstancedMesh(
@@ -25,6 +24,8 @@ export function createFx(scene) {
   const holder = new THREE.Object3D();
   let next = 0;
   let trailTime = 0;
+  let airSpark = '#ffcf6b';
+  let cheer = 0;
 
   function emit(x, y, z, vx, vy, vz, life, size, tint) {
     const s = sparks[next];
@@ -44,6 +45,13 @@ export function createFx(scene) {
 
   return {
     burst,
+    setSpark: (color) => { airSpark = color; },
+    finale(x, dt) {
+      cheer -= dt;
+      if (cheer > 0) return;
+      cheer = 0.22;
+      burst(x + (Math.random() - 0.5) * 3, 4 + Math.random() * 3, Math.random() < 0.5 ? '#ffd43b' : '#5cf2d6', 24, 9);
+    },
     dust(x, y) {
       for (let i = 0; i < 9; i++) {
         emit(x + Math.random() - 0.5, y + 0.05, Math.random() - 0.5, (Math.random() - 0.5) * 7, Math.random() * 3.5, 0, 0.32, 0.11, FLOOR_SPARK);
@@ -54,7 +62,7 @@ export function createFx(scene) {
       if (trailTime > 0) return;
       trailTime = TRAIL_EVERY;
       const y = run.y + (run.grounded ? 0.08 : 0.45);
-      const tint = run.grounded ? FLOOR_SPARK : AIR_SPARK;
+      const tint = run.grounded ? FLOOR_SPARK : airSpark;
       emit(run.x - 0.42, y, (Math.random() - 0.5) * 0.5, -2 - Math.random() * 2, Math.random() * 2, 0, 0.36, 0.1, tint);
     },
     update(dt) {

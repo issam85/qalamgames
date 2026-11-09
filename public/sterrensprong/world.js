@@ -81,9 +81,22 @@ export function createWorld(canvas, level) {
     floor.glow.color.lerp(tint.set(zone.glow), rate);
   }
 
-  function follow(run, dt) {
+  // in het kleurenscherm staat de lantaarn groot in beeld, naast of boven de knoppen
+  function showcase(run) {
+    camera.position.set(run.x, 1.4, 5.4);
+    if (camera.aspect >= 1.05) camera.lookAt(run.x - 1.5, 1, 0);
+    else camera.lookAt(run.x, -0.8, 0);
+    wall.position.x = camera.position.x;
+    scenery.update(camera.position.x);
+  }
+
+  function follow(run, dt, inMenu) {
     applyZone(run.x, run.x < lastX ? 1 : Math.min(1, dt * 2.5));
     lastX = run.x;
+    if (inMenu) {
+      showcase(run);
+      return;
+    }
     lift += (Math.max(0, run.y - 2.5) * 0.6 - lift) * Math.min(1, dt * 5);
     shake = Math.max(0, shake - dt * 2.4);
     const jitterX = (Math.random() - 0.5) * shake;
