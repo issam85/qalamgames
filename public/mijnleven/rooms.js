@@ -5,16 +5,21 @@ import { initBathroom, showBathroom } from './bathroom.js';
 import { initKitchen, showKitchen, cookedMeal } from './kitchen.js';
 import { initFamily, showFamily } from './family-room.js';
 import { initMosque, showMosque } from './mosque-room.js';
+import { initBedroom, showBedroom, fallAsleep, inPyjama } from './bedroom.js';
 import { knotsLeft } from './hair.js';
 import { washed } from './bath.js';
 import { progress as familyProgress } from './family.js';
 import { wuduDone, prayersDone } from './mosque.js';
+import { freshMakeup } from './makeup.js';
+import { today, setNights } from './ui.js';
 
 const JOURNEY_STARS = 3; // voor de reis naar Mekka, één keer per dag
+const SLEEP_AFTER = 3; // zoveel kamers moet je op een dag af hebben voor je moe bent
 
 // game = het spel · set(sleutel) = bewaar dat stukje · done(dagveld, wat) = Klaar!
-// met sterren · reward(dagveld, sterren, tekst) = extra sterren, één keer per dag
-export function connectRooms({ game, set, done, toast, reward }) {
+// met sterren · reward(dagveld, sterren, tekst) = extra sterren, één keer per dag ·
+// home() = terug naar het huis
+export function connectRooms({ game, set, done, toast, reward, home }) {
   const get = (key) => () => game[key];
   // per kamer: waarom "Klaar!" nog niet mag ('' = het mag), en wat er dan bewaard is
   const rules = {
@@ -44,6 +49,27 @@ export function connectRooms({ game, set, done, toast, reward }) {
     setMosque: set('mosque'),
     journeyDone: () => reward('mekkaDay', JOURNEY_STARS, 'Je reis naar Mekka is klaar!'),
   });
+  // hoeveel kamers zijn er vandaag af (de kast telt ook mee)
+  const tired = () => ({
+    done: ['starDay', ...Object.keys(rules).map((room) => `${room}Day`)].filter((key) => game[key] === today()).length,
+    need: SLEEP_AFTER,
+  });
+  initBedroom({ getPyjama: get('pyjama'), setPyjama: set('pyjama'), getOutfit: get('outfit'), getHair: get('hair'), getMakeup: get('makeup'), tired });
+  // slapen: een nieuwe dag begint, en je make-up is eraf
+  document.getElementById('slaap-done').addEventListener('click', () => {
+    const left = SLEEP_AFTER - tired().done;
+    if (left > 0) toast(`Je bent nog niet moe. Doe eerst nog ${left} ${left === 1 ? 'ding' : 'dingen'} in huis`);
+    else if (!inPyjama(game.pyjama)) toast('Trek eerst je pyjama aan');
+    else {
+      fallAsleep(() => {
+        set('nights')(game.nights + 1);
+        setNights(game.nights);
+        set('makeup')(freshMakeup());
+        home();
+        toast('Goedemorgen! Een nieuwe dag begint');
+      });
+    }
+  });
   Object.entries(rules).forEach(([room, [blocked, what]]) => {
     document.getElementById(`${room}-done`).addEventListener('click', () => {
       const why = blocked();
@@ -53,6 +79,6 @@ export function connectRooms({ game, set, done, toast, reward }) {
   });
   return {
     'screen-kapper': showSalon, 'screen-bad': showBathroom, 'screen-keuken': showKitchen, 'screen-gezin': showFamily,
-    'screen-moskee': showMosque,
+    'screen-moskee': showMosque, 'screen-slaap': showBedroom,
   };
 }

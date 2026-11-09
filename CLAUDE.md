@@ -192,8 +192,8 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken, Gezin en Moskee
-  en Mekka zijn open, in die volgorde) en zes kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
+- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken, Gezin, Moskee
+  en Mekka en Slaapkamer zijn open, in die volgorde) en zeven kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
   "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
   - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
     ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
@@ -236,6 +236,16 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     Marwa, begin op Safa, eind op Marwa); daarna een knop naar het Hajj-spel
     (`/#hajj`, `target="_top"`). "Klaar!" kan na wudu en de vijf gebeden; de reis
     geeft 3 extra sterren, één keer per dag (`mekkaDay`).
+  - Slaapkamer: pyjama (4 soorten × 8 kleuren; aan = `pyjama.day` is vandaag),
+    muziekdoosje (acht toetsen om zelf te spelen en drie eigen liedjes, geluid via
+    WebAudio) en de groene knop "Slapen". Slapen kan pas als er vandaag 3 kamers af
+    zijn en de pyjama aan is. Daarna is het nacht (2,6 s) en begint een nieuwe dag:
+    `nights` + 1, make-up eraf, terug naar het huis.
+- De dag in het spel (`today()` in `ui.js`) = de echte datum plus het aantal nachten
+  (`2026-11-09/3`; zonder nachten alleen de datum, zodat oude spellen blijven
+  kloppen). Een nieuwe dag begint dus door te slapen én als het echt morgen is; dan
+  zijn de knopen terug, moet je weer douchen, heeft het gezin lege hartjes en zijn
+  de sterren per kamer weer te verdienen.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
   `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
   `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
@@ -256,7 +266,9 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   elke actie doet (losse functies) · `family-scene.js` woonkamer en de figuren ·
   moskee: `mosque-room.js` scherm · `mosque.js` wudu, gebeden, tawaf en sa'i (losse
   functies) · `mosque-text.js` uitleg · `mosque-scene.js` wasplaats en de lucht per
-  gebed · `mecca-scene.js` tawaf, Zamzam en sa'i.
+  gebed · `mecca-scene.js` tawaf, Zamzam en sa'i ·
+  slaapkamer: `bedroom.js` scherm en slapen · `bedroom-scene.js` kamer, pyjama's en
+  muziekdoosje · `tunes.js` toetsen en liedjes.
   `rooms.js` sluit de kamers aan op het spel (wat een kamer mag lezen en bewaren, en
   de regel voor "Klaar!" per kamer); `app.js` houdt het spel, de sterren en de foto.
   `screen.js` bouwt het scherm van een kamer met de vaste indeling (balk, knoppen
@@ -275,10 +287,9 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamers (volgorde van de gebruiker): slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
-  geldt nog de echte datum); de winkel verkoopt kleren, make-upkleuren en
-  haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt
-  het meisje haar hoofddoek.
+- Volgende kamer: de winkel. Plan: kleren, make-upkleuren en haaraccessoires kopen
+  met sterren. Het kapsel is alleen bij de kapper, onder de douche en in pyjama te
+  zien; in het huis draagt het meisje haar hoofddoek.
 
 ## Tiktak Boom Bom (nieuw spel, november 2026)
 

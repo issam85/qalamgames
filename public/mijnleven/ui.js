@@ -27,4 +27,11 @@ export function cursorSvg(glyph, p, turn = -20) {
   return `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${turn})" opacity="0.95" pointer-events="none">${glyph}</g>`;
 }
 
-export const today =() => new Date().toISOString().slice(0, 10);
+// De dag in het spel: de echte datum, plus het aantal nachten dat je geslapen hebt.
+// Zo begint er een nieuwe dag als je gaat slapen, en ook als het echt morgen is.
+let nights = 0;
+export const setNights = (count) => { nights = count; };
+export const today = () => {
+  const date = new Date().toISOString().slice(0, 10);
+  return nights ? `${date}/${nights}` : date;
+};

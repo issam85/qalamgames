@@ -3,8 +3,9 @@
 // meter, de uitleg en de knoppen Opnieuw en Klaar!. De onderdelen heten <kamer>-nav,
 // -stage, -title, -label, -meter, -hint, -reset en -done.
 // nav = wat de knoppen links zijn (voor schermlezers) · stage = klasse van het
-// speelvlak · heading = kop boven de meter · extra = wat er nog in het paneel moet
-export function roomScreen({ room, title, nav, stage, heading = '', extra = '' }) {
+// speelvlak · heading = kop boven de meter · extra = wat er nog in het paneel moet ·
+// doneLabel = wat er op de groene knop staat
+export function roomScreen({ room, title, nav, stage, heading = '', extra = '', doneLabel = 'Klaar!' }) {
   const el = document.createElement('section');
   el.id = `screen-${room}`;
   el.className = 'screen';
@@ -23,7 +24,7 @@ export function roomScreen({ room, title, nav, stage, heading = '', extra = '' }
         ${extra}
         <div class="kast-buttons two">
           <button id="${room}-reset" class="btn blue">Opnieuw</button>
-          <button id="${room}-done" class="btn green">Klaar!</button>
+          <button id="${room}-done" class="btn green">${doneLabel}</button>
         </div>
       </div>
     </div>`;

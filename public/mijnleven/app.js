@@ -5,10 +5,11 @@ import { renderDoll } from './doll.js';
 import { initWardrobe, showWardrobe } from './wardrobe.js';
 import { connectRooms } from './rooms.js';
 import { makePhoto } from './photo.js';
-import { today } from './ui.js';
+import { today, setNights } from './ui.js';
 
 const DAILY_STARS = 2; // per kamer, voor de eerste keer op een dag
 const game = loadGame();
+setNights(game.nights);
 const toastEl = document.getElementById('toast');
 const photoEl = document.getElementById('photo');
 let toastTimer = 0;
@@ -72,7 +73,7 @@ async function photo() {
 }
 
 initWardrobe({ getOutfit: () => game.outfit, setOutfit: set('outfit'), getMakeup: () => game.makeup });
-const SHOW = { 'screen-kast': showWardrobe, ...connectRooms({ game, set, done, toast, reward }) };
+const SHOW = { 'screen-kast': showWardrobe, ...connectRooms({ game, set, done, toast, reward, home: () => show('screen-huis') }) };
 document.querySelectorAll('.room.is-open').forEach((room) => {
   room.addEventListener('click', () => show(`screen-${room.dataset.room}`));
 });

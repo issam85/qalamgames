@@ -1,5 +1,6 @@
 // Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
-// eten dat klaarstaat, het gezin, de moskee, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// eten dat klaarstaat, het gezin, de moskee, de pyjama, het aantal
+// nachten, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
@@ -8,6 +9,7 @@ import { freshMakeup, validMakeup } from './makeup.js';
 import { RECIPES } from './recipes.js';
 import { freshFamily, MEMBERS, THROWS } from './family.js';
 import { freshMosque, WUDU, PRAYERS, ROUNDS } from './mosque.js';
+import { PYJAMAS } from './bedroom-scene.js';
 
 const KEY = 'mijnleven';
 
@@ -63,6 +65,13 @@ function validMosque(mosque) {
     && typeof mosque.day === 'string';
 }
 
+const freshPyjama = () => ({ kind: 0, color: SWATCHES[1][0], day: '' });
+
+function validPyjama(pyjama) {
+  return Boolean(pyjama) && Number.isInteger(pyjama.kind) && pyjama.kind >= 0 && pyjama.kind < PYJAMAS.length
+    && SWATCHES.some(([hex]) => hex === pyjama.color) && typeof pyjama.day === 'string';
+}
+
 export function loadGame() {
   let data = {};
   try {
@@ -86,6 +95,8 @@ export function loadGame() {
     mosque: validMosque(data.mosque) ? data.mosque : freshMosque(),
     moskeeDay: typeof data.moskeeDay === 'string' ? data.moskeeDay : '',
     mekkaDay: typeof data.mekkaDay === 'string' ? data.mekkaDay : '',
+    pyjama: validPyjama(data.pyjama) ? data.pyjama : freshPyjama(),
+    nights: Number.isInteger(data.nights) && data.nights >= 0 ? data.nights : 0,
   };
 }
 
