@@ -1,10 +1,9 @@
 // Tekent de kring: wie staat waar, waar is de bom en wie kijkt er bang.
-import { MIDDLE } from './data.js';
 import { progress } from './game.js';
 import { drawKid, drawSweat } from './kid.js';
 import { drawBomb } from './bomb.js';
 import { drawGround, drawArrows, drawDanger, ellipsePoint } from './scene-bg.js';
-import { drawName, drawKeyPrompt, drawWait, drawSpeech, drawTopBar, drawBanners } from './scene-hud.js';
+import { drawName, drawKeyPrompt, drawWait, drawTikTak, drawTopBar, drawBanners } from './scene-hud.js';
 
 const LANDSCAPE = { w: 960, h: 540, cx: 480, cy: 332, rx: 318, ry: 152 };
 const PORTRAIT = { w: 540, h: 860, cx: 270, cy: 500, rx: 176, ry: 268 };
@@ -94,14 +93,9 @@ export function createScene(keyGlyph) {
     drawGround(c, v);
     drawArrows(c, v, seated(g).map((i) => angles[i] ?? 0));
     drawTopBar(c, v, g);
-    const order = [...seated(g), 'mid'].sort((a, b) => (a === 'mid' ? v.cy + 16 : pos(a).y)
-      - (b === 'mid' ? v.cy + 16 : pos(b).y));
-    order.forEach((who) => {
-      if (who === 'mid') drawKid(c, MIDDLE, v.cx, v.cy + 16, 0.82, { seated: true, look: [0.5, -0.4] });
-      else drawPerson(c, g, who, bomb, t);
-    });
+    [...seated(g)].sort((a, b) => pos(a).y - pos(b).y).forEach((who) => drawPerson(c, g, who, bomb, t));
     if (showBomb) drawBomb(c, bomb.x, bomb.y, 19 + p * 5, lit, t);
-    if (g.phase === 'play') drawSpeech(c, v, p > 0.85 ? 'TIKTAK!' : Math.floor(g.blink) % 2 ? 'TAK…' : 'TIK…', p > 0.85);
+    if (g.phase === 'play') drawTikTak(c, v, p > 0.85 ? 'TIKTAK!' : Math.floor(g.blink) % 2 ? 'TAK…' : 'TIK…', p > 0.85);
     drawDanger(c, v, p, lit);
     return v;
   }

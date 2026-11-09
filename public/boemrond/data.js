@@ -10,6 +10,3 @@ export const KIDS = [
   { name: 'Ilyas', skin: '#d9a273', shirt: '#fdd835', hair: 'cap', hairColor: '#c62828' },
   { name: 'Maryam', skin: '#c98d5e', shirt: '#ec407a', hair: 'hijab', hairColor: '#ffb300' },
 ];
-
-// Het kind in het midden, dat "tik tak" zegt.
-export const MIDDLE = { name: 'Tik Tak', skin: '#d9a273', shirt: '#5c6bc0', hair: 'cap', hairColor: '#ffb300' };

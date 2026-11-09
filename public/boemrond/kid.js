@@ -18,12 +18,7 @@ function dot(c, x, y, r, color) {
   c.fill();
 }
 
-function drawLegs(c, seated) {
-  if (seated) {
-    limb(c, -24, -8, 24, -4, '#37474f', 13);
-    limb(c, 24, -8, -24, -4, '#455a64', 13);
-    return;
-  }
+function drawLegs(c) {
   limb(c, -9, -30, -10, -7, '#37474f', 12);
   limb(c, 9, -30, 10, -7, '#37474f', 12);
   limb(c, -13, -3, -8, -3, '#fafafa', 9);
@@ -94,9 +89,9 @@ function drawFace(c, mood, look) {
   }
 }
 
-// o: mood (happy/scared/soot), arms (down/hold/up/throw), look [x, y], seated.
+// o: mood (happy/scared/soot), arms (down/hold/up/throw), look [x, y].
 export function drawKid(c, kid, x, y, s, o = {}) {
-  const { mood = 'happy', arms = 'down', look = [0, 0], seated = false } = o;
+  const { mood = 'happy', arms = 'down', look = [0, 0] } = o;
   const soot = mood === 'soot';
   const skin = soot ? SOOT : kid.skin;
   const shirt = soot ? '#5a5552' : kid.shirt;
@@ -105,10 +100,9 @@ export function drawKid(c, kid, x, y, s, o = {}) {
   c.scale(s, s);
   c.fillStyle = 'rgba(0,0,0,.22)';
   c.beginPath();
-  c.ellipse(0, 0, seated ? 34 : 26, 8, 0, 0, Math.PI * 2);
+  c.ellipse(0, 0, 26, 8, 0, 0, Math.PI * 2);
   c.fill();
-  drawLegs(c, seated);
-  if (seated) c.translate(0, 20);
+  drawLegs(c);
   c.fillStyle = shirt;
   c.beginPath();
   c.roundRect(-20, -62, 40, 38, 12);

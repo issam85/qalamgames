@@ -142,3 +142,15 @@ button {
   background: #ffd43b;
   box-shadow: 0 5px 0 #c9a400;
 }
+
+.mute {
+  position: fixed;
+  right: max(10px, env(safe-area-inset-right));
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 6;
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: #1565c0;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+}

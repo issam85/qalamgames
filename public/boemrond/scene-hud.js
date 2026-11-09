@@ -50,28 +50,15 @@ export function drawWait(c, x, y) {
   pill(c, 'Wacht…', x, y, 19, '#fff', '#c62828');
 }
 
-export function drawSpeech(c, v, text, urgent) {
-  const x = v.cx + 104;
-  const y = v.cy - 84;
-  c.fillStyle = urgent ? '#ffebee' : '#fff';
-  c.strokeStyle = urgent ? '#c62828' : '#3a3a3a';
-  c.lineWidth = 3;
-  c.beginPath();
-  c.ellipse(x, y, 56, 33, 0, 0, Math.PI * 2);
-  c.moveTo(x - 40, y + 20);
-  c.lineTo(x - 66, y + 44);
-  c.lineTo(x - 22, y + 29);
-  c.fill();
-  c.stroke();
-  c.beginPath();
-  c.ellipse(x, y, 54.5, 31.5, 0, 0, Math.PI * 2);
-  c.fill();
-  label(c, text, x, y + 1, 25, urgent ? '#c62828' : '#333');
+// "Tik… tak…" groot op de grond, midden in de kring.
+export function drawTikTak(c, v, text, urgent) {
+  label(c, text, v.cx, v.cy - 8, urgent ? 58 : 46, urgent ? '#d32f2f' : '#b39b70');
 }
 
 export function drawTopBar(c, v, g) {
   if (g.round > 0) pill(c, `Ronde ${g.round}`, v.w - 124, 34, 20, 'rgba(255,255,255,.92)', '#1565c0');
-  g.players.filter((p) => p.out && g.players.indexOf(p) !== g.loser).forEach((p, i) => {
+  const justHit = g.phase === 'boom' || g.phase === 'over' ? g.players[g.loser] : null;
+  g.players.filter((p) => p.out && p !== justHit).forEach((p, i) => {
     drawKid(c, p.kid, 38 + i * 56, 72, 0.5, { mood: 'soot' });
   });
 }
