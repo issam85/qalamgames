@@ -1,0 +1,113 @@
+/* De kledingkast: links de categorieën, in het midden het meisje, rechts de soorten,
+   de kleuren en de knoppen. Telefoon: kast-phone.css. */
+
+.kast {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 340px;
+  grid-template-areas: "cats stage panel";
+  gap: 16px;
+}
+
+.cats {
+  grid-area: cats;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat {
+  padding: 11px 14px;
+  border-radius: 16px;
+  border: 3px solid #fff;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--pink);
+  font-weight: 800;
+  font-size: 16px;
+  text-align: left;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(120, 80, 160, 0.12);
+}
+
+.cat[aria-pressed="true"],
+.item[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: #fff7d6;
+  color: #8a6400;
+}
+
+.kast-stage {
+  grid-area: stage;
+  min-height: 0;
+  padding: 12px;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 50% 85%, #fff 0%, #fbe7ff 60%, #efd9ff 100%);
+  border: 4px solid #fff;
+  box-shadow: 0 10px 24px rgba(120, 80, 160, 0.18);
+}
+
+.kast-panel {
+  grid-area: panel;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 4px solid #ffd1ec;
+  box-shadow: 0 8px 18px rgba(120, 80, 160, 0.12);
+}
+
+.kast-panel h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  color: var(--pink);
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.item {
+  padding: 10px 6px;
+  border-radius: 14px;
+  border: 3px solid #f1e4ff;
+  background: #faf5ff;
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid #e9d5ff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.swatch[aria-pressed="true"] {
+  border-color: var(--gold);
+  transform: scale(1.12);
+}
+
+.kast-buttons {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.kast-buttons .gold {
+  grid-column: 1 / -1;
+}

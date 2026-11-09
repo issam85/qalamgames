@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mijn Leven — spel van Al Qalam Gouda</title>
+  <meta name="description" content="Mijn Leven: kleed je eigen meisje aan met hoofddoeken, jurken, schoenen, tassen en sieraden. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="huis.css">
+  <link rel="stylesheet" href="kast.css">
+  <link rel="stylesheet" href="kast-phone.css">
+  <link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+  <section id="screen-huis" class="screen active">
+    <header class="bar">
+      <h1>Mijn Leven</h1>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+    </header>
+    <div class="huis">
+      <div class="huis-me">
+        <div id="huis-doll" class="doll"></div>
+        <p>Dit ben jij! Kies een kamer.</p>
+      </div>
+      <div class="rooms">
+        <button class="room is-open" data-room="kast"><b>Kledingkast</b><span>Hoofddoeken, jurken, schoenen, tassen en sieraden</span></button>
+        <div class="room"><b>Kapper</b><span>Borstelen, knippen en kapsels. Komt snel!</span></div>
+        <div class="room"><b>Badkamer</b><span>Douchen en make-up. Later.</span></div>
+        <div class="room"><b>Keuken</b><span>Lekker eten koken. Later.</span></div>
+        <div class="room"><b>Gezin</b><span>Je man en kinderen. Later.</span></div>
+        <div class="room"><b>Moskee en Mekka</b><span>Bidden en op reis. Later.</span></div>
+        <div class="room"><b>Slaapkamer</b><span>Slapen en liedjes. Later.</span></div>
+        <div class="room"><b>Winkel</b><span>Kopen met je sterren. Later.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-kast" class="screen">
+    <header class="bar">
+      <button id="kast-home" class="pill">Huis</button>
+      <h1>Kledingkast</h1>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+    </header>
+    <div class="kast">
+      <nav id="kast-cats" class="cats" aria-label="Soort kleding"></nav>
+      <div class="kast-stage"><div id="kast-doll" class="doll"></div></div>
+      <div class="kast-panel">
+        <h2 id="kast-title"></h2>
+        <div id="kast-items" class="items"></div>
+        <div id="kast-swatches" class="swatches" aria-label="Kleur"></div>
+        <div class="kast-buttons">
+          <button id="kast-surprise" class="btn gold">Verras me!</button>
+          <button id="kast-photo" class="btn blue">Foto</button>
+          <button id="kast-done" class="btn green">Klaar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="photo" class="overlay" hidden>
+    <div class="photo-card">
+      <img id="photo-img" alt="Foto van jouw outfit">
+      <div class="photo-actions">
+        <a id="photo-save" class="btn green" download="mijn-outfit.png">Opslaan</a>
+        <button id="photo-close" class="btn blue">Terug</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+/* Kledingkast op de telefoon. Staand: meisje bovenaan, categorieën als rij die je
+   opzij schuift, daaronder soorten, kleuren en knoppen. Liggend: drie smalle kolommen. */
+
+@media (max-width: 700px) {
+  .kast {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas: "stage" "cats" "panel";
+    gap: 8px;
+  }
+
+  .cats {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .cat {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .kast-panel {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .kast-panel h2 {
+    display: none;
+  }
+
+  .items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .item {
+    padding: 8px 2px;
+    font-size: 13px;
+  }
+
+  .swatches {
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .swatch {
+    width: 32px;
+    height: 32px;
+  }
+
+  .kast-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .kast-buttons .gold {
+    grid-column: auto;
+  }
+
+  .btn {
+    font-size: 15px;
+    padding: 10px 4px;
+  }
+
+  .stars {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-height: 520px) and (min-width: 701px) {
+  .kast {
+    grid-template-columns: 150px minmax(0, 1fr) 300px;
+    gap: 10px;
+  }
+
+  .cats {
+    gap: 5px;
+  }
+
+  .cat {
+    padding: 6px 10px;
+    font-size: 13px;
+    border-width: 2px;
+  }
+
+  .kast-panel {
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  .kast-panel h2 {
+    display: none;
+  }
+
+  .item {
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+
+  .swatch {
+    width: 26px;
+    height: 26px;
+    border-width: 3px;
+  }
+
+  .kast-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .kast-buttons .gold {
+    grid-column: auto;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 8px 4px;
+  }
+
+  .bar {
+    padding: 4px 12px;
+  }
+}

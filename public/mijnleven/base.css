@@ -1,0 +1,134 @@
+/* Mijn Leven: basis. Pastel, ronde kaarten en bolle knoppen; elk scherm is precies
+   één schermhoogte, zodat de knoppen altijd zonder scrollen in beeld zijn. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --ink: #3a2a4d;
+  --soft: #5b4a6e;
+  --pink: #c2419a;
+  --gold: #ffd43b;
+  --card: #fff;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  height: 100dvh;
+  overflow: hidden;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 600;
+  color: var(--ink);
+  background: linear-gradient(180deg, #f6e9ff 0%, #ffe6f3 55%, #e6fff4 100%);
+  padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+button, a {
+  font: inherit;
+  cursor: pointer;
+}
+
+.screen {
+  display: none;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 14px rgba(120, 80, 160, 0.12);
+}
+
+.bar h1 {
+  flex: 1;
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3.4vw, 34px);
+  color: var(--pink);
+}
+
+.pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 3px solid #e9d5ff;
+  background: #fff;
+  color: #6d28d9;
+  font-weight: 800;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff7d6;
+  border: 3px solid var(--gold);
+  color: #8a6400;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.stars svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--gold);
+  stroke: #c9a400;
+  stroke-width: 1.5;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 10px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  color: #fff;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  transition: transform 0.08s;
+}
+
+.btn:active {
+  transform: translateY(3px);
+}
+
+.btn.green { background: linear-gradient(180deg, #66bb6a, #43a047); box-shadow: 0 5px 0 #1b5e20; }
+.btn.blue { background: linear-gradient(180deg, #42a5f5, #1e88e5); box-shadow: 0 5px 0 #0d47a1; }
+.btn.gold { background: linear-gradient(180deg, #ffe066, #f9a825); box-shadow: 0 5px 0 #c17900; color: #5a3d00; }
+
+.doll {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.doll svg {
+  height: 100%;
+  max-width: 100%;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.18));
+}

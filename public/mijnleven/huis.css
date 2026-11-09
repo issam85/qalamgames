@@ -1,0 +1,102 @@
+/* Het huis: links jouw meisje, rechts de kamers. */
+
+.huis {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 300px) 1fr;
+  gap: 16px;
+}
+
+.huis-me {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 50% 85%, #fff 0%, #fbe7ff 60%, #efd9ff 100%);
+  border: 4px solid #fff;
+  box-shadow: 0 10px 24px rgba(120, 80, 160, 0.18);
+  text-align: center;
+  font-weight: 800;
+  color: var(--soft);
+}
+
+.huis-me .doll {
+  flex: 1;
+  min-height: 0;
+}
+
+.rooms {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 4px dashed #d9b3ff;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--soft);
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.room b {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(16px, 1.8vw, 22px);
+  color: #7c3aed;
+}
+
+.room.is-open {
+  border: 4px solid #ffd1ec;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(120, 80, 160, 0.16);
+  transition: transform 0.1s;
+}
+
+.room.is-open b {
+  color: var(--pink);
+}
+
+.room.is-open:hover {
+  transform: translateY(-3px);
+}
+
+@media (max-width: 700px) {
+  .huis {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .rooms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: 8px;
+  }
+
+  .room {
+    padding: 9px 12px;
+  }
+
+  .room span {
+    display: none;
+  }
+}
+
+@media (max-height: 520px) {
+  .room {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

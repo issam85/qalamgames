@@ -178,6 +178,35 @@ Bruikbare Higgsfield-ID's (referenties voor nieuw beeld in dezelfde stijl):
   zijn klaar. Speelveld-achtergronden zijn nu getekend in code; de Higgsfield-prompts
   staan in `docs/mario-party-plan.md` §9.1 voor als er credits zijn.
 
+## Mijn Leven (nieuw spel, november 2026)
+
+Idee van een leerling: een levensspel voor moslimmeisjes. Een huis met kamers:
+kledingkast (dress-up), kapper, badkamer (douchen, make-up), keuken, gezin (man en
+kinderen), moskee en Mekka, slaapkamer (slapen, liedjes) en een winkel. Werktitel
+"Mijn Leven"; naam en maker zijn nog niet bekend. Ontwerp op het Design-canvas:
+https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis).
+
+- Staat in `public/mijnleven/` (ES-modules zonder build), direct te openen op
+  `/mijnleven/index.html`. Nog NIET op de homepage: daarvoor ontbreken naam, maker,
+  `thumbs/mijnleven.webp`, `og/mijnleven.jpg`, de regel in `data/games.js` en
+  `data/lichtingen.js`, `<noscript>`, `sitemap.xml` en het SEO-blok.
+- Klaar: het huis (overzicht, alleen de Kledingkast is open) en de Kledingkast: 6
+  categorieën × 6 soorten × 8 kleuren, "Verras me!", "Foto" (PNG 720×960 om op te
+  slaan) en "Klaar!" (eerste keer per dag 2 sterren). Alles wordt bewaard in
+  `localStorage` (`mijnleven`).
+- Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
+  `data.js` categorieën, soorten, kleuren · `doll.js` + `doll-parts.js` het meisje als
+  SVG (vak 300×520, één functie per soort) · `photo.js` · `storage.js` · CSS:
+  `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
+  `overlay.css`. Elk scherm is één schermhoogte; knoppen altijd in beeld.
+- Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
+  `doll-parts.js`.
+- Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
+  liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
+  het 3D-renders zoals bij Mario Party.
+- Volgende kamer: de Kapper (zie het canvas: borstel, kam, schaar, föhn, hoofddoek,
+  kapsels, haarkleur).
+
 ## Volgende opdracht: website-upgrade
 
 Opdracht van de gebruiker: "de website moet geüpgraded worden. Gebruik Higgsfield waar
