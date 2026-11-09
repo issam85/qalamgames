@@ -1,0 +1,10 @@
+/* Moskee en Mekka gebruikt de indeling van de kast en het speelvlak van de keuken;
+   hier alleen wat anders is. Liggende telefoon: de knoppen in drie kolommen, anders
+   past het paneel niet. */
+
+@media (max-height: 520px) and (min-width: 701px) {
+  #moskee-items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+}

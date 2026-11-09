@@ -1,5 +1,5 @@
 // Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
-// eten dat klaarstaat, het gezin, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// eten dat klaarstaat, het gezin, de moskee, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
@@ -7,6 +7,7 @@ import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
 import { freshMakeup, validMakeup } from './makeup.js';
 import { RECIPES } from './recipes.js';
 import { freshFamily, MEMBERS, THROWS } from './family.js';
+import { freshMosque, WUDU, PRAYERS, ROUNDS } from './mosque.js';
 
 const KEY = 'mijnleven';
 
@@ -53,6 +54,15 @@ function validFamily(family) {
     && bools(family.read, kids) && bools(family.bed, kids) && typeof family.day === 'string';
 }
 
+const upTo = (n, max) => typeof n === 'number' && n >= 0 && n <= max;
+
+function validMosque(mosque) {
+  return Boolean(mosque) && upTo(mosque.wudu, WUDU.length) && upTo(mosque.prayers, PRAYERS.length)
+    && Number.isInteger(mosque.wudu) && Number.isInteger(mosque.prayers) && upTo(mosque.tawaf, ROUNDS)
+    && typeof mosque.zamzam === 'boolean' && upTo(mosque.sai, ROUNDS) && Number.isInteger(mosque.sai)
+    && typeof mosque.day === 'string';
+}
+
 export function loadGame() {
   let data = {};
   try {
@@ -73,6 +83,9 @@ export function loadGame() {
     keukenDay: typeof data.keukenDay === 'string' ? data.keukenDay : '',
     family: validFamily(data.family) ? data.family : freshFamily(),
     gezinDay: typeof data.gezinDay === 'string' ? data.gezinDay : '',
+    mosque: validMosque(data.mosque) ? data.mosque : freshMosque(),
+    moskeeDay: typeof data.moskeeDay === 'string' ? data.moskeeDay : '',
+    mekkaDay: typeof data.mekkaDay === 'string' ? data.mekkaDay : '',
   };
 }
 

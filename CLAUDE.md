@@ -192,8 +192,8 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken en Gezin zijn
-  open, in die volgorde) en vijf kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
+- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken, Gezin en Moskee
+  en Mekka zijn open, in die volgorde) en zes kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
   "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
   - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
     ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
@@ -226,6 +226,16 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     voorlezen (het boek over een dochter slepen), naar bed (pas met drie volle
     hartjes). "Klaar!" kan pas als alle hartjes vol zijn en beide dochters slapen;
     elke dag opnieuw.
+  - Moskee en Mekka, drie onderdelen (links; wat af is krijgt een vinkje):
+    Wudu: de 7 stappen in volgorde tikken (handen, mond, neus, gezicht, armen, hoofd,
+    voeten); een foute keuze zegt wat eerst komt. Gebed (pas na wudu): de lucht laat
+    een moment van de dag zien, kies het goede gebed (Fajr, Dhuhr, Asr, Maghrib,
+    Isha; gevraagd in een vaste, door elkaar gezette volgorde). Reis naar Mekka, in
+    het zwart en goud van het Hajj-spel: tawaf (7 rondes om de Kaaba slepen, alleen
+    tegen de klok in telt), Zamzam drinken (tik), sa'i (7 keer slepen tussen Safa en
+    Marwa, begin op Safa, eind op Marwa); daarna een knop naar het Hajj-spel
+    (`/#hajj`, `target="_top"`). "Klaar!" kan na wudu en de vijf gebeden; de reis
+    geeft 3 extra sterren, één keer per dag (`mekkaDay`).
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
   `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
   `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
@@ -243,26 +253,29 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   functies) · `cook-scene.js` aanrecht, recept, kom · `cook-stove.js` fornuis, balk,
   gerechten · `recipes.js` ingrediënten en recepten ·
   gezin: `family-room.js` scherm en wat je vasthoudt · `family.js` hartjes en wat
-  elke actie doet (losse functies) · `family-scene.js` woonkamer en de figuren.
+  elke actie doet (losse functies) · `family-scene.js` woonkamer en de figuren ·
+  moskee: `mosque-room.js` scherm · `mosque.js` wudu, gebeden, tawaf en sa'i (losse
+  functies) · `mosque-text.js` uitleg · `mosque-scene.js` wasplaats en de lucht per
+  gebed · `mecca-scene.js` tawaf, Zamzam en sa'i.
+  `rooms.js` sluit de kamers aan op het spel (wat een kamer mag lezen en bewaren, en
+  de regel voor "Klaar!" per kamer); `app.js` houdt het spel, de sterren en de foto.
   `screen.js` bouwt het scherm van een kamer met de vaste indeling (balk, knoppen
   links, tekening, paneel met meter, uitleg, Opnieuw en Klaar!); onderdelen heten
   `<kamer>-nav`, `-stage`, `-title`, `-label`, `-meter`, `-hint`, `-reset`, `-done`.
   Alleen het huis en de kast staan nog in `index.html`.
   CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
-  `kapper.css`, `bad.css`, `keuken.css`, `overlay.css`. Elk scherm is één
-  schermhoogte; knoppen altijd in beeld. `app.js` zit op 125 regels: bij de volgende
-  kamer eerst het aansluiten van de kamers afsplitsen.
-- Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…` en
-  `show…` aansluiten in `app.js` (`SHOW`), knop `data-room` in het huis, en een
-  `…Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
+  `kapper.css`, `bad.css`, `keuken.css`, `moskee.css`, `overlay.css`. Elk scherm is
+  één schermhoogte; knoppen altijd in beeld.
+- Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…`,
+  `show…` en de regel voor "Klaar!" in `rooms.js`, knop `data-room` in het huis, en
+  een `<kamer>Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
   na een herstart van de dev-server.
 - Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
   `doll-parts.js`.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamers (volgorde van de gebruiker): moskee en Mekka (stijl
-  van het Hajj-spel), slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
+- Volgende kamers (volgorde van de gebruiker): slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
   geldt nog de echte datum); de winkel verkoopt kleren, make-upkleuren en
   haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt
   het meisje haar hoofddoek.
