@@ -5,15 +5,19 @@ import { createRun, stepRun } from './physics.js';
 import { createInput } from './input.js';
 import { createWorld } from './world.js';
 import { buildObstacles } from './obstacles3d.js';
+import { createBoosts } from './boosts3d.js';
 import { createPlayer } from './player3d.js';
 import { createShatter } from './shatter.js';
+import { createFx } from './fx.js';
 
 const $ = (id) => document.getElementById(id);
 const level = TEST_LEVEL;
 const world = createWorld($('view'), level);
 buildObstacles(world.scene, level);
+const boosts = createBoosts(world.scene, level);
 const player = createPlayer(world.scene);
 const shatter = createShatter(world.scene);
+const fx = createFx(world.scene);
 const input = createInput(onPress);
 
 let run = createRun(level);
@@ -21,6 +25,7 @@ let mode = 'ready';
 let attempt = 1;
 let pause = 0;
 let spare = 0;
+let cheer = 0;
 let last = performance.now();
 
 function showOverlay(title, text) {
@@ -61,10 +66,22 @@ function crash() {
   pause = DEATH_PAUSE;
   player.setVisible(false);
   shatter.burst(run.x, run.y);
+  world.kick(0.55);
   const flash = $('flash');
   flash.classList.remove('on');
   void flash.offsetWidth; // laat de animatie opnieuw beginnen
   flash.classList.add('on');
+}
+
+function playEvents() {
+  run.events.forEach((e) => {
+    if (e.type === 'land') fx.dust(e.x, e.y);
+    if (e.type === 'boost') {
+      fx.burst(e.x, e.y + 0.45, e.kind === 'ring' ? '#5cf2d6' : '#ffd43b', 18, 8);
+      world.kick(0.16);
+    }
+  });
+  run.events.length = 0;
 }
 
 function simulate(dt) {
@@ -75,11 +92,23 @@ function simulate(dt) {
     pressed = false;
     spare -= PHYS.step;
   }
+  playEvents();
   if (run.state === 'dead') crash();
   if (run.state === 'won') {
     mode = 'won';
+    cheer = 0;
     showOverlay('Gehaald!', 'Druk op spatie of tik om nog een keer te spelen');
+  } else if (run.state === 'run') {
+    fx.trail(run, dt);
   }
+}
+
+function celebrate(dt) {
+  cheer -= dt;
+  if (cheer > 0) return;
+  cheer = 0.22;
+  const color = Math.random() < 0.5 ? '#ffd43b' : '#5cf2d6';
+  fx.burst(level.length + (Math.random() - 0.5) * 3, 4 + Math.random() * 3, color, 24, 9);
 }
 
 function frame(now) {
@@ -93,9 +122,13 @@ function frame(now) {
       attempt++;
       restart();
     }
+  } else if (mode === 'won') {
+    celebrate(dt);
   }
   player.update(run, dt);
+  boosts.update(run, dt);
   shatter.update(dt);
+  fx.update(dt);
   world.follow(run, dt);
   world.render();
   updateHud();

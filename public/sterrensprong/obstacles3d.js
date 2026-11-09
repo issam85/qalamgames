@@ -1,48 +1,62 @@
 // Zet een level om in 3D: één tekenopdracht per soort, licht genoeg voor een Chromebook.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
+import { cellTexture, glowSprite } from './pattern.js';
+import { addNeonEdges } from './neon.js';
 
 const BLOCK_DEPTH = 1.7;
 const SPIKE_DEPTH = 1;
+const THORN_STEP = 0.32;
+const of = (level, type) => level.obstacles.filter((o) => o.type === type);
+const box = (x, y, z, sx, sy, sz) =>
+  new THREE.Matrix4().makeTranslation(x, y, z).scale(new THREE.Vector3(sx, sy, sz));
 
-function spikeGeometry() {
-  const geo = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4);
-  geo.rotateY(Math.PI / 4);
-  return geo;
-}
-
-function placeAll(items, matrixOf, geometry, material, edgeColor, scene) {
-  if (!items.length) return;
-  const mesh = new THREE.InstancedMesh(geometry, material, items.length);
-  const edges = new THREE.EdgesGeometry(geometry).attributes.position;
-  const positions = new Float32Array(edges.count * 3 * items.length);
-  const point = new THREE.Vector3();
-  items.forEach((item, i) => {
-    const matrix = matrixOf(item);
-    mesh.setMatrixAt(i, matrix);
-    for (let e = 0; e < edges.count; e++) {
-      point.fromBufferAttribute(edges, e).applyMatrix4(matrix);
-      point.toArray(positions, (i * edges.count + e) * 3);
-    }
-  });
+function instanced(scene, geometry, material, matrices) {
+  if (!matrices.length) return;
+  const mesh = new THREE.InstancedMesh(geometry, material, matrices.length);
+  matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
   mesh.frustumCulled = false;
   scene.add(mesh);
-  const lineGeo = new THREE.BufferGeometry();
-  lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ color: edgeColor }));
-  lines.frustumCulled = false;
-  scene.add(lines);
 }
 
-function blockMatrix(ob) {
-  return new THREE.Matrix4()
-    .makeTranslation(ob.x + ob.w / 2, ob.y + ob.h / 2, 0)
-    .scale(new THREE.Vector3(ob.w, ob.h, BLOCK_DEPTH));
+function addBlocks(scene, blocks) {
+  const cells = [];
+  blocks.forEach((b) => {
+    for (let x = 0; x < b.w; x++) {
+      for (let y = 0; y < b.h; y++) cells.push(box(b.x + x + 0.5, b.y + y + 0.5, 0, 1, 1, BLOCK_DEPTH));
+    }
+  });
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  instanced(scene, geometry, new THREE.MeshLambertMaterial({ map: cellTexture(), color: '#6a52e0' }), cells);
+  const outlines = blocks.map((b) => box(b.x + b.w / 2, b.y + b.h / 2, 0, b.w, b.h, BLOCK_DEPTH));
+  addNeonEdges(scene, geometry, outlines, '#ffd43b', 0.06);
 }
 
-function spikeMatrix(ob) {
-  return new THREE.Matrix4()
-    .makeTranslation(ob.x + ob.w / 2, ob.y + ob.h / 2, 0)
-    .scale(new THREE.Vector3(ob.w, ob.h, SPIKE_DEPTH));
+function addSpikes(scene, spikes) {
+  const geometry = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4);
+  geometry.rotateY(Math.PI / 4);
+  const matrices = spikes.map((s) => box(s.x + s.w / 2, s.y + s.h / 2, 0, s.w, s.h, SPIKE_DEPTH));
+  instanced(scene, geometry, new THREE.MeshLambertMaterial({ color: '#d81b60', emissive: '#8a1048' }), matrices);
+  addNeonEdges(scene, geometry, matrices, '#ffd0e0', 0.035);
+}
+
+// vaste 'willekeur': elke poging ziet het doornenveld er hetzelfde uit
+const wobble = (n) => {
+  const v = Math.sin(n * 91.7) * 4375.5;
+  return v - Math.floor(v);
+};
+
+function addThorns(scene, thorns) {
+  const matrices = [];
+  thorns.forEach((t) => {
+    for (let x = t.x + 0.12; x < t.x + t.w - 0.1; x += THORN_STEP) {
+      [-0.5, 0, 0.5].forEach((z, row) => {
+        const h = 0.35 + wobble(x + row) * 0.45;
+        matrices.push(box(x + wobble(x * 3 + row) * 0.08, t.y + h / 2, z, 0.3, h, 0.3));
+      });
+    }
+  });
+  const geometry = new THREE.ConeGeometry(0.5, 1, 5);
+  instanced(scene, geometry, new THREE.MeshLambertMaterial({ color: '#ad1457', emissive: '#5c0b35' }), matrices);
 }
 
 function addFinish(scene, x) {
@@ -55,27 +69,14 @@ function addFinish(scene, x) {
   const arch = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.14, 10, 28, Math.PI), gold);
   arch.rotation.y = Math.PI / 2;
   arch.position.set(x, 7, 0);
-  scene.add(arch);
+  const glow = glowSprite('#ffb84d', 9);
+  glow.position.set(x, 6.5, 0);
+  scene.add(arch, glow);
 }
 
 export function buildObstacles(scene, level) {
-  const blocks = level.obstacles.filter((o) => o.type === 'block');
-  const spikes = level.obstacles.filter((o) => o.type === 'spike');
-  placeAll(
-    blocks,
-    blockMatrix,
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshLambertMaterial({ color: '#3a2a8c' }),
-    '#ffd43b',
-    scene,
-  );
-  placeAll(
-    spikes,
-    spikeMatrix,
-    spikeGeometry(),
-    new THREE.MeshLambertMaterial({ color: '#d81b60', emissive: '#8a1048' }),
-    '#ff5d8f',
-    scene,
-  );
+  addBlocks(scene, of(level, 'block'));
+  addSpikes(scene, of(level, 'spike'));
+  addThorns(scene, of(level, 'thorn'));
   addFinish(scene, level.length);
 }

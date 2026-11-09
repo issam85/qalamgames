@@ -1,49 +1,45 @@
-// De 3D-wereld: renderer, licht, vloer, sterrenmuur en de camera die meeloopt.
+// De 3D-wereld: renderer, licht, vloer, sterrenmuur, kleurzones en de meelopende camera.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { starTexture } from './pattern.js';
+import { createScenery } from './scenery.js';
 
 const NIGHT = '#140a30';
 const FLOOR_TILE = 4;
 const WALL_TILE = 7;
 const WALL_WIDTH = 140;
 const WALL_HEIGHT = 56;
-const PARALLAX = 0.4; // de muur schuift langzamer dan de vloer
+const PARALLAX = 0.25; // de muur schuift langzamer dan de stad en de vloer
 
 function addFloor(scene, length) {
   const size = length + 120;
   const depth = 34;
-  const map = starTexture(
-    { background: '#1a1048', fill: '#21145c', line: '#4a37a8', width: 3 },
-    size / FLOOR_TILE,
-    depth / FLOOR_TILE,
-  );
-  const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(size, 1, depth),
-    new THREE.MeshLambertMaterial({ map }),
-  );
+  const map = starTexture(size / FLOOR_TILE, depth / FLOOR_TILE);
+  const material = new THREE.MeshLambertMaterial({ map });
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(size, 1, depth), material);
   floor.position.set(size / 2 - 40, -0.5, -3);
   scene.add(floor);
-  const glow = new THREE.MeshBasicMaterial({ color: '#38e8d8' });
+  const glow = new THREE.MeshBasicMaterial();
   [-1, 1].forEach((z) => {
-    const strip = new THREE.Mesh(new THREE.BoxGeometry(size, 0.03, 0.07), glow);
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(size, 0.03, 0.09), glow);
     strip.position.set(size / 2 - 40, 0.02, z);
     scene.add(strip);
   });
+  return { material, glow };
 }
 
 function addWall(scene) {
-  const map = starTexture(
-    { background: '#1c1050', fill: '#261766', line: '#3f2c96', width: 4 },
-    WALL_WIDTH / WALL_TILE,
-    WALL_HEIGHT / WALL_TILE,
-  );
-  const wall = new THREE.Mesh(
-    new THREE.PlaneGeometry(WALL_WIDTH, WALL_HEIGHT),
-    new THREE.MeshBasicMaterial({ map, fog: false }),
-  );
+  const map = starTexture(WALL_WIDTH / WALL_TILE, WALL_HEIGHT / WALL_TILE);
+  const material = new THREE.MeshBasicMaterial({ map, fog: false });
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(WALL_WIDTH, WALL_HEIGHT), material);
   wall.position.set(0, WALL_HEIGHT / 2 - 2, -20);
   scene.add(wall);
-  return { wall, map };
+  return { wall, map, material };
+}
+
+function zoneAt(zones, x) {
+  let zone = zones[0];
+  zones.forEach((z) => { if (x >= z.x) zone = z; });
+  return zone;
 }
 
 export function createWorld(canvas, level) {
@@ -52,16 +48,20 @@ export function createWorld(canvas, level) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(NIGHT);
   scene.fog = new THREE.Fog(NIGHT, 26, 70);
-  scene.add(new THREE.HemisphereLight('#b9a6ff', '#2a1a66', 1.7));
-  const sun = new THREE.DirectionalLight('#ffe9c4', 1.6);
+  scene.add(new THREE.HemisphereLight('#c9b9ff', '#2a1a66', 1.9));
+  const sun = new THREE.DirectionalLight('#ffe9c4', 1.8);
   sun.position.set(-4, 10, 8);
   scene.add(sun);
 
-  addFloor(scene, level.length);
-  const { wall, map } = addWall(scene);
+  const floor = addFloor(scene, level.length);
+  const { wall, map, material: wallMaterial } = addWall(scene);
+  const scenery = createScenery(scene, level);
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+  const tint = new THREE.Color();
   let distance = 14;
   let lift = 0;
+  let shake = 0;
+  let lastX = Infinity; // eerste beeld meteen in de juiste kleur
 
   function resize() {
     const w = window.innerWidth;
@@ -74,13 +74,31 @@ export function createWorld(canvas, level) {
   window.addEventListener('resize', resize);
   resize();
 
-  function follow(run, dt) {
-    lift += (Math.max(0, run.y - 2.5) * 0.6 - lift) * Math.min(1, dt * 5);
-    camera.position.set(run.x + 3.4, 3.8 + lift, distance);
-    camera.lookAt(run.x + 5.6, 2.5 + lift, 0);
-    wall.position.x = camera.position.x;
-    map.offset.x = (camera.position.x * PARALLAX) / WALL_TILE;
+  function applyZone(x, rate) {
+    const zone = zoneAt(level.zones, x);
+    wallMaterial.color.lerp(tint.set(zone.wall), rate);
+    floor.material.color.lerp(tint.set(zone.floor), rate);
+    floor.glow.color.lerp(tint.set(zone.glow), rate);
   }
 
-  return { scene, follow, render: () => renderer.render(scene, camera) };
+  function follow(run, dt) {
+    applyZone(run.x, run.x < lastX ? 1 : Math.min(1, dt * 2.5));
+    lastX = run.x;
+    lift += (Math.max(0, run.y - 2.5) * 0.6 - lift) * Math.min(1, dt * 5);
+    shake = Math.max(0, shake - dt * 2.4);
+    const jitterX = (Math.random() - 0.5) * shake;
+    const jitterY = (Math.random() - 0.5) * shake;
+    camera.position.set(run.x + 3.4 + jitterX, 3.8 + lift + jitterY, distance);
+    camera.lookAt(run.x + 5.6 + jitterX, 2.5 + lift + jitterY, 0);
+    wall.position.x = camera.position.x;
+    map.offset.x = (camera.position.x * PARALLAX) / WALL_TILE;
+    scenery.update(camera.position.x);
+  }
+
+  return {
+    scene,
+    follow,
+    kick: (amount) => { shake = Math.max(shake, amount); },
+    render: () => renderer.render(scene, camera),
+  };
 }

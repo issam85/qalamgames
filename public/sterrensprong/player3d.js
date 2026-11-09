@@ -1,5 +1,6 @@
 // De hoofdfiguur: een gouden lantaarn met oogjes, die salto's maakt in de lucht.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
+import { glowSprite } from './pattern.js';
 
 const RADIUS = 0.46; // van het midden tot de onderkant van de lantaarn
 const SPIN = 11.5; // één rondje per sprong
@@ -39,7 +40,8 @@ export function createPlayer(scene) {
     new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.4 }),
   );
   shadow.rotation.x = -Math.PI / 2;
-  scene.add(lantern, glow, shadow);
+  const halo = glowSprite('#ffb84d', 3.4);
+  scene.add(lantern, glow, shadow, halo);
 
   let spin = 0;
   let squash = 0;
@@ -50,6 +52,7 @@ export function createPlayer(scene) {
       lantern.visible = on;
       glow.visible = on;
       shadow.visible = on;
+      halo.visible = on;
     },
     reset() {
       spin = 0;
@@ -70,6 +73,7 @@ export function createPlayer(scene) {
       lantern.rotation.z = spin + (run.grounded ? Math.sin(run.x * 4) * 0.07 : 0);
       lantern.scale.set(1 + amount, 1 - amount, 1 + amount);
       glow.position.set(run.x, run.y + 1, 1.2);
+      halo.position.set(run.x, run.y + RADIUS, 0);
       const height = run.y - run.floor;
       shadow.position.set(run.x, run.floor + 0.04, 0);
       shadow.material.opacity = Math.max(0.08, 0.4 - height * 0.1);
