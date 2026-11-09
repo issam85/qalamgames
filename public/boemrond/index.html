@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Boem Rond! — spel van Al Qalam Gouda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage"><canvas id="canvas"></canvas></div>
+
+  <div id="menu" class="overlay">
+    <div class="card">
+      <h1>Boem Rond!</h1>
+      <p class="how">De bom gaat rond in de kring en knippert steeds sneller. Geef hem snel door, maar pas als hij bij je is. Druk je te vroeg, dan laat je hem vallen! Wie de bom vasthoudt als hij ontploft, ligt eruit.<strong id="how-keys"></strong></p>
+      <div class="choice">
+        <button class="btn on" data-players="1">1 speler</button>
+        <button class="btn" data-players="2">2 spelers</button>
+      </div>
+      <button id="start" class="btn">Start!</button>
+    </div>
+  </div>
+
+  <div id="end" class="overlay" hidden>
+    <div class="card">
+      <h2 id="end-title"></h2>
+      <p id="end-text" class="how"></p>
+      <div class="row">
+        <button id="again" class="btn">Opnieuw</button>
+        <button id="back" class="btn blue">Spelers kiezen</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+/* Boem Rond!: één schermhoogte, het speelveld vult de ruimte, knoppen altijd in beeld. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  height: 100dvh;
+  overflow: hidden;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  color: #27324a;
+  background: radial-gradient(circle at 50% 30%, #8ee0ff, #35a7f0 55%, #1565c0);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  border-radius: 14px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 25, 60, 0.45);
+  z-index: 5;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.card {
+  width: min(520px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: clamp(16px, 4vh, 30px) clamp(18px, 4vw, 34px);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+h1, h2 {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+h1 {
+  font-size: clamp(38px, 9vh, 62px);
+  color: #e53935;
+  text-shadow: 0 3px 0 #ffd43b;
+}
+
+h2 {
+  font-size: clamp(36px, 8vh, 56px);
+  color: #e53935;
+}
+
+h2.won {
+  color: #2e7d32;
+}
+
+.how {
+  margin: 10px 0 14px;
+  font-size: clamp(15px, 2.6vh, 18px);
+  line-height: 1.35;
+}
+
+.how strong {
+  display: block;
+  margin-top: 6px;
+  color: #1565c0;
+}
+
+.choice, .row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.choice {
+  margin-bottom: 14px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+}
+
+.btn {
+  padding: 12px 26px;
+  border-radius: 16px;
+  color: #fff;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: 22px;
+  background: #2e7d32;
+  box-shadow: 0 5px 0 #1b5e20;
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #1b5e20;
+}
+
+.btn.blue {
+  background: #1565c0;
+  box-shadow: 0 5px 0 #0d47a1;
+}
+
+.choice .btn {
+  flex: 1;
+  color: #27324a;
+  background: #e8eef7;
+  box-shadow: 0 5px 0 #c3cfe0;
+}
+
+.choice .btn.on {
+  background: #ffd43b;
+  box-shadow: 0 5px 0 #c9a400;
+}
