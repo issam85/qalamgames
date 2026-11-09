@@ -2,6 +2,7 @@
 // te zien op het meisje en wordt bewaard.
 import { CATS, SWATCHES, randomOutfit } from './data.js';
 import { renderDoll } from './doll.js';
+import { button, swatch } from './ui.js';
 
 const catsEl = document.getElementById('kast-cats');
 const itemsEl = document.getElementById('kast-items');
@@ -11,15 +12,6 @@ const dollEl = document.getElementById('kast-doll');
 
 let cat = CATS[0].key;
 let api = null; // { getOutfit(), setOutfit(outfit) }
-
-function button(className, label, pressed, onClick) {
-  const btn = document.createElement('button');
-  btn.className = className;
-  btn.textContent = label;
-  btn.setAttribute('aria-pressed', String(pressed));
-  btn.addEventListener('click', onClick);
-  return btn;
-}
 
 function change(patch) {
   const outfit = api.getOutfit();
@@ -41,12 +33,9 @@ function render() {
   itemsEl.replaceChildren(...current.items.map((label, i) => button(
     'item', label, outfit.choice[cat] === i, () => change({ choice: { [cat]: i } }),
   )));
-  swatchesEl.replaceChildren(...SWATCHES.map(([hex, name]) => {
-    const btn = button('swatch', '', outfit.color[cat] === hex, () => change({ color: { [cat]: hex } }));
-    btn.style.background = hex;
-    btn.setAttribute('aria-label', name);
-    return btn;
-  }));
+  swatchesEl.replaceChildren(...SWATCHES.map(([hex, name]) => swatch(
+    hex, name, outfit.color[cat] === hex, () => change({ color: { [cat]: hex } }),
+  )));
   renderDoll(dollEl, outfit);
 }
 

@@ -1,0 +1,77 @@
+/* De kapper gebruikt de indeling van de kledingkast (kast.css); hier alleen wat
+   anders is: het speelvlak waar je sleept, de knopenmeter en de uitleg. */
+
+.salon-stage {
+  touch-action: none;
+  user-select: none;
+  cursor: none;
+  background: radial-gradient(ellipse at 50% 90%, #fff 0%, #e3f6ff 60%, #d2ecff 100%);
+}
+
+.meter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--soft);
+}
+
+.meter-row h2 {
+  color: #0e7490;
+}
+
+.meter {
+  flex-shrink: 0;
+  height: 16px;
+  border-radius: 99px;
+  background: #e0f2fe;
+  overflow: hidden;
+}
+
+.meter div {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #4cd4a0, var(--gold));
+  transition: width 0.2s;
+}
+
+.hint {
+  min-height: 2.7em;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--soft);
+}
+
+.kast-buttons.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 700px) {
+  .meter-row h2 {
+    display: block;
+    font-size: 16px;
+  }
+
+  .hint {
+    min-height: 2.6em;
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 520px) and (min-width: 701px) {
+  .meter-row h2 {
+    display: block;
+    font-size: 15px;
+  }
+
+  .meter {
+    height: 10px;
+  }
+
+  .hint {
+    min-height: 0;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+}

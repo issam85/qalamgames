@@ -192,22 +192,35 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht, alleen de Kledingkast is open) en de Kledingkast: 6
-  categorieën × 6 soorten × 8 kleuren, "Verras me!", "Foto" (PNG 720×960 om op te
-  slaan) en "Klaar!" (eerste keer per dag 2 sterren). Alles wordt bewaard in
-  `localStorage` (`mijnleven`).
+- Klaar: het huis (overzicht; Kledingkast en Kapper zijn open) en twee kamers. Alles
+  wordt bewaard in `localStorage` (`mijnleven`); "Klaar!" geeft per kamer de eerste
+  keer per dag 2 sterren.
+  - Kledingkast: 6 categorieën × 6 soorten × 8 kleuren, "Verras me!" en "Foto" (PNG
+    720×960 om op te slaan).
+  - Kapper (wensen van de leerling): elke dag 6 knopen, die je eruit borstelt door
+    erover te slepen (borstel 2 halen, kam 4). Puntkam = scheiding en twee vlechten,
+    schaar = korter (groeit per dag een stap terug), föhn = glans, hoed, hoofddoek (die
+    uit de kledingkast). Kapsels met waar ze voor zijn: los (spelen met je dochters),
+    staart (eten maken), vlechten, hoge knot, lage knot (onder een hoed), bruiloft.
+    "Klaar!" kan pas als alle knopen eruit zijn.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
   `data.js` categorieën, soorten, kleuren · `doll.js` + `doll-parts.js` het meisje als
-  SVG (vak 300×520, één functie per soort) · `photo.js` · `storage.js` · CSS:
-  `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
-  `overlay.css`. Elk scherm is één schermhoogte; knoppen altijd in beeld.
+  SVG (vak 300×520, één functie per soort) · `photo.js` · `storage.js` · `ui.js` ·
+  kapper: `salon.js` scherm en slepen · `salon-actions.js` wat het gereedschap doet
+  (losse functies, zo te testen) · `salon-tools.js` gereedschap en het plaatje bij de
+  muis · `hair.js` knopen, nieuwe dag, hoofd en schouders · `hair-styles.js` kapsels
+  (elk twee lagen: achter en vóór het lijf). CSS: `base.css`, `huis.css`, `kast.css`,
+  `kast-phone.css` (staand en liggend), `kapper.css`, `overlay.css`. De kapper
+  gebruikt de indeling van de kast. Elk scherm is één schermhoogte; knoppen altijd in
+  beeld.
 - Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
   `doll-parts.js`.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamer: de Kapper (zie het canvas: borstel, kam, schaar, föhn, hoofddoek,
-  kapsels, haarkleur).
+- Volgende kamers: badkamer (douchen, make-up), keuken, gezin, moskee en Mekka,
+  slaapkamer, winkel. Het kapsel is alleen bij de kapper te zien; in het huis draagt
+  het meisje haar hoofddoek.
 
 ## Volgende opdracht: website-upgrade
 

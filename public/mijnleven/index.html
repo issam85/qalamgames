@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="huis.css">
   <link rel="stylesheet" href="kast.css">
   <link rel="stylesheet" href="kast-phone.css">
+  <link rel="stylesheet" href="kapper.css">
   <link rel="stylesheet" href="overlay.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel Mijn Leven — kleed je eigen meisje aan met hoofddoeken, jurken, schoenen, tassen en sieraden. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
@@ -46,7 +47,7 @@
       </div>
       <div class="rooms">
         <button class="room is-open" data-room="kast"><b>Kledingkast</b><span>Hoofddoeken, jurken, schoenen, tassen en sieraden</span></button>
-        <div class="room"><b>Kapper</b><span>Borstelen, knippen en kapsels. Komt snel!</span></div>
+        <button class="room is-open" data-room="kapper"><b>Kapper</b><span>Borstelen, kammen, knippen, vlechten en mooie kapsels</span></button>
         <div class="room"><b>Badkamer</b><span>Douchen en make-up. Later.</span></div>
         <div class="room"><b>Keuken</b><span>Lekker eten koken. Later.</span></div>
         <div class="room"><b>Gezin</b><span>Je man en kinderen. Later.</span></div>
@@ -74,6 +75,29 @@
           <button id="kast-surprise" class="btn gold">Verras me!</button>
           <button id="kast-photo" class="btn blue">Foto</button>
           <button id="kast-done" class="btn green">Klaar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-kapper" class="screen">
+    <header class="bar">
+      <button id="kapper-home" class="pill">Huis</button>
+      <h1>Kapper</h1>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+    </header>
+    <div class="kast">
+      <nav id="kapper-tools" class="cats" aria-label="Gereedschap"></nav>
+      <div class="kast-stage salon-stage"><div id="kapper-doll" class="doll"></div></div>
+      <div class="kast-panel">
+        <div class="meter-row"><h2>Haar</h2><span id="kapper-label"></span></div>
+        <div class="meter"><div id="kapper-meter"></div></div>
+        <p id="kapper-hint" class="hint"></p>
+        <div id="kapper-styles" class="items"></div>
+        <div id="kapper-colors" class="swatches" aria-label="Haarkleur"></div>
+        <div class="kast-buttons two">
+          <button id="kapper-reset" class="btn blue">Opnieuw</button>
+          <button id="kapper-done" class="btn green">Klaar!</button>
         </div>
       </div>
     </div>
