@@ -1,10 +1,11 @@
-// Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, de
-// sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
+// eten dat klaarstaat, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
 import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
 import { freshMakeup, validMakeup } from './makeup.js';
+import { RECIPES } from './recipes.js';
 
 const KEY = 'mijnleven';
 
@@ -57,6 +58,8 @@ export function loadGame() {
     bath: validBath(data.bath) ? data.bath : freshBath(),
     makeup: validMakeup(data.makeup) ? data.makeup : freshMakeup(),
     badDay: typeof data.badDay === 'string' ? data.badDay : '',
+    meal: RECIPES.some((r) => r.key === data.meal) ? data.meal : '',
+    keukenDay: typeof data.keukenDay === 'string' ? data.keukenDay : '',
   };
 }
 

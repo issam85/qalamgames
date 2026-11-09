@@ -4,8 +4,8 @@
 import { face, arms, SKIN } from './doll.js';
 import { STYLE_SVG } from './hair-styles.js';
 import { SPOTS, washed } from './bath.js';
+import { sceneSvg } from './ui.js';
 
-const frame = (label, inner) => `<svg viewBox="30 0 240 340" role="img" aria-label="${label}">${inner}</svg>`;
 const star = (x, y) => `<path d="M${x} ${y} l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="#ffd43b"/>`;
 const SPARKLE = star(62, 60) + star(238, 50) + star(246, 140) + star(56, 150);
 
@@ -29,7 +29,7 @@ const spotsSvg = (spots) => spots.map((s, i) => `<g transform="translate(${SPOTS
 
 // extra = wat er nog bovenop moet (de spons, douche of handdoek bij de muis)
 export function showerSvg(hair, bath, makeup, extra = '') {
-  return frame('Jouw meisje onder de douche', TILES + STYLE_SVG[0](hair.color, hair.ends).join('')
+  return sceneSvg('Jouw meisje onder de douche', TILES + STYLE_SVG[0](hair.color, hair.ends).join('')
     + `<rect x="136" y="140" width="28" height="32" fill="${SKIN}"/>` + SCREEN + face(makeup)
     + spotsSvg(bath.spots) + (washed(bath) ? SPARKLE : '') + extra);
 }
@@ -48,6 +48,6 @@ const MOUTH_FOAM = '<g fill="#fff" stroke="#cfe8ff" stroke-width="1.5"><circle c
 // look = { open: mond open, clean: tanden gepoetst, foam: schuim van het poetsen }
 export function mirrorSvg(makeup, look, extra = '') {
   const teeth = look.clean ? '#ffffff' : '#f0dd9a';
-  return frame('Jouw meisje voor de spiegel', MIRROR + BODY + arms(ROBE) + face(makeup, look.open ? teeth : '')
+  return sceneSvg('Jouw meisje voor de spiegel', MIRROR + BODY + arms(ROBE) + face(makeup, look.open ? teeth : '')
     + TURBAN + (look.foam ? MOUTH_FOAM : '') + (look.clean ? star(173, 133) : '') + SINK + extra);
 }

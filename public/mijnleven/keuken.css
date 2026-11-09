@@ -1,0 +1,17 @@
+/* De keuken gebruikt de indeling van de kast (kast.css) en de meter en uitleg van de
+   kapper (kapper.css); hier het speelvlak en de grote knop bij het vuur. */
+
+.cook-stage {
+  touch-action: none;
+  user-select: none;
+  background: radial-gradient(ellipse at 50% 90%, #fff 0%, #fff3d6 60%, #ffe6b3 100%);
+}
+
+.cook-stage text {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+}
+
+.items .btn {
+  grid-column: 1 / -1;
+}

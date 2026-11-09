@@ -9,7 +9,7 @@ import { renderSalonPanel } from './salon-panel.js';
 import { trackPointer } from './pointer.js';
 import { today } from './ui.js';
 
-const stageEl = document.getElementById('kapper-doll');
+const stageEl = document.getElementById('kapper-stage');
 const hintEl = document.getElementById('kapper-hint');
 
 let api = null; // { getOutfit(), getMakeup(), getHair(), setHair(hair) }

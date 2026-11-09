@@ -6,13 +6,16 @@ import { initWardrobe, showWardrobe } from './wardrobe.js';
 import { initSalon, showSalon } from './salon.js';
 import { initBathroom, showBathroom } from './bathroom.js';
 import { washed } from './bath.js';
+import { initKitchen, showKitchen, cookedMeal } from './kitchen.js';
 import { knotsLeft } from './hair.js';
 import { makePhoto } from './photo.js';
 import { today } from './ui.js';
 
 const DAILY_STARS = 2; // per kamer, voor de eerste keer op een dag
 const game = loadGame();
-const SHOW = { 'screen-kast': showWardrobe, 'screen-kapper': showSalon, 'screen-bad': showBathroom };
+const SHOW = {
+  'screen-kast': showWardrobe, 'screen-kapper': showSalon, 'screen-bad': showBathroom, 'screen-keuken': showKitchen,
+};
 const toastEl = document.getElementById('toast');
 const photoEl = document.getElementById('photo');
 let toastTimer = 0;
@@ -61,6 +64,16 @@ function bathDone() {
   else done('badDay', 'Je make-up');
 }
 
+// het eten dat klaar is gaat mee naar het gezin
+function kitchenDone() {
+  if (!cookedMeal()) {
+    toast('Maak eerst je gerecht af');
+    return;
+  }
+  set('meal')(cookedMeal());
+  done('keukenDay', 'Het eten');
+}
+
 // een stukje van het spel bewaren, bijvoorbeeld set('hair') → (hair) => ...
 const set = (key) => (value) => {
   game[key] = value;
@@ -94,6 +107,8 @@ document.querySelectorAll('.home').forEach((btn) => btn.addEventListener('click'
 document.getElementById('kast-done').addEventListener('click', () => done('starDay', 'Je outfit'));
 document.getElementById('kapper-done').addEventListener('click', salonDone);
 document.getElementById('bad-done').addEventListener('click', bathDone);
+initKitchen();
+document.getElementById('keuken-done').addEventListener('click', kitchenDone);
 document.getElementById('kast-photo').addEventListener('click', photo);
 document.getElementById('photo-close').addEventListener('click', () => { photoEl.hidden = true; });
 refresh();

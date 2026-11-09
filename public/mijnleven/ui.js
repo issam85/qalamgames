@@ -18,6 +18,9 @@ export function swatch(hex, name, pressed, onClick) {
   return btn;
 }
 
+// een tekening van een kamer, in hetzelfde vak als de kapper (30,0 – 270,340)
+export const sceneSvg = (label, inner) => `<svg viewBox="30 0 240 340" role="img" aria-label="${label}">${inner}</svg>`;
+
 // het plaatje dat met muis of vinger meebeweegt; p = { x, y } in het vak van de tekening
 export function cursorSvg(glyph, p, turn = -20) {
   if (!p) return '';

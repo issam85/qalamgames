@@ -192,8 +192,8 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Badkamer, Kledingkast en Kapper zijn open, in die
-  volgorde) en drie kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
+- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper en Keuken zijn open, in
+  die volgorde) en vier kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
   "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
   - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
     ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
@@ -212,6 +212,13 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     tik telt ook), hoed, hoofddoek (die uit de kledingkast). Kapsels met waar ze voor zijn: los (spelen met je dochters),
     staart (eten maken), vlechten, hoge knot, lage knot (onder een hoed), bruiloft.
     "Klaar!" kan pas als alle knopen eruit zijn.
+  - Keuken: recept kiezen (pannenkoeken, couscous, soep). Stap 1: de 4 ingrediënten
+    in de volgorde van het briefje in de kom tikken (er staan er 6, twee horen er
+    niet in). Stap 2: met de lepel rondjes roeren (slepen, 4 rondjes). Stap 3: het
+    vuur: een pijl loopt in 3,2 s over een balk, tik als hij in het groen staat
+    (pannenkoeken 3 keer omdraaien, de andere 1 keer van het vuur); te vroeg of te
+    laat = opnieuw. "Klaar!" kan pas als het gerecht af is; het wordt bewaard als
+    `meal` voor het gezin.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
   `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
   `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
@@ -224,16 +231,28 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   dag, hoofd en schouders · `hair-styles.js` kapsels (elk twee lagen: achter en vóór
   het lijf), lokken en vallende stukjes ·
   badkamer: `bathroom.js` scherm · `bath.js` plekken en wassen (losse functies) ·
-  `bath-scene.js` douche en spiegel · `bath-tools.js` spullen · `makeup.js` kleuren.
+  `bath-scene.js` douche en spiegel · `bath-tools.js` spullen · `makeup.js` kleuren ·
+  keuken: `kitchen.js` scherm · `cook.js` stappen, roeren, op tijd zijn (losse
+  functies) · `cook-scene.js` aanrecht, recept, kom · `cook-stove.js` fornuis, balk,
+  gerechten · `recipes.js` ingrediënten en recepten.
+  `screen.js` bouwt het scherm van een kamer met de vaste indeling (balk, knoppen
+  links, tekening, paneel met meter, uitleg, Opnieuw en Klaar!); onderdelen heten
+  `<kamer>-nav`, `-stage`, `-title`, `-label`, `-meter`, `-hint`, `-reset`, `-done`.
+  Alleen het huis en de kast staan nog in `index.html`.
   CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
-  `kapper.css`, `bad.css`, `overlay.css`. Kapper en badkamer gebruiken de indeling van
-  de kast. Elk scherm is één schermhoogte; knoppen altijd in beeld.
+  `kapper.css`, `bad.css`, `keuken.css`, `overlay.css`. Elk scherm is één
+  schermhoogte; knoppen altijd in beeld.
+- Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…` en
+  `show…` aansluiten in `app.js` (`SHOW`), knop `data-room` in het huis, en een
+  `…Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
+  na een herstart van de dev-server.
 - Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
   `doll-parts.js`.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamers (volgorde van de gebruiker): keuken, gezin, moskee en Mekka (stijl
+- Volgende kamers (volgorde van de gebruiker): gezin (krijgt het eten uit de keuken:
+  `game.meal`), moskee en Mekka (stijl
   van het Hajj-spel), slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
   geldt nog de echte datum); de winkel verkoopt kleren, make-upkleuren en
   haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt

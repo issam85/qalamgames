@@ -5,10 +5,15 @@ import { MAKEUP, freshMakeup } from './makeup.js';
 import { BRUSH_STEPS, freshBath, newDay, washed, progress, wash, stepDone, onFace, onMouth } from './bath.js';
 import { showerSvg, mirrorSvg } from './bath-scene.js';
 import { trackPointer } from './pointer.js';
+import { roomScreen } from './screen.js';
 import { button, swatch, today } from './ui.js';
 
-const toolsEl = document.getElementById('bad-tools');
-const stageEl = document.getElementById('bad-doll');
+roomScreen({
+  room: 'bad', title: 'Badkamer', nav: 'Spullen in de badkamer', stage: 'salon-stage', heading: 'Schoon',
+  extra: '<ul id="bad-list" class="todo"></ul><div id="bad-colors" class="swatches" aria-label="Kleur van de make-up"></div>',
+});
+const toolsEl = document.getElementById('bad-nav');
+const stageEl = document.getElementById('bad-stage');
 const meterEl = document.getElementById('bad-meter');
 const labelEl = document.getElementById('bad-label');
 const hintEl = document.getElementById('bad-hint');

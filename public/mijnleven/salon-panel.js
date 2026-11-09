@@ -2,9 +2,14 @@
 // haarkleuren.
 import { STYLES, HAIR_COLORS, SPOTS, knotsLeft } from './hair.js';
 import { TOOLS } from './salon-tools.js';
+import { roomScreen } from './screen.js';
 import { button, swatch } from './ui.js';
 
-const toolsEl = document.getElementById('kapper-tools');
+roomScreen({
+  room: 'kapper', title: 'Kapper', nav: 'Gereedschap', stage: 'salon-stage', heading: 'Haar',
+  extra: '<div id="kapper-styles" class="items"></div><div id="kapper-colors" class="swatches" aria-label="Haarkleur"></div>',
+});
+const toolsEl = document.getElementById('kapper-nav');
 const stylesEl = document.getElementById('kapper-styles');
 const colorsEl = document.getElementById('kapper-colors');
 const meterEl = document.getElementById('kapper-meter');
