@@ -192,8 +192,8 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper en Keuken zijn open, in
-  die volgorde) en vier kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
+- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken en Gezin zijn
+  open, in die volgorde) en vijf kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
   "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
   - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
     ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
@@ -219,6 +219,13 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     (pannenkoeken 3 keer omdraaien, de andere 1 keer van het vuur); te vroeg of te
     laat = opnieuw. "Klaar!" kan pas als het gerecht af is; het wordt bewaard als
     `meal` voor het gezin.
+  - Gezin: papa en de dochters Amira en Noor (namen zelf gekozen, de leerling mag ze
+    veranderen) met hartjes: papa eten en thee, een dochter eten, spelen en voorlezen.
+    Links kies je wat je doet, daarna tik je op iemand: eten (alleen als er een `meal`
+    is; als alle drie gegeten hebben is het op), thee (papa), bal (3 keer tikken),
+    voorlezen (het boek over een dochter slepen), naar bed (pas met drie volle
+    hartjes). "Klaar!" kan pas als alle hartjes vol zijn en beide dochters slapen;
+    elke dag opnieuw.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
   `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
   `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
@@ -234,14 +241,17 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `bath-scene.js` douche en spiegel · `bath-tools.js` spullen · `makeup.js` kleuren ·
   keuken: `kitchen.js` scherm · `cook.js` stappen, roeren, op tijd zijn (losse
   functies) · `cook-scene.js` aanrecht, recept, kom · `cook-stove.js` fornuis, balk,
-  gerechten · `recipes.js` ingrediënten en recepten.
+  gerechten · `recipes.js` ingrediënten en recepten ·
+  gezin: `family-room.js` scherm en wat je vasthoudt · `family.js` hartjes en wat
+  elke actie doet (losse functies) · `family-scene.js` woonkamer en de figuren.
   `screen.js` bouwt het scherm van een kamer met de vaste indeling (balk, knoppen
   links, tekening, paneel met meter, uitleg, Opnieuw en Klaar!); onderdelen heten
   `<kamer>-nav`, `-stage`, `-title`, `-label`, `-meter`, `-hint`, `-reset`, `-done`.
   Alleen het huis en de kast staan nog in `index.html`.
   CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
   `kapper.css`, `bad.css`, `keuken.css`, `overlay.css`. Elk scherm is één
-  schermhoogte; knoppen altijd in beeld.
+  schermhoogte; knoppen altijd in beeld. `app.js` zit op 125 regels: bij de volgende
+  kamer eerst het aansluiten van de kamers afsplitsen.
 - Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…` en
   `show…` aansluiten in `app.js` (`SHOW`), knop `data-room` in het huis, en een
   `…Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
@@ -251,8 +261,7 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamers (volgorde van de gebruiker): gezin (krijgt het eten uit de keuken:
-  `game.meal`), moskee en Mekka (stijl
+- Volgende kamers (volgorde van de gebruiker): moskee en Mekka (stijl
   van het Hajj-spel), slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
   geldt nog de echte datum); de winkel verkoopt kleren, make-upkleuren en
   haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt

@@ -132,3 +132,8 @@ button, a {
   max-width: 100%;
   filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.18));
 }
+
+.doll text {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+}

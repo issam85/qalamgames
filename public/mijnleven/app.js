@@ -7,6 +7,8 @@ import { initSalon, showSalon } from './salon.js';
 import { initBathroom, showBathroom } from './bathroom.js';
 import { washed } from './bath.js';
 import { initKitchen, showKitchen, cookedMeal } from './kitchen.js';
+import { initFamily, showFamily } from './family-room.js';
+import { progress as familyProgress } from './family.js';
 import { knotsLeft } from './hair.js';
 import { makePhoto } from './photo.js';
 import { today } from './ui.js';
@@ -15,6 +17,7 @@ const DAILY_STARS = 2; // per kamer, voor de eerste keer op een dag
 const game = loadGame();
 const SHOW = {
   'screen-kast': showWardrobe, 'screen-kapper': showSalon, 'screen-bad': showBathroom, 'screen-keuken': showKitchen,
+  'screen-gezin': showFamily,
 };
 const toastEl = document.getElementById('toast');
 const photoEl = document.getElementById('photo');
@@ -74,6 +77,12 @@ function kitchenDone() {
   done('keukenDay', 'Het eten');
 }
 
+// het gezin is klaar als alle hartjes vol zijn en de meisjes in bed liggen
+function familyDone() {
+  if (familyProgress(game.family) < 1) toast('Je gezin wil nog iets: kijk naar de hartjes');
+  else done('gezinDay', 'Je gezin');
+}
+
 // een stukje van het spel bewaren, bijvoorbeeld set('hair') → (hair) => ...
 const set = (key) => (value) => {
   game[key] = value;
@@ -109,6 +118,8 @@ document.getElementById('kapper-done').addEventListener('click', salonDone);
 document.getElementById('bad-done').addEventListener('click', bathDone);
 initKitchen();
 document.getElementById('keuken-done').addEventListener('click', kitchenDone);
+initFamily({ getFamily: () => game.family, setFamily: set('family'), getMeal: () => game.meal, eatMeal: () => set('meal')('') });
+document.getElementById('gezin-done').addEventListener('click', familyDone);
 document.getElementById('kast-photo').addEventListener('click', photo);
 document.getElementById('photo-close').addEventListener('click', () => { photoEl.hidden = true; });
 refresh();

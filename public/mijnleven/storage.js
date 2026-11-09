@@ -1,11 +1,12 @@
 // Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
-// eten dat klaarstaat, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// eten dat klaarstaat, het gezin, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
 import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
 import { freshMakeup, validMakeup } from './makeup.js';
 import { RECIPES } from './recipes.js';
+import { freshFamily, MEMBERS, THROWS } from './family.js';
 
 const KEY = 'mijnleven';
 
@@ -42,6 +43,16 @@ function validBath(bath) {
     && typeof bath.teeth === 'boolean' && typeof bath.day === 'string';
 }
 
+const bools = (list, size) => Array.isArray(list) && list.length === size && list.every((v) => typeof v === 'boolean');
+
+function validFamily(family) {
+  const kids = MEMBERS.length - 1;
+  return Boolean(family) && bools(family.fed, MEMBERS.length) && typeof family.tea === 'boolean'
+    && Array.isArray(family.play) && family.play.length === kids
+    && family.play.every((n) => Number.isInteger(n) && n >= 0 && n <= THROWS)
+    && bools(family.read, kids) && bools(family.bed, kids) && typeof family.day === 'string';
+}
+
 export function loadGame() {
   let data = {};
   try {
@@ -60,6 +71,8 @@ export function loadGame() {
     badDay: typeof data.badDay === 'string' ? data.badDay : '',
     meal: RECIPES.some((r) => r.key === data.meal) ? data.meal : '',
     keukenDay: typeof data.keukenDay === 'string' ? data.keukenDay : '',
+    family: validFamily(data.family) ? data.family : freshFamily(),
+    gezinDay: typeof data.gezinDay === 'string' ? data.gezinDay : '',
   };
 }
 
