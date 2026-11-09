@@ -1,19 +1,30 @@
 // Alles boven het 3D-beeld: voortgang, pogingen, flits en meldingen.
 const $ = (id) => document.getElementById(id);
 
-export function updateHud(run, attempt) {
-  const percent = Math.min(100, Math.floor((run.x / run.level.length) * 100));
+export const percentOf = (run) => Math.min(100, Math.floor((run.x / run.level.length) * 100));
+
+export function updateHud(run, attempt, practice, best) {
+  const percent = percentOf(run);
   $('bar-fill').style.width = `${percent}%`;
+  $('bar-best').style.left = `${best}%`;
+  $('bar-best').hidden = practice || best === 0 || best === 100;
   $('percent').textContent = `${percent}%`;
-  $('attempt').textContent = `${run.level.name} · poging ${attempt}`;
+  $('attempt').textContent = practice ? `${run.level.name} · oefenen` : `${run.level.name} · poging ${attempt}`;
 }
 
 // bij 100%: de wereld is klaar, de volgende gaat open
-export function showWorldDone(level, next) {
-  $('overlay-title').textContent = next ? `${level.name} gehaald!` : 'Alles gehaald!';
-  $('overlay-text').textContent = next
-    ? `Druk op spatie of tik voor ${next.name}`
-    : 'Druk op spatie of tik om opnieuw te beginnen';
+export function showWorldDone(level, next, practice) {
+  let title = `${level.name} gehaald!`;
+  let text = `Druk op spatie of tik voor ${next?.name}`;
+  if (practice) {
+    title = 'Oefenen gehaald!';
+    text = 'Druk op spatie of tik om terug te gaan. Nu nog echt, zonder checkpoints!';
+  } else if (!next) {
+    title = 'Alles gehaald!';
+    text = 'Druk op spatie of tik om terug te gaan';
+  }
+  $('overlay-title').textContent = title;
+  $('overlay-text').textContent = text;
   $('overlay').hidden = false;
 }
 
@@ -28,7 +39,7 @@ export function flash() {
   element.classList.add('on');
 }
 
-// korte naam in beeld als een nieuw stuk van de wereld begint
+// korte tekst midden in beeld, bijvoorbeeld de naam van een nieuw stuk
 export function showToast(text) {
   const element = $('toast');
   element.textContent = text;

@@ -12,7 +12,7 @@
 <body>
   <canvas id="view"></canvas>
   <div class="hud">
-    <div class="bar"><div id="bar-fill"></div></div>
+    <div class="bar"><div id="bar-fill"></div><div id="bar-best" hidden></div></div>
     <div class="hud-row"><span id="percent">0%</span><span id="attempt">Poging 1</span></div>
   </div>
   <button id="to-menu" class="pill" type="button">Kleuren</button>
@@ -25,6 +25,8 @@
   <section id="menu" class="menu" hidden>
     <h1>Sterrensprong</h1>
     <div class="menu-scroll">
+      <h2>Wereld</h2>
+      <div id="worlds" class="worlds"></div>
       <h2>Kleurencombinaties</h2>
       <div id="combos" class="swatches"></div>
       <h2>Of kies zelf: licht</h2>
@@ -32,7 +34,10 @@
       <h2>Dak en rand</h2>
       <div id="metals" class="swatches"></div>
     </div>
-    <button id="start" class="start" type="button">Start</button>
+    <div class="menu-buttons">
+      <button id="practice" class="start blue" type="button">Oefenen</button>
+      <button id="start" class="start" type="button">Start</button>
+    </div>
   </section>
   <script type="module" src="game.js"></script>
 </body>

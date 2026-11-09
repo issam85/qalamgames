@@ -1,4 +1,6 @@
 // Kleuren van de lantaarn: kant-en-klare combinaties en losse kleuren. Keuze wordt bewaard.
+import { readSave, patchSave } from './storage.js';
+
 export const COMBOS = [
   { name: 'Goud', body: '#ffc93c', metal: '#b5651d' },
   { name: 'Maanlicht', body: '#dff3ff', metal: '#5b6b8c' },
@@ -22,24 +24,10 @@ export const METAL_COLORS = [
   '#1565c0', '#0f7c6c', '#3d7a1d', '#5b6b8c', '#1b1034',
 ];
 
-const KEY = 'sterrensprong';
-const DEFAULT = { body: COMBOS[0].body, metal: COMBOS[0].metal };
-
 export function loadSkin() {
-  try {
-    const skin = JSON.parse(localStorage.getItem(KEY))?.skin;
-    if (BODY_COLORS.includes(skin?.body) && METAL_COLORS.includes(skin?.metal)) return skin;
-  } catch {
-    // geen opslag beschikbaar: gewoon de standaardkleur
-  }
-  return { ...DEFAULT };
+  const { skin } = readSave();
+  if (BODY_COLORS.includes(skin?.body) && METAL_COLORS.includes(skin?.metal)) return skin;
+  return { body: COMBOS[0].body, metal: COMBOS[0].metal };
 }
 
-export function saveSkin(skin) {
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY)) || {};
-    localStorage.setItem(KEY, JSON.stringify({ ...saved, skin }));
-  } catch {
-    // niet bewaard, het spel werkt verder gewoon
-  }
-}
+export const saveSkin = (skin) => patchSave({ skin });

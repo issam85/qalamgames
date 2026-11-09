@@ -3,6 +3,7 @@ import { row, rhythm, stairs, shelf, tunnel, padOver, towers, ringChain } from '
 
 const AIR = 0.548; // zo lang duurt een gewone sprong
 const LEAD_IN = 14; // vrije aanloop
+const CHECKPOINT_BACK = 3; // zo ver vóór een stukje begin je in de oefenmodus
 
 // kleuren per stuk: muur, vloer en de lichtlijnen langs de baan
 const NIGHT = { wall: '#4a35ac', floor: '#5a44c8', glow: '#38e8d8' };
@@ -15,17 +16,19 @@ const CRIMSON = { wall: '#a8323c', floor: '#842830', glow: '#ffd43b' };
 function buildWorld(name, sections) {
   const zones = [];
   const parts = [];
+  const checkpoints = [];
   let x = LEAD_IN;
   sections.forEach(({ title, colors, speed, rest, pieces }, i) => {
     zones.push({ x: i ? x - 2 : 0, title, speed, ...colors });
     const tempo = { speed, jump: speed * AIR };
     pieces.forEach((piece) => {
       const made = piece(x, tempo);
+      if (!made.noCheckpoint) checkpoints.push(x - Math.min(rest - 0.6, CHECKPOINT_BACK));
       parts.push(...made.parts);
       x += made.width + rest;
     });
   });
-  return { name, length: x + 8, zones, obstacles: parts.sort((a, b) => a.x - b.x) };
+  return { name, length: x + 8, zones, checkpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
 }
 
 const WORLD_1 = buildWorld('Lantaarnstad', [

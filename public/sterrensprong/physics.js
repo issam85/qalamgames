@@ -1,9 +1,12 @@
 // Spelregels zonder beeld: lopen, springen, landen en botsen. Los te testen.
 import { PHYS, SPIKE_HIT, THORN_HIT } from './config.js';
 
-export function createRun(level) {
+// start = plek op de grond om te beginnen; in de oefenmodus het laatste checkpoint
+export function createRun(level, start = 0) {
+  let zone = 0;
+  while (zone + 1 < level.zones.length && level.zones[zone + 1].x <= start) zone++;
   return {
-    level, x: 0, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, cursor: 0, state: 'run', zone: 0,
+    level, x: start, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, cursor: 0, state: 'run', zone,
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
     events: [], // voor beeld en geluid: jump, land, boost
   };

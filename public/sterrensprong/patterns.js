@@ -28,7 +28,7 @@ export const stairs = (count, punish = false) => (x, tempo) => {
   for (let i = 0; i < count; i++) parts.push(block(x + i * (w + gap), 0, w, i + 1));
   const end = count * w + (count - 1) * gap;
   if (punish) parts.push(...spikes(x + end + 2, 2));
-  return { parts, width: end + (punish ? 6 : 3) };
+  return { parts, width: end + (punish ? 6 : 3), noCheckpoint: tempo.speed >= 12 };
 };
 
 export const shelf = (w, count) => (x) => ({
@@ -58,7 +58,8 @@ export const towers = (count, height, w) => (x, tempo) => {
     parts.push(thorns(at, gap), block(at + gap, 0, w, height));
     at += gap + w;
   }
-  return { parts, width: at - x + 3 };
+  // op hoge snelheid heb je een aanloop nodig: daar geen checkpoint vlak voor de torens
+  return { parts, width: at - x + 3, noCheckpoint: tempo.speed >= 10.5 };
 };
 
 // een veld doornen dat je alleen met ringen oversteekt

@@ -31,7 +31,10 @@ html, body {
   background: rgba(0, 0, 0, .3);
 }
 
+.bar { position: relative; }
 #bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, #ffd43b, #ff9f43); }
+#bar-best { position: absolute; top: 0; bottom: 0; width: 3px; background: #fff; }
+#bar-best[hidden] { display: none; }
 
 .hud-row {
   display: flex;

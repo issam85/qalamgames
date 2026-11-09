@@ -1,29 +1,25 @@
-// Spelverloop: kleuren kiezen, spelen, botsen en meteen opnieuw, tot 100% en dan de volgende wereld.
+// Spelverloop: kiezen, spelen of oefenen, botsen en opnieuw, tot 100% en dan de volgende wereld.
 import { PHYS, DEATH_PAUSE } from './config.js';
 import { WORLDS } from './levels.js';
 import { createRun, stepRun } from './physics.js';
 import { createInput } from './input.js';
-import { createWorld } from './world.js';
-import { buildObstacles } from './obstacles3d.js';
-import { createBoosts } from './boosts3d.js';
-import { createPlayer } from './player3d.js';
-import { createShatter } from './shatter.js';
-import { createFx } from './fx.js';
+import { createView } from './view.js';
 import { loadSkin, saveSkin } from './skins.js';
+import { loadProgress, bestOf, recordPercent, completeWorld } from './progress.js';
 import { createMenu } from './menu.js';
-import { updateHud, showWorldDone, hideOverlay, flash, showToast } from './hud.js';
-import { playEvents } from './events.js';
+import { updateHud, percentOf, showWorldDone, hideOverlay, flash, showToast } from './hud.js';
 
 const WIN_PAUSE = 0.7; // een tik vlak na de finish slaat het scherm niet over
-const world = createWorld(document.getElementById('view'));
-const player = createPlayer(world.scene);
-const shatter = createShatter(world.scene);
-const fx = createFx(world.scene);
+const RESPAWN_PAUSE = 0.7; // in de oefenmodus even klaarstaan op het checkpoint
+const view = createView(document.getElementById('view'));
 const input = createInput(onPress);
+const progress = loadProgress(WORLDS.length);
 
-let worldIndex = Math.min(WORLDS.length - 1, Math.max(0, (Number(new URLSearchParams(location.search).get('wereld')) || 1) - 1));
-let level, boosts, run;
+let worldIndex = progress.unlocked - 1;
+let level, run;
 let mode = 'ready';
+let practice = false;
+let checkpoint = -1; // laatst bereikte checkpoint in de oefenmodus
 let attempt = 1;
 let pause = 0;
 let spare = 0;
@@ -32,52 +28,46 @@ let last = performance.now();
 function loadLevel(index) {
   worldIndex = index;
   level = WORLDS[index];
-  const stage = world.load(level);
-  buildObstacles(stage, level);
-  boosts = createBoosts(stage, level);
+  view.load(level);
   run = createRun(level);
-  attempt = 1;
-}
-
-function applySkin(skin) {
-  player.setSkin(skin);
-  shatter.setColor(skin.body);
-  fx.setSpark(skin.body);
 }
 
 loadLevel(worldIndex);
 const firstSkin = loadSkin();
-applySkin(firstSkin);
-const menu = createMenu(firstSkin, {
-  onChange(skin) {
-    applySkin(skin);
+view.setSkin(firstSkin);
+const menu = createMenu({ skin: firstSkin, worlds: WORLDS, progress, selected: worldIndex }, {
+  onSkin(skin) {
+    view.setSkin(skin);
     saveSkin(skin);
   },
-  onStart: restart,
+  onWorld: loadLevel,
+  onStart: () => play(false),
+  onPractice: () => play(true),
 });
-menu.show(true);
 
 function clearRun() {
-  run = createRun(level);
+  run = createRun(level, practice && checkpoint >= 0 ? level.checkpoints[checkpoint] : 0);
   spare = 0;
   input.takePress();
-  player.reset();
-  player.setVisible(true);
-  shatter.hide();
+  view.reset(practice);
   hideOverlay();
 }
 
-function restart() {
+function play(asPractice) {
+  practice = asPractice;
+  checkpoint = -1;
+  attempt = 1;
   clearRun();
   mode = 'run';
   menu.show(false);
-  showToast(level.zones[0].title);
+  showToast(practice ? 'Oefenen' : level.zones[0].title);
 }
 
 function backToMenu() {
+  practice = false;
   clearRun();
   mode = 'ready';
-  attempt = 1;
+  menu.update(worldIndex);
   menu.show(true);
 }
 document.getElementById('to-menu').addEventListener('click', backToMenu);
@@ -85,25 +75,42 @@ document.getElementById('to-menu').addEventListener('click', backToMenu);
 function finishWorld() {
   mode = 'won';
   pause = WIN_PAUSE;
-  showWorldDone(level, WORLDS[worldIndex + 1]);
+  if (!practice) completeWorld(progress, level, worldIndex, WORLDS.length);
+  showWorldDone(level, WORLDS[worldIndex + 1], practice);
 }
 
 function onPress() {
   if (mode === 'ready') {
-    restart();
+    play(false);
   } else if (mode === 'won' && pause <= 0) {
-    loadLevel((worldIndex + 1) % WORLDS.length);
-    restart();
+    if (practice || worldIndex === WORLDS.length - 1) return backToMenu();
+    loadLevel(worldIndex + 1);
+    play(false);
   }
+  return undefined;
 }
 
 function crash() {
   mode = 'dead';
   pause = DEATH_PAUSE;
-  player.setVisible(false);
-  shatter.burst(run.x, run.y);
-  world.kick(0.55);
+  view.crash(run);
   flash();
+  const percent = percentOf(run);
+  if (!practice && recordPercent(progress, level, percent)) showToast(`Nieuw record: ${percent}%`);
+}
+
+function afterCrash() {
+  attempt++;
+  clearRun();
+  mode = practice ? 'wait' : 'run';
+  pause = RESPAWN_PAUSE;
+}
+
+function passCheckpoints() {
+  while (checkpoint + 1 < level.checkpoints.length && run.x >= level.checkpoints[checkpoint + 1]) {
+    checkpoint++;
+    view.checkpoint(run);
+  }
 }
 
 function simulate(dt) {
@@ -114,32 +121,27 @@ function simulate(dt) {
     pressed = false;
     spare -= PHYS.step;
   }
-  playEvents(run, fx, world);
-  if (run.state === 'dead') crash();
-  else if (run.state === 'won') finishWorld();
-  else fx.trail(run, dt);
+  view.events(run);
+  if (run.state === 'dead') {
+    crash();
+  } else if (run.state === 'won') {
+    finishWorld();
+  } else {
+    if (practice) passCheckpoints();
+    view.trail(run, dt);
+  }
 }
 
 function frame(now) {
   const dt = Math.min((now - last) / 1000, 0.05);
   last = now;
   pause -= dt;
-  if (mode === 'run') {
-    simulate(dt);
-  } else if (mode === 'dead' && pause <= 0) {
-    attempt++;
-    restart();
-  } else if (mode === 'won') {
-    fx.finale(level.length, dt);
-  }
-  const inMenu = mode === 'ready';
-  player.update(run, dt, inMenu);
-  boosts.update(run, dt);
-  shatter.update(dt);
-  fx.update(dt);
-  world.follow(run, dt, inMenu);
-  world.render();
-  updateHud(run, attempt);
+  if (mode === 'run') simulate(dt);
+  else if (mode === 'dead' && pause <= 0) afterCrash();
+  else if (mode === 'wait' && pause <= 0) mode = 'run';
+  else if (mode === 'won') view.finale(dt);
+  view.draw(run, dt, mode === 'ready');
+  updateHud(run, attempt, practice, bestOf(progress, level));
   requestAnimationFrame(frame);
 }
 
