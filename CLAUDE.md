@@ -258,12 +258,12 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt
   het meisje haar hoofddoek.
 
-## Boem Rond! (nieuw spel, november 2026)
+## Tiktak Boom Bom (nieuw spel, november 2026)
 
 Idee en schets van een leerling: kinderen staan in een kring, de bom knippert rood en gaat
 met pijltje naar rechts door tot hij ontploft. "Tik Tak Boem" is de naam van een bestaand
-bordspel, daarom heet dit spel Boem Rond!. Maker voorlopig "Al Qalam kids". Staat in
-`public/boemrond/` (ES-modules zonder build), op de homepage in Lichting 4.
+bordspel, daarom heet dit spel Tiktak Boom Bom. Maker voorlopig "Al Qalam kids". Staat in
+`public/tiktakboombom/` (ES-modules zonder build), op de homepage in Lichting 4.
 
 - 1 of 2 spelers plus computerkinderen, samen 6. Alleen: pijltje naar rechts of D; samen:
   D en pijltje naar rechts; tablet: tik op je helft. De bom gaat met de klok mee; spelers

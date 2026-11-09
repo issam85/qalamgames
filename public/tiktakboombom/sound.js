@@ -1,5 +1,5 @@
 // Geluiden, gemaakt met Web Audio (geen bestanden). De aan/uit-stand wordt onthouden.
-const KEY = 'boemrond-geluid';
+const KEY = 'tiktakboombom-geluid';
 let ctx = null;
 
 function readMuted() {

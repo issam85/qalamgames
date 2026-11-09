@@ -1,4 +1,4 @@
-// Schermen en spellus van Boem Rond!
+// Schermen en spellus van Tiktak Boom Bom
 import { startRound, step, press } from './game.js';
 import { createGame } from './game-setup.js';
 import { resultOf } from './result.js';

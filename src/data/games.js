@@ -14,8 +14,8 @@ export const GAMES = {
     controls: [['Muis of vinger', 'Klik of tik']],
     howto: 'Ga naar de Kledingkast, kies een soort kleding en een kleur, en druk op Klaar. Je outfit wordt bewaard op je eigen apparaat.',
   },
-  boemrond: {
-    title: 'Boem Rond!', src: '/boemrond/index.html', accent: '#e53935',
+  tiktakboombom: {
+    title: 'Tiktak Boom Bom', src: '/tiktakboombom/index.html', accent: '#e53935',
     blurb: 'De bom gaat rond in de kring en knippert steeds sneller. Geef hem snel door, maar pas als hij echt bij je is. Wie de bom vasthoudt als hij ontploft, ligt eruit. De laatste die overblijft wint!',
     controls: [['Pijltje naar rechts', 'Bom doorgeven'], ['D', 'Speler 1 bij twee spelers'], ['Tablet', 'Tik op je helft van het scherm']],
     howto: 'Kies 1 of 2 spelers. Wacht tot de bom in je handen is en geef hem dan meteen door. Druk je te vroeg, dan laat je hem vallen.',
