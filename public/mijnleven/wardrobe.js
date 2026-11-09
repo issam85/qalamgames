@@ -11,7 +11,7 @@ const titleEl = document.getElementById('kast-title');
 const dollEl = document.getElementById('kast-doll');
 
 let cat = CATS[0].key;
-let api = null; // { getOutfit(), setOutfit(outfit) }
+let api = null; // { getOutfit(), setOutfit(outfit), getMakeup() }
 
 function change(patch) {
   const outfit = api.getOutfit();
@@ -36,7 +36,7 @@ function render() {
   swatchesEl.replaceChildren(...SWATCHES.map(([hex, name]) => swatch(
     hex, name, outfit.color[cat] === hex, () => change({ color: { [cat]: hex } }),
   )));
-  renderDoll(dollEl, outfit);
+  renderDoll(dollEl, outfit, api.getMakeup());
 }
 
 export function initWardrobe(wardrobeApi) {

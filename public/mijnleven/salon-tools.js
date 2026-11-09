@@ -1,11 +1,13 @@
 // Het gereedschap van de kapper: naam, uitleg en het plaatje dat met je muis of
 // vinger meebeweegt. power = hoe hard het een knoop losmaakt per haal.
+import { cursorSvg } from './ui.js';
+
 export const TOOLS = [
   { key: 'borstel', label: 'Borstel', hint: 'Sleep over de knopen om ze eruit te borstelen.', power: 1 },
-  { key: 'kam', label: 'Kam', hint: 'Kam je haar voorzichtig: sleep een paar keer over een knoop.', power: 0.5 },
+  { key: 'kam', label: 'Kam', hint: 'Sleep de kam een paar keer over een knoop: hij wordt steeds kleiner.', power: 0.5 },
   { key: 'puntkam', label: 'Puntkam', hint: 'Tik op je haar: de puntkam maakt een scheiding en twee vlechten.' },
-  { key: 'schaar', label: 'Schaar', hint: 'Tik op het haar om het een stukje korter te knippen.' },
-  { key: 'fohn', label: 'Föhn', hint: 'Sleep over het haar tot het glanst.' },
+  { key: 'schaar', label: 'Schaar', hint: 'Sleep de schaar door een lok: daar knip je hem af.' },
+  { key: 'fohn', label: 'Föhn', hint: 'Sleep de föhn over je haar tot het glanst.' },
   { key: 'hoed', label: 'Hoed', hint: 'Tik om je hoed op te zetten. Met een lage knot past hij het mooist.' },
   { key: 'hoofddoek', label: 'Hoofddoek', hint: 'Tik om je hoofddoek om te doen. Tik nog een keer om hem af te doen.' },
 ];
@@ -25,8 +27,4 @@ const GLYPHS = {
   hoofddoek: '<path d="M0 -26 C-22 -26 -26 0 -22 18 L22 18 C26 0 22 -26 0 -26 Z" fill="#b36bff" stroke="#fff" stroke-width="3"/><ellipse cx="0" cy="0" rx="11" ry="13" fill="#f1c9a5"/>',
 };
 
-// p = { x, y } in het vak van de tekening
-export function toolSvg(tool, p) {
-  if (!p) return '';
-  return `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(-20)" opacity="0.95" pointer-events="none">${GLYPHS[tool]}</g>`;
-}
+export const toolSvg = (tool, p) => cursorSvg(GLYPHS[tool], p);

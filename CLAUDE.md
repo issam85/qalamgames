@@ -192,34 +192,51 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Kledingkast en Kapper zijn open) en twee kamers. Alles
-  wordt bewaard in `localStorage` (`mijnleven`); "Klaar!" geeft per kamer de eerste
-  keer per dag 2 sterren.
+- Klaar: het huis (overzicht; Badkamer, Kledingkast en Kapper zijn open, in die
+  volgorde) en drie kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
+  "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
+  - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
+    ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
+    badjas, handdoek om het haar): tanden poetsen (slepen over de mond) en make-up:
+    lippenstift, blush en oogschaduw, elk 5 kleuren (kleur kiezen of op het gezicht
+    tikken), watje = eraf. Make-up blijft zitten in het huis, de kast, op de foto en
+    bij de kapper. "Klaar!" kan pas na douchen en tanden poetsen; elke dag opnieuw.
   - Kledingkast: 6 categorieën × 6 soorten × 8 kleuren, "Verras me!" en "Foto" (PNG
     720×960 om op te slaan).
   - Kapper (wensen van de leerling): elke dag 6 knopen, die je eruit borstelt door
-    erover te slepen (borstel 2 halen, kam 4). Puntkam = scheiding en twee vlechten,
-    schaar = korter (groeit per dag een stap terug), föhn = glans, hoed, hoofddoek (die
-    uit de kledingkast). Kapsels met waar ze voor zijn: los (spelen met je dochters),
+    erover te slepen (borstel 2 halen, kam 4; de knoop wordt per haal kleiner). Puntkam
+    = scheiding en twee vlechten. Schaar: los haar heeft zes lokken vóór de schouders,
+    je sleept de schaar door een lok en die wordt daar afgeknipt (het stukje valt; per
+    dag groeit een lok 50 terug, lengte 150–300; staart en vlechten volgen de
+    gemiddelde lengte). Föhn = slepen tot het glanst (de glans komt langzaam op, een
+    tik telt ook), hoed, hoofddoek (die uit de kledingkast). Kapsels met waar ze voor zijn: los (spelen met je dochters),
     staart (eten maken), vlechten, hoge knot, lage knot (onder een hoed), bruiloft.
     "Klaar!" kan pas als alle knopen eruit zijn.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
-  `data.js` categorieën, soorten, kleuren · `doll.js` + `doll-parts.js` het meisje als
-  SVG (vak 300×520, één functie per soort) · `photo.js` · `storage.js` · `ui.js` ·
-  kapper: `salon.js` scherm en slepen · `salon-actions.js` wat het gereedschap doet
-  (losse functies, zo te testen) · `salon-tools.js` gereedschap en het plaatje bij de
-  muis · `hair.js` knopen, nieuwe dag, hoofd en schouders · `hair-styles.js` kapsels
-  (elk twee lagen: achter en vóór het lijf). CSS: `base.css`, `huis.css`, `kast.css`,
-  `kast-phone.css` (staand en liggend), `kapper.css`, `overlay.css`. De kapper
-  gebruikt de indeling van de kast. Elk scherm is één schermhoogte; knoppen altijd in
-  beeld.
+  `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
+  `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
+  · `storage.js` · `ui.js` · `pointer.js` slepen met muis of vinger op een tekening
+  (rekent om naar de viewBox, met pointer capture omdat de SVG bij elke beweging
+  opnieuw wordt gemaakt; gebruik dit voor elke kamer waar je sleept) ·
+  kapper: `salon.js` scherm en slepen · `salon-panel.js` knoppen en meter ·
+  `salon-actions.js` wat het gereedschap doet (losse functies, zo te testen) ·
+  `salon-tools.js` gereedschap en het plaatje bij de muis · `hair.js` knopen, nieuwe
+  dag, hoofd en schouders · `hair-styles.js` kapsels (elk twee lagen: achter en vóór
+  het lijf), lokken en vallende stukjes ·
+  badkamer: `bathroom.js` scherm · `bath.js` plekken en wassen (losse functies) ·
+  `bath-scene.js` douche en spiegel · `bath-tools.js` spullen · `makeup.js` kleuren.
+  CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
+  `kapper.css`, `bad.css`, `overlay.css`. Kapper en badkamer gebruiken de indeling van
+  de kast. Elk scherm is één schermhoogte; knoppen altijd in beeld.
 - Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
   `doll-parts.js`.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamers: badkamer (douchen, make-up), keuken, gezin, moskee en Mekka,
-  slaapkamer, winkel. Het kapsel is alleen bij de kapper te zien; in het huis draagt
+- Volgende kamers (volgorde van de gebruiker): keuken, gezin, moskee en Mekka (stijl
+  van het Hajj-spel), slaapkamer, winkel. Plan: slapen begint een nieuwe speldag (nu
+  geldt nog de echte datum); de winkel verkoopt kleren, make-upkleuren en
+  haaraccessoires voor sterren. Het kapsel is alleen bij de kapper te zien; in het huis draagt
   het meisje haar hoofddoek.
 
 ## Volgende opdracht: website-upgrade

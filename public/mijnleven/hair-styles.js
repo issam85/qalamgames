@@ -1,9 +1,18 @@
 // De tekeningen van de kapsels (zelfde volgorde als STYLES in hair.js).
-// c = haarkleur, len = lengte 0 (kort), 1 of 2 (lang). Elk kapsel geeft twee lagen
-// terug: [achter het lijf, vóór het lijf], zodat lang haar achter de schouders valt.
+// c = haarkleur, ends = de lengte per lok. Elk kapsel geeft twee lagen terug:
+// [achter het lijf, vóór het lijf].
+// Los haar heeft zes lokken die vóór de schouders vallen (drie links, drie rechts).
+// Elke lok heeft een eigen onderkant (y), zodat je ze los van elkaar kunt knippen.
+export const STRAND_X = [92, 105, 118, 182, 195, 208];
+export const MIN_END = 150;
+export const MAX_END = 300;
+const STRAND_W = 14;
+// 0 (alles kort) – 1 (alles lang), voor de staart en de vlechten
+export const longness = (ends) => (ends.reduce((a, e) => a + e, 0) / ends.length - MIN_END) / (MAX_END - MIN_END);
+const lock = (x, y, h, c) => `<rect x="${x - STRAND_W / 2}" y="${y.toFixed(1)}" width="${STRAND_W}" height="${h.toFixed(1)}" rx="7" fill="${c}"/>`;
+
 const CAP = 'M150 35 C100 35 86 82 90 137 L210 137 C214 82 200 35 150 35 Z';
 const cap = (c) => `<path d="${CAP}" fill="${c}"/>`;
-const ENDS = [190, 260, 330]; // onderkant van los haar per lengte
 const pearls = (list) => `<g fill="#fff" stroke="#ffd43b" stroke-width="1.5">${list.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.5"/>`).join('')}</g>`;
 
 function braid(x, bend, y) {
@@ -11,13 +20,23 @@ function braid(x, bend, y) {
   return `M${x} 127 C${x + bend} ${mid - 20} ${x + bend * 0.6} ${mid + 30} ${x + (x < 150 ? 4 : -4)} ${y}`;
 }
 
-function loose(c, len) {
-  const e = ENDS[len];
-  return [`<path d="M150 35 C100 35 86 82 90 137 L82 ${e} C108 ${e + 14} 192 ${e + 14} 218 ${e} L210 137 C214 82 200 35 150 35 Z" fill="${c}"/>`, cap(c)];
+function loose(c, ends) {
+  const e = Math.min(185, Math.max(...ends));
+  const locks = ends.map((end, i) => lock(STRAND_X[i], 120, end - 120, c)
+    + `<path d="M${STRAND_X[i] + 7} 140 V${end - 8}" stroke="rgba(0,0,0,0.13)" stroke-width="1.5"/>`).join('');
+  return [`<path d="M150 35 C100 35 86 82 90 137 L84 ${e} C108 ${e + 10} 192 ${e + 10} 216 ${e} L210 137 C214 82 200 35 150 35 Z" fill="${c}"/>`, cap(c) + locks];
 }
 
-function tail(c, len) {
-  const k = [0.55, 0.78, 1][len];
+// afgeknipte stukjes die naar beneden vallen; pieces = [{ x, y, h, t }], t = begintijd
+export function clippingsSvg(pieces, c, now) {
+  return pieces.map(({ x, y, h, t }) => {
+    const dt = now - t;
+    return `<g opacity="${Math.max(0, 1 - dt / 700).toFixed(2)}">${lock(x, y + dt * dt * 0.0005, h, c)}</g>`;
+  }).join('');
+}
+
+function tail(c, ends) {
+  const k = 0.55 + 0.45 * longness(ends);
   return [
     `<g transform="translate(205 107) scale(1 ${k}) translate(-205 -107)"><path d="M205 107 C250 137 250 237 215 287 C235 217 225 157 200 137 Z" fill="${c}"/></g>`,
     `${cap(c)}<circle cx="206" cy="119" r="9" fill="#ffd43b"/>`,
@@ -25,8 +44,8 @@ function tail(c, len) {
 }
 
 // twee vlechten met een scheiding in het midden (gemaakt met de puntkam)
-function braids(c, len) {
-  const y = [205, 250, 300][len];
+function braids(c, ends) {
+  const y = Math.round(205 + 95 * longness(ends));
   const d = `${braid(96, -26, y)} ${braid(204, 26, y)}`;
   return ['', `${cap(c)}<path d="M150 36 L150 60" stroke="rgba(255,255,255,0.75)" stroke-width="3" stroke-linecap="round"/>`
     + `<path d="${d}" fill="none" stroke="${c}" stroke-width="22" stroke-linecap="round"/>`

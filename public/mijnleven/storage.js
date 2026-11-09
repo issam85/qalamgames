@@ -1,7 +1,10 @@
-// Bewaart het spel op dit apparaat: de outfit, het haar, de sterren en de dag van de
-// laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, de
+// sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
+import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
+import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
+import { freshMakeup, validMakeup } from './makeup.js';
 
 const KEY = 'mijnleven';
 
@@ -16,10 +19,26 @@ function validOutfit(outfit) {
 
 function validHair(hair) {
   return Boolean(hair) && Number.isInteger(hair.style) && hair.style >= 0 && hair.style < STYLES.length
-    && [0, 1, 2].includes(hair.length) && HAIR_COLORS.some(([hex]) => hex === hair.color)
+    && HAIR_COLORS.some(([hex]) => hex === hair.color)
     && Array.isArray(hair.knots) && hair.knots.length === SPOTS.length
     && hair.knots.every((hp) => typeof hp === 'number' && hp >= 0)
     && typeof hair.day === 'string';
+}
+
+// de lengte per lok; een ouder spel had één lengte (0, 1 of 2) voor al het haar
+function loadHair(saved) {
+  if (!validHair(saved)) return freshHair();
+  const { length, ...hair } = saved;
+  const ok = Array.isArray(hair.ends) && hair.ends.length === STRAND_X.length
+    && hair.ends.every((end) => typeof end === 'number' && end >= MIN_END && end <= MAX_END);
+  const old = [MIN_END, (MIN_END + MAX_END) / 2, MAX_END][length] || MAX_END;
+  return { ...freshHair(), ...hair, ends: ok ? hair.ends : STRAND_X.map(() => old) };
+}
+
+function validBath(bath) {
+  return Boolean(bath) && Array.isArray(bath.spots) && bath.spots.length === WASH_SPOTS.length
+    && bath.spots.every((s) => Number.isInteger(s) && s >= 0 && s <= CLEAN)
+    && typeof bath.teeth === 'boolean' && typeof bath.day === 'string';
 }
 
 export function loadGame() {
@@ -33,8 +52,11 @@ export function loadGame() {
     outfit: validOutfit(data.outfit) ? data.outfit : defaultOutfit(),
     stars: Number.isInteger(data.stars) && data.stars >= 0 ? data.stars : 0,
     starDay: typeof data.starDay === 'string' ? data.starDay : '',
-    hair: validHair(data.hair) ? { ...freshHair(), ...data.hair } : freshHair(),
+    hair: loadHair(data.hair),
     kapperDay: typeof data.kapperDay === 'string' ? data.kapperDay : '',
+    bath: validBath(data.bath) ? data.bath : freshBath(),
+    makeup: validMakeup(data.makeup) ? data.makeup : freshMakeup(),
+    badDay: typeof data.badDay === 'string' ? data.badDay : '',
   };
 }
 

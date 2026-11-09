@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="kast.css">
   <link rel="stylesheet" href="kast-phone.css">
   <link rel="stylesheet" href="kapper.css">
+  <link rel="stylesheet" href="bad.css">
   <link rel="stylesheet" href="overlay.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel Mijn Leven — kleed je eigen meisje aan met hoofddoeken, jurken, schoenen, tassen en sieraden. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
@@ -46,9 +47,9 @@
         <p>Dit ben jij! Kies een kamer.</p>
       </div>
       <div class="rooms">
+        <button class="room is-open" data-room="bad"><b>Badkamer</b><span>Douchen, tanden poetsen en make-up</span></button>
         <button class="room is-open" data-room="kast"><b>Kledingkast</b><span>Hoofddoeken, jurken, schoenen, tassen en sieraden</span></button>
         <button class="room is-open" data-room="kapper"><b>Kapper</b><span>Borstelen, kammen, knippen, vlechten en mooie kapsels</span></button>
-        <div class="room"><b>Badkamer</b><span>Douchen en make-up. Later.</span></div>
         <div class="room"><b>Keuken</b><span>Lekker eten koken. Later.</span></div>
         <div class="room"><b>Gezin</b><span>Je man en kinderen. Later.</span></div>
         <div class="room"><b>Moskee en Mekka</b><span>Bidden en op reis. Later.</span></div>
@@ -60,7 +61,7 @@
 
   <section id="screen-kast" class="screen">
     <header class="bar">
-      <button id="kast-home" class="pill">Huis</button>
+      <button class="pill home">Huis</button>
       <h1>Kledingkast</h1>
       <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
     </header>
@@ -82,7 +83,7 @@
 
   <section id="screen-kapper" class="screen">
     <header class="bar">
-      <button id="kapper-home" class="pill">Huis</button>
+      <button class="pill home">Huis</button>
       <h1>Kapper</h1>
       <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
     </header>
@@ -98,6 +99,29 @@
         <div class="kast-buttons two">
           <button id="kapper-reset" class="btn blue">Opnieuw</button>
           <button id="kapper-done" class="btn green">Klaar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-bad" class="screen">
+    <header class="bar">
+      <button class="pill home">Huis</button>
+      <h1>Badkamer</h1>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+    </header>
+    <div class="kast">
+      <nav id="bad-tools" class="cats" aria-label="Spullen in de badkamer"></nav>
+      <div class="kast-stage salon-stage"><div id="bad-doll" class="doll"></div></div>
+      <div class="kast-panel">
+        <div class="meter-row"><h2>Schoon</h2><span id="bad-label"></span></div>
+        <div class="meter"><div id="bad-meter"></div></div>
+        <p id="bad-hint" class="hint"></p>
+        <ul id="bad-list" class="todo"></ul>
+        <div id="bad-colors" class="swatches" aria-label="Kleur van de make-up"></div>
+        <div class="kast-buttons two">
+          <button id="bad-reset" class="btn blue">Opnieuw</button>
+          <button id="bad-done" class="btn green">Klaar!</button>
         </div>
       </div>
     </div>

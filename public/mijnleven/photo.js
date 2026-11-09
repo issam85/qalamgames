@@ -15,8 +15,8 @@ function loadImage(url) {
 }
 
 // geeft een data-URL (PNG) van de foto terug
-export async function makePhoto(outfit) {
-  const svg = dollSvg(outfit).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="450" height="780" ');
+export async function makePhoto(outfit, makeup) {
+  const svg = dollSvg(outfit, makeup).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="450" height="780" ');
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   try {
     const doll = await loadImage(url);

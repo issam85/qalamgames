@@ -1,0 +1,52 @@
+/* De badkamer gebruikt de indeling van de kast (kast.css) en het speelvlak, de meter
+   en de uitleg van de kapper (kapper.css); hier alleen het lijstje met wat af is. */
+
+.todo {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.todo li {
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 3px solid #f1e4ff;
+  background: #faf5ff;
+  color: var(--soft);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.todo li.is-done {
+  border-color: #a5d6a7;
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.todo li.is-done::before {
+  content: '✓ ';
+}
+
+@media (max-width: 700px) {
+  .todo {
+    gap: 6px;
+  }
+
+  .todo li {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 520px) and (min-width: 701px) {
+  .todo {
+    gap: 5px;
+  }
+
+  .todo li {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-width: 2px;
+  }
+}

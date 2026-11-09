@@ -1,72 +1,92 @@
 // De kapper: kies gereedschap en gebruik het op het haar. Borstel en kam sleep je
-// over de knopen; puntkam, schaar, hoed en hoofddoek werken met een tik; de föhn
-// sleep je tot het haar glanst. Alles wordt bewaard.
-import { STYLES, HAIR_COLORS, SPOTS, VIEW, bustSvg, knotsLeft, freshHair, newDay } from './hair.js';
+// over de knopen, de schaar sleep je door een lok, de föhn sleep je tot het haar
+// glanst; puntkam, hoed en hoofddoek werken met een tik. Alles wordt bewaard.
+import { bustSvg, shineSvg, knotsLeft, freshHair, newDay } from './hair.js';
+import { clippingsSvg } from './hair-styles.js';
 import { TOOLS, toolSvg } from './salon-tools.js';
-import { onHair, untangle, tapHair } from './salon-actions.js';
-import { button, swatch, today } from './ui.js';
+import { DRY_STEPS, TAP_DRY, onHair, untangle, cut, tapHair } from './salon-actions.js';
+import { renderSalonPanel } from './salon-panel.js';
+import { trackPointer } from './pointer.js';
+import { today } from './ui.js';
 
-const toolsEl = document.getElementById('kapper-tools');
 const stageEl = document.getElementById('kapper-doll');
-const stylesEl = document.getElementById('kapper-styles');
-const colorsEl = document.getElementById('kapper-colors');
-const meterEl = document.getElementById('kapper-meter');
-const labelEl = document.getElementById('kapper-label');
 const hintEl = document.getElementById('kapper-hint');
-const DRY_STEPS = 40; // zo lang föhnen tot het glanst
 
-let api = null; // { getOutfit(), getHair(), setHair(hair) }
+let api = null; // { getOutfit(), getMakeup(), getHair(), setHair(hair) }
 let tool = TOOLS[0];
 let pointer = null; // plek van muis of vinger in het vak van de tekening
-let down = false;
 let dry = 0;
 const inside = new Set(); // knopen waar het gereedschap nu overheen gaat
+let falling = []; // afgeknipte stukjes die nog vallen
 
 const hair = () => api.getHair();
 const setHair = (patch) => api.setHair({ ...hair(), ...patch });
 const say = (text) => { hintEl.textContent = text; };
-const draw = () => { stageEl.innerHTML = bustSvg(api.getOutfit(), hair(), toolSvg(tool.key, pointer)); };
 
-function renderPanel() {
+function draw() {
   const h = hair();
-  const left = knotsLeft(h);
-  toolsEl.replaceChildren(...TOOLS.map((t) => button('cat', t.label, t === tool, () => {
+  const extra = (dry && !h.shine ? shineSvg(dry / DRY_STEPS) : '')
+    + clippingsSvg(falling, h.color, performance.now()) + toolSvg(tool.key, pointer);
+  stageEl.innerHTML = bustSvg(api.getOutfit(), h, api.getMakeup(), extra);
+}
+
+// laat de afgeknipte stukjes vallen tot ze weg zijn
+function fall() {
+  const now = performance.now();
+  falling = falling.filter((piece) => now - piece.t < 700);
+  draw();
+  if (falling.length) requestAnimationFrame(fall);
+}
+
+// wat de knoppen in het paneel doen
+const PANEL = {
+  tool: (t) => {
     tool = t;
     say(t.hint);
     renderPanel();
-  })));
-  stylesEl.replaceChildren(...STYLES.map(([label, text], i) => button('item', label, h.style === i && !h.hijab, () => {
+  },
+  style: (i, text) => {
     setHair({ style: i, hijab: false });
     say(text);
     render();
-  })));
-  colorsEl.replaceChildren(...HAIR_COLORS.map(([hex, name]) => swatch(hex, name, h.color === hex, () => {
+  },
+  color: (hex) => {
     setHair({ color: hex });
     render();
-  })));
-  labelEl.textContent = left === 0 ? 'Helemaal glad!' : `${left} ${left === 1 ? 'knoop' : 'knopen'}`;
-  meterEl.style.width = `${100 - (left / SPOTS.length) * 100}%`;
-}
+  },
+};
+const renderPanel = () => renderSalonPanel(hair(), tool, PANEL);
 
 function render() {
   renderPanel();
   draw();
 }
 
-function toView(e) {
-  const box = stageEl.querySelector('svg').getBoundingClientRect();
-  return {
-    x: VIEW.x + ((e.clientX - box.left) / box.width) * VIEW.w,
-    y: VIEW.y + ((e.clientY - box.top) / box.height) * VIEW.h,
-  };
-}
-
 function brush(p) {
   const knots = untangle(hair().knots, p, tool.power, inside);
   if (!knots) return;
   setHair({ knots });
-  if (knotsLeft(hair()) === 0) say('Helemaal glad! Kies nu een kapsel.');
+  const left = knotsLeft(hair());
+  say(left === 0 ? 'Helemaal glad! Kies nu een kapsel.' : `Goed zo! Nog ${left} ${left === 1 ? 'knoop' : 'knopen'}.`);
   renderPanel();
+}
+
+// knippen kan alleen in los haar: de schaar knipt elke lok af waar hij doorheen gaat
+function snip(from, to) {
+  if (hair().style !== 0) {
+    if (!onHair(to)) return;
+    setHair({ style: 0 });
+    say('Je haar gaat los, dan kun je knippen.');
+    renderPanel();
+    return;
+  }
+  const result = cut(hair().ends, from, to);
+  if (!result) return;
+  setHair({ ends: result.ends });
+  say('Knip, knip! Morgen is het weer een stukje gegroeid.');
+  const now = performance.now();
+  if (!falling.length) requestAnimationFrame(fall);
+  falling.push(...result.pieces.map((piece) => ({ ...piece, t: now })));
 }
 
 function tap(p) {
@@ -77,51 +97,43 @@ function tap(p) {
   if (patch) renderPanel();
 }
 
-function drag(p) {
+// from = waar de muis of vinger net nog was
+function drag(p, from) {
   if (hair().hijab) return;
   if (tool.power) brush(p);
+  else if (tool.key === 'schaar') snip(from, p);
   else if (tool.key === 'fohn' && onHair(p) && !hair().shine) {
-    dry += 1;
-    if (dry < DRY_STEPS) return;
+    dry += from === p ? TAP_DRY : 1;
+    if (dry < DRY_STEPS) {
+      say(`Föhnen... ${Math.round((dry / DRY_STEPS) * 100)}%`);
+      return;
+    }
     setHair({ shine: true });
     say('Wat glanst je haar mooi!');
   }
 }
 
-function onDown(e) {
-  e.preventDefault();
-  down = true;
-  pointer = toView(e);
-  tap(pointer);
-  drag(pointer);
+function onDown(p) {
+  pointer = p;
+  tap(p);
+  drag(p, p);
   draw();
 }
 
-function onMove(e) {
-  pointer = toView(e);
-  if (down) drag(pointer);
+function onMove(p, pressed) {
+  const from = pointer || p;
+  pointer = p;
+  if (p && pressed) drag(p, from);
   draw();
-}
-
-function onUp() {
-  down = false;
-  inside.clear();
 }
 
 export function initSalon(salonApi) {
   api = salonApi;
-  stageEl.addEventListener('pointerdown', onDown);
-  stageEl.addEventListener('pointermove', onMove);
-  window.addEventListener('pointerup', onUp);
-  window.addEventListener('pointercancel', onUp);
-  stageEl.addEventListener('pointerleave', () => {
-    pointer = null;
-    draw();
-  });
+  trackPointer(stageEl, { down: onDown, move: onMove, up: () => inside.clear() });
   document.getElementById('kapper-reset').addEventListener('click', () => {
     api.setHair({ ...freshHair(), color: hair().color, day: today() });
     dry = 0;
-    say('Opnieuw! Je haar zit weer in de knoop.');
+    say('Opnieuw! Je haar is weer lang en zit in de knoop.');
     render();
   });
 }

@@ -18,4 +18,10 @@ export function swatch(hex, name, pressed, onClick) {
   return btn;
 }
 
-export const today = () => new Date().toISOString().slice(0, 10);
+// het plaatje dat met muis of vinger meebeweegt; p = { x, y } in het vak van de tekening
+export function cursorSvg(glyph, p, turn = -20) {
+  if (!p) return '';
+  return `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${turn})" opacity="0.95" pointer-events="none">${glyph}</g>`;
+}
+
+export const today =() => new Date().toISOString().slice(0, 10);
