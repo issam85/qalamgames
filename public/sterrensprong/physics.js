@@ -3,7 +3,7 @@ import { PHYS, SPIKE_HIT, THORN_HIT } from './config.js';
 
 export function createRun(level) {
   return {
-    level, x: 0, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, cursor: 0, state: 'run',
+    level, x: 0, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, cursor: 0, state: 'run', zone: 0,
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
     events: [], // voor beeld en geluid: jump, land, boost
   };
@@ -64,10 +64,20 @@ function resolve(run, prevY, held) {
   return floor;
 }
 
+// elk stuk van het level heeft zijn eigen snelheid en kleur
+function updateZone(run) {
+  const { zones } = run.level;
+  if (run.zone + 1 < zones.length && run.x >= zones[run.zone + 1].x) {
+    run.zone++;
+    run.events.push({ type: 'zone', title: zones[run.zone].title });
+  }
+}
+
 export function stepRun(run, held, pressed) {
   const dt = PHYS.step;
   run.buffer = pressed ? PHYS.buffer : Math.max(0, run.buffer - dt);
-  run.x += PHYS.speed * dt;
+  run.x += run.level.zones[run.zone].speed * dt;
+  updateZone(run);
   if (run.grounded && (held || run.buffer > 0)) {
     run.vy = PHYS.jump;
     run.grounded = false;

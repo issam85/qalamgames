@@ -1,6 +1,6 @@
-// Spelverloop: kleuren kiezen, spelen, botsen en meteen opnieuw, finish.
+// Spelverloop: kleuren kiezen, spelen, botsen en meteen opnieuw, tot 100% en dan de volgende wereld.
 import { PHYS, DEATH_PAUSE } from './config.js';
-import { TEST_LEVEL } from './levels.js';
+import { WORLDS } from './levels.js';
 import { createRun, stepRun } from './physics.js';
 import { createInput } from './input.js';
 import { createWorld } from './world.js';
@@ -11,23 +11,33 @@ import { createShatter } from './shatter.js';
 import { createFx } from './fx.js';
 import { loadSkin, saveSkin } from './skins.js';
 import { createMenu } from './menu.js';
-import { updateHud, showOverlay, hideOverlay, flash } from './hud.js';
+import { updateHud, showWorldDone, hideOverlay, flash, showToast } from './hud.js';
+import { playEvents } from './events.js';
 
-const level = TEST_LEVEL;
-const world = createWorld(document.getElementById('view'), level);
-buildObstacles(world.scene, level);
-const boosts = createBoosts(world.scene, level);
+const WIN_PAUSE = 0.7; // een tik vlak na de finish slaat het scherm niet over
+const world = createWorld(document.getElementById('view'));
 const player = createPlayer(world.scene);
 const shatter = createShatter(world.scene);
 const fx = createFx(world.scene);
 const input = createInput(onPress);
 
-let run = createRun(level);
+let worldIndex = Math.min(WORLDS.length - 1, Math.max(0, (Number(new URLSearchParams(location.search).get('wereld')) || 1) - 1));
+let level, boosts, run;
 let mode = 'ready';
 let attempt = 1;
 let pause = 0;
 let spare = 0;
 let last = performance.now();
+
+function loadLevel(index) {
+  worldIndex = index;
+  level = WORLDS[index];
+  const stage = world.load(level);
+  buildObstacles(stage, level);
+  boosts = createBoosts(stage, level);
+  run = createRun(level);
+  attempt = 1;
+}
 
 function applySkin(skin) {
   player.setSkin(skin);
@@ -35,6 +45,7 @@ function applySkin(skin) {
   fx.setSpark(skin.body);
 }
 
+loadLevel(worldIndex);
 const firstSkin = loadSkin();
 applySkin(firstSkin);
 const menu = createMenu(firstSkin, {
@@ -60,6 +71,7 @@ function restart() {
   clearRun();
   mode = 'run';
   menu.show(false);
+  showToast(level.zones[0].title);
 }
 
 function backToMenu() {
@@ -70,11 +82,17 @@ function backToMenu() {
 }
 document.getElementById('to-menu').addEventListener('click', backToMenu);
 
+function finishWorld() {
+  mode = 'won';
+  pause = WIN_PAUSE;
+  showWorldDone(level, WORLDS[worldIndex + 1]);
+}
+
 function onPress() {
   if (mode === 'ready') {
     restart();
-  } else if (mode === 'won') {
-    attempt = 1;
+  } else if (mode === 'won' && pause <= 0) {
+    loadLevel((worldIndex + 1) % WORLDS.length);
     restart();
   }
 }
@@ -88,17 +106,6 @@ function crash() {
   flash();
 }
 
-function playEvents() {
-  run.events.forEach((e) => {
-    if (e.type === 'land') fx.dust(e.x, e.y);
-    if (e.type === 'boost') {
-      fx.burst(e.x, e.y + 0.45, e.kind === 'ring' ? '#5cf2d6' : '#ffd43b', 18, 8);
-      world.kick(0.16);
-    }
-  });
-  run.events.length = 0;
-}
-
 function simulate(dt) {
   spare += dt;
   let pressed = input.takePress();
@@ -107,27 +114,21 @@ function simulate(dt) {
     pressed = false;
     spare -= PHYS.step;
   }
-  playEvents();
+  playEvents(run, fx, world);
   if (run.state === 'dead') crash();
-  if (run.state === 'won') {
-    mode = 'won';
-    showOverlay('Gehaald!', 'Druk op spatie of tik om nog een keer te spelen');
-  } else if (run.state === 'run') {
-    fx.trail(run, dt);
-  }
+  else if (run.state === 'won') finishWorld();
+  else fx.trail(run, dt);
 }
 
 function frame(now) {
   const dt = Math.min((now - last) / 1000, 0.05);
   last = now;
+  pause -= dt;
   if (mode === 'run') {
     simulate(dt);
-  } else if (mode === 'dead') {
-    pause -= dt;
-    if (pause <= 0) {
-      attempt++;
-      restart();
-    }
+  } else if (mode === 'dead' && pause <= 0) {
+    attempt++;
+    restart();
   } else if (mode === 'won') {
     fx.finale(level.length, dt);
   }

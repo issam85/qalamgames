@@ -1,4 +1,4 @@
-// De 3D-wereld: renderer, licht, vloer, sterrenmuur, kleurzones en de meelopende camera.
+// De 3D-wereld: renderer, licht en camera blijven; vloer, muur en stad wisselen per wereld.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { starTexture } from './pattern.js';
 import { createScenery } from './scenery.js';
@@ -10,39 +10,43 @@ const WALL_WIDTH = 140;
 const WALL_HEIGHT = 56;
 const PARALLAX = 0.25; // de muur schuift langzamer dan de stad en de vloer
 
-function addFloor(scene, length) {
+function addFloor(stage, length) {
   const size = length + 120;
   const depth = 34;
   const map = starTexture(size / FLOOR_TILE, depth / FLOOR_TILE);
   const material = new THREE.MeshLambertMaterial({ map });
   const floor = new THREE.Mesh(new THREE.BoxGeometry(size, 1, depth), material);
   floor.position.set(size / 2 - 40, -0.5, -3);
-  scene.add(floor);
+  stage.add(floor);
   const glow = new THREE.MeshBasicMaterial();
   [-1, 1].forEach((z) => {
     const strip = new THREE.Mesh(new THREE.BoxGeometry(size, 0.03, 0.09), glow);
     strip.position.set(size / 2 - 40, 0.02, z);
-    scene.add(strip);
+    stage.add(strip);
   });
   return { material, glow };
 }
 
-function addWall(scene) {
+function addWall(stage) {
   const map = starTexture(WALL_WIDTH / WALL_TILE, WALL_HEIGHT / WALL_TILE);
   const material = new THREE.MeshBasicMaterial({ map, fog: false });
   const wall = new THREE.Mesh(new THREE.PlaneGeometry(WALL_WIDTH, WALL_HEIGHT), material);
   wall.position.set(0, WALL_HEIGHT / 2 - 2, -20);
-  scene.add(wall);
+  stage.add(wall);
   return { wall, map, material };
 }
 
-function zoneAt(zones, x) {
-  let zone = zones[0];
-  zones.forEach((z) => { if (x >= z.x) zone = z; });
-  return zone;
+// geeft het geheugen van de vorige wereld terug aan de videokaart
+function dispose(stage) {
+  stage.traverse((item) => {
+    item.geometry?.dispose();
+    item.material?.map?.dispose();
+    item.material?.dispose();
+    if (item.isInstancedMesh) item.dispose();
+  });
 }
 
-export function createWorld(canvas, level) {
+export function createWorld(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   const scene = new THREE.Scene();
@@ -53,15 +57,13 @@ export function createWorld(canvas, level) {
   sun.position.set(-4, 10, 8);
   scene.add(sun);
 
-  const floor = addFloor(scene, level.length);
-  const { wall, map, material: wallMaterial } = addWall(scene);
-  const scenery = createScenery(scene, level);
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
   const tint = new THREE.Color();
+  let parts = null;
   let distance = 14;
   let lift = 0;
   let shake = 0;
-  let lastX = Infinity; // eerste beeld meteen in de juiste kleur
+  let lastX = Infinity;
 
   function resize() {
     const w = window.innerWidth;
@@ -74,11 +76,30 @@ export function createWorld(canvas, level) {
   window.addEventListener('resize', resize);
   resize();
 
-  function applyZone(x, rate) {
-    const zone = zoneAt(level.zones, x);
-    wallMaterial.color.lerp(tint.set(zone.wall), rate);
-    floor.material.color.lerp(tint.set(zone.floor), rate);
-    floor.glow.color.lerp(tint.set(zone.glow), rate);
+  // bouwt de vaste delen van een wereld en geeft de groep terug voor de hindernissen
+  function load(level) {
+    if (parts) {
+      scene.remove(parts.stage);
+      dispose(parts.stage);
+    }
+    const stage = new THREE.Group();
+    scene.add(stage);
+    const floor = addFloor(stage, level.length);
+    parts = { stage, floor, ...addWall(stage), scenery: createScenery(stage, level) };
+    lastX = Infinity;
+    return stage;
+  }
+
+  function applyZone(zone, rate) {
+    parts.material.color.lerp(tint.set(zone.wall), rate);
+    parts.floor.material.color.lerp(tint.set(zone.floor), rate);
+    parts.floor.glow.color.lerp(tint.set(zone.glow), rate);
+  }
+
+  function moveBackdrop() {
+    parts.wall.position.x = camera.position.x;
+    parts.map.offset.x = (camera.position.x * PARALLAX) / WALL_TILE;
+    parts.scenery.update(camera.position.x);
   }
 
   // in het kleurenscherm staat de lantaarn groot in beeld, naast of boven de knoppen
@@ -86,12 +107,11 @@ export function createWorld(canvas, level) {
     camera.position.set(run.x, 1.4, 5.4);
     if (camera.aspect >= 1.05) camera.lookAt(run.x - 1.5, 1, 0);
     else camera.lookAt(run.x, -0.8, 0);
-    wall.position.x = camera.position.x;
-    scenery.update(camera.position.x);
+    moveBackdrop();
   }
 
   function follow(run, dt, inMenu) {
-    applyZone(run.x, run.x < lastX ? 1 : Math.min(1, dt * 2.5));
+    applyZone(run.level.zones[run.zone], run.x < lastX ? 1 : Math.min(1, dt * 2.5));
     lastX = run.x;
     if (inMenu) {
       showcase(run);
@@ -103,13 +123,12 @@ export function createWorld(canvas, level) {
     const jitterY = (Math.random() - 0.5) * shake;
     camera.position.set(run.x + 3.4 + jitterX, 3.8 + lift + jitterY, distance);
     camera.lookAt(run.x + 5.6 + jitterX, 2.5 + lift + jitterY, 0);
-    wall.position.x = camera.position.x;
-    map.offset.x = (camera.position.x * PARALLAX) / WALL_TILE;
-    scenery.update(camera.position.x);
+    moveBackdrop();
   }
 
   return {
     scene,
+    load,
     follow,
     kick: (amount) => { shake = Math.max(shake, amount); },
     render: () => renderer.render(scene, camera),

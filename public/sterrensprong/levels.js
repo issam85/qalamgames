@@ -1,48 +1,76 @@
-// Levels: x = linkerkant, y = onderkant, in blokken vanaf de start.
-const spikes = (x, count = 1, y = 0) =>
-  Array.from({ length: count }, (_, i) => ({ type: 'spike', x: x + i, y, w: 1, h: 1 }));
-const block = (x, y, w, h) => [{ type: 'block', x, y, w, h }];
-const thorns = (x, w, y = 0) => [{ type: 'thorn', x, y, w, h: 0.5 }];
-const pad = (x, y = 0) => [{ type: 'pad', x, y, w: 1, h: 0.2 }];
-const ring = (x, y) => [{ type: 'ring', x: x - 0.75, y: y - 0.75, w: 1.5, h: 1.5 }];
+// De werelden: elk één groot level aan één stuk tot 100%, in stukken die steeds moeilijker worden.
+import { row, rhythm, stairs, shelf, tunnel, padOver, towers, ringChain } from './patterns.js';
 
-// kleuren per stuk van een level: muur, vloer en de lichtlijnen langs de baan
+const AIR = 0.548; // zo lang duurt een gewone sprong
+const LEAD_IN = 14; // vrije aanloop
+
+// kleuren per stuk: muur, vloer en de lichtlijnen langs de baan
 const NIGHT = { wall: '#4a35ac', floor: '#5a44c8', glow: '#38e8d8' };
 const TEAL = { wall: '#14808f', floor: '#127082', glow: '#ffd43b' };
 const ROSE = { wall: '#a02c78', floor: '#8a2468', glow: '#7fffd4' };
 const AMBER = { wall: '#b05a24', floor: '#8e4a1e', glow: '#7fd3ff' };
+const GREEN = { wall: '#1f8a5a', floor: '#1a7048', glow: '#ffe28a' };
+const CRIMSON = { wall: '#a8323c', floor: '#842830', glow: '#ffd43b' };
 
-function level(name, length, zones, parts) {
-  return { name, length, zones, obstacles: parts.flat().sort((a, b) => a.x - b.x) };
+function buildWorld(name, sections) {
+  const zones = [];
+  const parts = [];
+  let x = LEAD_IN;
+  sections.forEach(({ title, colors, speed, rest, pieces }, i) => {
+    zones.push({ x: i ? x - 2 : 0, title, speed, ...colors });
+    const tempo = { speed, jump: speed * AIR };
+    pieces.forEach((piece) => {
+      const made = piece(x, tempo);
+      parts.push(...made.parts);
+      x += made.width + rest;
+    });
+  });
+  return { name, length: x + 8, zones, obstacles: parts.sort((a, b) => a.x - b.x) };
 }
 
-export const TEST_LEVEL = level('Test', 176, [
-  { x: 0, ...NIGHT },
-  { x: 44, ...TEAL },
-  { x: 92, ...ROSE },
-  { x: 118, ...AMBER },
-], [
-  spikes(16),
-  spikes(25, 2),
-  spikes(34, 3),
-  block(44, 0, 4, 1),
-  block(51, 0, 4, 2),
-  block(58, 0, 4, 3),
-  spikes(64, 2),
-  spikes(74),
-  block(80, 0, 9, 1),
-  spikes(84, 1, 1),
-  spikes(93, 3),
-  block(102, 0, 3, 1),
-  spikes(105, 3),
-  block(108, 0, 3, 1),
-  pad(118),
-  block(122, 0, 5, 3),
-  thorns(127, 13),
-  ring(130, 4),
-  ring(135, 3.4),
-  block(140, 0, 4, 2),
-  spikes(150, 2),
-  thorns(158, 4),
-  block(162, 0, 5, 1),
+const WORLD_1 = buildWorld('Lantaarnstad', [
+  { title: 'De straat', colors: NIGHT, speed: 9, rest: 8, pieces: [
+    row(1), row(1), row(2), row(1), row(2), row(2), rhythm(3), row(3), row(1), row(2), row(3),
+  ] },
+  { title: 'Over de daken', colors: TEAL, speed: 9.5, rest: 7, pieces: [
+    stairs(3), row(2), shelf(9, 1), row(3), stairs(3), rhythm(4), padOver(), row(3), shelf(11, 1),
+    stairs(4), row(2), padOver(),
+  ] },
+  { title: 'De doornentuin', colors: GREEN, speed: 10, rest: 6, pieces: [
+    towers(3, 1, 3), row(3), ringChain(1), row(2), towers(4, 1, 3), ringChain(2), rhythm(4), tunnel(5),
+    row(3), towers(3, 3, 3), ringChain(2), row(3), stairs(4, true), towers(5, 1, 2), row(3),
+  ] },
 ]);
+
+const WORLD_2 = buildWorld('Sterrenbazaar', [
+  { title: 'De markt', colors: ROSE, speed: 10, rest: 6, pieces: [
+    row(2), rhythm(4), row(3), stairs(3), shelf(11, 2), rhythm(5, 2), padOver(), tunnel(6), row(3),
+    towers(4, 1, 3), row(3), stairs(4, true),
+  ] },
+  { title: 'De lichtjes', colors: AMBER, speed: 10.75, rest: 5, pieces: [
+    ringChain(2), row(3), towers(5, 1, 2), rhythm(5), tunnel(7), row(3), towers(4, 3, 2), ringChain(3),
+    shelf(13, 2), row(3), padOver(), stairs(4, true), ringChain(3), rhythm(4, 2),
+  ] },
+  { title: 'Het dakterras', colors: TEAL, speed: 11.5, rest: 4, pieces: [
+    towers(6, 1, 2), row(3), ringChain(3), tunnel(7), rhythm(6), towers(5, 3, 2), row(3), stairs(4, true),
+    ringChain(4), shelf(14, 2), rhythm(5, 2), towers(6, 1, 1), row(3), padOver(), ringChain(4),
+  ] },
+]);
+
+const WORLD_3 = buildWorld('Hemelpaleis', [
+  { title: 'De poort', colors: CRIMSON, speed: 11.5, rest: 4, pieces: [
+    rhythm(6), towers(5, 1, 2), row(3), ringChain(3), stairs(4, true), tunnel(8), rhythm(5, 2),
+    towers(5, 3, 2), padOver(), shelf(15, 2), ringChain(4), row(3),
+  ] },
+  { title: 'De sterrenzaal', colors: NIGHT, speed: 12.25, rest: 3.5, pieces: [
+    towers(7, 1, 1), row(3), ringChain(4), rhythm(7), tunnel(8), row(3), towers(6, 3, 2), stairs(4, true),
+    ringChain(5), rhythm(6, 2), shelf(16, 2), padOver(), towers(7, 1, 1), row(3), ringChain(5),
+  ] },
+  { title: 'De top', colors: AMBER, speed: 13, rest: 3, pieces: [
+    rhythm(8), towers(8, 1, 1), ringChain(5), row(3), tunnel(9), rhythm(7, 2), towers(7, 3, 2),
+    stairs(4, true), ringChain(6), row(3), towers(8, 1, 1), padOver(), rhythm(8), ringChain(6),
+    shelf(18, 2), towers(9, 1, 1), row(3),
+  ] },
+]);
+
+export const WORLDS = [WORLD_1, WORLD_2, WORLD_3];

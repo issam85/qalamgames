@@ -1,6 +1,5 @@
 // Spelconstanten. Afstanden in blokken (1 blok = 1 eenheid), tijd in seconden.
 export const PHYS = {
-  speed: 9.5,
   gravity: 62,
   jump: 17,
   ring: 15, // sprong uit een springring
