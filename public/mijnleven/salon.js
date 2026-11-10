@@ -3,6 +3,7 @@
 // glanst; puntkam, hoed en hoofddoek werken met een tik. Alles wordt bewaard.
 import { bustSvg, shineSvg, knotsLeft, freshHair, newDay } from './hair.js';
 import { clippingsSvg } from './hair-styles.js';
+import { paint } from './glans.js';
 import { TOOLS, toolSvg } from './salon-tools.js';
 import { DRY_STEPS, TAP_DRY, onHair, untangle, cut, tapHair } from './salon-actions.js';
 import { renderSalonPanel } from './salon-panel.js';
@@ -26,7 +27,7 @@ const say = (text) => { hintEl.textContent = text; };
 function draw() {
   const h = hair();
   const extra = (dry && !h.shine ? shineSvg(dry / DRY_STEPS) : '')
-    + clippingsSvg(falling, h.color, performance.now()) + toolSvg(tool.key, pointer);
+    + clippingsSvg(falling, paint(h.color), performance.now()) + toolSvg(tool.key, pointer);
   stageEl.innerHTML = bustSvg(api.getOutfit(), h, api.getMakeup(), extra);
 }
 

@@ -1,7 +1,7 @@
 // De badkamer zonder scherm: de plekken die je wast en wat spons, douche en handdoek
 // ermee doen. Losse functies, zo te testen.
 // Een plek gaat van 0 (vies) → 1 (schuim) → 2 (nat) → 3 (schoon en droog).
-export const SPOTS = [[150, 42], [98, 92], [202, 92], [150, 208], [92, 234], [208, 234], [118, 294], [186, 294]];
+export const SPOTS = [[150, 70], [96, 114], [204, 114], [150, 222], [92, 248], [208, 248], [118, 302], [186, 302]];
 export const STEPS = ['spons', 'douche', 'handdoek']; // STEPS[stand] = wat je nu nodig hebt
 export const CLEAN = STEPS.length;
 export const BRUSH_STEPS = 40; // zo lang poetsen tot je tanden blinken
@@ -37,5 +37,5 @@ export function wash(spots, p, toolKey) {
 // is deze stap (spons, douche of handdoek) overal gedaan?
 export const stepDone = (spots, toolKey) => spots.every((s) => s > STEPS.indexOf(toolKey));
 
-export const onFace = (p) => Math.hypot(p.x - 150, p.y - 105) < 56;
-export const onMouth = (p) => Math.hypot(p.x - 150, p.y - 128) < 30;
+export const onFace = (p) => Math.hypot(p.x - 150, p.y - 118) < 60;
+export const onMouth = (p) => Math.hypot(p.x - 150, p.y - 150) < 26;

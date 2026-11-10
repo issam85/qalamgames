@@ -261,8 +261,13 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   zijn de knopen terug, moet je weer douchen, heeft het gezin lege hartjes en zijn
   de sterren per kamer weer te verdienen.
 - Bestanden: `app.js` schermen, sterren, foto · `wardrobe.js` kiezen in de kast ·
-  `data.js` categorieën, soorten, kleuren · `doll.js` (gezicht met make-up, armen) +
-  `doll-parts.js` het meisje als SVG (vak 300×520, één functie per soort) · `photo.js`
+  `data.js` categorieën, soorten, kleuren · `glans.js` de Glans-stijl (verloop per
+  kleur via `paint()`, `defs()` bovenin elke SVG, `shape()`, glans, sterretjes,
+  `mirror()`) · `doll.js` (gezicht met grote glanzende ogen en make-up, mouwen,
+  handen; hoofd rond (150, 118), schouders op 196, handen op (90, 330) en (210, 330))
+  + `doll-parts.js` de kleren als SVG (vak 300×520, één functie per soort, krijgt de
+  verf `p`; de tas hangt aan de rechterhand; bij de baljurk `GOWN` geen tas en
+  schoenen, wel pofmouwen) · `photo.js`
   · `storage.js` · `ui.js` · `pointer.js` slepen met muis of vinger op een tekening
   (rekent om naar de viewBox, met pointer capture omdat de SVG bij elke beweging
   opnieuw wordt gemaakt; gebruik dit voor elke kamer waar je sleept) ·
@@ -299,7 +304,12 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   een `<kamer>Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
   na een herstart van de dev-server.
 - Nieuwe soort kleding = naam in `data.js` en tekening op dezelfde plek in
-  `doll-parts.js`.
+  `doll-parts.js`, met `shape(d, p)` uit `glans.js`.
+- Stijl (10 nov 2026): de gebruiker koos "C · Glans" (verloop, dunne lijn in een
+  donkere tint, glans, sterretjes, zoals de Mario Party-renders) boven "Zacht" en
+  "Strip". Het meisje, de kapsels, de badkamer en de slaapkamer zijn overgetekend; de
+  haarlengtes staan nog in het oude vak (`HAIR_DY` in `hair-styles.js`). Nog te doen
+  in dezelfde stijl: papa en de dochters, de kamers zelf, de winkel-etalage.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.

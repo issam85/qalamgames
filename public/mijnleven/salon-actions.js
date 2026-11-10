@@ -1,7 +1,7 @@
 // Wat het gereedschap van de kapper met het haar doet. Losse functies zonder scherm,
 // zodat ze makkelijk te testen zijn.
 import { SPOTS, VLECHTEN, HATS } from './hair.js';
-import { STRAND_X, MIN_END } from './hair-styles.js';
+import { STRAND_X, MIN_END, HAIR_DY } from './hair-styles.js';
 
 export const DRY_STEPS = 40; // zo lang föhnen tot het glanst
 export const TAP_DRY = 5; // een tik met de föhn telt ook
@@ -28,7 +28,7 @@ export function untangle(knots, p, power, inside) {
 }
 
 // De schaar gaat van a naar b (plekken in de tekening). Elke lok die hij kruist wordt
-// op die hoogte afgeknipt. Geeft { ends, pieces } terug (pieces = de stukjes die
+// op die hoogte afgeknipt (de lengtes staan in het oude vak, HAIR_DY hoger). Geeft { ends, pieces } terug (pieces = de stukjes die
 // vallen), of null als er niets geknipt is
 export function cut(ends, a, b) {
   const pieces = [];
@@ -36,7 +36,7 @@ export function cut(ends, a, b) {
     const x = STRAND_X[i];
     if (x < Math.min(a.x, b.x) - 7 || x > Math.max(a.x, b.x) + 7) return end;
     const part = a.x === b.x ? 1 : Math.min(1, Math.max(0, (x - a.x) / (b.x - a.x)));
-    const y = Math.round(a.y + (b.y - a.y) * part);
+    const y = Math.round(a.y + (b.y - a.y) * part) - HAIR_DY;
     if (y < MIN_END || y > end - 4) return end;
     pieces.push({ x, y, h: end - y });
     return y;

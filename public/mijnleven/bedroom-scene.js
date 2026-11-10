@@ -1,6 +1,7 @@
 // De tekeningen van de slaapkamer: de kamer met het bed (overdag, in pyjama of
 // 's nachts slapend) en het muziekdoosje met acht toetsen.
 import { dollSvg, face, arms, soft, SKIN } from './doll.js';
+import { paint, defs, shape, mirror } from './glans.js';
 import { STYLE_SVG } from './hair-styles.js';
 import { sceneSvg } from './ui.js';
 
@@ -10,9 +11,9 @@ const STAR = 'l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z';
 // het patroon op het pyjamajasje, zelfde volgorde als PYJAMAS
 const PATTERN = [
   '',
-  `<g fill="#ffd43b"><path d="M124 190 ${STAR}"/><path d="M168 240 ${STAR}"/><path d="M132 268 ${STAR}"/></g>`,
-  '<g fill="#fff" opacity="0.6"><rect x="108" y="180" width="84" height="12"/><rect x="106" y="220" width="88" height="12"/><rect x="104" y="260" width="92" height="12"/></g>',
-  `<g fill="#fff" opacity="0.8">${dots([[128, 186], [170, 200], [142, 232], [176, 256], [124, 274], [156, 288]], 7)}</g>`,
+  `<g fill="#ffd43b"><path d="M124 230 ${STAR}"/><path d="M168 280 ${STAR}"/><path d="M132 308 ${STAR}"/></g>`,
+  '<g fill="#fff" opacity="0.6"><rect x="108" y="220" width="84" height="12"/><rect x="106" y="260" width="88" height="12"/><rect x="104" y="300" width="92" height="12"/></g>',
+  `<g fill="#fff" opacity="0.8">${dots([[128, 226], [170, 240], [142, 272], [176, 296], [124, 314], [156, 328]], 7)}</g>`,
 ];
 
 const ROOM = '<rect x="30" y="0" width="240" height="340" rx="14" fill="#e9defc"/>'
@@ -27,11 +28,13 @@ const blanket = (color) => `<rect x="100" y="216" width="78" height="54" rx="10"
 function standing(look) {
   const place = 'x="138" y="96" width="135" height="234"';
   if (!look.inPyjama) return dollSvg(look.outfit, look.makeup).replace('<svg ', `<svg ${place} `);
-  const c = soft(look.pyjama.color);
-  const leg = `<path d="M106 300 L148 300 L146 494 L110 494 Z" fill="${c}"/><ellipse cx="128" cy="500" rx="24" ry="9" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>`;
-  const [back, front] = STYLE_SVG[0](look.hair.color, look.hair.ends);
-  return `<svg ${place} viewBox="0 0 300 520">${back}${leg}<g transform="translate(300 0) scale(-1 1)">${leg}</g>`
-    + `<path d="M110 150 L190 150 L198 312 L102 312 Z" fill="${c}"/>${PATTERN[look.pyjama.kind]}${arms(c)}${front}${face(look.makeup)}</svg>`;
+  const p = paint(soft(look.pyjama.color));
+  const hair = paint(look.hair.color);
+  const leg = shape('M108 330 L148 330 L146 494 L112 494 Z', p) + '<ellipse cx="128" cy="500" rx="24" ry="9" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>';
+  const [back, front] = STYLE_SVG[0](hair, look.hair.ends);
+  return `<svg ${place} viewBox="0 0 300 520">${defs([p, hair])}${back}${mirror(leg)}`
+    + shape('M112 196 C104 230 106 256 102 300 C98 320 100 332 104 338 L196 338 C200 332 202 320 198 300 C194 256 196 230 188 196 Z', p)
+    + `${PATTERN[look.pyjama.kind]}${arms(p)}${front}${face(look.makeup)}</svg>`;
 }
 
 // ze ligt in bed: alleen haar hoofd op het kussen, ogen dicht
