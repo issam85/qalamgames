@@ -1,0 +1,60 @@
+/* Geluidsknop, de toetsen op het startscherm en de stroken op een tablet. */
+
+.mute {
+  position: fixed;
+  right: max(10px, env(safe-area-inset-right));
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 6;
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: #1565c0;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+}
+
+.ask {
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.keys span {
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: #e3f2fd;
+  font-size: 15px;
+}
+
+#zones {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  pointer-events: none;
+}
+
+#zones[hidden] {
+  display: none;
+}
+
+#zones div {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 52px;
+  border-right: 2px dashed rgba(255, 255, 255, 0.55);
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+#zones div:last-child {
+  border-right: 0;
+}

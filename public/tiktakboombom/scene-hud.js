@@ -27,9 +27,9 @@ function pill(c, text, x, y, size, bg, fg) {
   label(c, text, x, y + 1, size, fg);
 }
 
-export function drawName(c, player, x, y) {
+export function drawName(c, player, x, y, key) {
   const human = player.human >= 0;
-  pill(c, player.name, x, y + 18, human ? 17 : 14, human ? '#ffd43b' : 'rgba(255,255,255,.82)', human ? '#7a4b00' : '#40506b');
+  pill(c, key ? `${player.name} · ${key}` : player.name, x, y + 18, human ? 16 : 14, human ? '#ffd43b' : 'rgba(255,255,255,.82)', human ? '#7a4b00' : '#40506b');
 }
 
 // De toets die je nu moet indrukken, boven het hoofd.
@@ -43,7 +43,7 @@ export function drawKeyPrompt(c, glyph, x, y, t) {
   c.beginPath();
   c.arc(x, y, r, 0, Math.PI * 2);
   c.fill();
-  label(c, glyph, x, y + 1, glyph.length > 1 ? 21 : 33, '#7a2e00');
+  label(c, glyph, x, y + 1, glyph.length > 4 ? 15 : glyph.length > 1 ? 21 : 33, '#7a2e00');
 }
 
 export function drawWait(c, x, y) {

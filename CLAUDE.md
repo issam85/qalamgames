@@ -311,15 +311,16 @@ met pijltje naar rechts door tot hij ontploft. "Tik Tak Boem" is de naam van een
 bordspel, daarom heet dit spel Tiktak Boom Bom. Maker voorlopig "Al Qalam kids". Staat in
 `public/tiktakboombom/` (ES-modules zonder build), op de homepage in Lichting 4.
 
-- 1 of 2 spelers plus computerkinderen, samen 6. Alleen: pijltje naar rechts of D; samen:
-  D en pijltje naar rechts; tablet: tik op je helft. De bom gaat met de klok mee; spelers
-  staan bovenaan, zodat de bom bij hen naar rechts beweegt.
+- 1 t/m 5 spelers plus computerkinderen, samen 6. Toetsen (`input.js`), ver uit elkaar en
+  in de volgorde van de kring: 1 = →; 2 = A, →; 3 = A, spatie, →; 4 = A, G, L, →; 5 = A, G,
+  spatie, L, →. Tablet: per speler een strook. De bom gaat met de klok mee; wie onderaan
+  staat, ziet hem dus naar links gaan (pijlen op de grond).
 - Lont 12–30 s, knippert steeds sneller. Druk je terwijl de bom nog naar je toe vliegt, dan
   valt hij (0,8 s kwijt). Ontploft hij in de lucht, dan ligt de ontvanger eruit. Het spel
   stopt zodra er één over is of geen enkele speler meer meedoet.
 - `game.js` regels (zonder tekenen, zo te testen) · `game-setup.js` · `result.js` · `cpu.js` ·
   `scene.js` + `scene-bg.js` + `scene-hud.js` · `kid.js` · `bomb.js` · `fx.js` · `sound.js` ·
-  `input.js` · `app.js`. Thumbnail en deelbeeld zijn gemaakt uit de eigen tekeningen.
+  `input.js` · `app.js` · `controls.css`. Thumbnail en deelbeeld zijn gemaakt uit de eigen tekeningen.
 
 ## Sterrensprong (nieuw spel, november 2026)
 

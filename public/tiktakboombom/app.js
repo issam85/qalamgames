@@ -3,7 +3,7 @@ import { startRound, step, press } from './game.js';
 import { createGame } from './game-setup.js';
 import { resultOf } from './result.js';
 import { createScene } from './scene.js';
-import { bindInput, keyGlyph, isTouch } from './input.js';
+import { bindInput, keyGlyph, keyName, isTouch } from './input.js';
 import { createFx } from './fx.js';
 import { sound, unlockSound, isMuted, setMuted } from './sound.js';
 
@@ -13,7 +13,7 @@ const canvas = $('canvas');
 const c = canvas.getContext('2d');
 const menu = $('menu');
 const end = $('end');
-const scene = createScene(keyGlyph);
+const scene = createScene(keyGlyph, keyName);
 const fx = createFx();
 
 let humans = 1;
@@ -33,6 +33,7 @@ function fit() {
 
 function begin() {
   unlockSound();
+  document.activeElement?.blur(); // anders vangt de Start-knop de toetsen af
   game = createGame(humans);
   menu.hidden = true;
   end.hidden = true;
@@ -82,13 +83,39 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+// Op het startscherm: wie welke toets heeft. Op een tablet: de stroken om op te tikken.
+function showControls() {
+  const box = $('how-keys');
+  box.replaceChildren();
+  $('zones').replaceChildren();
+  const names = Array.from({ length: humans }, (_, i) => `Speler ${i + 1}`);
+  if (isTouch() || humans === 1) {
+    box.textContent = humans > 1 ? 'Iedereen tikt op de eigen strook van het scherm.'
+      : isTouch() ? 'Tik op het scherm om door te geven.' : 'Geef door met pijltje naar rechts.';
+  } else {
+    const keys = document.createElement('div');
+    keys.className = 'keys';
+    names.forEach((name, i) => {
+      const chip = document.createElement('span');
+      chip.textContent = `${name}: ${keyName(i, humans)}`;
+      keys.append(chip);
+    });
+    box.append(keys);
+  }
+  $('zones').hidden = !isTouch() || humans === 1;
+  $('zones').style.gridTemplateColumns = `repeat(${humans}, 1fr)`;
+  names.forEach((name) => {
+    const zone = document.createElement('div');
+    zone.textContent = name;
+    $('zones').append(zone);
+  });
+}
+
 document.querySelectorAll('[data-players]').forEach((btn) => {
   btn.addEventListener('click', () => {
     humans = Number(btn.dataset.players);
     document.querySelectorAll('[data-players]').forEach((b) => b.classList.toggle('on', b === btn));
-    $('how-keys').textContent = isTouch()
-      ? (humans === 1 ? 'Tik op het scherm om door te geven.' : 'Speler 1 tikt links, speler 2 tikt rechts.')
-      : (humans === 1 ? 'Geef door met pijltje naar rechts.' : 'Speler 1 geeft door met D, speler 2 met pijltje naar rechts.');
+    showControls();
   });
 });
 $('start').addEventListener('click', begin);
@@ -106,6 +133,7 @@ $('mute').addEventListener('click', () => {
   unlockSound();
   setMuted(!isMuted());
   showMute();
+  $('mute').blur();
 });
 showMute();
 

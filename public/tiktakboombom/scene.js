@@ -9,7 +9,7 @@ const LANDSCAPE = { w: 960, h: 540, cx: 480, cy: 332, rx: 318, ry: 152 };
 const PORTRAIT = { w: 540, h: 860, cx: 270, cy: 500, rx: 176, ry: 268 };
 const CHEST = 44;
 
-export function createScene(keyGlyph) {
+export function createScene(keyGlyph, keyName) {
   let view = LANDSCAPE;
   const angles = [];
 
@@ -20,7 +20,7 @@ export function createScene(keyGlyph) {
 
   function targets(g) {
     const list = seated(g);
-    const base = -Math.PI / 2 - (g.humans === 2 ? Math.PI / 3 : 0);
+    const base = -Math.PI / 2 - (g.humans >= 2 ? Math.PI / 3 : 0);
     const map = {};
     list.forEach((i, k) => { map[i] = base + (k * Math.PI * 2) / list.length; });
     return map;
@@ -75,7 +75,7 @@ export function createScene(keyGlyph) {
     const pose = poseOf(g, i, bomb, t);
     drawKid(c, player.kid, p.x + (pose.wobble || 0), p.y, 1, pose);
     if (pose.arms === 'hold' && progress(g) > 0.35) drawSweat(c, p.x, p.y, t);
-    drawName(c, player, p.x, p.y);
+    drawName(c, player, p.x, p.y, g.humans > 1 && player.human >= 0 ? keyName(player.human, g.humans) : '');
     if (player.human < 0 || player.out || g.phase !== 'play') return;
     if (!g.flight && g.holder === i && g.drop <= 0) {
       drawKeyPrompt(c, keyGlyph(player.human, g.humans), p.x, Math.max(36, p.y - 142), t);

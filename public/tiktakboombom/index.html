@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="controls.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel Tiktak Boom Bom — geef de bom door in de kring voordat hij ontploft. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
   <meta name="keywords" content="Tiktak Boom Bom, bom doorgeven, partyspel, spel, game, Al Qalam, basisschool Gouda, Qalam Games" />
@@ -31,6 +32,7 @@
 </head>
 <body>
   <div id="stage"><canvas id="canvas"></canvas></div>
+  <div id="zones" hidden></div>
 
   <button id="mute" class="mute"></button>
 
@@ -38,9 +40,13 @@
     <div class="card">
       <h1>Tiktak Boom Bom</h1>
       <p class="how">De bom gaat rond in de kring en knippert steeds sneller. Geef hem snel door, maar pas als hij bij je is. Druk je te vroeg, dan laat je hem vallen! Wie de bom vasthoudt als hij ontploft, ligt eruit.<strong id="how-keys"></strong></p>
+      <p class="ask">Hoeveel spelers?</p>
       <div class="choice">
-        <button class="btn on" data-players="1">1 speler</button>
-        <button class="btn" data-players="2">2 spelers</button>
+        <button class="btn on" data-players="1">1</button>
+        <button class="btn" data-players="2">2</button>
+        <button class="btn" data-players="3">3</button>
+        <button class="btn" data-players="4">4</button>
+        <button class="btn" data-players="5">5</button>
       </div>
       <button id="start" class="btn">Start!</button>
     </div>
