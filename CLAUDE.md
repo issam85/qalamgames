@@ -429,7 +429,7 @@ tekenfilmprinsessen mogen er niet in: het zijn eigen prinsessen (Lina, Sara, Yas
 Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build), branch
 `schelpkristal`.
 
-- Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker (klaar), 3 douche,
+- Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker (klaar), 3 douche (klaar),
   4 met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
   homepage, thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok.
 - `princess.js` bouwt de prinses (vak 300 × 520, zoals het meisje van Mijn Leven) ·
@@ -447,6 +447,11 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   palmen, strandhuisje (twee lagen: achter en vóór de golven) · `beach-draw.js` donker,
   glinsteren, prinses met lantaarn · `beach-items.js` schelpen en kristallen ·
   `beach-input.js` · `beach.js` scherm en spellus. De prinses is een plaatje van haar SVG.
+- Stranddouche: de prinses in badpak achter een houten schotje, 8 plekken met zand; elk
+  spons → douche → handdoek (slepen, zoals de badkamer van Mijn Leven). Na elke stap
+  pakt ze vanzelf het volgende. Elke keer opnieuw zand, niets bewaard. `shower.js` regels
+  · `shower-scene.js` tekening en gereedschap · `shower-room.js` scherm · `pointer.js`
+  (uit Mijn Leven) · `bathingPrincess()` in `princess.js`.
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.

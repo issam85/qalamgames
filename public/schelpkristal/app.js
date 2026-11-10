@@ -5,6 +5,7 @@ import { PRINCESSES } from './data.js';
 import { princessSvg } from './princess.js';
 import { initDressing, showDressing } from './dressing.js';
 import { initBeach, showBeach, hideBeach } from './beach.js';
+import { initShower, showShower } from './shower-room.js';
 
 const game = loadGame();
 const save = () => saveGame(game);
@@ -30,7 +31,7 @@ function renderStart() {
   }));
 }
 
-const SHOW = { 'screen-start': renderStart, 'screen-kleed': showDressing, 'screen-strand': showBeach };
+const SHOW = { 'screen-start': renderStart, 'screen-kleed': showDressing, 'screen-strand': showBeach, 'screen-douche': showShower };
 
 function show(id) {
   hideBeach();
@@ -41,6 +42,9 @@ function show(id) {
 
 initDressing({ game, save });
 initBeach({ game, save, counters });
+initShower({ game });
+document.getElementById('to-douche').addEventListener('click', () => show('screen-douche'));
+document.getElementById('douche-done').addEventListener('click', () => show('screen-kleed'));
 document.getElementById('to-strand').addEventListener('click', () => show('screen-strand'));
 document.getElementById('to-kleed').addEventListener('click', () => show('screen-kleed'));
 document.getElementById('kleed-done').addEventListener('click', () => show('screen-start'));

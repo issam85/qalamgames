@@ -1,0 +1,57 @@
+/* De stranddouche: de indeling van het kleedhokje (kleed.css), plus de meter en de
+   uitleg in het paneel. Slepen op de tekening mag niet de pagina laten schuiven. */
+
+.douche-stage {
+  touch-action: none;
+  cursor: none;
+}
+
+.douche-stage svg {
+  border-radius: 16px;
+}
+
+.meter-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 800;
+  color: #8a6400;
+}
+
+.meter-row h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  color: #c2419a;
+}
+
+.meter {
+  height: 18px;
+  border-radius: 999px;
+  background: #f1e4ff;
+  overflow: hidden;
+}
+
+.meter div {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5ec8ff, #4cd4a0);
+  transition: width 0.2s;
+}
+
+.hint {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+@media (max-width: 700px) {
+  .meter-row h2 {
+    display: none;
+  }
+
+  .hint {
+    font-size: 15px;
+  }
+}

@@ -1,7 +1,22 @@
-/* Kleedhokje op de telefoon. Staand: prinses bovenaan, soorten als rij, daaronder
-   wat je kiest, de kleuren en de knoppen. Liggend: drie smalle kolommen. */
+/* Kleedhokje (en de balk bovenaan) op de telefoon. Staand: prinses bovenaan,
+   soorten als rij, daaronder wat je kiest, de kleuren en de knoppen. Liggend: drie
+   smalle kolommen. Ook de douche gebruikt deze indeling. */
 
 @media (max-width: 700px) {
+  .bar {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .bar h1 {
+    font-size: 20px;
+  }
+
+  .pill,
+  .found {
+    padding: 5px 9px;
+  }
+
   .kleed {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto auto;

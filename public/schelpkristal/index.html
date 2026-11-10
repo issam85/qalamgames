@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="kleed.css">
   <link rel="stylesheet" href="kleed-phone.css">
   <link rel="stylesheet" href="strand.css">
+  <link rel="stylesheet" href="douche.css">
 </head>
 <body>
   <section id="screen-start" class="screen active">
@@ -25,7 +26,7 @@
         <div id="start-pick" class="pick"></div>
         <div class="start-buttons">
           <button id="to-strand" class="btn blue">Naar het strand</button>
-          <button class="btn blue" disabled>Douchen <small>binnenkort</small></button>
+          <button id="to-douche" class="btn blue">Douchen</button>
           <button id="to-kleed" class="btn green">Kleedhokje</button>
         </div>
       </div>
@@ -68,6 +69,27 @@
         <div class="strand-buttons">
           <button id="strand-again" class="btn gold">Nog een keer</button>
           <button class="btn green back">Terug</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-douche" class="screen">
+    <header class="bar">
+      <button class="pill back">Terug</button>
+      <h1>Stranddouche</h1>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+    </header>
+    <div class="kleed">
+      <nav id="douche-tools" class="cats" aria-label="Spullen bij de douche"></nav>
+      <div class="kleed-stage"><div id="douche-stage" class="doll douche-stage"></div></div>
+      <div class="kleed-panel">
+        <div class="meter-row"><h2>Schoon</h2><span id="douche-label"></span></div>
+        <div class="meter"><div id="douche-meter"></div></div>
+        <p id="douche-hint" class="hint"></p>
+        <div class="kleed-buttons">
+          <button id="douche-reset" class="btn blue">Opnieuw</button>
+          <button id="douche-done" class="btn green">Naar het kleedhokje</button>
         </div>
       </div>
     </div>
