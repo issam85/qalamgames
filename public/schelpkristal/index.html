@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="start.css">
   <link rel="stylesheet" href="kleed.css">
   <link rel="stylesheet" href="kleed-phone.css">
+  <link rel="stylesheet" href="strand.css">
 </head>
 <body>
   <section id="screen-start" class="screen active">
@@ -23,7 +24,7 @@
         <h2>Kies je prinses</h2>
         <div id="start-pick" class="pick"></div>
         <div class="start-buttons">
-          <button class="btn blue" disabled>Naar het strand <small>binnenkort</small></button>
+          <button id="to-strand" class="btn blue">Naar het strand</button>
           <button class="btn blue" disabled>Douchen <small>binnenkort</small></button>
           <button id="to-kleed" class="btn green">Kleedhokje</button>
         </div>
@@ -47,6 +48,26 @@
         <div class="kleed-buttons">
           <button id="kleed-surprise" class="btn gold">Verras me!</button>
           <button id="kleed-done" class="btn green">Klaar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-strand" class="screen">
+    <header class="bar">
+      <button class="pill back">Terug</button>
+      <p id="strand-progress" class="hunt"></p>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+    </header>
+    <div class="strand">
+      <canvas id="strand-canvas" width="960" height="540" aria-label="Het strand in het donker"></canvas>
+      <p class="strand-hint">Loop met de pijltjes, of houd je vinger waar de prinses heen moet. Zoek de schelpen en kristallen die glinsteren!</p>
+      <div id="strand-end" class="strand-end" hidden>
+        <h2>Alles gevonden!</h2>
+        <p>Je hebt alle schelpen en kristallen van vanavond.</p>
+        <div class="strand-buttons">
+          <button id="strand-again" class="btn gold">Nog een keer</button>
+          <button class="btn green back">Terug</button>
         </div>
       </div>
     </div>

@@ -43,7 +43,7 @@ let drawings = 0;
 export function svg(viewBox, label, body) {
   drawings += 1;
   const own = (s) => s.replaceAll('url(#', `url(#d${drawings}`).replaceAll(' id="', ` id="d${drawings}`);
-  return `<svg viewBox="${viewBox}" role="img" aria-label="${label}">${own(defs(body) + body)}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img" aria-label="${label}">${own(defs(body) + body)}</svg>`;
 }
 export const irisFill = (c) => `url(#i${c.slice(1)})`;
 

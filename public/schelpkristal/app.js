@@ -4,6 +4,7 @@ import { loadGame, saveGame } from './storage.js';
 import { PRINCESSES } from './data.js';
 import { princessSvg } from './princess.js';
 import { initDressing, showDressing } from './dressing.js';
+import { initBeach, showBeach, hideBeach } from './beach.js';
 
 const game = loadGame();
 const save = () => saveGame(game);
@@ -29,15 +30,18 @@ function renderStart() {
   }));
 }
 
-const SHOW = { 'screen-start': renderStart, 'screen-kleed': showDressing };
+const SHOW = { 'screen-start': renderStart, 'screen-kleed': showDressing, 'screen-strand': showBeach };
 
 function show(id) {
+  hideBeach();
   document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
   counters();
   SHOW[id]();
 }
 
 initDressing({ game, save });
+initBeach({ game, save, counters });
+document.getElementById('to-strand').addEventListener('click', () => show('screen-strand'));
 document.getElementById('to-kleed').addEventListener('click', () => show('screen-kleed'));
 document.getElementById('kleed-done').addEventListener('click', () => show('screen-start'));
 document.querySelectorAll('.back').forEach((b) => b.addEventListener('click', () => show('screen-start')));

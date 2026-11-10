@@ -429,7 +429,7 @@ tekenfilmprinsessen mogen er niet in: het zijn eigen prinsessen (Lina, Sara, Yas
 Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build), branch
 `schelpkristal`.
 
-- Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker, 3 douche,
+- Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker (klaar), 3 douche,
   4 met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
   homepage, thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok.
 - `princess.js` bouwt de prinses (vak 300 × 520, zoals het meisje van Mijn Leven) ·
@@ -439,3 +439,14 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   scherm werkt anders niet) · `data.js` prinsessen, soorten, 18 kleuren, ketting `MATCH` =
   kleur van de jurk · `storage.js` (`localStorage` `schelpkristal`) · `dressing.js`
   kleedhokje · `app.js` beginscherm en schermen.
+- Strand (canvas, logisch 960 × 540, strand 2600 breed): pijltjes/WASD of de vinger
+  vasthouden waar ze heen moet. Per tocht 10 schelpen en 5 kristallen, half in het zand;
+  in het donker zie je alleen wat in het licht van de lantaarn of de lampjes ligt, de rest
+  glinstert af en toe. Oprapen = dichtbij lopen; telt op bij `game.shells`/`crystals`.
+  `beach-world.js` regels (zonder tekenen, zo te testen) · `beach-scene.js` lucht, zee,
+  palmen, strandhuisje (twee lagen: achter en vóór de golven) · `beach-draw.js` donker,
+  glinsteren, prinses met lantaarn · `beach-items.js` schelpen en kristallen ·
+  `beach-input.js` · `beach.js` scherm en spellus. De prinses is een plaatje van haar SVG.
+- Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
+  verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
+  `performance.now()`.
