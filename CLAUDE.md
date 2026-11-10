@@ -308,8 +308,9 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
 - Stijl (10 nov 2026): de gebruiker koos "C · Glans" (verloop, dunne lijn in een
   donkere tint, glans, sterretjes, zoals de Mario Party-renders) boven "Zacht" en
   "Strip". Het meisje, de kapsels, de badkamer en de slaapkamer zijn overgetekend; de
-  haarlengtes staan nog in het oude vak (`HAIR_DY` in `hair-styles.js`). Nog te doen
-  in dezelfde stijl: papa en de dochters, de kamers zelf, de winkel-etalage.
+  haarlengtes staan nog in het oude vak (`HAIR_DY` in `hair-styles.js`). Papa (gewaad,
+  kufi, baard) en de dochters (knotjes) staan ook in deze stijl (`family-scene.js`,
+  gezicht via `look()`). Nog te doen: de kamers zelf en de winkel-etalage.
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
