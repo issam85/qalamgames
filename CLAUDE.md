@@ -450,7 +450,9 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   palmen, strandhuisje (twee lagen: achter en vóór de golven) · `beach-draw.js` donker,
   glinsteren, prinses met lantaarn · `beach-items.js` schelpen en kristallen ·
   `beach-input.js` · `beach.js` scherm en spellus. De prinses is een plaatje van haar SVG.
-- Stranddouche: de prinses in badpak achter een houten schotje, 8 plekken met zand; elk
+- Bloot: de gebruiker wil het spel blootvrij, geen bikini of badpak. Onder de douche en in
+  de zee draagt de prinses een burkini (`swim.js`: lange mouwen, tuniek, lange broek).
+- Stranddouche: de prinses in burkini achter een houten schotje, 8 plekken met zand; elk
   spons → douche → handdoek (slepen, zoals de badkamer van Mijn Leven). Na elke stap
   pakt ze vanzelf het volgende. Elke keer opnieuw zand, niets bewaard. `shower.js` regels
   · `shower-scene.js` tekening en gereedschap · `shower-room.js` scherm · `pointer.js`

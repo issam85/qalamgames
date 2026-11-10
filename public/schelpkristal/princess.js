@@ -5,7 +5,8 @@ import { PRINCESSES, MATCH } from './data.js';
 import { DRESSES, bodice, sleeves } from './dresses.js';
 import { CROWNS, NECKLACES, SHOES } from './jewels.js';
 import { hairBack, hairCrown, hairFront } from './hair.js';
-import { paint, skinPaint, svg, mirror, irisFill, shape, gloss, INK } from './glans.js';
+import { paint, skinPaint, svg, mirror, irisFill, INK } from './glans.js';
+import { pants, tunic, sleeves as swimSleeves } from './swim.js';
 
 // wit valt weg tegen een lichte achtergrond: dan een heel lichte grijstint
 const soft = (hex) => (hex === '#ffffff' ? '#f4f4f4' : hex);
@@ -55,16 +56,16 @@ export function princessSvg(princess, outfit, label = 'Jouw prinses', box = '0 0
   return svg(box, label, inner);
 }
 
-// Onder de stranddouche: in een badpak, zonder kroon en sieraden. Geeft alleen de
-// tekening terug (zonder <svg>), voor in de tekening van de douche (shower-scene.js).
-export function bathingPrincess(princess) {
+// Onder de stranddouche en in de zee: in een burkini (swim.js), zonder kroon en
+// sieraden; alleen gezicht en handen zijn bloot. Geeft alleen de tekening terug
+// (zonder <svg>), voor in een grotere tekening. suit = kleur van de burkini.
+export function bathingPrincess(princess, suit = '#5ec8ff') {
   const pr = PRINCESSES[princess];
   const skin = skinPaint(pr.skin);
   const hair = paint(pr.hair);
-  const suit = paint('#5ec8ff');
-  const b = body(skin);
-  return hairBack(pr.style, hair) + b.torso + b.arms
-    + shape('M116 214 Q150 228 184 214 C192 240 190 262 184 300 L116 300 C110 262 108 240 116 214 Z', suit)
-    + mirror(`<path d="M122 216 L124 198" stroke="${suit.line}" stroke-width="6" stroke-linecap="round"/>`) + gloss(132, 250, 7, 18)
+  const p = paint(suit);
+  const s = `fill="${skin.fill}" stroke="${skin.line}" stroke-width="1.4"`;
+  return hairBack(pr.style, hair) + `<rect x="138" y="150" width="24" height="52" ${s}/>`
+    + pants(p) + tunic(p) + swimSleeves(p) + mirror(`<circle cx="90" cy="330" r="12" ${s}/>`)
     + hairCrown(hair) + face(pr, skin) + hairFront(pr.style, hair);
 }
