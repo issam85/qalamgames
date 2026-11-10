@@ -1,0 +1,99 @@
+/* Het kleedhokje: links de soorten, in het midden de prinses, rechts wat je kiest,
+   de kleuren en de knoppen. Telefoon: kleed-phone.css. */
+
+.kleed {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 360px;
+  grid-template-areas: "cats stage panel";
+  gap: 16px;
+}
+
+.cats {
+  grid-area: cats;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  color: #c2419a;
+  font-weight: 800;
+  font-size: 17px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cat[aria-pressed="true"],
+.item[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: #fff7d6;
+  color: #8a6400;
+}
+
+.kleed-stage {
+  grid-area: stage;
+}
+
+.kleed-panel {
+  grid-area: panel;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 4px solid #ffd1ec;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.item {
+  padding: 10px 6px;
+  border-radius: 14px;
+  border: 3px solid #f1e4ff;
+  background: #faf5ff;
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 4px solid #e9d5ff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.swatch.match {
+  background: conic-gradient(#ff8ac8, #ffd43b, #7ed957, #2ec4c4, #2f6fe0, #b36bff, #ff8ac8);
+}
+
+.swatch[aria-pressed="true"] {
+  border-color: var(--gold);
+  transform: scale(1.12);
+}
+
+.kleed-buttons {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}

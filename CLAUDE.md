@@ -418,3 +418,24 @@ screenshot geweigerd en is zonder referentie (zonder figuur) gemaakt.
 | سباق السلام (Race of Peace) | `9b9be001-db78-4c1e-a355-7f9bb22b9d61` |
 | Video hero A / B / C | `fe2d198b-7ee7-49bd-b0a4-bf67523ccd81` / `a4170df9-d86e-42d7-aa4e-02b419d974b8` / `821a1284-d2ab-42bd-8fd5-bafa13fc6bbf` |
 | Video Fight Night / Hajj | `9c9c2e01-4955-499d-85c4-2d98d05ed975` / `edab91e8-1953-4ded-92a3-2bd82fd2c764` |
+
+## Zoek Schelp Kristal (nieuw spel, november 2026)
+
+Idee van een leerling: een prinses loopt 's avonds (zomer, donker) over het strand en zoekt
+kristallen en schelpen; op het strand kan ze douchen en zich aankleden. Wensen: prinsessen
+zoals in tekenfilms, zonder hoofddoek en zonder tas, verschillende jurken in alle kleuren,
+een kroon, een ketting die bij de jurk past, hakken en andere schoenen. Echte
+tekenfilmprinsessen mogen er niet in: het zijn eigen prinsessen (Lina, Sara, Yasmina, Roos).
+Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build), branch
+`schelpkristal`.
+
+- Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker, 3 douche,
+  4 met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
+  homepage, thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok.
+- `princess.js` bouwt de prinses (vak 300 × 520, zoals het meisje van Mijn Leven) ·
+  `hair.js` lang haar in drie lagen (golf, krul, vlecht, steil) · `dresses.js` jurken
+  (lijfje, mouwen, rok, soms sleep) · `jewels.js` kronen, kettingen, schoenen · `glans.js`
+  de Glans-stijl; `svg()` geeft elke tekening eigen id's (een verloop in een verborgen
+  scherm werkt anders niet) · `data.js` prinsessen, soorten, 18 kleuren, ketting `MATCH` =
+  kleur van de jurk · `storage.js` (`localStorage` `schelpkristal`) · `dressing.js`
+  kleedhokje · `app.js` beginscherm en schermen.

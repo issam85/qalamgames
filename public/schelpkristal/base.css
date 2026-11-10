@@ -1,0 +1,150 @@
+/* Zoek Schelp Kristal: basis. Een zomeravond aan het strand: donkerblauwe lucht met
+   sterren, gouden en roze accenten, ronde kaarten en bolle knoppen. Elk scherm is
+   precies één schermhoogte, zodat de knoppen altijd in beeld zijn. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --ink: #2c1f4a;
+  --pink: #ff8ac8;
+  --gold: #ffd43b;
+  --night: #141a4a;
+  --card: rgba(255, 255, 255, 0.94);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  height: 100dvh;
+  overflow: hidden;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-weight: 600;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 18%, #fff 0 1.5px, transparent 2px),
+    radial-gradient(circle at 78% 10%, #fff 0 1.2px, transparent 2px),
+    radial-gradient(circle at 46% 6%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 40%, #fff 0 1.4px, transparent 2px),
+    radial-gradient(circle at 30% 34%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 86% 14%, #fff7c2 0 26px, rgba(255, 247, 194, 0.25) 30px, transparent 60px),
+    linear-gradient(180deg, #0d1240 0%, #26206a 55%, #5b3a7a 85%, #c98a6a 100%);
+  padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.screen {
+  display: none;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.bar h1 {
+  flex: 1;
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3.4vw, 34px);
+  color: var(--gold);
+  text-shadow: 0 3px 0 #c2419a;
+}
+
+.pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 3px solid #ffd1ec;
+  background: #fff;
+  color: #c2419a;
+  font-weight: 800;
+}
+
+.found {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff7d6;
+  border: 3px solid var(--gold);
+  color: #8a6400;
+  font-weight: 800;
+}
+
+.ico {
+  width: 20px;
+  height: 20px;
+  background: #ffb3c7;
+  clip-path: polygon(50% 100%, 0 35%, 25% 5%, 50% 0, 75% 5%, 100% 35%);
+}
+
+.ico.crystal {
+  margin-left: 6px;
+  background: linear-gradient(135deg, #b8f3ff, #7b6cff);
+  clip-path: polygon(50% 0, 90% 35%, 50% 100%, 10% 35%);
+}
+
+.btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 10px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  color: #fff;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  transition: transform 0.08s;
+}
+
+.btn small {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.btn:active { transform: translateY(3px); }
+.btn:disabled { filter: grayscale(0.7); opacity: 0.6; cursor: default; }
+.btn.green { background: linear-gradient(180deg, #66bb6a, #43a047); box-shadow: 0 5px 0 #1b5e20; }
+.btn.blue { background: linear-gradient(180deg, #42a5f5, #1e88e5); box-shadow: 0 5px 0 #0d47a1; }
+.btn.gold { background: linear-gradient(180deg, #ffe066, #f9a825); box-shadow: 0 5px 0 #c17900; color: #5a3d00; }
+
+.doll {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.doll svg {
+  height: 100%;
+  max-width: 100%;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3));
+}

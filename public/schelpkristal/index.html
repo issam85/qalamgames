@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Zoek Schelp Kristal — spel van Al Qalam Gouda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="start.css">
+  <link rel="stylesheet" href="kleed.css">
+  <link rel="stylesheet" href="kleed-phone.css">
+</head>
+<body>
+  <section id="screen-start" class="screen active">
+    <header class="bar">
+      <h1>Zoek Schelp Kristal</h1>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+    </header>
+    <div class="start">
+      <div class="start-stage"><div id="start-doll" class="doll"></div></div>
+      <div class="start-panel">
+        <h2>Kies je prinses</h2>
+        <div id="start-pick" class="pick"></div>
+        <div class="start-buttons">
+          <button class="btn blue" disabled>Naar het strand <small>binnenkort</small></button>
+          <button class="btn blue" disabled>Douchen <small>binnenkort</small></button>
+          <button id="to-kleed" class="btn green">Kleedhokje</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-kleed" class="screen">
+    <header class="bar">
+      <button class="pill back">Terug</button>
+      <h1>Kleedhokje</h1>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+    </header>
+    <div class="kleed">
+      <nav id="kleed-cats" class="cats" aria-label="Soort"></nav>
+      <div class="kleed-stage"><div id="kleed-doll" class="doll"></div></div>
+      <div class="kleed-panel">
+        <h2 id="kleed-title"></h2>
+        <div id="kleed-items" class="items"></div>
+        <div id="kleed-swatches" class="swatches" aria-label="Kleur"></div>
+        <div class="kleed-buttons">
+          <button id="kleed-surprise" class="btn gold">Verras me!</button>
+          <button id="kleed-done" class="btn green">Klaar!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

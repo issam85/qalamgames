@@ -1,0 +1,39 @@
+// Bewaart het spel op dit apparaat: welke prinses, wat ze aanheeft en wat ze op het
+// strand gevonden heeft. In een privévenster lukt opslaan niet; dan geldt het alleen
+// voor dit bezoek.
+import { PRINCESSES, CATS, SWATCHES, MATCH, defaultOutfit } from './data.js';
+
+const KEY = 'schelpkristal';
+const COLORS = SWATCHES.map(([hex]) => hex);
+
+function validOutfit(outfit) {
+  if (!outfit || !outfit.choice || !outfit.color) return false;
+  return CATS.every((cat) => Number.isInteger(outfit.choice[cat.key])
+    && outfit.choice[cat.key] >= 0 && outfit.choice[cat.key] < cat.items.length
+    && (COLORS.includes(outfit.color[cat.key]) || (cat.key === 'ketting' && outfit.color[cat.key] === MATCH)));
+}
+
+const count = (n) => (Number.isInteger(n) && n >= 0 ? n : 0);
+
+export function loadGame() {
+  let saved = {};
+  try {
+    saved = JSON.parse(localStorage.getItem(KEY)) || {};
+  } catch {
+    saved = {};
+  }
+  return {
+    princess: Number.isInteger(saved.princess) && saved.princess >= 0 && saved.princess < PRINCESSES.length ? saved.princess : 0,
+    outfit: validOutfit(saved.outfit) ? saved.outfit : defaultOutfit(),
+    shells: count(saved.shells),
+    crystals: count(saved.crystals),
+  };
+}
+
+export function saveGame(game) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(game));
+  } catch {
+    // opslaan lukt niet (privévenster): dan alleen voor nu
+  }
+}

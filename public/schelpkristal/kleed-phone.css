@@ -1,0 +1,86 @@
+/* Kleedhokje op de telefoon. Staand: prinses bovenaan, soorten als rij, daaronder
+   wat je kiest, de kleuren en de knoppen. Liggend: drie smalle kolommen. */
+
+@media (max-width: 700px) {
+  .kleed {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas: "stage" "cats" "panel";
+    gap: 8px;
+  }
+
+  .cats {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .cat {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .kleed-panel {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .kleed-panel h2 {
+    display: none;
+  }
+
+  .items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .item {
+    padding: 7px 2px;
+    font-size: 13px;
+  }
+
+  .swatches {
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border-width: 3px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .kleed {
+    grid-template-columns: 120px minmax(0, 1fr) 300px;
+    gap: 8px;
+  }
+
+  .cat {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .kleed-panel {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .item {
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+
+  .swatch {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+  }
+
+  .btn {
+    padding: 8px;
+    font-size: 16px;
+  }
+}
