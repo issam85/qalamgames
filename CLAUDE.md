@@ -340,7 +340,10 @@ homepage in Lichting 4.
   Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13). De volgende wereld gaat open na
   100% met Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden,
   beste percentage.
-- Oefenen: checkpoints (groene ruitjes) voor de meeste stukjes, na een botsing 0,7 s klaarstaan.
+- Start: 5 levens (`tries.js`) en checkpoints (gouden ruitjes) op de veilige plek het dichtst bij
+  20, 40, 60 en 80%. Botsen = een leven minder en terug naar het laatste checkpoint; levens op = terug
+  naar 0% met weer 5 levens.
+- Oefenen: onbeperkt, checkpoints (groene ruitjes) voor de meeste stukjes, na een botsing 0,7 s klaarstaan.
   Op hoge snelheid geen checkpoint vlak voor torens en trappen (`noCheckpoint`): zonder aanloop
   klopt de sprong daar niet.
 - Nieuw parcours: stukjes in `patterns.js` rekenen met de snelheid, de volgorde staat in

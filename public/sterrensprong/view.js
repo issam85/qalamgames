@@ -8,14 +8,14 @@ import { createShatter } from './shatter.js';
 import { createFx } from './fx.js';
 import { playEvents } from './events.js';
 
-function addMarkers(stage, level) {
+function addMarkers(stage, points, color) {
   const mesh = new THREE.InstancedMesh(
     new THREE.OctahedronGeometry(0.3),
-    new THREE.MeshBasicMaterial({ color: '#7dff9b' }),
-    level.checkpoints.length,
+    new THREE.MeshBasicMaterial({ color }),
+    points.length,
   );
   const matrix = new THREE.Matrix4();
-  level.checkpoints.forEach((x, i) => mesh.setMatrixAt(i, matrix.makeTranslation(x, 3.2, 0)));
+  points.forEach((x, i) => mesh.setMatrixAt(i, matrix.makeTranslation(x, 3.2, 0)));
   mesh.frustumCulled = false;
   mesh.visible = false;
   stage.add(mesh);
@@ -36,7 +36,10 @@ export function createView(canvas) {
       const stage = world.load(level);
       buildObstacles(stage, level);
       boosts = createBoosts(stage, level);
-      markers = addMarkers(stage, level);
+      markers = {
+        practice: addMarkers(stage, level.checkpoints, '#7dff9b'),
+        lives: addMarkers(stage, level.lifeCheckpoints, '#ffd43b'),
+      };
       finish = level.length;
     },
     setSkin(skin) {
@@ -48,7 +51,8 @@ export function createView(canvas) {
       player.reset();
       player.setVisible(true);
       shatter.hide();
-      markers.visible = practice;
+      markers.practice.visible = practice;
+      markers.lives.visible = !practice;
     },
     crash(run) {
       player.setVisible(false);

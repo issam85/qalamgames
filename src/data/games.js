@@ -24,7 +24,7 @@ export const GAMES = {
     title: 'Sterrensprong', src: '/sterrensprong/index.html', accent: '#ffc93c',
     blurb: 'Jouw lantaarn rent vanzelf door een 3D-nachtstad. Spring over punten, doornen en torens en haal alle drie de werelden tot 100%. Kies je eigen kleuren!',
     controls: [['Springen', 'Spatie, pijltje omhoog of klik'], ['Tablet', 'Tik op het scherm']],
-    howto: 'Eén knop: springen. Vasthouden blijft springen. In een ring druk je nog een keer. Bots je, dan begin je opnieuw. Bij Oefenen heb je checkpoints, maar een nieuwe wereld gaat pas open als je 100% haalt met Start.',
+    howto: 'Eén knop: springen. Vasthouden blijft springen. In een ring druk je nog een keer. Je hebt 5 levens: bots je, dan ga je terug naar je laatste checkpoint (20, 40, 60 of 80%). Geen levens meer? Dan begin je weer op 0%. Een nieuwe wereld gaat open als je 100% haalt met Start.',
   },
   fightnight: {
     title: 'Fight Night', src: '/fightnight.html', accent: '#FAC775', video: '/video/fightnight.mp4',

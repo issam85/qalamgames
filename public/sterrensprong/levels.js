@@ -28,7 +28,11 @@ function buildWorld(name, sections) {
       x += made.width + rest;
     });
   });
-  return { name, length: x + 8, zones, checkpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
+  const length = x + 8;
+  // de veilige plek die het dichtst bij 20, 40, 60 en 80% ligt
+  const closest = (spot) => checkpoints.reduce((a, b) => (Math.abs(b - spot) < Math.abs(a - spot) ? b : a));
+  const lifeCheckpoints = [0.2, 0.4, 0.6, 0.8].map((part) => closest(part * length));
+  return { name, length, zones, checkpoints, lifeCheckpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
 }
 
 const WORLD_1 = buildWorld('Lantaarnstad', [

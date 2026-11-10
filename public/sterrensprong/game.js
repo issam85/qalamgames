@@ -8,19 +8,18 @@ import { loadSkin, saveSkin } from './skins.js';
 import { loadProgress, bestOf, recordPercent, completeWorld } from './progress.js';
 import { createMenu } from './menu.js';
 import { updateHud, percentOf, showWorldDone, hideOverlay, flash, showToast } from './hud.js';
+import { createTries } from './tries.js';
 
 const WIN_PAUSE = 0.7; // een tik vlak na de finish slaat het scherm niet over
-const RESPAWN_PAUSE = 0.7; // in de oefenmodus even klaarstaan op het checkpoint
+const RESPAWN_PAUSE = 0.7; // even klaarstaan op het checkpoint
 const view = createView(document.getElementById('view'));
 const input = createInput(onPress);
 const progress = loadProgress(WORLDS.length);
+const tries = createTries();
 
 let worldIndex = progress.unlocked - 1;
 let level, run;
 let mode = 'ready';
-let practice = false;
-let checkpoint = -1; // laatst bereikte checkpoint in de oefenmodus
-let attempt = 1;
 let pause = 0;
 let spare = 0;
 let last = performance.now();
@@ -30,6 +29,7 @@ function loadLevel(index) {
   level = WORLDS[index];
   view.load(level);
   run = createRun(level);
+  tries.begin(level, false);
 }
 
 loadLevel(worldIndex);
@@ -46,17 +46,15 @@ const menu = createMenu({ skin: firstSkin, worlds: WORLDS, progress, selected: w
 });
 
 function clearRun() {
-  run = createRun(level, practice && checkpoint >= 0 ? level.checkpoints[checkpoint] : 0);
+  run = createRun(level, tries.spawn());
   spare = 0;
   input.takePress();
-  view.reset(practice);
+  view.reset(tries.practice);
   hideOverlay();
 }
 
-function play(asPractice) {
-  practice = asPractice;
-  checkpoint = -1;
-  attempt = 1;
+function play(practice) {
+  tries.begin(level, practice);
   clearRun();
   mode = 'run';
   menu.show(false);
@@ -64,7 +62,7 @@ function play(asPractice) {
 }
 
 function backToMenu() {
-  practice = false;
+  tries.begin(level, false);
   clearRun();
   mode = 'ready';
   menu.update(worldIndex);
@@ -75,15 +73,15 @@ document.getElementById('to-menu').addEventListener('click', backToMenu);
 function finishWorld() {
   mode = 'won';
   pause = WIN_PAUSE;
-  if (!practice) completeWorld(progress, level, worldIndex, WORLDS.length);
-  showWorldDone(level, WORLDS[worldIndex + 1], practice);
+  if (!tries.practice) completeWorld(progress, level, worldIndex, WORLDS.length);
+  showWorldDone(level, WORLDS[worldIndex + 1], tries.practice);
 }
 
 function onPress() {
   if (mode === 'ready') {
     play(false);
   } else if (mode === 'won' && pause <= 0) {
-    if (practice || worldIndex === WORLDS.length - 1) return backToMenu();
+    if (tries.practice || worldIndex === WORLDS.length - 1) return backToMenu();
     loadLevel(worldIndex + 1);
     play(false);
   }
@@ -95,22 +93,23 @@ function crash() {
   pause = DEATH_PAUSE;
   view.crash(run);
   flash();
+  tries.lose();
   const percent = percentOf(run);
-  if (!practice && recordPercent(progress, level, percent)) showToast(`Nieuw record: ${percent}%`);
+  if (!tries.practice && recordPercent(progress, level, percent)) showToast(`Nieuw record: ${percent}%`);
 }
 
 function afterCrash() {
-  attempt++;
+  const outOfLives = tries.respawn();
   clearRun();
-  mode = practice ? 'wait' : 'run';
+  if (outOfLives) showToast('Geen levens meer: opnieuw!');
+  mode = tries.reached < 0 ? 'run' : 'wait';
   pause = RESPAWN_PAUSE;
 }
 
-function passCheckpoints() {
-  while (checkpoint + 1 < level.checkpoints.length && run.x >= level.checkpoints[checkpoint + 1]) {
-    checkpoint++;
-    view.checkpoint(run);
-  }
+function passCheckpoint() {
+  if (!tries.pass(run.x)) return;
+  view.checkpoint(run);
+  if (!tries.practice) showToast(`Checkpoint ${(tries.reached + 1) * 20}%`);
 }
 
 function simulate(dt) {
@@ -127,7 +126,7 @@ function simulate(dt) {
   } else if (run.state === 'won') {
     finishWorld();
   } else {
-    if (practice) passCheckpoints();
+    passCheckpoint();
     view.trail(run, dt);
   }
 }
@@ -141,7 +140,7 @@ function frame(now) {
   else if (mode === 'wait' && pause <= 0) mode = 'run';
   else if (mode === 'won') view.finale(dt);
   view.draw(run, dt, mode === 'ready');
-  updateHud(run, attempt, practice, bestOf(progress, level));
+  updateHud(run, tries, bestOf(progress, level));
   requestAnimationFrame(frame);
 }
 
