@@ -6,7 +6,9 @@ const KEYS = {
   ArrowUp: ['y', -1], KeyW: ['y', -1], ArrowDown: ['y', 1], KeyS: ['y', 1],
 };
 
-export function beachInput(canvas) {
+// lift = hoeveel de prinses onder de vinger staat (op het strand staan haar voeten
+// iets lager dan je vinger; in de zee zwemt ze er precies naartoe)
+export function beachInput(canvas, lift = 40) {
   const held = new Set();
   let point = null; // { x, y } op het scherm (logisch), zolang de vinger erop is
 
@@ -46,7 +48,7 @@ export function beachInput(canvas) {
       return d;
     },
     // waar de vinger is, in de wereld (cam = linkerkant van het scherm)
-    target: (cam) => (point ? { x: point.x + cam, y: point.y + 40 } : null),
+    target: (cam) => (point ? { x: point.x + cam, y: point.y + lift } : null),
     clear() {
       held.clear();
       point = null;

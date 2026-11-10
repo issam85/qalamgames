@@ -6,6 +6,7 @@ import { background, sea, H } from './beach-scene.js';
 import { drawItems, drawDark, drawPrincess, drawPicked } from './beach-draw.js';
 import { beachInput } from './beach-input.js';
 import { princessSvg } from './princess.js';
+import { ting } from './sound.js';
 
 const canvas = document.getElementById('strand-canvas');
 const ctx = canvas.getContext('2d');
@@ -19,25 +20,6 @@ let walk = null;
 let api = null; // { game, save(), counters() }
 let frame = 0;
 let last = 0;
-let audio = null;
-
-// een hoog "ting" bij het oprapen; een kristal klinkt hoger
-function ting(high) {
-  try {
-    audio = audio || new AudioContext();
-    const o = audio.createOscillator();
-    const g = audio.createGain();
-    o.frequency.value = high ? 1320 : 880;
-    o.type = 'sine';
-    g.gain.setValueAtTime(0.15, audio.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.4);
-    o.connect(g).connect(audio.destination);
-    o.start();
-    o.stop(audio.currentTime + 0.4);
-  } catch {
-    // geen geluid: dan maar stil
-  }
-}
 
 function progress() {
   progressEl.innerHTML = `Schelpen <b>${SHELLS - left(walk, 'shell')} / ${SHELLS}</b> · Kristallen <b>${CRYSTALS - left(walk, 'crystal')} / ${CRYSTALS}</b>`;

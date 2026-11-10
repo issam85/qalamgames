@@ -461,6 +461,14 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   kristallen]); tik op iets met een slotje en je betaalt met wat je op het strand vond.
   Vrijgespeeld staat in `game.owned` (`'jurk:4'`); `hasItem()`. Draagt een oude bewaarde
   outfit iets op slot, dan zet `loadGame()` dat terug naar het begin.
+- Zwemmen (wens van de leerling: eerst omkleden, dan de zee in): knop Zwemmen opent het
+  kleedhokje bij Zwemkleding (4 burkini's: effen, bloemen, golven, sterren, alle kleuren,
+  capuchon aan/uit = `outfit.hood`); "Naar de zee!" gaat naar de zee. Daar zwem je met
+  pijltjes of vinger (canvas 960 × 540, zee 2400 breed) en pak je bij 8 oesters de parel
+  als de oester open is (3 s open, 2 s dicht). Parels = `game.pearls`, voor de Parelkroon
+  en het Parelsnoer (prijs `[0, 0, parels]`). `sea-world.js` regels · `sea-scene.js` lucht,
+  water, golven, vissen · `sea-oysters.js` · `sea.js` · `sound.js` gedeelde "ting".
+  Een oud bewaard spel zonder zwemkleding krijgt die uit de standaard (`fillOutfit`).
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.

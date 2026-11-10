@@ -94,6 +94,13 @@
   color: #c2419a;
 }
 
+.ico.pearl {
+  margin-left: 6px;
+  border-radius: 50%;
+  clip-path: none;
+  background: radial-gradient(circle at 35% 35%, #fff 0 25%, #f1e9dc 45%, #c9bfae 100%);
+}
+
 .item small .ico {
   width: 13px;
   height: 13px;

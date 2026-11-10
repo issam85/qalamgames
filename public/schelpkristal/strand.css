@@ -22,7 +22,8 @@
   gap: 8px;
 }
 
-#strand-canvas {
+#strand-canvas,
+.sea-canvas {
   flex: 1;
   min-height: 0;
   width: 100%;

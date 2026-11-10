@@ -38,7 +38,7 @@
   <section id="screen-start" class="screen active">
     <header class="bar">
       <h1>Zoek Schelp Kristal</h1>
-      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="start">
       <div class="start-stage"><div id="start-doll" class="doll"></div></div>
@@ -48,6 +48,7 @@
         <div class="start-buttons">
           <button id="to-strand" class="btn blue">Naar het strand</button>
           <button id="to-douche" class="btn blue">Douchen</button>
+          <button id="to-zee" class="btn blue">Zwemmen</button>
           <button id="to-kleed" class="btn green">Kleedhokje</button>
         </div>
       </div>
@@ -58,7 +59,7 @@
     <header class="bar">
       <button class="pill back">Terug</button>
       <h1>Kleedhokje</h1>
-      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="kleed">
       <nav id="kleed-cats" class="cats" aria-label="Soort"></nav>
@@ -80,7 +81,7 @@
     <header class="bar">
       <button class="pill back">Terug</button>
       <p id="strand-progress" class="hunt"></p>
-      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="strand">
       <canvas id="strand-canvas" width="960" height="540" aria-label="Het strand in het donker"></canvas>
@@ -100,7 +101,7 @@
     <header class="bar">
       <button class="pill back">Terug</button>
       <h1>Stranddouche</h1>
-      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b></div>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="kleed">
       <nav id="douche-tools" class="cats" aria-label="Spullen bij de douche"></nav>
@@ -112,6 +113,26 @@
         <div class="kleed-buttons">
           <button id="douche-reset" class="btn blue">Opnieuw</button>
           <button id="douche-done" class="btn green">Naar het kleedhokje</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-zee" class="screen">
+    <header class="bar">
+      <button class="pill back">Terug</button>
+      <p id="zee-progress" class="hunt"></p>
+      <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
+    </header>
+    <div class="strand">
+      <canvas id="zee-canvas" class="sea-canvas" width="960" height="540" aria-label="De zee bij maanlicht"></canvas>
+      <p class="strand-hint">Zwem met de pijltjes, of houd je vinger waar de prinses heen moet. Duik naar een oester als hij open is en pak de parel!</p>
+      <div id="zee-end" class="strand-end" hidden>
+        <h2>Alle parels!</h2>
+        <p>Je hebt alle parels uit de zee gehaald.</p>
+        <div class="strand-buttons">
+          <button id="zee-again" class="btn gold">Nog een keer</button>
+          <button class="btn green back">Terug</button>
         </div>
       </div>
     </div>

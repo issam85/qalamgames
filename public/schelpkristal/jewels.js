@@ -21,8 +21,17 @@ export const CROWNS = [
     + ARC.map(([x, y]) => `<g fill="${p.fill}" stroke="${p.line}" stroke-width="1">${dots([[x - 6, y - 3], [x + 6, y - 3], [x - 4, y + 6], [x + 4, y + 6], [x, y - 7]], 5)}</g><circle cx="${x}" cy="${y}" r="3.5" fill="#ffd43b"/>`).join(''),
   (p) => shape(BAND, GOLD) + [[150, 58, 14], [124, 70, 10], [176, 70, 10]].map(([x, y, s]) => shape(SHELL(x, y, s), p) + shellLines(x, y, s)).join('') + gem(150, 78, 4, '#fff'),
   (p) => shape(BAND, p) + [[150, 54, 9], [126, 66, 6], [174, 66, 6]].map(([x, y, s]) => shape(HEART(x, y, s), paint('#ff5fa2'))).join('') + sparkle(150, 36, 5),
+  (p) => shape(BAND, p) + `<g stroke="${p.line}" stroke-width="2">${ARC.map(([x, y], i) => `<path d="M${x} ${y} L${x} ${y - 12 - (3 - Math.abs(i - 3)) * 6}"/>`).join('')}</g>`
+    + pearls(ARC.map(([x, y], i) => [x, y - 14 - (3 - Math.abs(i - 3)) * 6]), 5) + pearls([[150, 40]], 8) + sparkle(168, 34, 5),
 ];
 
+// glanzende witte parels op de plekken in list
+const pearls = (list, r) => `<g fill="#fbf7f0" stroke="#c9bfae" stroke-width="1">${dots(list, r)}</g><g fill="#fff">${dots(list.map(([x, y]) => [x - r / 3, y - r / 3]), r / 3)}</g>`;
+// een snoer van de hals naar beneden; het laagste punt is y = low
+const strand = (low) => Array.from({ length: 13 }, (_, i) => {
+  const t = (i + 0.5) / 13;
+  return [(1 - t) ** 2 * 124 + 2 * (1 - t) * t * 150 + t * t * 176, (1 - t) ** 2 * 204 + 2 * (1 - t) * t * (low * 2 - 204) + t * t * 204];
+});
 const chain = (c = '#e6b800') => `<path d="M124 204 Q150 244 176 204" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>`;
 const CURVE = Array.from({ length: 9 }, (_, i) => {
   const t = (i + 0.5) / 9;
@@ -35,6 +44,7 @@ export const NECKLACES = [
   (p) => chain() + shape(SHELL(150, 232, 10), p) + shellLines(150, 232, 10),
   (p) => chain() + [[150, 222, 8], [136, 216, 5], [164, 216, 5]].map(([x, y, s]) => shape(`M${x} ${y} ${STAR(s)}`, p)).join(''),
   (p) => chain() + shape('M150 218 L158 230 L150 256 L142 230 Z', { ...p, fill: light(p.c, 0.4) }, 'opacity="0.9"') + gloss(147, 230, 3, 8) + sparkle(160, 248, 4),
+  () => pearls(strand(244), 4) + pearls(strand(286), 4.5) + pearls([[150, 292]], 7),
 ];
 
 const glass = (p) => ({ ...paint(light(p.c, 0.5)), line: p.line });

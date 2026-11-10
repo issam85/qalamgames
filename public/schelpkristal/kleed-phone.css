@@ -26,13 +26,13 @@
 
   .cats {
     flex-direction: row;
-    gap: 6px;
+    gap: 4px;
   }
 
   .cat {
-    flex: 1;
+    flex: 1 1 auto;
     padding: 8px 4px;
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
   }
 
