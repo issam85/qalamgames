@@ -26,6 +26,12 @@ export const GAMES = {
     controls: [['Springen', 'Spatie, pijltje omhoog of klik'], ['Tablet', 'Tik op het scherm']],
     howto: 'Eén knop: springen. Vasthouden blijft springen. In een ring druk je nog een keer. Je hebt 5 levens: bots je, dan ga je terug naar je laatste checkpoint (20, 40, 60 of 80%). Geen levens meer? Dan begin je weer op 0%. Een nieuwe wereld gaat open als je 100% haalt met Start.',
   },
+  schelpkristal: {
+    title: 'Zoek Schelp Kristal', src: '/schelpkristal/index.html', accent: '#ff8ac8',
+    blurb: "Kies je prinses en loop 's avonds met je lantaarn over het strand. Zoek schelpen en kristallen die glinsteren, douche het zand eraf en kies jurken, kronen, kettingen en schoenen in alle kleuren.",
+    controls: [['Lopen', 'Pijltjes of WASD'], ['Tablet', 'Houd je vinger waar de prinses heen moet'], ['Douche en kleedhokje', 'Klik of tik, sleep']],
+    howto: 'Zoek op het strand alle schelpen en kristallen: alleen wat in het licht van je lantaarn ligt zie je goed. Met wat je vindt speel je in het kleedhokje nieuwe jurken, kronen, kettingen en schoenen vrij.',
+  },
   fightnight: {
     title: 'Fight Night', src: '/fightnight.html', accent: '#FAC775', video: '/video/fightnight.mp4',
     blurb: "Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je tegenstander met jabs, combo's en knock-outs.",

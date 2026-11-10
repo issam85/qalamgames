@@ -430,8 +430,11 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
 `schelpkristal`.
 
 - Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker (klaar), 3 douche (klaar),
-  4a vrijspelen (klaar), 4b met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
-  homepage, thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok.
+  4a met schelpen en kristallen kronen, jurken, kettingen en schoenen vrijspelen (klaar), 4b
+  homepage (Lichting 4), thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok (klaar).
+  `thumbs/schelpkristal.webp` en `og/schelpkristal.jpg` zijn gemaakt uit de eigen
+  tekeningen (drie prinsessen op het strand, headless Chrome); het hulpscript staat niet in
+  de repo. Open: echte naam en maker, namen van de prinsessen, test op een echte tablet.
 - `princess.js` bouwt de prinses (vak 300 × 520, zoals het meisje van Mijn Leven) ·
   `hair.js` lang haar in drie lagen (golf, krul, vlecht, steil) · `dresses.js` jurken
   (lijfje, mouwen, rok, soms sleep) · `jewels.js` kronen, kettingen, schoenen · `glans.js`
