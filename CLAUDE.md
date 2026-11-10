@@ -469,6 +469,12 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   en het Parelsnoer (prijs `[0, 0, parels]`). `sea-world.js` regels · `sea-scene.js` lucht,
   water, golven, vissen · `sea-oysters.js` · `sea.js` · `sound.js` gedeelde "ting".
   Een oud bewaard spel zonder zwemkleding krijgt die uit de standaard (`fillOutfit`).
+- Vrienden op het strand (wens van de leerling): prins Adam, prins Yusuf (`prince.js`:
+  kort haar, tuniek, lange broek, laarzen, cape, kroontje; zelfde gezicht zonder wimpers)
+  en de eerste prinses die je zelf niet bent, in een paarse glitterjurk. Elk met een
+  lantaarn. Ze zoeken samen (wat zij vinden telt mee), lopen langzamer (95) en rusten 4 s
+  na een vondst; "Adam vond een schelp!" in een wolkje. Alleen vrienden: alles in ±42 s.
+  `beach-friends.js` regels · tekenen in `beach.js` en `drawSay()` in `beach-draw.js`.
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.

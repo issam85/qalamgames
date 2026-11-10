@@ -11,16 +11,18 @@ import { pants, tunic, pattern, hood, sleeves as swimSleeves } from './swim.js';
 // wit valt weg tegen een lichte achtergrond: dan een heel lichte grijstint
 const soft = (hex) => (hex === '#ffffff' ? '#f4f4f4' : hex);
 
-const eye = (iris) => `<ellipse cx="131" cy="118" rx="10" ry="12.5" fill="#fff"/><circle cx="132" cy="120" r="7.2" fill="${iris}"/><circle cx="132.5" cy="121" r="4.2" fill="#1d1016"/>`
+// lashes = wimpers (de prinsen hebben er geen)
+const eye = (iris, lashes) => `<ellipse cx="131" cy="118" rx="10" ry="12.5" fill="#fff"/><circle cx="132" cy="120" r="7.2" fill="${iris}"/><circle cx="132.5" cy="121" r="4.2" fill="#1d1016"/>`
   + '<circle cx="128.5" cy="116" r="3" fill="#fff"/><circle cx="135" cy="124" r="1.4" fill="#fff" opacity="0.9"/>'
   + `<path d="M120 116 Q131 101.5 142 115" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>`
-  + `<path d="M120 116 l-3.5 -3 M123 107 l-3 -3.5 M127 104.5 l-1.5 -4" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
+  + (lashes ? `<path d="M120 116 l-3.5 -3 M123 107 l-3 -3.5 M127 104.5 l-1.5 -4" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>` : '');
 const brow = (c) => `<path d="M119 96.5 Q131 89.5 142 95.5" fill="none" stroke="${c}" stroke-width="2.8" stroke-linecap="round"/>`;
 const MOUTH = '<path d="M138 146 Q150 162 162 146 Q150 152 138 146 Z" fill="#e8605f"/><path d="M138 146 Q150 160 162 146" fill="none" stroke="#b83b3b" stroke-width="2.2" stroke-linecap="round"/>';
 
-function face(pr, skin) {
+// het gezicht; pr = { eyes, hair } (ook voor de prinsen in prince.js)
+export function face(pr, skin, lashes = true) {
   return `<ellipse cx="150" cy="118" rx="44" ry="50" fill="${skin.fill}" stroke="${skin.line}" stroke-width="1.2"/>`
-    + mirror(eye(irisFill(pr.eyes)) + brow(paint(pr.hair).line))
+    + mirror(eye(irisFill(pr.eyes), lashes) + brow(paint(pr.hair).line))
     + `<path d="M148 134 q2 4 5 1" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="2" stroke-linecap="round"/>${MOUTH}`
     + mirror('<ellipse cx="120" cy="138" rx="11" ry="7" fill="url(#blush)"/>');
 }

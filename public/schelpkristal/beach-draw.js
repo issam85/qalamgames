@@ -23,7 +23,8 @@ export function drawItems(ctx, walk, cam, front) {
 
 // Het donker, met gaten waar licht is. Daarna het glinsteren: ook in het donker zie
 // je af en toe een schelp of kristal oplichten.
-export function drawDark(ctx, dark, walk, cam) {
+// friends = de vrienden; hun lantaarns geven ook licht
+export function drawDark(ctx, dark, walk, cam, friends = []) {
   const d = dark.getContext('2d');
   d.globalCompositeOperation = 'source-over';
   d.clearRect(0, 0, 960, H);
@@ -35,7 +36,8 @@ export function drawDark(ctx, dark, walk, cam) {
   d.fillRect(0, 0, 960, H);
   d.globalCompositeOperation = 'destination-out';
   const flicker = 1 + Math.sin(walk.time * 9) * 0.02;
-  const lights = [{ x: walk.x + walk.face * 26, y: walk.y - 66, r: LANTERN * flicker }, ...LIGHTS];
+  const lantern = (w, r) => ({ x: w.x + w.face * 26, y: w.y - 66, r });
+  const lights = [lantern(walk, LANTERN * flicker), ...friends.map((f) => lantern(f, LANTERN * 0.7)), ...LIGHTS];
   lights.forEach(({ x, y, r }) => {
     const sx = x - cam;
     if (sx < -r || sx > 960 + r) return;
@@ -107,4 +109,20 @@ export function drawPicked(ctx, walk, cam) {
     ctx.fillText('+1', it.x - cam, it.y - 70 - t * 90);
     ctx.globalAlpha = 1;
   });
+}
+
+// een wolkje met tekst boven een vriendje (wat het net vond)
+export function drawSay(ctx, f, text, cam) {
+  if (!text) return;
+  ctx.font = '700 18px Fredoka, sans-serif';
+  const w = ctx.measureText(text).width + 20;
+  const x = f.x - cam;
+  const y = f.y - 250;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+  ctx.beginPath();
+  ctx.roundRect(x - w / 2, y - 16, w, 30, 15);
+  ctx.fill();
+  ctx.fillStyle = '#c2419a';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y + 5);
 }
