@@ -8,7 +8,7 @@ export const TOOLS = [
   { key: 'puntkam', label: 'Puntkam', hint: 'Tik op je haar: de puntkam maakt een scheiding en twee vlechten.' },
   { key: 'schaar', label: 'Schaar', hint: 'Sleep de schaar door een lok: daar knip je hem af.' },
   { key: 'fohn', label: 'Föhn', hint: 'Sleep de föhn over je haar tot het glanst.' },
-  { key: 'hoed', label: 'Hoed', hint: 'Tik om je hoed op te zetten. Met een lage knot past hij het mooist.' },
+  { key: 'hoed', label: 'Hoed', hint: 'Tik om je hoed op te zetten, en nog eens voor je haarspullen uit de winkel.' },
   { key: 'hoofddoek', label: 'Hoofddoek', hint: 'Tik om je hoofddoek om te doen. Tik nog een keer om hem af te doen.' },
 ];
 

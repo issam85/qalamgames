@@ -1,8 +1,8 @@
 // Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
 // eten dat klaarstaat, het gezin, de moskee, de pyjama, het aantal
-// nachten, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+// nachten, wat er in de winkel gekocht is, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { defaultOutfit, CATS, SWATCHES } from './data.js';
-import { freshHair, STYLES, HAIR_COLORS, SPOTS } from './hair.js';
+import { freshHair, STYLES, HAIR_COLORS, SPOTS, HATS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
 import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
 import { freshMakeup, validMakeup } from './makeup.js';
@@ -30,6 +30,9 @@ function validHair(hair) {
     && typeof hair.day === 'string';
 }
 
+// de hoed was eerst aan of uit, nu is het een nummer (0 = niets, 1 = hoed)
+const hatOf = (hat) => (Number.isInteger(hat) && hat >= 0 && hat < HATS.length ? hat : Number(hat === true));
+
 // de lengte per lok; een ouder spel had één lengte (0, 1 of 2) voor al het haar
 function loadHair(saved) {
   if (!validHair(saved)) return freshHair();
@@ -37,7 +40,7 @@ function loadHair(saved) {
   const ok = Array.isArray(hair.ends) && hair.ends.length === STRAND_X.length
     && hair.ends.every((end) => typeof end === 'number' && end >= MIN_END && end <= MAX_END);
   const old = [MIN_END, (MIN_END + MAX_END) / 2, MAX_END][length] || MAX_END;
-  return { ...freshHair(), ...hair, ends: ok ? hair.ends : STRAND_X.map(() => old) };
+  return { ...freshHair(), ...hair, hat: hatOf(hair.hat), ends: ok ? hair.ends : STRAND_X.map(() => old) };
 }
 
 function validBath(bath) {
@@ -97,6 +100,7 @@ export function loadGame() {
     mekkaDay: typeof data.mekkaDay === 'string' ? data.mekkaDay : '',
     pyjama: validPyjama(data.pyjama) ? data.pyjama : freshPyjama(),
     nights: Number.isInteger(data.nights) && data.nights >= 0 ? data.nights : 0,
+    owned: Array.isArray(data.owned) ? data.owned.filter((key) => typeof key === 'string') : [],
   };
 }
 

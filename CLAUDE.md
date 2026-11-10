@@ -192,9 +192,10 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `thumbs/mijnleven.webp` en `og/mijnleven.jpg` zijn gemaakt uit de eigen tekeningen
   van het spel: een HTML-pagina met drie meisjes (`dollSvg`) en de titel, gerenderd met
   headless Chrome op 960×540 en 1200×630. Het hulpscript staat niet in de repo.
-- Klaar: het huis (overzicht; Badkamer, Kledingkast, Kapper, Keuken, Gezin, Moskee
-  en Mekka en Slaapkamer zijn open, in die volgorde) en zeven kamers. Alles wordt bewaard in `localStorage` (`mijnleven`);
-  "Klaar!" geeft per kamer de eerste keer per dag 2 sterren.
+- Klaar: het huis (overzicht) en alle acht kamers, in deze volgorde: Badkamer,
+  Kledingkast, Kapper, Keuken, Gezin, Moskee en Mekka, Slaapkamer, Winkel. Alles wordt
+  bewaard in `localStorage` (`mijnleven`); "Klaar!" geeft per kamer de eerste keer per
+  dag 2 sterren.
   - Badkamer: onder de douche 8 plekken, elk spons → douche → handdoek (slepen; je
     ziet alleen het hoofd, de rest zit achter het douchescherm). Voor de spiegel (in
     badjas, handdoek om het haar): tanden poetsen (slepen over de mond) en make-up:
@@ -241,6 +242,14 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     WebAudio) en de groene knop "Slapen". Slapen kan pas als er vandaag 3 kamers af
     zijn en de pyjama aan is. Daarna is het nacht (2,6 s) en begint een nieuwe dag:
     `nights` + 1, make-up eraf, terug naar het huis.
+  - Winkel: 16 dingen voor sterren (`shop.js`, sleutel `<soort>:<nummer>` in
+    `game.owned`): per kledingcategorie de zevende soort (4–8 sterren; `FREE_ITEMS`
+    in `data.js`), twee extra make-upkleuren per soort (3 sterren; `FREE_COLORS` in
+    `makeup.js`) en vier haarspullen (haarband, strik, bloem, diadeem; `HATS` in
+    `hair.js`, `hair.hat` is een nummer, 1 = hoed, bij de kapper tik je met de hoed
+    door wat je hebt). Links kies je de groep, tik op iets en het meisje past het in
+    de etalage; de groene knop is "Kopen" (geen Opnieuw). Gekocht = meteen aan, en
+    zichtbaar in kast, badkamer en kapper.
 - De dag in het spel (`today()` in `ui.js`) = de echte datum plus het aantal nachten
   (`2026-11-09/3`; zonder nachten alleen de datum, zodat oude spellen blijven
   kloppen). Een nieuwe dag begint dus door te slapen én als het echt morgen is; dan
@@ -268,7 +277,9 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   functies) · `mosque-text.js` uitleg · `mosque-scene.js` wasplaats en de lucht per
   gebed · `mecca-scene.js` tawaf, Zamzam en sa'i ·
   slaapkamer: `bedroom.js` scherm en slapen · `bedroom-scene.js` kamer, pyjama's en
-  muziekdoosje · `tunes.js` toetsen en liedjes.
+  muziekdoosje · `tunes.js` toetsen en liedjes ·
+  winkel: `shop-room.js` scherm · `shop.js` aanbod en kopen (losse functies) ·
+  `shop-scene.js` etalage met het meisje die past.
   `rooms.js` sluit de kamers aan op het spel (wat een kamer mag lezen en bewaren, en
   de regel voor "Klaar!" per kamer); `app.js` houdt het spel, de sterren en de foto.
   `screen.js` bouwt het scherm van een kamer met de vaste indeling (balk, knoppen
@@ -276,8 +287,8 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   `<kamer>-nav`, `-stage`, `-title`, `-label`, `-meter`, `-hint`, `-reset`, `-done`.
   Alleen het huis en de kast staan nog in `index.html`.
   CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
-  `kapper.css`, `bad.css`, `keuken.css`, `moskee.css`, `overlay.css`. Elk scherm is
-  één schermhoogte; knoppen altijd in beeld.
+  `kapper.css`, `bad.css`, `keuken.css`, `moskee.css`, `winkel.css`, `overlay.css`.
+  Elk scherm is één schermhoogte; knoppen altijd in beeld.
 - Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…`,
   `show…` en de regel voor "Klaar!" in `rooms.js`, knop `data-room` in het huis, en
   een `<kamer>Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
@@ -287,9 +298,11 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
-- Volgende kamer: de winkel. Plan: kleren, make-upkleuren en haaraccessoires kopen
-  met sterren. Het kapsel is alleen bij de kapper, onder de douche en in pyjama te
-  zien; in het huis draagt het meisje haar hoofddoek.
+- Alle kamers uit het idee van de leerling zijn gebouwd. Het kapsel is alleen bij
+  de kapper, onder de douche en in pyjama te zien; in het huis draagt het meisje haar
+  hoofddoek. Open: echte naam en maker van het spel, de namen van de dochters, test
+  op een echte tablet of telefoon, en een leerkracht die wudu, de gebedstijden en de
+  reis naar Mekka nakijkt.
 
 ## Tiktak Boom Bom (nieuw spel, november 2026)
 

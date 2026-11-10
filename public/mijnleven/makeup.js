@@ -1,10 +1,14 @@
 // Make-up uit de badkamer: lippenstift, blush en oogschaduw, elk met een paar kleuren.
+// De eerste FREE_COLORS kleuren heb je meteen, de rest koop je in de winkel (shop.js).
 // Wat je opdoet blijft zitten in het huis, de kast en bij de kapper.
 export const MAKEUP = {
-  lips: [['#e0245e', 'rood'], ['#ff5fa2', 'roze'], ['#b03060', 'framboos'], ['#ff7a59', 'koraal'], ['#c98078', 'zacht']],
-  blush: [['#ff8fab', 'roze'], ['#ffa07a', 'perzik'], ['#e57399', 'framboos'], ['#f4a6c0', 'zacht'], ['#d98880', 'brons']],
-  eyes: [['#b36bff', 'paars'], ['#5ec8ff', 'blauw'], ['#4cd4a0', 'mint'], ['#ffd43b', 'goud'], ['#ff8ac8', 'roze']],
+  lips: [['#e0245e', 'rood'], ['#ff5fa2', 'roze'], ['#b03060', 'framboos'], ['#ff7a59', 'koraal'], ['#c98078', 'zacht'], ['#d4af37', 'goud'], ['#8e44ad', 'paars']],
+  blush: [['#ff8fab', 'roze'], ['#ffa07a', 'perzik'], ['#e57399', 'framboos'], ['#f4a6c0', 'zacht'], ['#d98880', 'brons'], ['#ff7a59', 'koraal'], ['#c9a0ff', 'lila']],
+  eyes: [['#b36bff', 'paars'], ['#5ec8ff', 'blauw'], ['#4cd4a0', 'mint'], ['#ffd43b', 'goud'], ['#ff8ac8', 'roze'], ['#c0c0c0', 'zilver'], ['#2e8b57', 'groen']],
 };
+export const FREE_COLORS = 5;
+// mag je deze kleur op? (gratis, of gekocht in de winkel)
+export const hasColor = (owned, kind, index) => index < FREE_COLORS || owned.includes(`${kind}:${index}`);
 
 // '' = niets op
 export const freshMakeup = () => ({ lips: '', blush: '', eyes: '' });

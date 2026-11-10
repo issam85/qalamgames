@@ -14,6 +14,7 @@ export const JURK = [
   (c) => `<path d="M110 150 L190 150 L270 500 L30 500 Z" fill="${c}"/><g fill="#ffd43b"><path d="M120 280 ${STAR}"/><path d="M190 350 ${STAR}"/><path d="M135 440 ${STAR}"/></g>`,
   (c) => `<path d="${A_LINE}" fill="${c}"/><g fill="#fff" opacity="0.55"><rect x="100" y="220" width="100" height="14"/><rect x="91" y="280" width="118" height="14"/><rect x="83" y="340" width="134" height="14"/><rect x="74" y="400" width="152" height="14"/><rect x="66" y="460" width="168" height="14"/></g>`,
   (c) => `<path d="${A_LINE}" fill="#fff"/><path d="M110 150 L140 150 L122 500 L60 500 Z" fill="${c}"/><path d="M190 150 L160 150 L178 500 L240 500 Z" fill="${c}"/>`,
+  (c) => `<path d="M110 150 L190 150 L264 500 L36 500 Z" fill="${c}"/><path d="M40 494 L260 494" stroke="#ffd43b" stroke-width="10"/><g fill="#fff" opacity="0.9"><path d="M126 250 ${STAR}"/><path d="M176 330 ${STAR}"/><path d="M110 410 ${STAR}"/><path d="M196 440 ${STAR}"/></g>`,
 ];
 
 export const HOOFDDOEK = [
@@ -23,6 +24,7 @@ export const HOOFDDOEK = [
   (c) => `<path d="M150 36 C100 36 84 80 90 130 L210 130 C216 80 200 36 150 36 Z" fill="${c}"/><path d="M92 100 C120 80 180 80 208 100" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`,
   (c) => `<path d="${HIJAB}" fill="${c}"/><g fill="#fff">${dots([[200, 58], [214, 68], [210, 84], [194, 84], [188, 68]], 9)}</g><circle cx="201" cy="72" r="8" fill="#ffd43b"/>`,
   (c) => `<path d="${HIJAB}" fill="${c}"/><ellipse cx="150" cy="104" rx="47" ry="56" fill="#fff"/>`,
+  (c) => `<path d="${HIJAB}" fill="${c}"/><g fill="#fff" stroke="#ffd43b" stroke-width="1.5">${dots([[150, 48], [128, 54], [172, 54], [112, 70], [188, 70], [104, 92], [196, 92]], 5)}</g>`,
 ];
 
 export const SCHOENEN = [
@@ -32,6 +34,7 @@ export const SCHOENEN = [
   (c) => pair(`<rect x="96" y="496" width="46" height="12" rx="6" fill="${c}"/><path d="M104 496 L120 480 L136 496" fill="none" stroke="${c}" stroke-width="5"/>`),
   (c) => pair(`<path d="M100 490 L142 502 L142 508 L112 508 Z" fill="${c}"/><rect x="100" y="490" width="7" height="18" fill="${c}"/>`),
   (c) => pair(`<rect x="94" y="500" width="50" height="8" rx="4" fill="${c}"/><rect x="110" y="490" width="22" height="10" rx="5" fill="${c}"/>`),
+  (c) => pair(`<rect x="96" y="486" width="46" height="22" rx="10" fill="${c}"/><g fill="#ffd43b">${dots([[106, 494], [120, 500], [134, 492], [114, 504]], 2.5)}</g>`),
 ];
 
 export const TAS = [
@@ -41,6 +44,7 @@ export const TAS = [
   (c) => `<rect x="204" y="330" width="48" height="28" rx="8" fill="${c}"/><circle cx="228" cy="344" r="4" fill="#ffd43b"/>`,
   (c) => `<rect x="224" y="312" width="62" height="78" rx="6" fill="${c}"/><path d="M236 312 C236 286 274 286 274 312" fill="none" stroke="${c}" stroke-width="5"/><path d="M246 340 ${STAR}" fill="#fff" opacity="0.85"/>`,
   () => '',
+  (c) => `<path d="M196 150 L252 320" fill="none" stroke="${c}" stroke-width="5"/><path d="M256 338 c-12 -16 -34 -2 -16 16 l16 16 16 -16 c18 -18 -4 -32 -16 -16z" fill="${c}" stroke="#fff" stroke-width="2"/>`,
 ];
 
 export const SIERADEN = [
@@ -50,6 +54,7 @@ export const SIERADEN = [
   (c) => `<g fill="none" stroke="${c}" stroke-width="5"><ellipse cx="82" cy="312" rx="12" ry="5"/><ellipse cx="218" cy="312" rx="12" ry="5"/></g>`,
   (c) => `<rect x="70" y="304" width="24" height="12" rx="4" fill="${c}"/><circle cx="82" cy="310" r="8" fill="#fff" stroke="${c}" stroke-width="3"/><path d="M82 306v4h3" fill="none" stroke="#3a2a4d" stroke-width="1.5"/>`,
   (c) => `<path d="M126 196 ${STAR}" fill="${c}" stroke="#fff" stroke-width="2"/>`,
+  (c) => `<path d="M122 164 Q150 246 178 164" fill="none" stroke="${c}" stroke-width="4"/><path d="M144 238 ${STAR}" fill="${c}" stroke="#fff" stroke-width="2"/>`,
 ];
 
 export const EXTRA = [
@@ -59,4 +64,5 @@ export const EXTRA = [
   (c) => `<path d="M118 48 L126 18 L140 38 L150 12 L160 38 L174 18 L182 48 Z" fill="${c}" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>`,
   (c) => `<path d="M80 330 L74 380" stroke="#3c9a46" stroke-width="5"/><g fill="${c}">${dots([[68, 312], [86, 306], [92, 322]], 10)}</g><circle cx="76" cy="326" r="10" fill="#fff"/>`,
   (c) => `<g fill="${c}" stroke="#fff" stroke-width="3" stroke-linejoin="round"><path d="M150 44 L122 28 L122 60 Z"/><path d="M150 44 L178 28 L178 60 Z"/><circle cx="150" cy="44" r="7"/></g>`,
+  (c) => `<g fill="${c}" stroke="#fff" stroke-width="2"><ellipse cx="190" cy="62" rx="11" ry="8" transform="rotate(-30 190 62)"/><ellipse cx="214" cy="62" rx="11" ry="8" transform="rotate(30 214 62)"/><ellipse cx="192" cy="78" rx="8" ry="6"/><ellipse cx="212" cy="78" rx="8" ry="6"/></g><rect x="199" y="56" width="6" height="26" rx="3" fill="#3a2a4d"/>`,
 ];

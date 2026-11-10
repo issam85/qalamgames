@@ -6,6 +6,9 @@ import { initKitchen, showKitchen, cookedMeal } from './kitchen.js';
 import { initFamily, showFamily } from './family-room.js';
 import { initMosque, showMosque } from './mosque-room.js';
 import { initBedroom, showBedroom, fallAsleep, inPyjama } from './bedroom.js';
+import { initShop, showShop } from './shop-room.js';
+import { parseKey } from './shop.js';
+import { MAKEUP } from './makeup.js';
 import { knotsLeft } from './hair.js';
 import { washed } from './bath.js';
 import { progress as familyProgress } from './family.js';
@@ -18,8 +21,8 @@ const SLEEP_AFTER = 3; // zoveel kamers moet je op een dag af hebben voor je moe
 
 // game = het spel · set(sleutel) = bewaar dat stukje · done(dagveld, wat) = Klaar!
 // met sterren · reward(dagveld, sterren, tekst) = extra sterren, één keer per dag ·
-// home() = terug naar het huis
-export function connectRooms({ game, set, done, toast, reward, home }) {
+// home() = terug naar het huis · refresh() = sterren en het meisje in het huis bijwerken
+export function connectRooms({ game, set, done, toast, reward, home, refresh }) {
   const get = (key) => () => game[key];
   // per kamer: waarom "Klaar!" nog niet mag ('' = het mag), en wat er dan bewaard is
   const rules = {
@@ -40,8 +43,25 @@ export function connectRooms({ game, set, done, toast, reward, home }) {
       return prayersDone(game.mosque) ? '' : 'Bid eerst de vijf gebeden';
     }, 'Je gebed'],
   };
-  initSalon({ getOutfit: get('outfit'), getMakeup: get('makeup'), getHair: get('hair'), setHair: set('hair') });
-  initBathroom({ getHair: get('hair'), getBath: get('bath'), setBath: set('bath'), getMakeup: get('makeup'), setMakeup: set('makeup') });
+  initSalon({ getOutfit: get('outfit'), getMakeup: get('makeup'), getHair: get('hair'), setHair: set('hair'), getOwned: get('owned') });
+  initBathroom({
+    getHair: get('hair'), getBath: get('bath'), setBath: set('bath'), getMakeup: get('makeup'), setMakeup: set('makeup'), getOwned: get('owned'),
+  });
+  // kopen: sterren eraf, en je draagt het meteen
+  initShop({
+    getStars: get('stars'),
+    getOwned: get('owned'),
+    getLook: () => ({ outfit: game.outfit, hair: game.hair, makeup: game.makeup }),
+    purchase: (item, { owned, stars }) => {
+      const [kind, index] = parseKey(item.key);
+      set('owned')(owned);
+      set('stars')(stars);
+      if (item.group === 'kleren') set('outfit')({ ...game.outfit, choice: { ...game.outfit.choice, [kind]: index } });
+      else if (item.group === 'makeup') set('makeup')({ ...game.makeup, [kind]: MAKEUP[kind][index][0] });
+      else set('hair')({ ...game.hair, hat: index, hijab: false });
+      refresh();
+    },
+  });
   initKitchen();
   initFamily({ getFamily: get('family'), setFamily: set('family'), getMeal: get('meal'), eatMeal: () => set('meal')('') });
   initMosque({
@@ -79,6 +99,6 @@ export function connectRooms({ game, set, done, toast, reward, home }) {
   });
   return {
     'screen-kapper': showSalon, 'screen-bad': showBathroom, 'screen-keuken': showKitchen, 'screen-gezin': showFamily,
-    'screen-moskee': showMosque, 'screen-slaap': showBedroom,
+    'screen-moskee': showMosque, 'screen-slaap': showBedroom, 'screen-winkel': showShop,
   };
 }

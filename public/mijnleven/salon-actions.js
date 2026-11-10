@@ -1,6 +1,6 @@
 // Wat het gereedschap van de kapper met het haar doet. Losse functies zonder scherm,
 // zodat ze makkelijk te testen zijn.
-import { SPOTS, VLECHTEN } from './hair.js';
+import { SPOTS, VLECHTEN, HATS } from './hair.js';
 import { STRAND_X, MIN_END } from './hair-styles.js';
 
 export const DRY_STEPS = 40; // zo lang föhnen tot het glanst
@@ -45,11 +45,17 @@ export function cut(ends, a, b) {
 }
 
 // Een tik met puntkam, hoed of hoofddoek. Geeft { patch, text } terug:
-// patch = wat er aan het haar verandert, text = wat de kapper erbij zegt
-export function tapHair(toolKey, hair) {
-  if (toolKey === 'hoofddoek') return { patch: { hijab: !hair.hijab, hat: false } };
+// patch = wat er aan het haar verandert, text = wat de kapper erbij zegt.
+// owned = wat er in de winkel gekocht is ('hat:2' enzovoort)
+export function tapHair(toolKey, hair, owned = []) {
+  if (toolKey === 'hoofddoek') return { patch: { hijab: !hair.hijab, hat: 0 } };
   if (hair.hijab) return { text: 'Doe eerst je hoofddoek af.' };
   if (toolKey === 'puntkam') return { patch: { style: VLECHTEN }, text: 'Een mooie scheiding en twee vlechten!' };
-  if (toolKey === 'hoed') return { patch: { hat: !hair.hat } };
+  if (toolKey === 'hoed') {
+    // de hoed, en daarna om de beurt de haarspullen uit de winkel
+    const options = [0, ...HATS.map((_, i) => i).filter((i) => i === 1 || owned.includes(`hat:${i}`))];
+    const hat = options[(options.indexOf(hair.hat) + 1) % options.length];
+    return { patch: { hat }, text: hat ? `${HATS[hat][0]}!` : '' };
+  }
   return {};
 }

@@ -72,8 +72,8 @@ async function photo() {
   }
 }
 
-initWardrobe({ getOutfit: () => game.outfit, setOutfit: set('outfit'), getMakeup: () => game.makeup });
-const SHOW = { 'screen-kast': showWardrobe, ...connectRooms({ game, set, done, toast, reward, home: () => show('screen-huis') }) };
+initWardrobe({ getOutfit: () => game.outfit, setOutfit: set('outfit'), getMakeup: () => game.makeup, getOwned: () => game.owned });
+const SHOW = { 'screen-kast': showWardrobe, ...connectRooms({ game, set, done, toast, reward, home: () => show('screen-huis'), refresh }) };
 document.querySelectorAll('.room.is-open').forEach((room) => {
   room.addEventListener('click', () => show(`screen-${room.dataset.room}`));
 });

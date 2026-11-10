@@ -4,8 +4,8 @@
 // -stage, -title, -label, -meter, -hint, -reset en -done.
 // nav = wat de knoppen links zijn (voor schermlezers) · stage = klasse van het
 // speelvlak · heading = kop boven de meter · extra = wat er nog in het paneel moet ·
-// doneLabel = wat er op de groene knop staat
-export function roomScreen({ room, title, nav, stage, heading = '', extra = '', doneLabel = 'Klaar!' }) {
+// doneLabel = wat er op de groene knop staat · reset = false laat Opnieuw weg
+export function roomScreen({ room, title, nav, stage, heading = '', extra = '', doneLabel = 'Klaar!', reset = true }) {
   const el = document.createElement('section');
   el.id = `screen-${room}`;
   el.className = 'screen';
@@ -22,8 +22,8 @@ export function roomScreen({ room, title, nav, stage, heading = '', extra = '', 
         <div class="meter"><div id="${room}-meter"></div></div>
         <p id="${room}-hint" class="hint"></p>
         ${extra}
-        <div class="kast-buttons two">
-          <button id="${room}-reset" class="btn blue">Opnieuw</button>
+        <div class="kast-buttons ${reset ? 'two' : 'one'}">
+          ${reset ? `<button id="${room}-reset" class="btn blue">Opnieuw</button>` : ''}
           <button id="${room}-done" class="btn green">${doneLabel}</button>
         </div>
       </div>

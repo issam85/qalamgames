@@ -1,7 +1,7 @@
 // De badkamer: onder de douche was je je met spons, douche en handdoek (slepen); voor
 // de spiegel poets je je tanden (slepen) en doe je make-up op (kleur kiezen, tikken).
 import { TOOLS, toolSvg } from './bath-tools.js';
-import { MAKEUP, freshMakeup } from './makeup.js';
+import { MAKEUP, freshMakeup, hasColor } from './makeup.js';
 import { BRUSH_STEPS, freshBath, newDay, washed, progress, wash, stepDone, onFace, onMouth } from './bath.js';
 import { showerSvg, mirrorSvg } from './bath-scene.js';
 import { trackPointer } from './pointer.js';
@@ -26,7 +26,7 @@ const NEXT = {
   handdoek: 'Lekker schoon! Poets nu je tanden bij de spiegel.',
 };
 
-let api = null; // { getHair(), getBath(), setBath(bath), getMakeup(), setMakeup(makeup) }
+let api = null; // { getHair(), getBath(), setBath(bath), getMakeup(), setMakeup(makeup), getOwned() }
 let tool = TOOLS[0];
 let pointer = null; // plek van muis of vinger in het vak van de tekening
 let brushed = 0;
@@ -63,7 +63,9 @@ function renderPanel() {
   labelEl.textContent = part === 1 ? 'Helemaal schoon!' : `${Math.round(part * 100)}%`;
   meterEl.style.width = `${part * 100}%`;
   listEl.replaceChildren(check('Douchen', washed(b)), check('Tanden poetsen', b.teeth));
-  colorsEl.replaceChildren(...(MAKEUP[tool.key] || []).map(([hex, name]) => swatch(hex, name, pick[tool.key] === hex, () => {
+  // alleen de kleuren die je hebt: gratis, of gekocht in de winkel
+  const colors = (MAKEUP[tool.key] || []).filter((_, i) => hasColor(api.getOwned(), tool.key, i));
+  colorsEl.replaceChildren(...colors.map(([hex, name]) => swatch(hex, name, pick[tool.key] === hex, () => {
     pick[tool.key] = hex;
     setMakeup({ [tool.key]: hex });
     render();

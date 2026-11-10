@@ -1,13 +1,15 @@
 // De kledingkast: categorieën, soorten per categorie en de kleuren.
-// De volgorde van de soorten hoort bij de tekeningen in doll-parts.js.
+// De volgorde van de soorten hoort bij de tekeningen in doll-parts.js. De eerste
+// FREE_ITEMS soorten heb je meteen; de rest koop je in de winkel (shop.js).
 export const CATS = [
-  { key: 'hoofddoek', label: 'Hoofddoek', items: ['Simpel', 'Met strik', 'Lang', 'Tulband', 'Met bloem', 'Twee kleuren'] },
-  { key: 'jurk', label: 'Jurk en abaya', items: ['Abaya', 'Met bloemen', 'Rok en blouse', 'Feestjurk', 'Gestreept', 'Met jasje'] },
-  { key: 'schoenen', label: 'Schoenen', items: ['Sneakers', "Ballerina's", 'Laarsjes', 'Sandalen', 'Hakjes', 'Slippers'] },
-  { key: 'tas', label: 'Tas', items: ['Rugzak', 'Handtas', 'Schoudertas', 'Clutch', 'Shopper', 'Geen tas'] },
-  { key: 'sieraden', label: 'Sieraden', items: ['Geen', 'Ketting', 'Parelketting', 'Armbanden', 'Horloge', 'Broche'] },
-  { key: 'extra', label: "Extra's", items: ['Geen', 'Zonnebril', 'Bril', 'Kroontje', 'Bloemen', 'Strik'] },
+  { key: 'hoofddoek', label: 'Hoofddoek', items: ['Simpel', 'Met strik', 'Lang', 'Tulband', 'Met bloem', 'Twee kleuren', 'Met parels'] },
+  { key: 'jurk', label: 'Jurk en abaya', items: ['Abaya', 'Met bloemen', 'Rok en blouse', 'Feestjurk', 'Gestreept', 'Met jasje', 'Prinsessenjurk'] },
+  { key: 'schoenen', label: 'Schoenen', items: ['Sneakers', "Ballerina's", 'Laarsjes', 'Sandalen', 'Hakjes', 'Slippers', 'Glitterschoenen'] },
+  { key: 'tas', label: 'Tas', items: ['Rugzak', 'Handtas', 'Schoudertas', 'Clutch', 'Shopper', 'Geen tas', 'Hartjestas'] },
+  { key: 'sieraden', label: 'Sieraden', items: ['Geen', 'Ketting', 'Parelketting', 'Armbanden', 'Horloge', 'Broche', 'Lange ketting'] },
+  { key: 'extra', label: "Extra's", items: ['Geen', 'Zonnebril', 'Bril', 'Kroontje', 'Bloemen', 'Strik', 'Vlinder'] },
 ];
+export const FREE_ITEMS = 6;
 
 export const SWATCHES = [
   ['#ff8ac8', 'roze'], ['#b36bff', 'paars'], ['#5ec8ff', 'blauw'], ['#4cd4a0', 'mint'],
@@ -21,10 +23,14 @@ export function defaultOutfit() {
   };
 }
 
-export function randomOutfit() {
+// mag je deze soort aan? (gratis, of gekocht in de winkel)
+export const hasItem = (owned, cat, index) => index < FREE_ITEMS || owned.includes(`${cat}:${index}`);
+
+export function randomOutfit(owned) {
   const outfit = { choice: {}, color: {} };
   CATS.forEach((cat) => {
-    outfit.choice[cat.key] = Math.floor(Math.random() * cat.items.length);
+    const options = cat.items.map((_, i) => i).filter((i) => hasItem(owned, cat.key, i));
+    outfit.choice[cat.key] = options[Math.floor(Math.random() * options.length)];
     outfit.color[cat.key] = SWATCHES[Math.floor(Math.random() * SWATCHES.length)][0];
   });
   return outfit;

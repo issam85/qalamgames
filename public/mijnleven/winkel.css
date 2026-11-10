@@ -1,0 +1,6 @@
+/* De winkel gebruikt de indeling van de kast en het speelvlak van de keuken; hier
+   alleen de ene grote knop onderin. */
+
+.kast-buttons.one {
+  grid-template-columns: minmax(0, 1fr);
+}

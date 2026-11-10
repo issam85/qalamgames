@@ -12,7 +12,7 @@ import { today } from './ui.js';
 const stageEl = document.getElementById('kapper-stage');
 const hintEl = document.getElementById('kapper-hint');
 
-let api = null; // { getOutfit(), getMakeup(), getHair(), setHair(hair) }
+let api = null; // { getOutfit(), getMakeup(), getHair(), setHair(hair), getOwned() }
 let tool = TOOLS[0];
 let pointer = null; // plek van muis of vinger in het vak van de tekening
 let dry = 0;
@@ -91,7 +91,7 @@ function snip(from, to) {
 
 function tap(p) {
   if (!onHair(p)) return;
-  const { patch, text } = tapHair(tool.key, hair());
+  const { patch, text } = tapHair(tool.key, hair(), api.getOwned());
   if (patch) setHair(patch);
   if (text) say(text);
   if (patch) renderPanel();
