@@ -8,6 +8,7 @@ export const LICHTINGEN = [
       { game: 'marioparty', student: 'Al Qalam kids', klas: 'Al Qalam School' },
       { game: 'mijnleven', student: 'Al Qalam kids', klas: 'Al Qalam School' },
       { game: 'tiktakboombom', student: 'Al Qalam kids', klas: 'Al Qalam School' },
+      { game: 'sterrensprong', student: 'Al Qalam kids', klas: 'Al Qalam School' },
     ],
     rest: [],
   },

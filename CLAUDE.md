@@ -308,6 +308,32 @@ bordspel, daarom heet dit spel Tiktak Boom Bom. Maker voorlopig "Al Qalam kids".
   `scene.js` + `scene-bg.js` + `scene-hud.js` · `kid.js` · `bomb.js` · `fx.js` · `sound.js` ·
   `input.js` · `app.js`. Thumbnail en deelbeeld zijn gemaakt uit de eigen tekeningen.
 
+## Sterrensprong (nieuw spel, november 2026)
+
+De gebruiker vroeg om Geometry Dash in 3D. Dat wordt niet nagebouwd (naam, figuur, levels en
+uiterlijk horen bij dat spel): dit is een eigen spel in hetzelfde genre, met een lantaarn in
+een nachtstad. Geen muziek (keuze van de gebruiker). Maker voorlopig "Al Qalam kids". Staat in
+`public/sterrensprong/` (ES-modules zonder build, three.js uit `marioparty/vendor/`), op de
+homepage in Lichting 4.
+
+- Eén knop (spatie, pijl omhoog, W, klik, tik); vasthouden blijft springen. Drie werelden, elk
+  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (68, 94 en 126 s).
+  Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13). De volgende wereld gaat open na
+  100% met Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden,
+  beste percentage.
+- Oefenen: checkpoints (groene ruitjes) voor de meeste stukjes, na een botsing 0,7 s klaarstaan.
+  Op hoge snelheid geen checkpoint vlak voor torens en trappen (`noCheckpoint`): zonder aanloop
+  klopt de sprong daar niet.
+- Nieuw parcours: stukjes in `patterns.js` rekenen met de snelheid, de volgorde staat in
+  `levels.js`. Controleer na een wijziging met een zoeker over `physics.js` (zonder beeld, in
+  Node) of elke wereld én elk checkpoint te halen is; het hulpscript staat niet in de repo.
+- `game.js` spelverloop · `physics.js` spelregels (zonder beeld) · `config.js` · `levels.js` +
+  `patterns.js` · `view.js` alles in 3D samen · `world.js` renderer, camera, vloer, muur,
+  kleurzones · `scenery.js` stad en maan · `obstacles3d.js` + `neon.js` · `boosts3d.js` ringen
+  en veren · `player3d.js` lantaarn · `shatter.js` · `fx.js` + `events.js` · `pattern.js`
+  texturen · `menu.js` + `menu.css` · `skins.js` kleuren · `progress.js` + `storage.js` ·
+  `hud.js` · `input.js`. Thumbnail en deelbeeld zijn gerenderd uit de eigen 3D-wereld.
+
 ## Volgende opdracht: website-upgrade
 
 Opdracht van de gebruiker: "de website moet geüpgraded worden. Gebruik Higgsfield waar
