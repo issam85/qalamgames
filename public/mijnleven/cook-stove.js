@@ -17,7 +17,9 @@ const steam = (x, y) => `<path d="M${x} ${y} q-8 -11 0 -22 t0 -22" fill="none" s
 const star = (x, y) => `<path d="M${x} ${y} l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="#ffd43b"/>`;
 const dots = (list, r, fill) => `<g fill="${fill}">${list.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>`;
 
-const STOVE = '<rect x="30" y="226" width="240" height="114" fill="#4a4a55"/><rect x="30" y="226" width="240" height="8" fill="#6b6b78"/>'
+const STOVE = '<defs><linearGradient id="g-fornuis" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b6b78"/><stop offset="1" stop-color="#2f2f38"/></linearGradient></defs>'
+  + '<rect x="30" y="226" width="240" height="114" fill="url(#g-fornuis)"/><rect x="30" y="226" width="240" height="8" fill="#8a8a9a"/><rect x="30" y="226" width="240" height="2" fill="#fff" opacity="0.6"/>'
+  + '<g fill="#b8c2d0" stroke="#55555f" stroke-width="1.5"><circle cx="60" cy="300" r="9"/><circle cx="90" cy="300" r="9"/><circle cx="210" cy="300" r="9"/><circle cx="240" cy="300" r="9"/></g><g stroke="#2f2f38" stroke-width="2" stroke-linecap="round"><path d="M60 294 v6"/><path d="M90 294 v6"/><path d="M210 294 v6"/><path d="M240 294 v6"/></g>'
   + '<ellipse cx="150" cy="246" rx="74" ry="13" fill="#2b2b33"/>'
   + '<g fill="#ff7a59"><path d="M100 246 l8 -16 8 16z"/><path d="M124 250 l8 -18 8 18z"/><path d="M160 250 l8 -18 8 18z"/><path d="M184 246 l8 -16 8 16z"/></g>'
   + '<g fill="#ffd43b"><path d="M128 250 l4 -9 4 9z"/><path d="M164 250 l4 -9 4 9z"/></g>';

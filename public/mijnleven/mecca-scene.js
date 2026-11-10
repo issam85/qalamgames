@@ -2,17 +2,19 @@
 // tawaf van boven gezien, het Zamzam-water en de sa'i tussen Safa en Marwa.
 import { ROUNDS, KAABA, SAFA_X, MARWA_X, journeyStep, towardsMarwa } from './mosque.js';
 import { sceneSvg } from './ui.js';
+import { grad, glow, sparkles } from './decor.js';
+import { gloss } from './glans.js';
 
 const GOLD = '#d4af37';
 const dots = (list, r) => list.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('');
-const NIGHT = '<rect x="30" y="0" width="240" height="340" rx="14" fill="#060810"/>'
+const NIGHT = grad('nacht', '#0d1020', '#060810') + '<rect x="30" y="0" width="240" height="340" rx="14" fill="url(#g-nacht)"/>' + sparkles([[72, 150, 4], [228, 200, 3]])
   + `<g fill="#fff" opacity="0.8">${dots([[52, 30], [96, 62], [142, 22], [204, 48], [250, 26], [236, 84], [64, 96], [258, 300], [44, 318]], 1.6)}</g>`;
 const title = (text, sub) => `<text x="150" y="34" text-anchor="middle" font-size="18" fill="${GOLD}">${text}</text>`
   + `<text x="150" y="56" text-anchor="middle" font-size="12" fill="#ddd8c4">${sub}</text>`;
 // de Kaaba van voren: zwart, met de gouden band en de gouden deur
 const kaaba = (x, y, size) => `<rect x="${x - size / 2}" y="${y - size / 2}" width="${size}" height="${size}" fill="#0c0c0c" stroke="${GOLD}" stroke-width="2"/>`
   + `<rect x="${x - size / 2}" y="${y - size * 0.3}" width="${size}" height="${size * 0.16}" fill="${GOLD}"/>`
-  + `<rect x="${x - size * 0.12}" y="${y + size * 0.14}" width="${size * 0.24}" height="${size * 0.36}" fill="none" stroke="${GOLD}" stroke-width="2"/>`;
+  + `<rect x="${x - size * 0.12}" y="${y + size * 0.14}" width="${size * 0.24}" height="${size * 0.36}" fill="none" stroke="${GOLD}" stroke-width="2"/>` + gloss(x - size * 0.3, y - size * 0.1, size * 0.08, size * 0.3);
 // jij: een klein figuurtje in het wit met een roze hoofddoek
 const pilgrim = (x, y) => `<path d="M${x - 9} ${y + 22} L${x - 6} ${y} H${x + 6} L${x + 9} ${y + 22} Z" fill="#fff"/><circle cx="${x}" cy="${y - 6}" r="8" fill="#ff8ac8"/><circle cx="${x}" cy="${y - 5}" r="4.5" fill="#f1c9a5"/>`;
 
@@ -26,7 +28,7 @@ function tawafSvg(mosque, where) {
   const far = Math.hypot(where.x - x, where.y - y) || 1;
   const me = { x: x + ((where.x - x) / far) * 76, y: y + ((where.y - y) / far) * 76 };
   return title('Tawaf', `Ronde ${Math.min(ROUNDS, Math.floor(mosque.tawaf) + 1)} van ${ROUNDS}`)
-    + `<circle cx="${x}" cy="${y}" r="116" fill="#f3efe2"/><circle cx="${x}" cy="${y}" r="116" fill="none" stroke="${GOLD}" stroke-width="3"/>`
+    + grad('marmer', '#fbf8ee', '#ddd5bd', 0.3, 1) + `<circle cx="${x}" cy="${y}" r="116" fill="url(#g-marmer)"/><circle cx="${x}" cy="${y}" r="116" fill="none" stroke="${GOLD}" stroke-width="3"/>`
     + `<circle cx="${x}" cy="${y}" r="76" fill="none" stroke="${GOLD}" stroke-width="2" stroke-dasharray="6 8" opacity="0.7"/>`
     + `<g fill="#b9b39d">${dots(CROWD, 6)}</g>`
     // de pijl: tegen de klok in
@@ -36,7 +38,7 @@ function tawafSvg(mosque, where) {
 
 function zamzamSvg() {
   return title('Zamzam', 'Tik op de beker en drink het water')
-    + `<rect x="92" y="96" width="116" height="150" rx="16" fill="#12141f" stroke="${GOLD}" stroke-width="3"/>`
+    + glow('water', '#8ad8ff') + '<ellipse cx="150" cy="240" rx="70" ry="30" fill="url(#g-water)"/>' + `<rect x="92" y="96" width="116" height="150" rx="16" fill="#12141f" stroke="${GOLD}" stroke-width="3"/>`
     + `<text x="150" y="130" text-anchor="middle" font-size="16" fill="${GOLD}">Zamzam</text>`
     + `<rect x="143" y="150" width="14" height="26" rx="5" fill="${GOLD}"/><path d="M150 178 V214" stroke="#8ad8ff" stroke-width="6" stroke-linecap="round"/>`
     + '<path d="M126 214 H174 L168 270 H132 Z" fill="#bfe6ff" stroke="#fff" stroke-width="3"/>';
@@ -44,11 +46,11 @@ function zamzamSvg() {
 
 // x = waar jij loopt tussen de twee heuvels
 function saiSvg(mosque, x) {
-  const hill = (cx, name) => `<path d="M${cx - 44} 262 C${cx - 30} 190 ${cx + 30} 190 ${cx + 44} 262 Z" fill="#6b5a45" stroke="${GOLD}" stroke-width="2"/>`
+  const hill = (cx, name) => `<path d="M${cx - 44} 262 C${cx - 30} 190 ${cx + 30} 190 ${cx + 44} 262 Z" fill="url(#g-heuvel)" stroke="${GOLD}" stroke-width="2"/>`
     + `<text x="${cx}" y="182" text-anchor="middle" font-size="14" fill="${GOLD}">${name}</text>`;
   const to = towardsMarwa(mosque);
   return title("Sa'i", `Keer ${Math.min(ROUNDS, mosque.sai + 1)} van ${ROUNDS}: loop naar ${to ? 'Marwa' : 'Safa'}`)
-    + '<rect x="30" y="262" width="240" height="78" fill="#f3efe2"/>'
+    + grad('heuvel', '#8a775c', '#4f4232') + grad('zand', '#fbf8ee', '#e3dac2') + '<rect x="30" y="262" width="240" height="78" fill="url(#g-zand)"/>'
     + `<rect x="30" y="262" width="240" height="4" fill="${GOLD}"/><rect x="126" y="266" width="48" height="6" fill="#43a047"/>`
     + hill(SAFA_X, 'Safa') + hill(MARWA_X, 'Marwa')
     + `<path d="M${to ? 132 : 168} 232 h${to ? 30 : -30}" stroke="${GOLD}" stroke-width="4" stroke-linecap="round"/><path d="M${to ? 168 : 132} 232 l${to ? -10 : 10} -7 v14 z" fill="${GOLD}"/>`

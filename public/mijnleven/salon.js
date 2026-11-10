@@ -1,7 +1,7 @@
 // De kapper: kies gereedschap en gebruik het op het haar. Borstel en kam sleep je
 // over de knopen, de schaar sleep je door een lok, de föhn sleep je tot het haar
 // glanst; puntkam, hoed en hoofddoek werken met een tik. Alles wordt bewaard.
-import { bustSvg, shineSvg, knotsLeft, freshHair, newDay } from './hair.js';
+import { bustSvg, shineSvg, knotsLeft, freshHair, newDay, SALON } from './hair.js';
 import { clippingsSvg } from './hair-styles.js';
 import { paint } from './glans.js';
 import { TOOLS, toolSvg } from './salon-tools.js';
@@ -28,7 +28,7 @@ function draw() {
   const h = hair();
   const extra = (dry && !h.shine ? shineSvg(dry / DRY_STEPS) : '')
     + clippingsSvg(falling, paint(h.color), performance.now()) + toolSvg(tool.key, pointer);
-  stageEl.innerHTML = bustSvg(api.getOutfit(), h, api.getMakeup(), extra);
+  stageEl.innerHTML = bustSvg(api.getOutfit(), h, api.getMakeup(), extra, SALON);
 }
 
 // laat de afgeknipte stukjes vallen tot ze weg zijn

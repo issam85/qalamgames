@@ -4,6 +4,7 @@ import { loadGame, saveGame } from './storage.js';
 import { renderDoll } from './doll.js';
 import { initWardrobe, showWardrobe } from './wardrobe.js';
 import { connectRooms } from './rooms.js';
+import { decorateHouse } from './house-icons.js';
 import { makePhoto } from './photo.js';
 import { today, setNights } from './ui.js';
 
@@ -74,6 +75,7 @@ async function photo() {
 
 initWardrobe({ getOutfit: () => game.outfit, setOutfit: set('outfit'), getMakeup: () => game.makeup, getOwned: () => game.owned });
 const SHOW = { 'screen-kast': showWardrobe, ...connectRooms({ game, set, done, toast, reward, home: () => show('screen-huis'), refresh }) };
+decorateHouse();
 document.querySelectorAll('.room.is-open').forEach((room) => {
   room.addEventListener('click', () => show(`screen-${room.dataset.room}`));
 });

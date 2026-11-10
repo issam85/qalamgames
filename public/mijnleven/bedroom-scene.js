@@ -1,7 +1,8 @@
 // De tekeningen van de slaapkamer: de kamer met het bed (overdag, in pyjama of
 // 's nachts slapend) en het muziekdoosje met acht toetsen.
 import { dollSvg, face, arms, soft, SKIN } from './doll.js';
-import { paint, defs, shape, mirror } from './glans.js';
+import { paint, defs, shape, mirror, gloss } from './glans.js';
+import { wall, planks, rug, windowSvg, lamp, grad, dots as decoDots } from './decor.js';
 import { STYLE_SVG } from './hair-styles.js';
 import { sceneSvg } from './ui.js';
 
@@ -16,13 +17,15 @@ const PATTERN = [
   `<g fill="#fff" opacity="0.8">${dots([[128, 226], [170, 240], [142, 272], [176, 296], [124, 314], [156, 328]], 7)}</g>`,
 ];
 
-const ROOM = '<rect x="30" y="0" width="240" height="340" rx="14" fill="#e9defc"/>'
-  + '<rect x="56" y="24" width="64" height="70" rx="8" fill="#1d2a5a" stroke="#fff" stroke-width="5"/><path d="M98 40 A16 16 0 1 0 108 68 A13 13 0 1 1 98 40 Z" fill="#fff3c4"/>'
-  + `<g fill="#fff">${dots([[68, 40], [78, 76], [106, 82]], 1.8)}</g>`
-  + '<rect x="30" y="270" width="240" height="70" fill="#d8b98c"/><ellipse cx="150" cy="312" rx="100" ry="18" fill="#b79cf2" opacity="0.6"/>';
-const BED = '<rect x="40" y="164" width="16" height="120" rx="6" fill="#b5793a"/><rect x="170" y="216" width="12" height="68" rx="5" fill="#b5793a"/>'
-  + '<rect x="52" y="226" width="124" height="40" rx="8" fill="#fff" stroke="#e6d6f5" stroke-width="2"/><ellipse cx="80" cy="222" rx="24" ry="11" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>';
-const blanket = (color) => `<rect x="100" y="216" width="78" height="54" rx="10" fill="${color}"/><rect x="100" y="216" width="78" height="12" rx="6" fill="#fff" opacity="0.7"/>`;
+// de kamer: muur met een raam op de nacht, een lamp, houten vloer en een kleed
+const ROOM = wall('#eadffc', 270) + windowSvg(60, 26, 60, 60, 'night', '#b36bff') + lamp(232, '#ff8ac8')
+  + planks(270, '#d8b98c') + rug(150, 312, 100, 18, '#b79cf2');
+// het bed: hoofdeinde, matras en kussen
+const BED = grad('hout', '#d9a86c', '#b5793a') + grad('kussen', '#ffffff', '#ece4f7')
+  + '<path d="M40 170 C40 150 56 150 56 170 V284 H40 Z" fill="url(#g-hout)" stroke="#8a4f22" stroke-width="1.5"/><rect x="170" y="216" width="12" height="68" rx="5" fill="url(#g-hout)" stroke="#8a4f22" stroke-width="1.5"/>'
+  + '<rect x="52" y="226" width="124" height="40" rx="8" fill="url(#g-kussen)" stroke="#d9c9ee" stroke-width="2"/><ellipse cx="80" cy="222" rx="24" ry="11" fill="url(#g-kussen)" stroke="#d9c9ee" stroke-width="2"/>' + gloss(70, 218, 8, 4);
+const blanket = (color) => `<rect x="100" y="216" width="78" height="54" rx="10" fill="${paint(color).fill}" stroke="${paint(color).line}" stroke-width="1.5"/>`
+  + `<g fill="#fff" opacity="0.6">${decoDots([[116, 240], [140, 250], [162, 238], [128, 262], [156, 262]], 3)}</g><rect x="100" y="216" width="78" height="12" rx="6" fill="#fff" opacity="0.75"/>`;
 
 // het meisje staat naast het bed: in haar pyjama (los haar), of nog in haar kleren
 function standing(look) {
@@ -48,9 +51,11 @@ function asleep(look) {
 
 // look = { outfit, makeup, hair, pyjama, inPyjama, night }
 export function bedroomSvg(look) {
-  const cover = blanket(look.inPyjama ? soft(look.pyjama.color) : '#ff9ecf');
-  if (!look.night) return sceneSvg('Jouw slaapkamer', ROOM + BED + cover + standing(look));
-  return sceneSvg('Je slaapt', `${ROOM + BED + asleep(look) + cover}<rect x="30" y="0" width="240" height="340" rx="14" fill="#0b1030" opacity="0.5"/>`
+  const color = look.inPyjama ? soft(look.pyjama.color) : '#ff9ecf';
+  const cover = blanket(color);
+  const head = defs([paint(color)]);
+  if (!look.night) return sceneSvg('Jouw slaapkamer', head + ROOM + BED + cover + standing(look));
+  return sceneSvg('Je slaapt', `${head + ROOM + BED + asleep(look) + cover}<rect x="30" y="0" width="240" height="340" rx="14" fill="#0b1030" opacity="0.5"/>`
     + '<text x="150" y="150" text-anchor="middle" font-size="20" fill="#fff3c4">Welterusten...</text>');
 }
 
@@ -65,10 +70,12 @@ export function keyAt(p) {
 
 // lit = de toets die nu klinkt (-1 = geen)
 export function musicSvg(lit) {
-  const keys = KEY_COLORS.map((color, i) => `<rect x="${keyX(i)}" y="178" width="23" height="${140 - i * 9}" rx="8" fill="${color}" stroke="#fff" stroke-width="${i === lit ? 5 : 2}" ${i === lit ? '' : 'opacity="0.85"'}/>`).join('');
+  const paints = KEY_COLORS.map((c) => paint(c));
+  const keys = paints.map((p, i) => `<rect x="${keyX(i)}" y="178" width="23" height="${140 - i * 9}" rx="8" fill="${p.fill}" stroke="${i === lit ? '#fff' : p.line}" stroke-width="${i === lit ? 4 : 1.5}"/>` + gloss(keyX(i) + 7, 196, 4, 10)).join('');
   const notes = lit >= 0 ? `<text x="${keyX(lit) + 4}" y="166" font-size="22" fill="#c2419a">♪</text>` : '';
-  return sceneSvg('Het muziekdoosje', '<rect x="30" y="0" width="240" height="340" rx="14" fill="#e9defc"/>'
-    + '<path d="M70 70 L230 70 L214 30 L86 30 Z" fill="#ffd1ec" stroke="#ffd43b" stroke-width="3"/><rect x="62" y="70" width="176" height="68" rx="10" fill="#c2419a" stroke="#ffd43b" stroke-width="3"/>'
+  const box = paint('#c2419a');
+  return sceneSvg('Het muziekdoosje', defs([...paints, box]) + wall('#eadffc') + lamp(252, '#ffd43b')
+    + `<path d="M70 70 L230 70 L214 30 L86 30 Z" fill="${paint('#ffd1ec').fill}" stroke="#c9a400" stroke-width="3" stroke-linejoin="round"/><rect x="62" y="70" width="176" height="68" rx="10" fill="${box.fill}" stroke="#c9a400" stroke-width="3"/>` + gloss(90, 86, 14, 6, -20)
     + '<text x="150" y="112" text-anchor="middle" font-size="18" fill="#fff">Muziekdoosje</text>'
-    + keys + notes);
+    + '<rect x="30" y="322" width="240" height="18" fill="#d8b98c"/>' + keys + notes);
 }

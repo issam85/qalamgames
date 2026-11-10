@@ -271,6 +271,7 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   · `storage.js` · `ui.js` · `pointer.js` slepen met muis of vinger op een tekening
   (rekent om naar de viewBox, met pointer capture omdat de SVG bij elke beweging
   opnieuw wordt gemaakt; gebruik dit voor elke kamer waar je sleept) ·
+  decor: `decor.js` kamerdecor · `house-icons.js` icoontjes in het huis ·
   kapper: `salon.js` scherm en slepen · `salon-panel.js` knoppen en meter ·
   `salon-actions.js` wat het gereedschap doet (losse functies, zo te testen) ·
   `salon-tools.js` gereedschap en het plaatje bij de muis · `hair.js` knopen, nieuwe
@@ -310,7 +311,11 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   "Strip". Het meisje, de kapsels, de badkamer en de slaapkamer zijn overgetekend; de
   haarlengtes staan nog in het oude vak (`HAIR_DY` in `hair-styles.js`). Papa (gewaad,
   kufi, baard) en de dochters (knotjes) staan ook in deze stijl (`family-scene.js`,
-  gezicht via `look()`). Nog te doen: de kamers zelf en de winkel-etalage.
+  gezicht via `look()`). De kamers zijn ook overgetekend met `decor.js` (muur,
+  planken, tegels, kleed, raam met gordijnen, plant, lamp, lijstje, gloed; elk hulpje
+  brengt zijn eigen `<defs>` mee met `g-`-id's), het huis heeft icoontjes per kamer
+  (`house-icons.js`, `decorateHouse()` in `app.js`) en de kapper een spiegel met
+  lampjes achter het meisje (`SALON` in `hair.js`, vijfde argument van `bustSvg`).
 - Echte liedjes (de leerling noemde bestaande nummers) mogen er niet in: wel eigen
   liedjes maken met AI. Plaatjes zijn getekend in code; met Higgsfield-credits worden
   het 3D-renders zoals bij Mario Party.
