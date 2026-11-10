@@ -1,7 +1,7 @@
-// Bewaart het spel op dit apparaat: welke prinses, wat ze aanheeft en wat ze op het
-// strand gevonden heeft. In een privévenster lukt opslaan niet; dan geldt het alleen
-// voor dit bezoek.
-import { PRINCESSES, CATS, SWATCHES, MATCH, defaultOutfit } from './data.js';
+// Bewaart het spel op dit apparaat: welke prinses, wat ze aanheeft, wat ze op het
+// strand gevonden heeft en wat ze daarmee heeft vrijgespeeld. In een privévenster
+// lukt opslaan niet; dan geldt het alleen voor dit bezoek.
+import { PRINCESSES, CATS, SWATCHES, MATCH, defaultOutfit, hasItem } from './data.js';
 
 const KEY = 'schelpkristal';
 const COLORS = SWATCHES.map(([hex]) => hex);
@@ -22,12 +22,21 @@ export function loadGame() {
   } catch {
     saved = {};
   }
-  return {
+  const game = {
     princess: Number.isInteger(saved.princess) && saved.princess >= 0 && saved.princess < PRINCESSES.length ? saved.princess : 0,
     outfit: validOutfit(saved.outfit) ? saved.outfit : defaultOutfit(),
     shells: count(saved.shells),
     crystals: count(saved.crystals),
+    owned: Array.isArray(saved.owned) ? saved.owned.filter((key) => CATS.some((c) => {
+      const [cat, i] = key.split(':');
+      return c.key === cat && Boolean(c.prices[Number(i)]);
+    })) : [],
   };
+  // iets aan dat (nog) op slot zit: dan weer wat je in het begin aanhad
+  CATS.forEach(({ key }) => {
+    if (!hasItem(game.owned, key, game.outfit.choice[key])) game.outfit.choice[key] = defaultOutfit().choice[key];
+  });
+  return game;
 }
 
 export function saveGame(game) {

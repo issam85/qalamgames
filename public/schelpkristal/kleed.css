@@ -68,6 +68,48 @@
   font-size: 15px;
 }
 
+.item.locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-style: dashed;
+  background: #f3f0f7;
+  color: #7a6a8a;
+}
+
+.item.locked::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+  background: #b8a8c8;
+}
+
+.item small {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  color: #c2419a;
+}
+
+.item small .ico {
+  width: 13px;
+  height: 13px;
+  margin-left: 2px;
+}
+
+.note {
+  min-height: 1.3em;
+  font-weight: 800;
+  color: #c2419a;
+}
+
+.note:empty {
+  display: none;
+}
+
 .swatches {
   display: flex;
   flex-wrap: wrap;

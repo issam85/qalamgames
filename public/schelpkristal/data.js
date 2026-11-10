@@ -1,5 +1,6 @@
 // De prinsessen, de soorten in het kleedhokje en de kleuren. De volgorde van de
-// soorten hoort bij de tekeningen in dresses.js en jewels.js.
+// soorten hoort bij de tekeningen in dresses.js en jewels.js. prices: per soort null
+// (meteen van jou) of [schelpen, kristallen] om hem vrij te spelen.
 export const PRINCESSES = [
   { name: 'Lina', skin: '#f6d2b4', hair: '#f2c94c', style: 'golf', eyes: '#3d7ad6' },
   { name: 'Sara', skin: '#9c6644', hair: '#24160f', style: 'krul', eyes: '#6b3e1e' },
@@ -8,11 +9,26 @@ export const PRINCESSES = [
 ];
 
 export const CATS = [
-  { key: 'jurk', label: 'Jurk', items: ['Baljurk', 'Met sleep', 'Zeemeermin', 'Zomerjurk', 'Laagjes', 'Sterrenjurk', 'Glitterjurk', 'Bloemenjurk'] },
-  { key: 'kroon', label: 'Kroon', items: ['Tiara', 'Grote kroon', 'Sterrenkroon', 'Bloemenkrans', 'Schelpenkroon', 'Hartjeskroon'] },
-  { key: 'ketting', label: 'Ketting', items: ['Parels', 'Hartje', 'Diamant', 'Schelp', 'Sterretjes', 'Kristal'] },
-  { key: 'schoenen', label: 'Schoenen', items: ['Hakjes', 'Hoge hakken', 'Glazen muiltjes', "Ballerina's", 'Sandalen', 'Laarsjes'] },
+  {
+    key: 'jurk', label: 'Jurk', items: ['Baljurk', 'Met sleep', 'Zeemeermin', 'Zomerjurk', 'Laagjes', 'Sterrenjurk', 'Glitterjurk', 'Bloemenjurk'],
+    prices: [null, null, null, null, [8, 1], [10, 2], [12, 3], [12, 3]],
+  },
+  {
+    key: 'kroon', label: 'Kroon', items: ['Tiara', 'Grote kroon', 'Sterrenkroon', 'Bloemenkrans', 'Schelpenkroon', 'Hartjeskroon'],
+    prices: [null, null, null, [4, 2], [8, 1], [6, 3]],
+  },
+  {
+    key: 'ketting', label: 'Ketting', items: ['Parels', 'Hartje', 'Diamant', 'Schelp', 'Sterretjes', 'Kristal'],
+    prices: [null, null, null, [6, 0], [4, 2], [2, 4]],
+  },
+  {
+    key: 'schoenen', label: 'Schoenen', items: ['Hakjes', 'Hoge hakken', 'Glazen muiltjes', "Ballerina's", 'Sandalen', 'Laarsjes'],
+    prices: [null, null, null, [5, 0], [6, 1], [8, 1]],
+  },
 ];
+
+// is deze soort van jou? (meteen, of vrijgespeeld; owned = ['jurk:4', ...])
+export const hasItem = (owned, cat, i) => !CATS.find((c) => c.key === cat).prices[i] || owned.includes(`${cat}:${i}`);
 
 // "alle kleuren"
 export const SWATCHES = [
@@ -33,10 +49,10 @@ export function defaultOutfit() {
 }
 
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
-export function randomOutfit() {
+export function randomOutfit(owned) {
   const outfit = { choice: {}, color: {} };
   CATS.forEach((cat) => {
-    outfit.choice[cat.key] = Math.floor(Math.random() * cat.items.length);
+    outfit.choice[cat.key] = pick(cat.items.map((_, i) => i).filter((i) => hasItem(owned, cat.key, i)));
     outfit.color[cat.key] = pick(SWATCHES)[0];
   });
   outfit.color.kroon = pick(['#ffd43b', '#c0c6d4', '#ffc2e0']);

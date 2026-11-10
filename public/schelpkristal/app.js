@@ -40,7 +40,7 @@ function show(id) {
   SHOW[id]();
 }
 
-initDressing({ game, save });
+initDressing({ game, save, counters });
 initBeach({ game, save, counters });
 initShower({ game });
 document.getElementById('to-douche').addEventListener('click', () => show('screen-douche'));

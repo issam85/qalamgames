@@ -430,7 +430,7 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
 `schelpkristal`.
 
 - Stappen: 1 prinsessen + kleedhokje (klaar), 2 strand met zoeken in het donker (klaar), 3 douche (klaar),
-  4 met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
+  4a vrijspelen (klaar), 4b met kristallen en schelpen nieuwe kronen, kettingen en schoenen vrijspelen, plus
   homepage, thumbnail, `og/`, `<noscript>`, sitemap en SEO-blok.
 - `princess.js` bouwt de prinses (vak 300 × 520, zoals het meisje van Mijn Leven) ·
   `hair.js` lang haar in drie lagen (golf, krul, vlecht, steil) · `dresses.js` jurken
@@ -452,6 +452,10 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   pakt ze vanzelf het volgende. Elke keer opnieuw zand, niets bewaard. `shower.js` regels
   · `shower-scene.js` tekening en gereedschap · `shower-room.js` scherm · `pointer.js`
   (uit Mijn Leven) · `bathingPrincess()` in `princess.js`.
+- Vrijspelen: per soort `prices` in `data.js` (null = meteen van jou, anders [schelpen,
+  kristallen]); tik op iets met een slotje en je betaalt met wat je op het strand vond.
+  Vrijgespeeld staat in `game.owned` (`'jurk:4'`); `hasItem()`. Draagt een oude bewaarde
+  outfit iets op slot, dan zet `loadGame()` dat terug naar het begin.
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.
