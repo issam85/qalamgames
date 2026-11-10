@@ -2,7 +2,7 @@
 // (glans.js). Het vak is 300 × 520: hoofd rond (150, 118), schouders op 196, handen op
 // (90, 330) en (210, 330), de tas hangt aan de rechterhand.
 import { JURK, HOOFDDOEK, SCHOENEN, TAS, SIERADEN, EXTRA, GOWN, gownTop } from './doll-parts.js';
-import { SKIN, SKIN_PAINT, INK, paint, defs, mirror } from './glans.js';
+import { SKIN, SKIN_PAINT, INK, paint, defs, mirror, scoped } from './glans.js';
 
 export { SKIN };
 // wit valt weg tegen de lichte kamer: dan een heel lichte grijstint
@@ -19,7 +19,7 @@ function mouth(lips, teeth) {
 }
 
 // een groot glanzend oog met wimpers en wenkbrauw (links; rechts is gespiegeld)
-const EYE = '<ellipse cx="131" cy="118" rx="10" ry="12.5" fill="#fff"/><circle cx="132" cy="120" r="7.2" fill="url(#giris)"/><circle cx="132.5" cy="121" r="4.2" fill="#1d1016"/>'
+const EYE = '<ellipse cx="131" cy="118" rx="10" ry="12.5" fill="#fff"/><circle cx="132" cy="120" r="7.2" fill="url(#g-iris)"/><circle cx="132.5" cy="121" r="4.2" fill="#1d1016"/>'
   + '<circle cx="128.5" cy="116" r="3" fill="#fff"/><circle cx="135" cy="124" r="1.4" fill="#fff" opacity="0.9"/>'
   + `<path d="M120 116 Q131 101.5 142 115" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>`
   + `<path d="M120 116 l-3.5 -3 M123 107 l-3 -3.5 M127 104.5 l-1.5 -4" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`
@@ -31,7 +31,7 @@ export function face(makeup = {}, teeth = '') {
   const shadow = makeup.eyes ? mirror(`<ellipse cx="131" cy="104" rx="13" ry="7" fill="${makeup.eyes}" opacity="0.85"/>`) : '';
   const cheek = makeup.blush
     ? mirror(`<ellipse cx="120" cy="138" rx="11" ry="7" fill="${makeup.blush}" opacity="0.75"/>`)
-    : mirror('<ellipse cx="120" cy="138" rx="11" ry="7" fill="url(#gblush)"/>');
+    : mirror('<ellipse cx="120" cy="138" rx="11" ry="7" fill="url(#g-blush)"/>');
   return `<ellipse cx="150" cy="118" rx="44" ry="50" fill="${SKIN_PAINT.fill}" stroke="${SKIN_PAINT.line}" stroke-width="1.2"/>${shadow}`
     + mirror(EYE) + NOSE + mouth(makeup.lips, teeth) + cheek;
 }
@@ -51,7 +51,7 @@ export function dollSvg(outfit, makeup) {
   const { choice, color } = outfit;
   const p = Object.fromEntries(Object.keys(color).map((k) => [k, paint(soft(color[k]))]));
   const gown = choice.jurk === GOWN; // onder de baljurk zie je geen schoenen, en een tas past er niet bij
-  return '<svg viewBox="0 0 300 520" role="img" aria-label="Jouw meisje in de gekozen kleren">'
+  return scoped('<svg viewBox="0 0 300 520" role="img" aria-label="Jouw meisje in de gekozen kleren">'
     + defs(Object.values(p))
     + '<ellipse cx="150" cy="508" rx="84" ry="10" fill="rgba(0,0,0,0.15)"/>'
     + `<rect x="136" y="150" width="28" height="50" fill="${SKIN_PAINT.fill}"/>`
@@ -63,7 +63,7 @@ export function dollSvg(outfit, makeup) {
     + hand(210)
     + SIERADEN[choice.sieraden](p.sieraden)
     + EXTRA[choice.extra](p.extra)
-    + '</svg>';
+    + '</svg>');
 }
 
 export function renderDoll(el, outfit, makeup) {

@@ -2,7 +2,7 @@
 // en schouders (zelfde vak als het meisje, ingezoomd op 30,0 – 270,340).
 import { JURK, HOOFDDOEK } from './doll-parts.js';
 import { face, arms, soft } from './doll.js';
-import { paint, defs, shape } from './glans.js';
+import { paint, defs, shape, scoped } from './glans.js';
 import { STYLE_SVG, STRAND_X, MAX_END } from './hair-styles.js';
 
 // naam en waar het kapsel handig voor is
@@ -79,7 +79,7 @@ export function bustSvg(outfit, hair, makeup, extra = '') {
   const top = hair.hijab
     ? HOOFDDOEK[choice.hoofddoek](doek) + face(makeup)
     : front + face(makeup) + knotsSvg(hair) + (hair.shine ? SHINE : '') + HATS[hair.hat][1];
-  return `<svg viewBox="${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}" role="img" aria-label="Jouw meisje bij de kapper">`
+  return scoped(`<svg viewBox="${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}" role="img" aria-label="Jouw meisje bij de kapper">`
     + defs([jurk, doek, paint(hair.color), paint('#ff8ac8'), paint('#f3d9a4'), paint('#f7e3b8')])
-    + back + JURK[choice.jurk](jurk) + arms(jurk) + top + extra + '</svg>';
+    + back + JURK[choice.jurk](jurk) + arms(jurk) + top + extra + '</svg>');
 }

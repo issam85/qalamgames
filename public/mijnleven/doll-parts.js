@@ -44,7 +44,7 @@ export const JURK = [
   (p) => shape('M112 196 C104 230 106 256 102 300 L198 300 C194 256 196 230 188 196 Z', WHITE) + folds('M100 300 C84 360 66 430 62 478 Q150 514 238 478 C234 430 216 360 200 300 Z', p)
     + shape('M100 296 L200 296 L200 308 L100 308 Z', GOLD),
   (p) => folds(WIDE, p) + `<g fill="#ffd43b"><path d="M120 300 ${STAR}"/><path d="M190 360 ${STAR}"/><path d="M130 440 ${STAR}"/><path d="M200 450 ${STAR}"/></g>` + sparkle(72, 420, 6) + sparkle(228, 330, 5),
-  (p) => folds(DRESS, p) + clip('cstreep', DRESS, `<g fill="#fff" opacity="0.55">${[240, 300, 360, 420, 480].map((y) => `<rect x="30" y="${y}" width="240" height="14"/>`).join('')}</g>`),
+  (p) => folds(DRESS, p) + clip('g-streep', DRESS, `<g fill="#fff" opacity="0.55">${[240, 300, 360, 420, 480].map((y) => `<rect x="30" y="${y}" width="240" height="14"/>`).join('')}</g>`),
   (p) => folds(DRESS, WHITE) + mirror(shape('M112 196 L138 196 L136 300 L124 440 L78 440 C80 400 90 340 100 290 C106 256 104 230 112 196 Z', p))
     + `<g fill="${light(p.c, 0.5)}">${dots([[130, 330], [128, 370], [126, 410]], 4)}</g>`,
   (p) => ballGown(p),

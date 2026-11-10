@@ -32,14 +32,14 @@ function look(x, y, s, closed) {
   const r = 4.2 * s;
   const eye = (cx) => (closed
     ? `<path d="M${cx - r} ${y} q${r} ${r * 1.2} ${2 * r} 0" fill="none" stroke="${INK}" stroke-width="${2 * s}" stroke-linecap="round"/>`
-    : `<ellipse cx="${cx}" cy="${y}" rx="${r}" ry="${r * 1.25}" fill="#fff"/><circle cx="${cx}" cy="${y + 1}" r="${r * 0.7}" fill="url(#giris)"/><circle cx="${cx}" cy="${y + 1.5}" r="${r * 0.4}" fill="#1d1016"/>`
+    : `<ellipse cx="${cx}" cy="${y}" rx="${r}" ry="${r * 1.25}" fill="#fff"/><circle cx="${cx}" cy="${y + 1}" r="${r * 0.7}" fill="url(#g-iris)"/><circle cx="${cx}" cy="${y + 1.5}" r="${r * 0.4}" fill="#1d1016"/>`
       + `<circle cx="${cx - r * 0.3}" cy="${y - r * 0.35}" r="${r * 0.28}" fill="#fff"/>`
       + `<path d="M${cx - r - 1} ${y - 1} Q${cx} ${y - r * 1.7} ${cx + r + 1} ${y - 1}" fill="none" stroke="${INK}" stroke-width="${1.8 * s}" stroke-linecap="round"/>`);
   const brow = (cx) => `<path d="M${cx - r - 1} ${y - r * 2.2} Q${cx} ${y - r * 2.9} ${cx + r + 1} ${y - r * 2.1}" fill="none" stroke="#4a2c1e" stroke-width="${1.8 * s}" stroke-linecap="round"/>`;
   return eye(x - g) + eye(x + g) + brow(x - g) + brow(x + g)
     + `<path d="M${x - 1} ${y + 6 * s} q1.5 2.5 3.5 0.5" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>`
     + `<path d="M${x - 5 * s} ${y + 11 * s} Q${x} ${y + 17 * s} ${x + 5 * s} ${y + 11 * s}" fill="none" stroke="#b83b3b" stroke-width="${2 * s}" stroke-linecap="round"/>`
-    + mirror(x, `<ellipse cx="${x - 11 * s}" cy="${y + 9 * s}" rx="${5 * s}" ry="${3 * s}" fill="url(#gblush)"/>`);
+    + mirror(x, `<ellipse cx="${x - 11 * s}" cy="${y + 9 * s}" rx="${5 * s}" ry="${3 * s}" fill="url(#g-blush)"/>`);
 }
 
 // papa: een lang blauw gewaad met een kraag, een witte kufi en een korte baard
