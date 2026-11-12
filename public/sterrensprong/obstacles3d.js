@@ -6,6 +6,7 @@ import { addNeonEdges } from './neon.js';
 const BLOCK_DEPTH = 1.7;
 const SPIKE_DEPTH = 1;
 const THORN_STEP = 0.32;
+const TURN = { up: 0, down: Math.PI, left: Math.PI / 2 }; // de punt wijst omhoog, omlaag of naar links
 const of = (level, type) => level.obstacles.filter((o) => o.type === type);
 const box = (x, y, z, sx, sy, sz) =>
   new THREE.Matrix4().makeTranslation(x, y, z).scale(new THREE.Vector3(sx, sy, sz));
@@ -34,7 +35,10 @@ function addBlocks(scene, blocks) {
 function addSpikes(scene, spikes) {
   const geometry = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4);
   geometry.rotateY(Math.PI / 4);
-  const matrices = spikes.map((s) => box(s.x + s.w / 2, s.y + s.h / 2, 0, s.w, s.h, SPIKE_DEPTH));
+  const matrices = spikes.map((s) => new THREE.Matrix4()
+    .makeTranslation(s.x + s.w / 2, s.y + s.h / 2, 0)
+    .multiply(new THREE.Matrix4().makeRotationZ(TURN[s.dir || 'up']))
+    .scale(new THREE.Vector3(s.w, s.h, SPIKE_DEPTH)));
   instanced(scene, geometry, new THREE.MeshLambertMaterial({ color: '#d81b60', emissive: '#8a1048' }), matrices);
   addNeonEdges(scene, geometry, matrices, '#ffd0e0', 0.035);
 }

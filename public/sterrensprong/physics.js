@@ -1,5 +1,6 @@
 // Spelregels zonder beeld: lopen, springen, vliegen, landen en botsen. Los te testen.
-import { PHYS, SPIKE_HIT, THORN_HIT } from './config.js';
+import { PHYS } from './config.js';
+import { HAZARDS } from './hazards.js';
 
 const HEIGHT = PHYS.half * 2;
 const indexAt = (list, x) => {
@@ -17,13 +18,6 @@ export function createRun(level, start = 0) {
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
     events: [], // voor beeld: jump, land, boost, zone, portal
   };
-}
-
-function hitsHazard(run, ob, hit) {
-  const left = ob.x + hit.inset;
-  const right = ob.x + ob.w - hit.inset;
-  return run.x + PHYS.half > left && run.x - PHYS.half < right
-    && run.y < ob.y + hit.height && run.y + HEIGHT > ob.y;
 }
 
 function launch(run, ob, power) {
@@ -69,8 +63,7 @@ function resolve(run, prevY, held) {
     if (ob.x >= right) break;
     if (ob.x + ob.w <= left) continue;
     if (ob.type === 'block') touchBlock(run, ob, prevY, room);
-    else if (ob.type === 'spike') run.state = hitsHazard(run, ob, SPIKE_HIT) ? 'dead' : run.state;
-    else if (ob.type === 'thorn') run.state = hitsHazard(run, ob, THORN_HIT) ? 'dead' : run.state;
+    else if (HAZARDS[ob.type]) run.state = HAZARDS[ob.type](run, ob) ? 'dead' : run.state;
     else tryBoost(run, ob, held);
   }
   return room;

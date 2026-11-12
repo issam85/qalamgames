@@ -347,7 +347,7 @@ een nachtstad. Geen muziek (keuze van de gebruiker). Maker voorlopig "Al Qalam k
 homepage in Lichting 4.
 
 - Eén knop (spatie, pijl omhoog, W, klik, tik); vasthouden blijft springen. Drie werelden, elk
-  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (80, 111 en 150 s).
+  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (84, 122 en 162 s).
   Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13). De volgende wereld gaat open na
   100% met Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden,
   beste percentage.
@@ -359,6 +359,12 @@ homepage in Lichting 4.
   (onderkant op 7) en doornen door openingen van 3 (makkelijk) of 2 blokken hoog. Langs de
   onderkant van een blok schuif je, tegen de zijkant ben je af. Elke wereld heeft een vliegstuk.
   De ring: een druk in de lucht telt 0,2 s vooruit (`ringBuffer`), een sprong vanaf de grond niet.
+- Gevaren (`hazards.js` regels, `hazards3d.js` beeld, `patterns-hazards.js` stukken): punten
+  omhoog, omlaag (plafond) of naar links (zijkant van een toren), doornen, zilveren sterzagen
+  (rond, raken iets binnen de rand) en knotsen aan een ketting. De knots zwaait mee met hoe ver
+  je bent (`maceBall(ob, x)`), niet met de klok, zodat hij na een checkpoint altijd hetzelfde
+  hangt. Om en om hangt hij onderaan als je aankomt (springen) of zwaait hij opzij (doorlopen).
+  Vliegstukken kunnen `spiky` (punten rond de openingen) en `saws` (zagen in het plafond).
 - Oefenen: onbeperkt, checkpoints (groene ruitjes) voor de meeste stukjes, na een botsing 0,7 s klaarstaan.
   Op hoge snelheid geen checkpoint vlak voor torens en trappen (`noCheckpoint`): zonder aanloop
   klopt de sprong daar niet.
