@@ -365,6 +365,9 @@ homepage in Lichting 4.
   je bent (`maceBall(ob, x)`), niet met de klok, zodat hij na een checkpoint altijd hetzelfde
   hangt. Om en om hangt hij onderaan als je aankomt (springen) of zwaait hij opzij (doorlopen).
   Vliegstukken kunnen `spiky` (punten rond de openingen) en `saws` (zagen in het plafond).
+- Uiterlijk per wereld (`styles.js`): Lantaarnstad steen met een gouden ster, Sterrenbazaar
+  mozaïek met marktkraampjes en lichtsnoeren, Hemelpaleis marmer met goud, gouden koepels en
+  wolken. Blokvlakken in `textures-blocks.js`, kraampjes en wolken in `scenery-extra.js`.
 - Oefenen: onbeperkt, checkpoints (groene ruitjes) voor de meeste stukjes, na een botsing 0,7 s klaarstaan.
   Op hoge snelheid geen checkpoint vlak voor torens en trappen (`noCheckpoint`): zonder aanloop
   klopt de sprong daar niet.

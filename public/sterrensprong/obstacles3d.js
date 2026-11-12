@@ -1,6 +1,7 @@
 // Zet een level om in 3D: één tekenopdracht per soort, licht genoeg voor een Chromebook.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
-import { cellTexture, glowSprite } from './pattern.js';
+import { glowSprite } from './pattern.js';
+import { styleOf } from './styles.js';
 import { addNeonEdges } from './neon.js';
 
 const BLOCK_DEPTH = 1.7;
@@ -19,7 +20,7 @@ function instanced(scene, geometry, material, matrices) {
   scene.add(mesh);
 }
 
-function addBlocks(scene, blocks) {
+function addBlocks(scene, blocks, style) {
   const cells = [];
   blocks.forEach((b) => {
     for (let x = 0; x < b.w; x++) {
@@ -27,9 +28,9 @@ function addBlocks(scene, blocks) {
     }
   });
   const geometry = new THREE.BoxGeometry(1, 1, 1);
-  instanced(scene, geometry, new THREE.MeshLambertMaterial({ map: cellTexture(), color: '#6a52e0' }), cells);
+  instanced(scene, geometry, new THREE.MeshLambertMaterial({ map: style.block(), color: style.tint }), cells);
   const outlines = blocks.map((b) => box(b.x + b.w / 2, b.y + b.h / 2, 0, b.w, b.h, BLOCK_DEPTH));
-  addNeonEdges(scene, geometry, outlines, '#ffd43b', 0.06);
+  addNeonEdges(scene, geometry, outlines, style.edge, 0.06);
 }
 
 function addSpikes(scene, spikes) {
@@ -79,7 +80,7 @@ function addFinish(scene, x) {
 }
 
 export function buildObstacles(scene, level) {
-  addBlocks(scene, of(level, 'block'));
+  addBlocks(scene, of(level, 'block'), styleOf(level));
   addSpikes(scene, of(level, 'spike'));
   addThorns(scene, of(level, 'thorn'));
   addFinish(scene, level.length);

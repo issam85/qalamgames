@@ -4,7 +4,7 @@ import * as THREE from '../marioparty/vendor/three.module.min.js';
 const SIZE = 256;
 const INNER = 0.765; // verhouding waarbij de punten precies een achtster vormen
 
-function star(ctx, cx, cy, r) {
+export function star(ctx, cx, cy, r) {
   ctx.beginPath();
   for (let i = 0; i < 16; i++) {
     const a = (i * Math.PI) / 8;
@@ -44,20 +44,6 @@ export function starTexture(repeatX, repeatY) {
   star(ctx, SIZE / 2, SIZE / 2, SIZE * 0.34);
   [[0, 0], [SIZE, 0], [0, SIZE], [SIZE, SIZE]].forEach(([x, y]) => star(ctx, x, y, SIZE * 0.34));
   return toTexture(canvas, repeatX, repeatY);
-}
-
-// één vlak van een blok: rand met een kleine ster in het midden
-export function cellTexture() {
-  const { canvas, ctx } = makeCanvas(128);
-  ctx.fillStyle = '#b4b4b4';
-  ctx.fillRect(0, 0, 128, 128);
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 5;
-  ctx.strokeRect(9, 9, 110, 110);
-  ctx.fillStyle = '#d8d8d8';
-  ctx.lineWidth = 3;
-  star(ctx, 64, 64, 30);
-  return toTexture(canvas);
 }
 
 // één raam van de lantaarn; wit, zodat het de gekozen kleur aanneemt

@@ -15,7 +15,7 @@ const AMBER = { wall: '#b05a24', floor: '#8e4a1e', glow: '#7fd3ff' };
 const GREEN = { wall: '#1f8a5a', floor: '#1a7048', glow: '#ffe28a' };
 const CRIMSON = { wall: '#a8323c', floor: '#842830', glow: '#ffd43b' };
 
-function buildWorld(name, sections) {
+function buildWorld(name, style, sections) {
   const zones = [];
   const parts = [];
   const checkpoints = [];
@@ -36,10 +36,10 @@ function buildWorld(name, sections) {
   // de veilige plek die het dichtst bij 20, 40, 60 en 80% ligt
   const closest = (spot) => checkpoints.reduce((a, b) => (Math.abs(b - spot) < Math.abs(a - spot) ? b : a));
   const lifeCheckpoints = [0.2, 0.4, 0.6, 0.8].map((part) => closest(part * length));
-  return { name, length, zones, portals, checkpoints, lifeCheckpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
+  return { name, style, length, zones, portals, checkpoints, lifeCheckpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
 }
 
-const WORLD_1 = buildWorld('Lantaarnstad', [
+const WORLD_1 = buildWorld('Lantaarnstad', 'stad', [
   { title: 'De straat', colors: NIGHT, speed: 9, rest: 8, pieces: [
     row(1), row(1), row(2), row(1), row(2), row(2), rhythm(3), row(3), row(1), row(2), row(3),
   ] },
@@ -56,7 +56,7 @@ const WORLD_1 = buildWorld('Lantaarnstad', [
   ] },
 ]);
 
-const WORLD_2 = buildWorld('Sterrenbazaar', [
+const WORLD_2 = buildWorld('Sterrenbazaar', 'bazaar', [
   { title: 'De markt', colors: ROSE, speed: 10, rest: 6, pieces: [
     row(2), rhythm(4), sawRow(3), stairs(3), shelf(11, 2), rhythm(5, 2), padOver(), tunnel(6), maceRow(2),
     towers(4, 1, 3), row(3), stairs(4, true),
@@ -74,7 +74,7 @@ const WORLD_2 = buildWorld('Sterrenbazaar', [
   ] },
 ]);
 
-const WORLD_3 = buildWorld('Hemelpaleis', [
+const WORLD_3 = buildWorld('Hemelpaleis', 'paleis', [
   { title: 'De poort', colors: CRIMSON, speed: 11.5, rest: 4, pieces: [
     rhythm(6), sawTowers(5, 1, 2), sawRow(4), ringChain(3), stairs(4, true), tunnel(8), maceRow(3),
     towers(5, 3, 2), padOver(), shelf(15, 2), ringChain(4), row(3),

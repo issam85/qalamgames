@@ -1,5 +1,7 @@
-// Achtergrond: een nachtstad met koepels en minaretten, en de maan.
+// Achtergrond: een nachtstad met koepels en minaretten, en de maan. Uiterlijk per wereld uit styles.js.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
+import { styleOf } from './styles.js';
+import { addMarket, addClouds } from './scenery-extra.js';
 
 const CITY_Z = -13;
 const PARALLAX = 0.5; // de stad schuift half zo snel als de baan
@@ -17,15 +19,15 @@ function fill(group, geometry, material, matrices) {
   group.add(mesh);
 }
 
-function layoutCity(length) {
+function layoutCity(length, look) {
   const city = { walls: [], domes: [], towers: [], tips: [], windows: [] };
   let x = -60;
   for (let i = 0; x < length * PARALLAX + 70; i++) {
     const w = 3 + hash(i) * 3.5;
     const h = 3 + hash(i + 40) * 5;
     city.walls.push(place(x + w / 2, h / 2, CITY_Z, w, h, 3));
-    if (i % 3 === 0) city.domes.push(place(x + w / 2, h, CITY_Z, w * 0.42, w * 0.42, w * 0.42));
-    if (i % 5 === 2) {
+    if (i % look.domeEvery === 0) city.domes.push(place(x + w / 2, h, CITY_Z, w * 0.42, w * 0.42, w * 0.42));
+    if (i % look.towerEvery === 2 % look.towerEvery) {
       const tall = h + 6;
       city.towers.push(place(x + w + 0.4, tall / 2, CITY_Z, 0.5, tall, 0.5));
       city.tips.push(place(x + w + 0.4, tall + 0.5, CITY_Z, 0.5, 1, 0.5));
@@ -62,13 +64,19 @@ function moonSprite() {
 
 export function createScenery(scene, level) {
   const group = new THREE.Group();
-  const city = layoutCity(level.length);
-  const dark = new THREE.MeshBasicMaterial({ color: '#150c3a', fog: false });
+  const style = styleOf(level);
+  const look = style.city;
+  const city = layoutCity(level.length, look);
+  const dark = new THREE.MeshBasicMaterial({ color: look.dark, fog: false });
+  const dome = new THREE.MeshBasicMaterial({ color: look.dome, fog: false });
   fill(group, new THREE.BoxGeometry(1, 1, 1), dark, city.walls);
-  fill(group, new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), dark, city.domes);
+  fill(group, new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), dome, city.domes);
   fill(group, new THREE.CylinderGeometry(0.5, 0.5, 1, 8), dark, city.towers);
-  fill(group, new THREE.ConeGeometry(0.9, 1, 8), dark, city.tips);
-  fill(group, new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: '#ffcf6b', fog: false }), city.windows);
+  fill(group, new THREE.ConeGeometry(0.9, 1, 8), dome, city.tips);
+  fill(group, new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: look.window, fog: false }), city.windows);
+  const span = level.length * PARALLAX + 70;
+  if (style.extras === 'market') addMarket(group, span);
+  if (style.extras === 'clouds') addClouds(group, span);
   scene.add(group);
   const moon = moonSprite();
   scene.add(moon);
