@@ -6,7 +6,7 @@ export function createRun(level, start = 0) {
   let zone = 0;
   while (zone + 1 < level.zones.length && level.zones[zone + 1].x <= start) zone++;
   return {
-    level, x: start, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, cursor: 0, state: 'run', zone,
+    level, x: start, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, ringBuffer: 0, cursor: 0, state: 'run', zone,
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
     events: [], // voor beeld en geluid: jump, land, boost
   };
@@ -23,6 +23,7 @@ function launch(run, ob, power) {
   run.vy = power;
   run.grounded = false;
   run.buffer = 0;
+  run.ringBuffer = 0;
   run.used = new Set(run.used).add(ob);
   run.events.push({ type: 'boost', kind: ob.type, x: run.x, y: run.y });
 }
@@ -31,7 +32,7 @@ function tryBoost(run, ob, held) {
   if (run.used.has(ob)) return;
   if (ob.type === 'pad') {
     if (run.vy <= 0 && run.y <= ob.y + ob.h + 0.05) launch(run, ob, PHYS.pad);
-  } else if (run.y + PHYS.half * 2 > ob.y && run.y < ob.y + ob.h && (held || run.buffer > 0)) {
+  } else if (run.y + PHYS.half * 2 > ob.y && run.y < ob.y + ob.h && (held || run.ringBuffer > 0)) {
     launch(run, ob, PHYS.ring);
   }
 }
@@ -79,6 +80,8 @@ function updateZone(run) {
 export function stepRun(run, held, pressed) {
   const dt = PHYS.step;
   run.buffer = pressed ? PHYS.buffer : Math.max(0, run.buffer - dt);
+  // alleen een druk in de lucht telt voor een ring; een sprong vanaf de grond niet
+  run.ringBuffer = pressed && !run.grounded ? PHYS.ringBuffer : Math.max(0, run.ringBuffer - dt);
   run.x += run.level.zones[run.zone].speed * dt;
   updateZone(run);
   if (run.grounded && (held || run.buffer > 0)) {

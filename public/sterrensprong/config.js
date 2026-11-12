@@ -7,6 +7,7 @@ export const PHYS = {
   half: 0.42, // halve breedte van de speler (hoogte is 2 × half)
   step: 1 / 240, // vaste rekenstap, op elke computer dezelfde sprong
   buffer: 0.09, // zo lang telt een druk vóór de landing nog mee
+  ringBuffer: 0.2, // zo lang telt een druk in de lucht vóór je bij een ring bent
   landTolerance: 0.25, // net onder de bovenkant van een blok telt nog als landen
 };
 

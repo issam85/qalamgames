@@ -8,7 +8,7 @@ const spikes = (x, count = 1, y = 0) =>
 const block = (x, y, w, h) => ({ type: 'block', x, y, w, h });
 const thorns = (x, w) => ({ type: 'thorn', x, y: 0, w, h: 0.5 });
 const pad = (x) => ({ type: 'pad', x, y: 0, w: 1, h: 0.2 });
-const ring = (x, y) => ({ type: 'ring', x: x - 0.75, y: y - 0.75, w: 1.5, h: 1.5 });
+const ring = (x, y) => ({ type: 'ring', x: x - 0.9, y: y - 0.9, w: 1.8, h: 1.8 });
 
 export const row = (count) => (x) => ({ parts: spikes(x, count), width: count });
 

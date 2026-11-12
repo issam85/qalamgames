@@ -9,11 +9,11 @@ function buildRing(ob) {
   const group = new THREE.Group();
   group.position.set(ob.x + ob.w / 2, ob.y + ob.h / 2, 0);
   const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.55, 0.09, 10, 8),
+    new THREE.TorusGeometry(0.68, 0.1, 10, 8),
     new THREE.MeshBasicMaterial({ color: RING_COLOR }),
   );
   const inner = new THREE.Mesh(
-    new THREE.TorusGeometry(0.34, 0.04, 8, 8),
+    new THREE.TorusGeometry(0.42, 0.045, 8, 8),
     new THREE.MeshBasicMaterial({ color: '#ffffff' }),
   );
   group.add(ring, inner, glowSprite(RING_COLOR, 3.2));
