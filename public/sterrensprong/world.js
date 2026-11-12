@@ -117,7 +117,8 @@ export function createWorld(canvas) {
       showcase(run);
       return;
     }
-    lift += (Math.max(0, run.y - 2.5) * 0.6 - lift) * Math.min(1, dt * 5);
+    const want = run.fly ? 1.4 : Math.max(0, run.y - 2.5) * 0.6; // vliegen: plafond in beeld
+    lift += (want - lift) * Math.min(1, dt * 5);
     shake = Math.max(0, shake - dt * 2.4);
     const jitterX = (Math.random() - 0.5) * shake;
     const jitterY = (Math.random() - 0.5) * shake;

@@ -3,6 +3,7 @@ import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { createWorld } from './world.js';
 import { buildObstacles } from './obstacles3d.js';
 import { createBoosts } from './boosts3d.js';
+import { createPortals } from './portals3d.js';
 import { createPlayer } from './player3d.js';
 import { createShatter } from './shatter.js';
 import { createFx } from './fx.js';
@@ -28,6 +29,7 @@ export function createView(canvas) {
   const shatter = createShatter(world.scene);
   const fx = createFx(world.scene);
   let boosts = null;
+  let portals = null;
   let markers = null;
   let finish = 0;
 
@@ -36,6 +38,7 @@ export function createView(canvas) {
       const stage = world.load(level);
       buildObstacles(stage, level);
       boosts = createBoosts(stage, level);
+      portals = createPortals(stage, level);
       markers = {
         practice: addMarkers(stage, level.checkpoints, '#7dff9b'),
         lives: addMarkers(stage, level.lifeCheckpoints, '#ffd43b'),
@@ -66,6 +69,7 @@ export function createView(canvas) {
     draw(run, dt, inMenu) {
       player.update(run, dt, inMenu);
       boosts.update(run, dt);
+      portals.update(dt);
       shatter.update(dt);
       fx.update(dt);
       world.follow(run, dt, inMenu);

@@ -61,7 +61,7 @@ export function createFx(scene) {
       trailTime -= dt;
       if (trailTime > 0) return;
       trailTime = TRAIL_EVERY;
-      const y = run.y + (run.grounded ? 0.08 : 0.45);
+      const y = run.y + (run.grounded || run.fly ? 0.08 : 0.45);
       const tint = run.grounded ? FLOOR_SPARK : airSpark;
       emit(run.x - 0.42, y, (Math.random() - 0.5) * 0.5, -2 - Math.random() * 2, Math.random() * 2, 0, 0.36, 0.1, tint);
     },

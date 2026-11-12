@@ -1,5 +1,6 @@
 // De werelden: elk één groot level aan één stuk tot 100%, in stukken die steeds moeilijker worden.
 import { row, rhythm, stairs, shelf, tunnel, padOver, towers, ringChain } from './patterns.js';
+import { flight } from './patterns-fly.js';
 
 const AIR = 0.548; // zo lang duurt een gewone sprong
 const LEAD_IN = 14; // vrije aanloop
@@ -17,6 +18,7 @@ function buildWorld(name, sections) {
   const zones = [];
   const parts = [];
   const checkpoints = [];
+  const portals = [{ x: 0, mode: 'run' }];
   let x = LEAD_IN;
   sections.forEach(({ title, colors, speed, rest, pieces }, i) => {
     zones.push({ x: i ? x - 2 : 0, title, speed, ...colors });
@@ -25,6 +27,7 @@ function buildWorld(name, sections) {
       const made = piece(x, tempo);
       if (!made.noCheckpoint) checkpoints.push(x - Math.min(rest - 0.6, CHECKPOINT_BACK));
       parts.push(...made.parts);
+      portals.push(...(made.portals || []));
       x += made.width + rest;
     });
   });
@@ -32,7 +35,7 @@ function buildWorld(name, sections) {
   // de veilige plek die het dichtst bij 20, 40, 60 en 80% ligt
   const closest = (spot) => checkpoints.reduce((a, b) => (Math.abs(b - spot) < Math.abs(a - spot) ? b : a));
   const lifeCheckpoints = [0.2, 0.4, 0.6, 0.8].map((part) => closest(part * length));
-  return { name, length, zones, checkpoints, lifeCheckpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
+  return { name, length, zones, portals, checkpoints, lifeCheckpoints, obstacles: parts.sort((a, b) => a.x - b.x) };
 }
 
 const WORLD_1 = buildWorld('Lantaarnstad', [
@@ -42,6 +45,9 @@ const WORLD_1 = buildWorld('Lantaarnstad', [
   { title: 'Over de daken', colors: TEAL, speed: 9.5, rest: 7, pieces: [
     stairs(3), row(2), shelf(9, 1), row(3), stairs(3), rhythm(4), padOver(), row(3), shelf(11, 1),
     stairs(4), row(2), padOver(),
+  ] },
+  { title: 'Het vliegende tapijt', colors: ROSE, speed: 9.5, rest: 6, pieces: [
+    flight(5, 3), row(2), flight(4, 3),
   ] },
   { title: 'De doornentuin', colors: GREEN, speed: 10, rest: 6, pieces: [
     towers(3, 1, 3), row(3), ringChain(1), row(2), towers(4, 1, 3), ringChain(2), rhythm(4), tunnel(5),
@@ -58,6 +64,9 @@ const WORLD_2 = buildWorld('Sterrenbazaar', [
     ringChain(2), row(3), towers(5, 1, 2), rhythm(5), tunnel(7), row(3), towers(4, 3, 2), ringChain(3),
     shelf(13, 2), row(3), padOver(), stairs(4, true), ringChain(3), rhythm(4, 2),
   ] },
+  { title: 'Over de markt vliegen', colors: GREEN, speed: 11, rest: 5, pieces: [
+    flight(7, 3), rhythm(4), flight(6, 2),
+  ] },
   { title: 'Het dakterras', colors: TEAL, speed: 11.5, rest: 4, pieces: [
     towers(6, 1, 2), row(3), ringChain(3), tunnel(7), rhythm(6), towers(5, 3, 2), row(3), stairs(4, true),
     ringChain(4), shelf(14, 2), rhythm(5, 2), towers(6, 1, 1), row(3), padOver(), ringChain(4),
@@ -72,6 +81,9 @@ const WORLD_3 = buildWorld('Hemelpaleis', [
   { title: 'De sterrenzaal', colors: NIGHT, speed: 12.25, rest: 3.5, pieces: [
     towers(7, 1, 1), row(3), ringChain(4), rhythm(7), tunnel(8), row(3), towers(6, 3, 2), stairs(4, true),
     ringChain(5), rhythm(6, 2), shelf(16, 2), padOver(), towers(7, 1, 1), row(3), ringChain(5),
+  ] },
+  { title: 'Door de wolken', colors: TEAL, speed: 12.5, rest: 3.5, pieces: [
+    flight(8, 2), rhythm(5), flight(7, 2), row(3), flight(6, 2),
   ] },
   { title: 'De top', colors: AMBER, speed: 13, rest: 3, pieces: [
     rhythm(8), towers(8, 1, 1), ringChain(5), row(3), tunnel(9), rhythm(7, 2), towers(7, 3, 2),

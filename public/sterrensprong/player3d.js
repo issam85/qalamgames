@@ -1,6 +1,7 @@
 // De hoofdfiguur: een lantaarn met sterrenramen en een gezichtje, in kleuren naar keuze.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { glowSprite, lanternTexture } from './pattern.js';
+import { createCarpet } from './carpet.js';
 
 const RADIUS = 0.46; // van het midden tot de onderkant van de lantaarn
 const SPIN = 11.5; // één rondje per sprong
@@ -68,6 +69,7 @@ export function createPlayer(scene) {
   shadow.rotation.x = -Math.PI / 2;
   const halo = glowSprite('#ffffff', 3.4);
   scene.add(lantern, glow, shadow, halo);
+  const carpet = createCarpet(scene);
 
   let spin = 0;
   let squash = 0;
@@ -92,7 +94,9 @@ export function createPlayer(scene) {
     },
     update(run, dt, inMenu) {
       time += dt;
-      if (run.grounded) {
+      if (run.fly) {
+        spin += (Math.round(spin / TURN) * TURN - spin) * Math.min(1, dt * 12); // rechtop op het tapijt
+      } else if (run.grounded) {
         if (!wasGrounded) squash = 1;
         spin += (Math.round(spin / TURN) * TURN - spin) * Math.min(1, dt * 24);
       } else {
@@ -104,7 +108,10 @@ export function createPlayer(scene) {
       const bob = inMenu ? Math.abs(Math.sin(time * 2.4)) * 0.12 : 0;
       lantern.position.set(run.x, run.y + RADIUS * (1 - amount) + bob, 0);
       lantern.rotation.y = inMenu ? Math.sin(time * 1.1) * 0.45 : 0;
-      lantern.rotation.z = spin + (run.grounded && !inMenu ? Math.sin(run.x * 4) * 0.07 : 0);
+      const sway = run.grounded && !inMenu ? Math.sin(run.x * 4) * 0.07 : 0;
+      const tilt = run.fly ? Math.max(-0.35, Math.min(0.35, run.vy * 0.04)) : 0;
+      lantern.rotation.z = spin + sway + tilt;
+      carpet.update(run, dt, lantern.visible && run.fly && !inMenu);
       lantern.scale.set(1 + amount, 1 - amount, 1 + amount);
       glow.position.set(run.x, run.y + 1, 1.2);
       halo.position.set(run.x, run.y + RADIUS + bob, 0);

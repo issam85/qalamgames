@@ -8,6 +8,9 @@ export const PHYS = {
   step: 1 / 240, // vaste rekenstap, op elke computer dezelfde sprong
   buffer: 0.09, // zo lang telt een druk vóór de landing nog mee
   ringBuffer: 0.2, // zo lang telt een druk in de lucht vóór je bij een ring bent
+  flyUp: 42, // vliegen: zo snel ga je omhoog als je vasthoudt
+  flyDown: 42, // en zo snel zak je als je loslaat
+  flyMax: 9, // hoogste snelheid omhoog of omlaag
   landTolerance: 0.25, // net onder de bovenkant van een blok telt nog als landen
 };
 
