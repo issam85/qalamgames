@@ -45,16 +45,27 @@ function settleFlipped(run, room) {
   if (run.y > LOST) run.state = 'dead';
 }
 
+// lopen: landen, van een rand af vallen, of in een tunnel met je hoofd tegen het plafond
+function settleWalking(run, room) {
+  if (!run.grounded && run.vy > 0 && run.y + HEIGHT > room.ceiling) {
+    run.y = room.ceiling - HEIGHT;
+    run.vy = 0;
+  }
+  if (!run.grounded && run.vy <= 0 && run.y <= room.floor) {
+    land(run, room.floor, room.floor);
+  } else if (run.grounded && run.y > room.floor) {
+    run.grounded = false;
+    run.vy = 0;
+  }
+}
+
 export function settle(run, room) {
   if (run.fly) {
     if (run.y <= room.floor) [run.y, run.vy] = [room.floor, Math.max(0, run.vy)];
     if (run.y + HEIGHT >= room.ceiling) [run.y, run.vy] = [room.ceiling - HEIGHT, Math.min(0, run.vy)];
   } else if (run.flip) {
     settleFlipped(run, room);
-  } else if (!run.grounded && run.vy <= 0 && run.y <= room.floor) {
-    land(run, room.floor, room.floor);
-  } else if (run.grounded && run.y > room.floor) {
-    run.grounded = false;
-    run.vy = 0;
+  } else {
+    settleWalking(run, room);
   }
 }

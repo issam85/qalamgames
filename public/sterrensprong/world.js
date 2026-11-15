@@ -2,6 +2,7 @@
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { starTexture } from './pattern.js';
 import { createScenery } from './scenery.js';
+import { createQuality } from './quality.js';
 
 const NIGHT = '#140a30';
 const FLOOR_TILE = 4;
@@ -47,7 +48,8 @@ function dispose(stage) {
 }
 
 export function createWorld(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  // gladde randen alleen op een gewoon scherm; op een scherp scherm kost het te veel
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: window.devicePixelRatio <= 1 });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(NIGHT);
@@ -75,6 +77,8 @@ export function createWorld(canvas) {
   }
   window.addEventListener('resize', resize);
   resize();
+  const measure = createQuality(renderer, resize);
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   // bouwt de vaste delen van een wereld en geeft de groep terug voor de hindernissen
   function load(level) {
@@ -131,7 +135,10 @@ export function createWorld(canvas) {
     scene,
     load,
     follow,
-    kick: (amount) => { shake = Math.max(shake, amount); },
-    render: () => renderer.render(scene, camera),
+    kick: (amount) => { shake = calm.matches ? 0 : Math.max(shake, amount); },
+    render() {
+      renderer.render(scene, camera);
+      measure();
+    },
   };
 }

@@ -18,7 +18,7 @@ html, body {
   position: fixed;
   top: max(12px, env(safe-area-inset-top));
   left: 50%;
-  width: min(520px, 76vw);
+  width: min(520px, 76vw, calc(100vw - 150px)); /* naast de pauzeknop */
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -44,10 +44,21 @@ html, body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, .6);
 }
 
-/* streepjes op de balk bij 20, 40, 60 en 80% */
-.bar.marks {
-  background: repeating-linear-gradient(90deg, transparent 0 calc(20% - 2px), rgba(255, 255, 255, .6) calc(20% - 2px) 20%), rgba(0, 0, 0, .3);
+/* gouden ruitjes waar de checkpoints van Start liggen (hud.js) */
+.bar-box { position: relative; }
+.marks { position: absolute; inset: 0; }
+.marks i {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  transform: rotate(45deg);
+  border: 2px solid #ffd43b;
+  background: #2a1a66;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .5);
 }
+.marks i.on { background: #ffd43b; border-color: #fff; }
 
 .lives { display: flex; justify-content: center; gap: 3px; margin-top: 2px; }
 .lives[hidden] { display: none; }
@@ -59,6 +70,9 @@ html, body {
   top: 18%;
   left: 0;
   right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   font-size: clamp(26px, 5vw, 46px);
   font-weight: 700;
@@ -87,28 +101,3 @@ html, body {
 #flash.on { animation: flash .28s ease-out; }
 
 @keyframes flash { from { opacity: .55; } to { opacity: 0; } }
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  text-align: center;
-  pointer-events: none;
-  background: rgba(16, 8, 40, .45);
-}
-
-.overlay[hidden] { display: none; }
-
-.overlay h1 {
-  font-size: clamp(40px, 9vw, 84px);
-  font-weight: 700;
-  color: #ffd43b;
-  text-shadow: 0 4px 0 #c62828;
-}
-
-.overlay p { font-size: clamp(18px, 3vw, 26px); }

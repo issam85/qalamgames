@@ -54,7 +54,7 @@ function addThorns(scene, thorns) {
   const matrices = [];
   thorns.forEach((t) => {
     for (let x = t.x + 0.12; x < t.x + t.w - 0.1; x += THORN_STEP) {
-      [-0.5, 0, 0.5].forEach((z, row) => {
+      [-0.4, 0.4].forEach((z, row) => { // twee rijen: genoeg voor het oog, minder werk
         const h = 0.35 + wobble(x + row) * 0.45;
         matrices.push(box(x + wobble(x * 3 + row) * 0.08, t.y + h / 2, z, 0.3, h, 0.3));
       });

@@ -36,7 +36,7 @@
 
 .swatches {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
   gap: 7px;
   padding: 3px;
 }
@@ -55,9 +55,9 @@
 
 .world {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 8px 12px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
   border: 3px solid rgba(42, 26, 102, .2);
   border-radius: 14px;
   background: #f1edff;
@@ -68,6 +68,8 @@
 }
 
 .world b { font-size: 17px; font-weight: 700; }
+.world .badge { flex: none; width: 36px; height: 36px; color: #6f6a80; }
+.world .badge svg { width: 100%; height: 100%; display: block; }
 .world.on { border-color: #ffb300; background: #fff6d6; box-shadow: 0 0 0 2px #ffd43b; }
 .world:disabled { background: #e4e2ea; color: #6f6a80; cursor: default; }
 .world:focus-visible { outline: 3px solid #1565c0; outline-offset: 2px; }
@@ -86,6 +88,9 @@
   cursor: pointer;
 }
 
+.start { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.start svg { width: 1.1em; height: 1.1em; flex: none; }
+
 .start:active { transform: translateY(3px); box-shadow: 0 2px 0 #1b5e20; }
 .start.blue { background: #1565c0; box-shadow: 0 5px 0 #0d47a1; font-size: 20px; }
 .start.blue:active { box-shadow: 0 2px 0 #0d47a1; }
@@ -94,9 +99,9 @@
   position: fixed;
   top: max(10px, env(safe-area-inset-top));
   left: max(12px, env(safe-area-inset-left));
-  width: 48px;
-  height: 48px;
-  padding: 0;
+  width: 52px;
+  height: 52px;
+  padding: 13px;
   border: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
@@ -105,6 +110,8 @@
   cursor: pointer;
   color: #2a1a66;
 }
+
+.pill svg { width: 100%; height: 100%; display: block; }
 
 .in-menu .hud, .in-menu .pill { display: none; }
 
@@ -116,6 +123,5 @@
   .menu { top: 6px; bottom: 6px; padding: 8px 12px; gap: 4px; }
   .menu h1 { display: none; }
   .menu h2 { margin: 4px 0 2px; font-size: 14px; }
-  .swatches { grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); }
   .start { padding: 6px; font-size: 20px; }
 }

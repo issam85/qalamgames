@@ -41,7 +41,8 @@ function tryBoost(run, ob, held) {
 }
 
 // een blok: erop staan of landen, langs de onderkant schuiven (vliegen) of eronder landen
-// (ondersteboven), of botsen. Ondersteboven op de bovenkant komen is botsen.
+// (ondersteboven), met je hoofd tegen de onderkant stoten, of botsen. Ondersteboven op de
+// bovenkant komen is botsen; tegen de zijkant ook.
 function touchBlock(run, ob, prevY, room) {
   const top = ob.y + ob.h;
   if (run.y >= top) room.floor = Math.max(room.floor, top);
@@ -49,6 +50,8 @@ function touchBlock(run, ob, prevY, room) {
   else if (!run.flip && prevY >= top - PHYS.landTolerance && run.vy <= 0) room.floor = Math.max(room.floor, top);
   else if ((run.fly || run.flip) && prevY + HEIGHT <= ob.y + PHYS.landTolerance && run.vy >= 0) {
     room.ceiling = Math.min(room.ceiling, ob.y);
+  } else if (prevY + HEIGHT <= ob.y + PHYS.landTolerance && run.vy > 0) {
+    room.ceiling = Math.min(room.ceiling, ob.y); // lopend tegen de onderkant springen: kopje stoten
   } else run.state = 'dead';
 }
 

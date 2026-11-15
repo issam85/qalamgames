@@ -1,0 +1,90 @@
+/* Eindscherm en pauze met twee grote knoppen, plaatjes in meldingen, en de handjes. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+  pointer-events: none;
+  background: rgba(16, 8, 40, .55);
+}
+
+.overlay[hidden] { display: none; }
+
+.overlay h1 {
+  font-size: clamp(34px, 8vw, 78px);
+  font-weight: 700;
+  color: #ffd43b;
+  text-shadow: 0 4px 0 #c62828;
+}
+
+.overlay p { font-size: clamp(18px, 3vw, 26px); }
+.overlay p:empty { display: none; }
+
+.overlay-buttons { display: flex; gap: 24px; margin-top: 8px; }
+
+.round {
+  width: clamp(72px, 14vmin, 104px);
+  height: clamp(72px, 14vmin, 104px);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #2e7d32;
+  box-shadow: 0 6px 0 #1b5e20;
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.round svg { width: 58%; height: 58%; display: block; }
+.round.blue { background: #1565c0; box-shadow: 0 6px 0 #0d47a1; }
+.round:active { transform: translateY(4px); box-shadow: 0 2px 0 #1b5e20; }
+.round.blue:active { box-shadow: 0 2px 0 #0d47a1; }
+.round:disabled { opacity: .45; cursor: default; transform: none; }
+.overlay .round[hidden] { display: none; }
+.round:focus-visible { outline: 4px solid #ffd43b; outline-offset: 4px; }
+
+/* meldingen: groot plaatje, klein woord eronder */
+.toast-icon svg { width: clamp(64px, 13vmin, 110px); height: clamp(64px, 13vmin, 110px); display: block; }
+#toast.with-icon .toast-text { font-size: clamp(18px, 3.2vw, 28px); }
+
+/* handje onder de lantaarn */
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .7);
+  pointer-events: none;
+}
+
+.hint[hidden] { display: none; }
+.hint svg { width: clamp(80px, 16vmin, 130px); height: auto; overflow: visible; }
+
+.hint-tap .hand { animation: hand-tap .8s ease-in-out infinite; }
+.hint-tap .ripple { transform-origin: 24.5px 6px; animation: ripple .8s ease-out infinite; }
+.hint-hold .hand { transform: translateY(4px); }
+.hint-hold path { animation: arrow-up 1s ease-in-out infinite; }
+.hint-no .hand { animation: hand-wait 1.6s ease-in-out infinite; }
+
+@keyframes hand-tap { 0%, 100% { transform: translateY(-3px); } 45% { transform: translateY(4px); } }
+@keyframes ripple { 0%, 40% { opacity: 0; transform: scale(.4); } 55% { opacity: 1; } 100% { opacity: 0; transform: scale(1.6); } }
+@keyframes arrow-up { 0%, 100% { transform: translateY(4px); } 50% { transform: translateY(-4px); } }
+@keyframes hand-wait { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-6deg); } }
+
+/* minder beweging: geen flits, geen schuddende of stuiterende plaatjes */
+@media (prefers-reduced-motion: reduce) {
+  #flash.on { animation: none; }
+  .hint *, .round:active { animation: none !important; transform: none !important; }
+}

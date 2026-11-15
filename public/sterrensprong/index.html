@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="menu.css">
+  <link rel="stylesheet" href="overlay.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel Sterrensprong — spring met je eigen lantaarn door een 3D-nachtstad en haal alle werelden tot 100%. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
   <meta name="keywords" content="Sterrensprong, springspel, 3D, lantaarn, spel, game, Al Qalam, basisschool Gouda, Qalam Games" />
@@ -33,16 +34,24 @@
 <body>
   <canvas id="view"></canvas>
   <div class="hud">
-    <div class="bar"><div id="bar-fill"></div><div id="bar-best" hidden></div></div>
+    <div class="bar-box">
+      <div class="bar"><div id="bar-fill"></div><div id="bar-best" hidden></div></div>
+      <div id="marks" class="marks"></div>
+    </div>
     <div class="hud-row"><span id="percent">0%</span><span id="attempt">Poging 1</span></div>
     <div id="lives" class="lives" role="img"></div>
   </div>
-  <button id="to-menu" class="pill" type="button" aria-label="Terug naar het menu" title="Terug naar het menu">&#8592;</button>
-  <div id="toast"></div>
+  <button id="pause" class="pill" type="button" aria-label="Pauze" title="Pauze"></button>
+  <div id="toast" role="status"></div>
+  <div id="hint" class="hint" hidden></div>
   <div id="flash"></div>
   <div id="overlay" class="overlay" hidden>
     <h1 id="overlay-title"></h1>
     <p id="overlay-text"></p>
+    <div class="overlay-buttons">
+      <button id="overlay-menu" class="round blue" type="button" aria-label="Naar het menu" title="Naar het menu"></button>
+      <button id="overlay-go" class="round" type="button"></button>
+    </div>
   </div>
   <section id="menu" class="menu" hidden>
     <h1>Sterrensprong</h1>

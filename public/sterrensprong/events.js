@@ -1,11 +1,13 @@
 // Wat er in de spelregels gebeurde, omzetten in beeld.
-import { showToast } from './hud.js';
+import { showToast } from './toast.js';
+import { HANDS } from './hint.js';
 import { PORTAL_COLORS } from './portals3d.js';
 
+// bij een poort: een handje dat laat zien wat je nu doet, met een kort woord
 const PORTAL_TEXT = {
-  fly: 'Vliegen: vasthouden = omhoog!',
-  flip: 'Ondersteboven! Springen gaat naar beneden',
-  run: 'Weer lopen!',
+  fly: ['Vasthouden = omhoog', HANDS.hold],
+  flip: ['Tik = naar beneden', HANDS.down],
+  run: ['Weer lopen', HANDS.tap],
 };
 
 export function playEvents(run, fx, world) {
@@ -15,7 +17,7 @@ export function playEvents(run, fx, world) {
     if (e.type === 'portal') {
       fx.burst(e.x, e.y + 0.45, PORTAL_COLORS[e.mode], 22, 8);
       world.kick(0.14);
-      showToast(PORTAL_TEXT[e.mode]);
+      showToast(...PORTAL_TEXT[e.mode], true);
     }
     if (e.type === 'boost') {
       fx.burst(e.x, e.y + 0.45, e.kind === 'ring' ? '#5cf2d6' : '#ffd43b', 18, 8);

@@ -1,4 +1,5 @@
-// Levens en checkpoints. Start: 5 levens en checkpoints op 20, 40, 60 en 80%. Oefenen: onbeperkt.
+// Levens en checkpoints. Start: 5 levens en de checkpoints uit level.lifeCheckpoints (wereld 1
+// vijf, de andere vier). Oefenen: onbeperkt, met de checkpoints vóór bijna elk stukje.
 export const START_LIVES = 5;
 
 export function createTries() {

@@ -1,41 +1,42 @@
-// Spelverloop: kiezen, spelen of oefenen, botsen en opnieuw, tot 100% en dan de volgende wereld.
-import { PHYS, DEATH_PAUSE } from './config.js';
+// Spelverloop: kiezen, spelen of oefenen, botsen en opnieuw, pauze, tot 100% en dan de volgende wereld.
 import { WORLDS } from './levels.js';
-import { createRun, stepRun } from './physics.js';
+import { createRun } from './physics.js';
 import { createInput } from './input.js';
 import { createView } from './view.js';
 import { loadSkin, saveSkin } from './skins.js';
-import { loadProgress, bestOf, recordPercent, completeWorld } from './progress.js';
+import { loadProgress, bestOf } from './progress.js';
 import { createMenu } from './menu.js';
-import { updateHud, percentOf, showWorldDone, hideOverlay, flash, showToast } from './hud.js';
+import { updateHud, setOverlayReady, hideOverlay } from './hud.js';
+import { showToast, clearToasts } from './toast.js';
+import { ICONS } from './icons.js';
 import { createTries } from './tries.js';
+import { createTutorial } from './tutorial.js';
+import { createRound } from './round.js';
+import { createPause } from './pause.js';
 
-const WIN_PAUSE = 0.7; // een tik vlak na de finish slaat het scherm niet over
-const RESPAWN_PAUSE = 0.7; // even klaarstaan op het checkpoint
 const view = createView(document.getElementById('view'));
 const input = createInput(onPress);
 const progress = loadProgress(WORLDS.length);
 const tries = createTries();
+const tutorial = createTutorial();
 
-let worldIndex = progress.unlocked - 1;
-let level, run;
-let mode = 'ready';
-let pause = 0;
-let spare = 0;
+// de toestand, gedeeld met round.js en pause.js. mode: ready, run, wait, dead, won, paused
+const g = { mode: 'ready', resumeTo: 'run', pause: 0, spare: 0, worldIndex: 0, level: null, run: null };
 let last = performance.now();
 
 function loadLevel(index) {
-  worldIndex = index;
-  level = WORLDS[index];
-  view.load(level);
-  run = createRun(level);
-  tries.begin(level, false);
+  g.worldIndex = index;
+  g.level = WORLDS[index];
+  view.load(g.level);
+  tutorial.load(g.level);
+  g.run = createRun(g.level);
+  tries.begin(g.level, false);
 }
 
-loadLevel(worldIndex);
+loadLevel(progress.unlocked - 1);
 const firstSkin = loadSkin();
 view.setSkin(firstSkin);
-const menu = createMenu({ skin: firstSkin, worlds: WORLDS, progress, selected: worldIndex }, {
+const menu = createMenu({ skin: firstSkin, worlds: WORLDS, progress, selected: g.worldIndex }, {
   onSkin(skin) {
     view.setSkin(skin);
     saveSkin(skin);
@@ -46,101 +47,61 @@ const menu = createMenu({ skin: firstSkin, worlds: WORLDS, progress, selected: w
 });
 
 function clearRun() {
-  run = createRun(level, tries.spawn());
-  spare = 0;
+  g.run = createRun(g.level, tries.spawn());
+  g.spare = 0;
+  input.requireRelease(); // een vinger die nog ligt, springt niet meteen weer
   input.takePress();
   view.reset(tries.practice);
   hideOverlay();
+  clearToasts();
 }
 
 function play(practice) {
-  tries.begin(level, practice);
+  tries.begin(g.level, practice);
   clearRun();
-  mode = 'run';
+  g.mode = 'run';
   menu.show(false);
-  showToast(practice ? 'Oefenen' : level.zones[0].title);
+  if (practice) showToast('Oefenen', ICONS.infinity);
+  else showToast(g.level.zones[0].title);
 }
 
 function backToMenu() {
-  tries.begin(level, false);
+  tries.begin(g.level, false);
   clearRun();
-  mode = 'ready';
-  menu.update(worldIndex);
+  g.mode = 'ready';
+  menu.update(g.worldIndex);
   menu.show(true);
 }
-document.getElementById('to-menu').addEventListener('click', backToMenu);
 
-function finishWorld() {
-  mode = 'won';
-  pause = WIN_PAUSE;
-  if (!tries.practice) completeWorld(progress, level, worldIndex, WORLDS.length);
-  showWorldDone(level, WORLDS[worldIndex + 1], tries.practice);
+const round = createRound(g, { input, view, tries, progress, clearRun });
+const pauser = createPause(g, { input, tries, play, backToMenu, loadLevel });
+
+// een tik naast het menu start niets: alleen het toetsenbord of de knoppen
+function onPress(source) {
+  if (source !== 'key') return;
+  if (g.mode === 'ready') play(false);
+  else if (g.mode === 'won' || g.mode === 'paused') pauser.goOn();
 }
 
-function onPress() {
-  if (mode === 'ready') {
-    play(false);
-  } else if (mode === 'won' && pause <= 0) {
-    if (tries.practice || worldIndex === WORLDS.length - 1) return backToMenu();
-    loadLevel(worldIndex + 1);
-    play(false);
-  }
-  return undefined;
-}
-
-function crash() {
-  mode = 'dead';
-  pause = DEATH_PAUSE;
-  view.crash(run);
-  flash();
-  tries.lose();
-  const percent = percentOf(run);
-  if (!tries.practice && recordPercent(progress, level, percent)) showToast(`Nieuw record: ${percent}%`);
-}
-
-function afterCrash() {
-  const outOfLives = tries.respawn();
-  clearRun();
-  if (outOfLives) showToast('Geen levens meer: opnieuw!');
-  mode = tries.reached < 0 ? 'run' : 'wait';
-  pause = RESPAWN_PAUSE;
-}
-
-function passCheckpoint() {
-  if (!tries.pass(run.x)) return;
-  view.checkpoint(run);
-  if (!tries.practice) showToast(`Checkpoint ${(tries.reached + 1) * 20}%`);
-}
-
-function simulate(dt) {
-  spare += dt;
-  let pressed = input.takePress();
-  while (spare >= PHYS.step && run.state === 'run') {
-    stepRun(run, input.held(), pressed);
-    pressed = false;
-    spare -= PHYS.step;
-  }
-  view.events(run);
-  if (run.state === 'dead') {
-    crash();
-  } else if (run.state === 'won') {
-    finishWorld();
-  } else {
-    passCheckpoint();
-    view.trail(run, dt);
-  }
-}
-
-function frame(now) {
-  const dt = Math.min((now - last) / 1000, 0.05);
+function frame() {
+  const now = performance.now(); // de tijd van requestAnimationFrame klopt niet in elke browser
+  const dt = g.mode === 'paused' ? 0 : Math.max(0, Math.min((now - last) / 1000, 0.05));
   last = now;
-  pause -= dt;
-  if (mode === 'run') simulate(dt);
-  else if (mode === 'dead' && pause <= 0) afterCrash();
-  else if (mode === 'wait' && pause <= 0) mode = 'run';
-  else if (mode === 'won') view.finale(dt);
-  view.draw(run, dt, mode === 'ready');
-  updateHud(run, tries, bestOf(progress, level));
+  const wasWaiting = g.pause > 0;
+  g.pause -= dt;
+  if (g.mode === 'run') round.simulate(dt);
+  else if (g.mode === 'dead' && g.pause <= 0) round.afterCrash();
+  else if (g.mode === 'wait') {
+    input.requireRelease(); // tikken en vasthouden tijdens het klaarstaan tellen niet
+    input.takePress();
+    if (g.pause <= 0) g.mode = 'run';
+  } else if (g.mode === 'won') {
+    view.finale(dt);
+    if (wasWaiting && g.pause <= 0) setOverlayReady(true);
+  }
+  tutorial.update(g.mode === 'run' || g.mode === 'wait' ? g.run : null);
+  view.draw(g.run, dt, g.mode === 'ready');
+  updateHud(g.run, tries, bestOf(progress, g.level));
   requestAnimationFrame(frame);
 }
 
