@@ -22,7 +22,7 @@ let spots = sandy();
 let pointer = null;
 
 const say = (text) => { hintEl.textContent = text; };
-const draw = () => { stageEl.innerHTML = showerSvg(api.game.princess, spots, tool, pointer); };
+const draw = () => { stageEl.innerHTML = showerSvg(api.game.princess, api.game.outfit, spots, tool, pointer); };
 
 function renderPanel() {
   const part = progress(spots);

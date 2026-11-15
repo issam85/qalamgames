@@ -44,10 +44,10 @@ export const TOOLS = [
 const cursor = (tool, p) => (p ? `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${tool.turn ?? -20})" opacity="0.95" pointer-events="none">${tool.glyph}</g>` : '');
 
 // tool = wat je vasthebt (met de douche stroomt het water); p = plek van de muis
-export function showerSvg(princess, spots, tool, p) {
+export function showerSvg(princess, outfit, spots, tool, p) {
   const marks = spots.map((s, i) => `<g transform="translate(${SPOTS[i][0]} ${SPOTS[i][1]})">${MARK[s]}</g>`).join('');
   const shine = washed(spots) ? star(70, 230) + star(232, 240) + star(80, 110) + star(222, 96) : '';
-  const scene = BACK + POLE + bathingPrincess(princess) + (tool.key === 'douche' ? WATER : '') + SCREEN + marks + shine + cursor(tool, p);
+  const scene = BACK + POLE + bathingPrincess(princess, outfit) + (tool.key === 'douche' ? WATER : '') + SCREEN + marks + shine + cursor(tool, p);
   // alleen het vak zelf: lang haar valt anders onder het schotje uit de tekening
   return svg('30 0 240 340', 'Je prinses onder de stranddouche', `<clipPath id="vak"><rect x="30" y="0" width="240" height="340" rx="14"/></clipPath><g clip-path="url(#vak)">${scene}</g>`);
 }
