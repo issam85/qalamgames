@@ -43,6 +43,8 @@
 
 .gv-icon-btn { width: 44px; padding: 0; }
 
+.gv-buttons { display: flex; gap: 10px; flex: none; }
+
 .gv-stage { padding-top: 32px; }
 
 .gv-frame {
@@ -72,7 +74,8 @@
   right: 8px;
   z-index: 100;
   display: none;
-  justify-content: space-between;
+  justify-content: flex-end; /* rechtsboven: linksboven is voor de terugknop van het spel zelf */
+  gap: 10px;
   pointer-events: none;
   transition: opacity 0.3s ease;
 }

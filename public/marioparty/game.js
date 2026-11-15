@@ -11,6 +11,7 @@ import { CHARACTERS, loadCharacters } from './characters.js';
 import { loadSprites } from './sprites.js';
 import { playCutscene, playCutscenes, resetCutscenes } from './cutscene.js';
 import { withWipe } from './transition.js';
+import { initBack, backFor } from './back.js';
 
 const ROUNDS = 5;
 const PLACE_LABELS = ['1e 🥇', '2e 🥈', '3e', '4e'];
@@ -26,6 +27,7 @@ const hud = document.getElementById('hud');
 function showScreen(id, onSwitch) {
   return withWipe(() => {
     document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+    backFor(id);
     if (onSwitch) onSwitch();
   });
 }
@@ -142,3 +144,9 @@ document.getElementById('card-btn').addEventListener('click', guarded(playMiniga
 document.getElementById('to-toad-btn').addEventListener('click', guarded(showToad));
 document.getElementById('toad-btn').addEventListener('click', guarded(endRound));
 document.getElementById('restart-btn').addEventListener('click', guarded(() => showScreen('screen-setup')));
+// één stap terug: bord → karakters kiezen, minigame kiezen → bord, minigame → minigame kiezen
+initBack({
+  'screen-board': () => { stopBoard(); return showScreen('screen-setup'); },
+  'screen-card': () => showBoard(),
+  'screen-minigame': () => { state.minigame.stop(); chooseMinigame(state.minigame); return showScreen('screen-card'); },
+});

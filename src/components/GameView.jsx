@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { ArrowLeft, Maximize, Minimize } from 'lucide-react';
+import { DoorOpen, Maximize, Minimize } from 'lucide-react';
 import IslamicRacingGame from '../IslamicRacingGame';
 import GameInfo from './GameInfo';
 import useFullscreen from '../hooks/useFullscreen';
@@ -7,10 +7,18 @@ import { GAMES } from '../data/games';
 import { findEntry } from '../data/lichtingen';
 import '../styles/game.css';
 
-function BackButton({ onBack }) {
+// Het deurtje: het spel uit, terug naar alle spellen. Een stap terug in een spel doet
+// het spel zelf (zijn eigen terugknop linksboven), daarom staat dit rechtsboven.
+function DoorButton({ onBack }) {
   return (
-    <button type="button" className="btn btn-white" onClick={(e) => { e.stopPropagation(); onBack(); }}>
-      <ArrowLeft size={18} strokeWidth={2.4} aria-hidden="true" /> Terug
+    <button
+      type="button"
+      className="btn btn-white gv-icon-btn gv-door"
+      aria-label="Spel verlaten"
+      title="Spel verlaten"
+      onClick={(e) => { e.stopPropagation(); onBack(); }}
+    >
+      <DoorOpen size={22} strokeWidth={2.4} aria-hidden="true" />
     </button>
   );
 }
@@ -46,19 +54,21 @@ export default function GameView({ gameKey, onBack }) {
     <div className={immersive ? 'gv gv-immersive' : 'gv'}>
       <header className="gv-bar">
         <div className="container gv-bar-inner">
-          <BackButton onBack={handleBack} />
           <div className="gv-heading">
             <h1 className={gameKey === 'game' ? 'gv-title arabic' : 'gv-title'}>{game.title}</h1>
             {entry && <span className="gv-chip">{entry.lichting}</span>}
           </div>
-          <FullscreenButton isFullscreen={isFullscreen} onToggle={toggleFullscreen} />
+          <div className="gv-buttons">
+            <DoorButton onBack={handleBack} />
+            <FullscreenButton isFullscreen={isFullscreen} onToggle={toggleFullscreen} />
+          </div>
         </div>
       </header>
 
       <div className="gv-stage container">
         <div ref={containerRef} className="gv-frame" onClick={handleTap}>
           <div className={showControls ? 'gv-overlay' : 'gv-overlay is-hidden'}>
-            <BackButton onBack={handleBack} />
+            <DoorButton onBack={handleBack} />
             <FullscreenButton isFullscreen={isFullscreen} onToggle={toggleFullscreen} />
           </div>
           {immersive ? (

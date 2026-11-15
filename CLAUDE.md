@@ -38,6 +38,10 @@ HTML-pagina in `public/`, geopend in een iframe (`components/GameView.jsx`).
   `<!-- qalam-seo -->`-blok per spelpagina, `public/robots.txt` en `public/sitemap.xml`.
   Nieuw spel = ook in `<noscript>`, `sitemap.xml` en een eigen SEO-blok.
 - Meer achtergrond: `PROJECT.md`.
+- Knoppen bij een spel: het deurtje (`GameView.jsx`, rechtsboven naast volledig scherm) gaat het
+  spel uit. Linksboven is voor de eigen terugknop van het spel: een rond ←-knopje dat één stap
+  teruggaat (Mario Party `back.js`, Sterrensprong `#to-menu`, Tiktak Boom Bom `#to-menu`). Nieuw
+  spel = ook zo'n ←-knop op elk scherm waar een stap terug kan.
 - App-versie (installeren op een tablet, bv. voor Samsung Kids): `public/manifest.webmanifest`,
   iconen in `public/icons/` (blauw met het gouden Q-tegeltje, ruim in het midden zodat Android
   het rond of als druppel kan uitsnijden), `public/sw.js` en `public/offline.html`. De service

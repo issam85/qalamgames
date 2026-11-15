@@ -37,7 +37,16 @@ function begin() {
   game = createGame(humans);
   menu.hidden = true;
   end.hidden = true;
+  $('to-menu').hidden = false;
   startRound(game);
+}
+
+// terug naar spelers kiezen (tijdens het spelen met ←, na afloop met de knop)
+function toMenu() {
+  end.hidden = true;
+  menu.hidden = false;
+  $('to-menu').hidden = true;
+  game = createGame(humans);
 }
 
 function showEnd() {
@@ -46,6 +55,7 @@ function showEnd() {
   $('end-title').classList.toggle('won', r.won);
   $('end-text').textContent = r.text;
   end.hidden = false;
+  $('to-menu').hidden = true;
   if (r.won) sound.win();
   else sound.lose();
 }
@@ -120,11 +130,8 @@ document.querySelectorAll('[data-players]').forEach((btn) => {
 });
 $('start').addEventListener('click', begin);
 $('again').addEventListener('click', begin);
-$('back').addEventListener('click', () => {
-  end.hidden = true;
-  menu.hidden = false;
-  game = createGame(humans);
-});
+$('back').addEventListener('click', toMenu);
+$('to-menu').addEventListener('click', toMenu);
 
 function showMute() {
   $('mute').textContent = isMuted() ? 'Geluid: uit' : 'Geluid: aan';
