@@ -219,7 +219,11 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     tikken), watje = eraf. Make-up blijft zitten in het huis, de kast, op de foto en
     bij de kapper. "Klaar!" kan pas na douchen en tanden poetsen; elke dag opnieuw.
   - Kledingkast: 6 categorieën × 6 soorten × 8 kleuren, "Verras me!" en "Foto" (PNG
-    720×960 om op te slaan).
+    720×960; kan het apparaat delen, dan deelt Opslaan, in een WebView-app (`; wv)`)
+    staat er "Vraag een grote mens om een schermafbeelding"). Sieraden combineer je:
+    `choice.sieraden` is een lijst (`[]` = Geen), hooguit één ketting (`NECKLACES`,
+    `toggleJewel`/`wearJewel` in `data.js`); met horloge zitten armbanden alleen
+    rechts (`jewels()` in `doll-parts.js`). Oude opslag (één getal) wordt omgezet.
   - Kapper (wensen van de leerling): elke dag 6 knopen, die je eruit borstelt door
     erover te slepen (borstel 2 halen, kam 4; de knoop wordt per haal kleiner). Puntkam
     = scheiding en twee vlechten. Schaar: los haar heeft zes lokken vóór de schouders,
@@ -231,11 +235,11 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     "Klaar!" kan pas als alle knopen eruit zijn.
   - Keuken: recept kiezen (pannenkoeken, couscous, soep). Stap 1: de 4 ingrediënten
     in de volgorde van het briefje in de kom tikken (er staan er 6, twee horen er
-    niet in). Stap 2: met de lepel rondjes roeren (slepen, 4 rondjes). Stap 3: het
+    niet in). Stap 2: met de lepel rondjes roeren (slepen, 3 rondjes). Stap 3: het
     vuur: een pijl loopt in 3,2 s over een balk, tik als hij in het groen staat
     (pannenkoeken 3 keer omdraaien, de andere 1 keer van het vuur); te vroeg of te
-    laat = opnieuw. "Klaar!" kan pas als het gerecht af is; het wordt bewaard als
-    `meal` voor het gezin.
+    laat = opnieuw; na 3 keer mis wordt het groen 30% breder (`WIDER`). Zodra het
+    gerecht af is staat het als `meal` bij het gezin (ook zonder "Klaar!").
   - Gezin: papa en de dochters Amira en Noor (namen zelf gekozen, de leerling mag ze
     veranderen) met hartjes: papa eten en thee, een dochter eten, spelen en voorlezen.
     Links kies je wat je doet, daarna tik je op iemand: eten (alleen als er een `meal`
@@ -247,17 +251,21 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     Wudu: de 7 stappen in volgorde tikken (handen, mond, neus, gezicht, armen, hoofd,
     voeten); een foute keuze zegt wat eerst komt. Gebed (pas na wudu): de lucht laat
     een moment van de dag zien, kies het goede gebed (Fajr, Dhuhr, Asr, Maghrib,
-    Isha; gevraagd in een vaste, door elkaar gezette volgorde). Reis naar Mekka, in
+    Isha; gevraagd in een vaste, door elkaar gezette volgorde; oosten rechts: Fajr
+    donker met sterren en een bleke streep licht rechts, geen zon; Maghrib een
+    oranjerode gloed links, boven al donker; de knoppen tonen elk hun lucht). Reis naar Mekka, in
     het zwart en goud van het Hajj-spel: tawaf (7 rondes om de Kaaba slepen, alleen
-    tegen de klok in telt), Zamzam drinken (tik), sa'i (7 keer slepen tussen Safa en
+    tegen de klok in telt; van het plein af = de haal begint opnieuw, een sprong telt
+    niet), Zamzam drinken (tik), sa'i (7 keer slepen tussen Safa en
     Marwa, begin op Safa, eind op Marwa); daarna een knop naar het Hajj-spel
     (`/#hajj`, `target="_top"`). "Klaar!" kan na wudu en de vijf gebeden; de reis
     geeft 3 extra sterren, één keer per dag (`mekkaDay`).
   - Slaapkamer: pyjama (4 soorten × 8 kleuren; aan = `pyjama.day` is vandaag),
     muziekdoosje (acht toetsen om zelf te spelen en drie eigen liedjes, geluid via
     WebAudio) en de groene knop "Slapen". Slapen kan pas als er vandaag 3 kamers af
-    zijn en de pyjama aan is. Daarna is het nacht (2,6 s) en begint een nieuwe dag:
-    `nights` + 1, make-up eraf, terug naar het huis.
+    zijn en de pyjama aan is. Daarna is het nacht (2,6 s, alle knoppen uit; nog een
+    tik telt niet, `isNight()`) en begint een nieuwe dag: `nights` + 1, make-up eraf,
+    terug naar het huis. Geluid pas na een tik (`unlockAudio()` in `tunes.js`).
   - Winkel: 16 dingen voor sterren (`shop.js`, sleutel `<soort>:<nummer>` in
     `game.owned`): per kledingcategorie de zevende soort (4–8 sterren; `FREE_ITEMS`
     in `data.js`), twee extra make-upkleuren per soort (3 sterren; `FREE_COLORS` in
@@ -266,7 +274,19 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
     door wat je hebt). Links kies je de groep, tik op iets en het meisje past het in
     de etalage; de groene knop is "Kopen" (geen Opnieuw). Gekocht = meteen aan, en
     zichtbaar in kast, badkamer en kapper.
-- De dag in het spel (`today()` in `ui.js`) = de echte datum plus het aantal nachten
+- Bediening voor kinderen die (nog) niet lezen: elke knop heeft een plaatje met het
+  woord klein eronder (`button(…, icon)` in `ui.js`; plaatjes uit `thumbs.js`,
+  `thumbs-hair.js`, `ingredient-icons.js`, `wudu-icons.js`, `toolIcon`s, `skyTile`,
+  `pyjamaThumb`). Na een foute tik licht de goede knop op (`pulse()`, klasse
+  `is-next`); bij een geblokkeerde "Klaar!" licht de knop op die eerst moet (derde
+  element van de regels in `rooms.js`, knoppen met `data-key` via `keyed()`) en staat
+  zijn plaatje in het meldinkje. Wat vandaag af is krijgt in het huis een gouden ster.
+  Meldinkje 3,5 s, tik = weg, `role="status"`.
+- Terug: rond ←-knopje linksboven (`.back-btn`). Een kamer of de foto openen doet
+  `history.pushState`; ← en de terugtoets van Android gaan via `history.back()` en
+  `popstate` één stap terug (foto dicht, tijdens de nacht niets, anders het huis).
+  Rechts in de balk 66 px vrij voor het deurtje van de website.
+- De dag in het spel (`today()` in `ui.js`) = de lokale datum plus het aantal nachten
   (`2026-11-09/3`; zonder nachten alleen de datum, zodat oude spellen blijven
   kloppen). Een nieuwe dag begint dus door te slapen én als het echt morgen is; dan
   zijn de knopen terug, moet je weer douchen, heeft het gezin lege hartjes en zijn
@@ -279,9 +299,12 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   + `doll-parts.js` de kleren als SVG (vak 300×520, één functie per soort, krijgt de
   verf `p`; de tas hangt aan de rechterhand; bij de baljurk `GOWN` geen tas en
   schoenen, wel pofmouwen) · `photo.js`
-  · `storage.js` · `ui.js` · `pointer.js` slepen met muis of vinger op een tekening
-  (rekent om naar de viewBox, met pointer capture omdat de SVG bij elke beweging
-  opnieuw wordt gemaakt; gebruik dit voor elke kamer waar je sleept) ·
+  · `storage.js` (kijkt de outfit per categorie na) · `ui.js` · `pointer.js` slepen
+  met muis of vinger op een tekening (rekent om naar de viewBox, met pointer capture
+  omdat de SVG bij elke beweging opnieuw wordt gemaakt; alleen de eerste vinger telt;
+  `p.touch` = vinger, dan staat het plaatje 40 hoger; `onFrame(draw)` tekent hooguit
+  één keer per beeldje; gebruik dit voor elke kamer waar je sleept) ·
+  `thumbs.js` + `thumbs-hair.js` plaatjes van kleding, kapsels en haarspullen ·
   decor: `decor.js` kamerdecor · `house-icons.js` icoontjes in het huis ·
   kapper: `salon.js` scherm en slepen · `salon-panel.js` knoppen en meter ·
   `salon-actions.js` wat het gereedschap doet (losse functies, zo te testen) ·
@@ -290,12 +313,14 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   het lijf), lokken en vallende stukjes ·
   badkamer: `bathroom.js` scherm · `bath.js` plekken en wassen (losse functies) ·
   `bath-scene.js` douche en spiegel · `bath-tools.js` spullen · `makeup.js` kleuren ·
-  keuken: `kitchen.js` scherm · `cook.js` stappen, roeren, op tijd zijn (losse
+  keuken: `kitchen.js` scherm · `kitchen-panel.js` paneel · `ingredient-icons.js` ·
+  `cook.js` stappen, roeren, op tijd zijn (losse
   functies) · `cook-scene.js` aanrecht, recept, kom · `cook-stove.js` fornuis, balk,
   gerechten · `recipes.js` ingrediënten en recepten ·
   gezin: `family-room.js` scherm en wat je vasthoudt · `family.js` hartjes en wat
   elke actie doet (losse functies) · `family-scene.js` woonkamer en de figuren ·
-  moskee: `mosque-room.js` scherm · `mosque.js` wudu, gebeden, tawaf en sa'i (losse
+  moskee: `mosque-room.js` scherm · `mosque-panel.js` paneel · `wudu-icons.js` ·
+  `mosque.js` wudu, gebeden, tawaf en sa'i (losse
   functies) · `mosque-text.js` uitleg · `mosque-scene.js` wasplaats en de lucht per
   gebed · `mecca-scene.js` tawaf, Zamzam en sa'i ·
   slaapkamer: `bedroom.js` scherm en slapen · `bedroom-scene.js` kamer, pyjama's en
@@ -308,9 +333,11 @@ https://claude.ai/artifact/PEg7qC9eBYx5Fp4X2mryHq (Kledingkast, Kapper, Het huis
   links, tekening, paneel met meter, uitleg, Opnieuw en Klaar!); onderdelen heten
   `<kamer>-nav`, `-stage`, `-title`, `-label`, `-meter`, `-hint`, `-reset`, `-done`.
   Alleen het huis en de kast staan nog in `index.html`.
-  CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand en liggend),
-  `kapper.css`, `bad.css`, `keuken.css`, `moskee.css`, `winkel.css`, `overlay.css`.
-  Elk scherm is één schermhoogte; knoppen altijd in beeld.
+  CSS: `base.css`, `huis.css`, `kast.css`, `kast-phone.css` (staand),
+  `knoppen.css` (plaatjesknoppen, ←, oplichten, grijs), `liggend.css` (lage tablet of
+  telefoon liggend: knoppen minstens 44 px, kolommen schuiven), `kapper.css`,
+  `bad.css`, `keuken.css`, `winkel.css`, `overlay.css`. Elk scherm is één
+  schermhoogte; knoppen altijd in beeld.
 - Nieuwe kamer = `roomScreen({...})` bovenaan de module van de kamer, `init…`,
   `show…` en de regel voor "Klaar!" in `rooms.js`, knop `data-room` in het huis, en
   een `<kamer>Day` in `storage.js` voor de sterren. Nieuwe bestanden in `public/` ziet Vite pas
@@ -345,14 +372,20 @@ bordspel, daarom heet dit spel Tiktak Boom Bom. Maker voorlopig "Al Qalam kids".
 
 - 1 t/m 5 spelers plus computerkinderen, samen 6. Toetsen (`input.js`), ver uit elkaar en
   in de volgorde van de kring: 1 = →; 2 = A, →; 3 = A, spatie, →; 4 = A, G, L, →; 5 = A, G,
-  spatie, L, →. Tablet: per speler een strook. De bom gaat met de klok mee; wie onderaan
-  staat, ziet hem dus naar links gaan (pijlen op de grond).
+  spatie, L, → (`e.code`). Tablet: tik bij je eigen poppetje (`nearestHuman()` in `scene.js`
+  zoekt de dichtstbijzijnde speler; met 1 speler telt elke tik). Elke speler heeft een kleur
+  (`PLAYER_COLORS` in `data.js`): ring onder het poppetje, naam, toetsen en stipjes op het
+  startscherm, de kring waar je tikt (grijs als het niet jouw beurt is) en de stand op het
+  eindscherm. ← of Escape = pauze (Verder / Spelers kiezen); de geluidsknop staat alleen in
+  menu, pauze en eindscherm. De bom gaat met de klok mee; wie onderaan staat, ziet hem dus
+  naar links gaan (pijlen op de grond).
 - Lont 12–30 s, knippert steeds sneller. Druk je terwijl de bom nog naar je toe vliegt, dan
-  valt hij (0,8 s kwijt). Ontploft hij in de lucht, dan ligt de ontvanger eruit. Het spel
+  valt hij (0,8 s kwijt); in de laatste 0,16 s van de vlucht telt een druk al als goed. Ontploft hij in de lucht, dan ligt de ontvanger eruit. Het spel
   stopt zodra er één over is of geen enkele speler meer meedoet.
 - `game.js` regels (zonder tekenen, zo te testen) · `game-setup.js` · `result.js` · `cpu.js` ·
   `scene.js` + `scene-bg.js` + `scene-hud.js` · `kid.js` · `bomb.js` · `fx.js` · `sound.js` ·
-  `input.js` · `app.js` · `controls.css`. Thumbnail en deelbeeld zijn gemaakt uit de eigen tekeningen.
+  `input.js` · `presses.js` (toets of tik → speler, kring) · `menu.js` (startscherm,
+  eindscherm, geluidsknop) · `app.js` · `controls.css`. Thumbnail en deelbeeld zijn gemaakt uit de eigen tekeningen.
 
 ## Sterrensprong (nieuw spel, november 2026)
 
@@ -363,13 +396,33 @@ een nachtstad. Geen muziek (keuze van de gebruiker). Maker voorlopig "Al Qalam k
 homepage in Lichting 4.
 
 - Eén knop (spatie, pijl omhoog, W, klik, tik); vasthouden blijft springen. Drie werelden, elk
-  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (89, 129 en 177 s).
-  Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13). De volgende wereld gaat open na
-  100% met Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden,
-  beste percentage.
-- Start: 5 levens (`tries.js`) en checkpoints (gouden ruitjes) op de veilige plek het dichtst bij
-  20, 40, 60 en 80%. Botsen = een leven minder en terug naar het laatste checkpoint; levens op = terug
-  naar 0% met weer 5 levens.
+  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (88, 129 en 181 s;
+  lengte 846, 1403 en 2244 blokken). Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13).
+  Wereld 1 heeft geen drie punten op een rij meer (alleen `row(1)`/`row(2)`); wereld 3 heeft
+  minstens 4 blokken rust tussen stukjes ('De top' 5). De volgende wereld gaat open na 100% met
+  Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden, beste
+  percentage en `seen` (welke handjes al getoond zijn); altijd via `patchSave` (voegt samen).
+- Invoer (`input.js`): elke vinger telt apart (pointerId). Na een botsing, tijdens het klaarstaan
+  en na de pauze roept het spel `requireRelease()` aan: een vinger of toets die nog neer is,
+  springt pas weer na loslaten, en tikken tijdens het klaarstaan tellen niet. In het menu start
+  alleen de Start-knop of het toetsenbord het spel, niet een tik naast het menu.
+- Start: 5 levens (`tries.js`) en checkpoints (gouden ruitjes op de balk, uit
+  `level.lifeCheckpoints`) op de veilige plek het dichtst bij `lifeAt` van de wereld: wereld 1
+  17, 33, 50, 67 en 83%, de andere 20, 40, 60 en 80%. Een checkpoint ligt
+  `max(3, snelheid × 0,8)` blokken vóór het stukje (hooguit rust − 0,6). Botsen = een leven minder
+  en terug naar het laatste checkpoint; levens op = terug naar 0% met weer 5 levens.
+- In een tunnel of onder een blok stoot je lopend je hoofd (`physics.js` + `settleWalking` in
+  `motion.js`) in plaats van af te gaan; tegen de zijkant ben je nog steeds af.
+- Beeld zonder lezen: meldingen (`toast.js`) zijn een groot plaatje met een woord eronder, in een
+  rij (minstens 0,8 s elk; poorten en checkpoints eerst). Plaatjes in `icons.js` (hartje,
+  gebroken hartje, ruitjes, ster met getal, slot, ▶, ⌂, ⏸, ∞, voortgangsring), handjes in
+  `hint.js` (tik, vasthouden, tik naar beneden, niet tikken). `tutorial.js`: de eerste keer een
+  handje vóór de eerste punt, ring, tunnel en de eerste vlieg- en ondersteboven-poort; bewaard
+  in `seen` zodra je er voorbij bent.
+- Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
+  of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start met
+  levens) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + hartje,
+  Oefenen = ∞ + groen ruitje.
 - Vliegen (`patterns-fly.js`, `carpet.js`, `portals3d.js`): door een roze poort op het vliegende
   tapijt, vasthouden = omhoog, loslaten = zakken; een mint poort = weer lopen. Tussen een plafond
   (onderkant op 7) en doornen door openingen van 3 (makkelijk) of 2 blokken hoog. Langs de
@@ -395,12 +448,17 @@ homepage in Lichting 4.
 - Nieuw parcours: stukjes in `patterns.js` rekenen met de snelheid, de volgorde staat in
   `levels.js`. Controleer na een wijziging met een zoeker over `physics.js` (zonder beeld, in
   Node) of elke wereld én elk checkpoint te halen is; het hulpscript staat niet in de repo.
-- `game.js` spelverloop · `physics.js` spelregels (zonder beeld) · `config.js` · `levels.js` +
+- `game.js` spelverloop en toestand · `round.js` één poging (botsen, checkpoints, finish) ·
+  `pause.js` · `physics.js` spelregels (zonder beeld) · `config.js` · `levels.js` +
   `patterns.js` · `view.js` alles in 3D samen · `world.js` renderer, camera, vloer, muur,
   kleurzones · `scenery.js` stad en maan · `obstacles3d.js` + `neon.js` · `boosts3d.js` ringen
   en veren · `player3d.js` lantaarn · `shatter.js` · `fx.js` + `events.js` · `pattern.js`
   texturen · `menu.js` + `menu.css` · `skins.js` kleuren · `progress.js` + `storage.js` ·
-  `hud.js` · `input.js`. Thumbnail en deelbeeld zijn gerenderd uit de eigen 3D-wereld.
+  `hud.js` (balk, levens, eindscherm) · `toast.js` · `icons.js` · `hint.js` · `tutorial.js` ·
+  `input.js` · `quality.js` (trage computer: na 2 s meten, > 20 ms per beeld → 1 pixel per
+  pixel; gladde randen alleen bij devicePixelRatio 1) · CSS `style.css`, `menu.css`,
+  `overlay.css` (eindscherm, pauze, handjes, minder beweging). Thumbnail en deelbeeld zijn
+  gerenderd uit de eigen 3D-wereld.
 
 ## Volgende opdracht: website-upgrade
 
@@ -493,7 +551,7 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   · `shower-scene.js` tekening en gereedschap · `shower-room.js` scherm · `pointer.js`
   (uit Mijn Leven) · `bathingPrincess()` in `princess.js`.
 - Vrijspelen: per soort `prices` in `data.js` (null = meteen van jou, anders [schelpen,
-  kristallen]); tik op iets met een slotje en je betaalt met wat je op het strand vond.
+  kristallen, parels]); tik op iets met een slotje, pas het en koop het (zie Verbeterronde).
   Vrijgespeeld staat in `game.owned` (`'jurk:4'`); `hasItem()`. Draagt een oude bewaarde
   outfit iets op slot, dan zet `loadGame()` dat terug naar het begin.
 - Zwemmen (wens van de leerling: eerst omkleden, dan de zee in): knop Zwemmen opent het
@@ -508,7 +566,7 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   kort haar, tuniek, lange broek, laarzen, cape, kroontje; zelfde gezicht zonder wimpers)
   en de eerste prinses die je zelf niet bent, in een paarse glitterjurk. Elk met een
   lantaarn. Ze zoeken samen (wat zij vinden telt mee), lopen langzamer (95) en rusten 4 s
-  na een vondst; "Adam vond een schelp!" in een wolkje. Alleen vrienden: alles in ±42 s.
+  na een vondst; wat ze vonden staat als plaatje in een wolkje. Alleen vrienden: alles in ±42 s.
   `beach-friends.js` regels · tekenen in `beach.js` en `drawSay()` in `beach-draw.js`.
 - Voor kinderen die (nog) niet lezen (stap 1 van 4, nov 2026): overal een plaatje met het woord
   klein eronder. Beginscherm, Klaar, Verras me en Terug krijgen een icoon (`pictures.js`,
@@ -518,13 +576,52 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   kettingen, voeten = schoenen, de rest = jurk); een wijzend handje laat dat zien tot de eerste
   tik. CSS: `pictures.css`, `kleed-fit.css` (raster binnen de schermhoogte, Klaar! altijd in
   beeld).
-- Haar per prinses (stap 2): soort "Haar" tussen Kroon en Ketting, zes kapsels (`HAIR_STYLES`:
-  golf, krul, vlecht, steil, staart, knot; staart en knot in `hair.js`) en negen kleuren
-  (`HAIR_COLORS`, ook roze, paars, blauw, zilver). Bewaard in `game.looks[nummer]` (`hair-pick.js`,
-  gecontroleerd in `validLooks()`); `setLooks()` in `princess.js` laat elke tekening dat haar
-  gebruiken. Tik op hoofd of lange lokken = Haar, bovenop het hoofd = Kroon. Volgende stappen,
-  elk na akkoord: 3 gezicht (ogen, wimpers, mond, lippenstift, blosjes, sproetjes, glitter) per
-  prinses, 4 oorbellen, armband, haarversiering, patroon op de jurk.
+- Haar per prinses (stap 2): soort "Haar", zes kapsels (`HAIR_STYLES`: golf, krul, vlecht, steil,
+  staart, knot; staart en knot in `hair.js`) en negen kleuren (`HAIR_COLORS`). Bewaard in
+  `game.looks[nummer]`; `setLooks()` in `princess.js` laat elke tekening dat haar gebruiken.
+- Verbeterronde (nov 2026, branch `lichting4-verbeteren`):
+  - Kleedhokje met acht soorten: Jurk (+ rij Patroon), Kroon, Haar (+ rij Haarversiering),
+    Gezicht, Ketting, Sieraden (oorbellen + armband), Schoenen, Zwemkleding. De soorten op het
+    scherm staan in `SCREEN_CATS` (`dressing.js`); per rij een kleurrij met het icoon van wat je
+    kleurt (strook die opzij schuift, rondjes 36 px). Nieuwe soorten in `CATS` (`data.js`):
+    `patroon`, `oorbellen`, `armband`, `speld`; nummer 0 = geen/effen (dan geen kleurrij).
+    Tekeningen in `extras.js` (oorbellen ná de lokken, armband om de linkerpols, versiering
+    opzij van het hoofd; bij een staart vervangt hij het elastiekje, `replacesTie`); patroon =
+    `PATTERNS` uit `swim.js` in de omtrek van de rok (`outline` per jurk, `dressPattern()`).
+  - Gezicht per prinses (in `game.looks`, net als het haar): ogen (`EYE_COLORS`), lippen
+    (`LIP_COLORS`), mond (`MOUTHS`, 0 = de oude glimlach), wimpers kort/lang, blosjes,
+    sproetjes, glitter; standaard in `FACE`. `face()` in `princess.js` (de prinsen gebruiken de
+    standaard). `hair-pick.js`: `lookOf`, `validLooks()` (per veld nakijken) en
+    `lookChoices('haar' | 'gezicht')`. `outfit-pick.js`: de knoppen en kleurrijen voor wat ze
+    aanheeft.
+  - Vrijspelen = eerst passen, dan kopen (`unlock.js`): tik op iets met een slotje en de prinses
+    past het (niet bewaard); in het notitievak het plaatje met een gouden knop met de prijs. Te
+    weinig: kruisje, wat je nog mist en een knop naar strand of zee. Kopen = "ting" en
+    sterretjes. Elke andere tik zet het passen terug.
+  - Opslag: `validOutfit()` in `storage.js` kijkt per soort keuze en kleur na; wat ontbreekt of
+    niet klopt komt uit de standaard, de rest blijft (de oude zwemkleur `#5ec8ff` stond niet in
+    `SWATCHES` en gooide eerder de hele outfit weg). `princessSvg()` vult zelf ontbrekende
+    sleutels aan; het vriendinnetje op het strand komt uit `friendDress()` (`sprites.js`).
+  - Terugknop: één ronde ←-knop linksboven (`back.js`, zoals Mario Party; Esc doet hetzelfde):
+    kleedhokje/strand/douche → begin, zee → kleedhokje bij Zwemkleding. Terug op de
+    eindschermen doet dezelfde stap.
+  - Strand en zee: ook één korte tik (< 250 ms, < 15 px) = daarheen lopen/zwemmen, met een
+    kloppend ringetje (`beach-input.js`, `drawGoal()`); vasthouden blijft. De vinger staat nu
+    op de voeten (geen `lift`), en vlak bij een schelp of kristal loopt ze naar dat ding
+    (`snap()`). Boven een oester wachten geeft een parel (`sea-world.js`). Pijltjes werken
+    alleen op het eigen scherm. Figuren worden één keer naar een canvas gezet (`sprites.js`,
+    scherpte hooguit 1,5).
+  - Plaatjes i.p.v. tekst: `icons.js` (alle iconen, ook ←, ↻, kruisje, vinkje, handje),
+    `pictures.js` (`itemPicture`, `lookPicture`, `hoodPicture`, `decorate`, `pictureNote`,
+    `countPart`). Voortgang als icoon + 3/10, wolkje boven een vriendje met de schelp of het
+    kristal, bordjes op de deurtjes van het strandhuisje, capuchon aan/uit als twee plaatjes,
+    douchespullen als tekening. Douche: sleep je met het verkeerde ding, dan licht de knop van
+    het goede op (`neededAt()`); schoon = de knop naar het kleedhokje klopt.
+  - Tikken op de prinses (`doll-touch.js`, `zoneAt()`): naast haar = niets, gezicht = Gezicht,
+    oor of pols = Sieraden. Geluid gaat aan bij de eerste tik (`sound.js`).
+  - CSS: `kleed-fit.css` (maten, kleurrijen, liggend alleen iconen), `extra.css` (terugknop,
+    meldingen, douche-knipperen, eindschermen). Gemeten en (nog) niet nodig: de douche en het
+    kleedhokje sneller tekenen (< 1 ms per beweging, < 10 ms per tik op een laptop).
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.
