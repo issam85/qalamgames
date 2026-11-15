@@ -63,3 +63,35 @@ export function sparkle(ctx, x, y, s, color) {
   ctx.quadraticCurveTo(x, y, x, y - s);
   ctx.fill();
 }
+
+// een rond bordje boven een deurtje van het strandhuisje: kind = 'douche' of 'kleed'
+export function doorSign(ctx, kind, x, y) {
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(x, y, 15, 0, 6.28);
+  ctx.fill();
+  ctx.strokeStyle = '#5a2a5a';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  if (kind === 'douche') {
+    ctx.moveTo(x - 8, y - 4);
+    ctx.quadraticCurveTo(x, y - 14, x + 8, y - 4);
+    ctx.closePath();
+    ctx.fillStyle = '#9aa3b2';
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#2e8fd8';
+    [-5, 0, 5].forEach((dx) => ctx.fillRect(x + dx - 1, y, 2, 7));
+    return;
+  }
+  ctx.moveTo(x - 3, y - 10);
+  ctx.lineTo(x + 3, y - 10);
+  ctx.lineTo(x + 4, y - 4);
+  ctx.lineTo(x + 10, y + 10);
+  ctx.lineTo(x - 10, y + 10);
+  ctx.lineTo(x - 4, y - 4);
+  ctx.closePath();
+  ctx.fillStyle = '#ff8ac8';
+  ctx.fill();
+  ctx.stroke();
+}

@@ -7,18 +7,21 @@ import { validLooks } from './hair-pick.js';
 const KEY = 'schelpkristal';
 const COLORS = SWATCHES.map(([hex]) => hex);
 
-// een ouder spel had nog geen zwemkleding: wat ontbreekt komt uit de standaard
-function fillOutfit(saved) {
-  if (!saved || !saved.choice || !saved.color) return null;
+// Per soort nakijken: een keuze en een kleur die bestaan. Wat ontbreekt (een ouder spel had
+// nog geen zwemkleding of sieraden) of niet meer klopt (de oude zwemkleur #5ec8ff), komt uit
+// de standaard; de rest blijft zoals het was.
+export function validOutfit(saved) {
   const def = defaultOutfit();
-  return { choice: { ...def.choice, ...saved.choice }, color: { ...def.color, ...saved.color }, hood: saved.hood === true };
-}
-
-function validOutfit(outfit) {
-  if (!outfit) return false;
-  return CATS.every((cat) => Number.isInteger(outfit.choice[cat.key])
-    && outfit.choice[cat.key] >= 0 && outfit.choice[cat.key] < cat.items.length
-    && (COLORS.includes(outfit.color[cat.key]) || (cat.key === 'ketting' && outfit.color[cat.key] === MATCH)));
+  if (!saved || typeof saved !== 'object') return def;
+  const choice = saved.choice || {};
+  const color = saved.color || {};
+  CATS.forEach(({ key, items }) => {
+    const i = choice[key];
+    if (Number.isInteger(i) && i >= 0 && i < items.length) def.choice[key] = i;
+    if (COLORS.includes(color[key]) || (key === 'ketting' && color[key] === MATCH)) def.color[key] = color[key];
+  });
+  def.hood = saved.hood === true;
+  return def;
 }
 
 const count = (n) => (Number.isInteger(n) && n >= 0 ? n : 0);
@@ -32,12 +35,12 @@ export function loadGame() {
   }
   const game = {
     princess: Number.isInteger(saved.princess) && saved.princess >= 0 && saved.princess < PRINCESSES.length ? saved.princess : 0,
-    outfit: validOutfit(fillOutfit(saved.outfit)) ? fillOutfit(saved.outfit) : defaultOutfit(),
-    looks: validLooks(saved.looks), // haar per prinses
+    outfit: validOutfit(saved.outfit),
+    looks: validLooks(saved.looks), // haar en gezicht per prinses
     shells: count(saved.shells),
     crystals: count(saved.crystals),
     pearls: count(saved.pearls),
-    owned: Array.isArray(saved.owned) ? saved.owned.filter((key) => CATS.some((c) => {
+    owned: Array.isArray(saved.owned) ? saved.owned.filter((key) => typeof key === 'string' && CATS.some((c) => {
       const [cat, i] = key.split(':');
       return c.key === cat && Boolean(c.prices[Number(i)]);
     })) : [],

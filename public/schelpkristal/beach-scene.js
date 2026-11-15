@@ -3,6 +3,7 @@
 // deel wordt één keer getekend in twee lagen (background: achter de golven en vóór de
 // golven), de maan en de golven elk beeld opnieuw (sea).
 import { WORLD } from './beach-world.js';
+import { doorSign } from './beach-items.js';
 
 export const H = 540;
 export const SHORE = 300; // waar de zee het zand raakt
@@ -66,13 +67,11 @@ function hut(ctx) {
   ctx.lineTo(x + w / 2, 140);
   ctx.lineTo(x + w + 24, 206);
   ctx.fill();
-  [['Douche', x + 30, '#2e8fd8'], ['Kleedhokje', x + 170, '#ff8ac8']].forEach(([label, dx, c]) => {
+  // de deurtjes met een bordje erboven: een douche en een jurk (zonder woorden)
+  [['douche', x + 30, '#2e8fd8'], ['kleed', x + 170, '#ff8ac8']].forEach(([kind, dx, c]) => {
     ctx.fillStyle = c;
     ctx.fillRect(dx, 240, 100, 110);
-    ctx.fillStyle = '#fff';
-    ctx.font = '700 17px Fredoka, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(label, dx + 50, 232);
+    doorSign(ctx, kind, dx + 50, 226);
   });
   ctx.fillStyle = '#fff3a3';
   ctx.beginPath();

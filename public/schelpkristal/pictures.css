@@ -95,8 +95,6 @@
 }
 
 @media (max-width: 700px) {
-  .pill.with-pic .name { display: none; }
-
   .cat {
     flex-direction: column;
     gap: 0;

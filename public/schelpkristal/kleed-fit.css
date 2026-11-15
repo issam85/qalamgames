@@ -42,3 +42,40 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .tap-hand { animation: none; } }
+
+/* kleurrijen: per rij het icoon van wat je kleurt, de kleuren in een strook die opzij
+   schuift; elk rondje minstens 36 px, ook op een kleine tablet */
+.swatches { flex-direction: column; flex-wrap: nowrap; gap: 4px; }
+.color-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.row-ico svg { display: block; width: 30px; height: 30px; }
+.strip { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding: 4px 3px; }
+.strip .swatch { flex: none; width: 36px; height: 36px; border-width: 3px; }
+
+/* kopje boven een rij in een soort met twee rijen (jurk + patroon, oorbellen + armband) */
+.row-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; font-weight: 800; color: #c2419a; font-size: 14px; }
+.row-head svg { width: 24px; height: 24px; }
+
+/* acht soorten: op een lage tablet kleiner, zodat ze zonder schuiven passen */
+@media (min-width: 701px) and (max-height: 700px) {
+  .cat { padding: 4px 10px; font-size: 13px; }
+  .cat svg { width: 26px; height: 26px; }
+  .cats { gap: 5px; }
+}
+
+/* telefoon staand: alleen de iconen, acht naast elkaar */
+@media (max-width: 700px) {
+  .cats { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .cat { padding: 6px 0; justify-content: center; min-height: 44px; }
+  .cat .name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  #douche-tools { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* telefoon of kleine tablet liggend: soorten alleen als icoon, zodat het paneel meer ruimte
+   heeft voor de plaatjes */
+@media (max-height: 520px) and (orientation: landscape) {
+  .kleed { grid-template-columns: 62px minmax(0, 1fr) 340px; }
+  .cats { gap: 4px; }
+  .cat { justify-content: center; padding: 3px; }
+  .cat .name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  #kleed-title { display: none; }
+}

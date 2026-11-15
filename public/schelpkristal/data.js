@@ -1,6 +1,7 @@
 // De prinsessen, de soorten in het kleedhokje en de kleuren. De volgorde van de
-// soorten hoort bij de tekeningen in dresses.js, jewels.js en swim.js. prices: per soort
-// null (meteen van jou) of [schelpen, kristallen, parels] om hem vrij te spelen.
+// soorten hoort bij de tekeningen in dresses.js, jewels.js, extras.js en swim.js. prices:
+// per soort null (meteen van jou) of [schelpen, kristallen, parels] om hem vrij te spelen.
+// Bij oorbellen, armband, haarversiering en patroon is nummer 0 "geen" (of effen).
 export const PRINCESSES = [
   { name: 'Lina', skin: '#f6d2b4', hair: '#f2c94c', style: 'golf', eyes: '#3d7ad6' },
   { name: 'Sara', skin: '#9c6644', hair: '#24160f', style: 'krul', eyes: '#6b3e1e' },
@@ -36,6 +37,16 @@ export const CATS = [
     prices: [null, null, null, [5, 0], [6, 1], [8, 1]],
   },
   { key: 'zwem', label: 'Zwemkleding', items: ['Effen', 'Bloemen', 'Golven', 'Sterren'], prices: [null, null, null, null] },
+  { key: 'patroon', label: 'Patroon', items: ['Effen', 'Bloemen', 'Golven', 'Sterren'], prices: [null, null, [4, 1], [6, 2]] },
+  {
+    key: 'oorbellen', label: 'Oorbellen', items: ['Geen', 'Knopjes', 'Hartjes', 'Sterren', 'Druppels', 'Parels'],
+    prices: [null, null, null, [5, 1], [6, 2], [0, 0, 4]],
+  },
+  { key: 'armband', label: 'Armband', items: ['Geen', 'Kralen', 'Gouden band', 'Bedeltjes', 'Parels'], prices: [null, null, [4, 1], [6, 1], [0, 0, 4]] },
+  {
+    key: 'speld', label: 'Haarversiering', items: ['Geen', 'Strik', 'Bloem', 'Haarband', 'Vlinder', 'Parelspeld'],
+    prices: [null, null, null, [4, 2], [6, 1], [0, 0, 3]],
+  },
 ];
 
 // is deze soort van jou? (meteen, of vrijgespeeld; owned = ['jurk:4', ...])
@@ -54,8 +65,11 @@ export const MATCH = 'jurk';
 
 export function defaultOutfit() {
   return {
-    choice: { jurk: 0, kroon: 0, ketting: 0, schoenen: 2, zwem: 0 },
-    color: { jurk: '#ff8ac8', kroon: '#ffd43b', ketting: MATCH, schoenen: '#8fd3ff', zwem: '#5ec8ff' },
+    choice: { jurk: 0, kroon: 0, ketting: 0, schoenen: 2, zwem: 0, patroon: 0, oorbellen: 0, armband: 0, speld: 0 },
+    color: {
+      jurk: '#ff8ac8', kroon: '#ffd43b', ketting: MATCH, schoenen: '#8fd3ff', zwem: '#8fd3ff',
+      patroon: '#ffffff', oorbellen: '#ffd43b', armband: '#ffd43b', speld: '#ff8ac8',
+    },
     hood: false, // capuchon op de burkini
   };
 }
@@ -69,5 +83,19 @@ export function randomOutfit(owned, hood = false) {
   });
   outfit.color.kroon = pick(['#ffd43b', '#c0c6d4', '#ffc2e0']);
   outfit.color.ketting = MATCH;
+  outfit.color.patroon = pick(['#ffffff', '#ffd43b', '#ff8ac8']);
   return outfit;
 }
+
+// het gezicht per prinses (bewaard in game.looks, net als het haar): ogen, lippen, mond
+export const EYE_COLORS = [
+  ['#3d7ad6', 'blauw'], ['#6b3e1e', 'bruin'], ['#2f7d4f', 'groen'], ['#7a4fc2', 'paars'],
+  ['#2ec4c4', 'turkoois'], ['#8a8f9c', 'grijs'], ['#c98a2b', 'amber'], ['#e0559a', 'roze'],
+];
+export const LIP_COLORS = [
+  ['#e8605f', 'rood'], ['#ff8ac8', 'roze'], ['#c2419a', 'framboos'], ['#d98a7a', 'naturel'],
+  ['#b36bff', 'paars'], ['#ff8a3d', 'koraal'],
+];
+// nummer 0 is de mond die de prinsessen altijd al hadden
+export const MOUTHS = ['Glimlach', 'Lach', 'Kusje'];
+export const FACE = { lips: '#e8605f', mouth: 0, lashes: 'kort', blush: true, freckles: false, glitter: false };

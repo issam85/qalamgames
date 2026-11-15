@@ -7,7 +7,7 @@ import { WORLD } from './beach-world.js';
 const SPEED = 95; // veel langzamer dan de prinses (260), zodat er voor haar genoeg overblijft
 const REST = 4; // seconden rust na een vondst
 const REACH = 40;
-const SAY = 1.6; // zo lang staat "… vond een schelp!" boven het vriendje
+const SAY = 1.6; // zo lang staat wat het vond in een wolkje boven het vriendje
 
 // waar de vrienden beginnen: links en rechts van de prinses (die staat op x = 300)
 const STARTS = [[150, WORLD.start - 60], [430, WORLD.start - 70], [500, WORLD.start + 30]];
@@ -66,9 +66,8 @@ export function friendsStep(friends, walk, dt, now) {
   return found;
 }
 
-// wat er boven het vriendje staat, of '' als het niets zegt
+// wat het vriendje net vond (voor het wolkje erboven), of null
 export function saying(f, walk) {
-  if (walk.time - f.said > SAY) return '';
-  const it = walk.items.find((i) => i.by === f.name && i.got === f.said);
-  return it ? `${f.name} vond ${it.kind === 'shell' ? 'een schelp' : 'een kristal'}!` : '';
+  if (walk.time - f.said > SAY) return null;
+  return walk.items.find((i) => i.by === f.name && i.got === f.said) || null;
 }

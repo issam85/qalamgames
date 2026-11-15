@@ -19,3 +19,10 @@ export function swatch(hex, name, pressed, onClick) {
   btn.title = name;
   return btn;
 }
+
+// een knop met een plaatje en het woord klein eronder (voor wie nog niet leest)
+export function withPicture(btn, picture, label) {
+  btn.innerHTML = `<span class="pic">${picture}</span><span class="name">${label}</span>`;
+  btn.setAttribute('aria-label', label);
+  return btn;
+}

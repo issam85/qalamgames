@@ -8,6 +8,7 @@ const SPEED = 260; // beeldpunten per seconde
 const REACH = 42; // zo dichtbij raap je iets op
 const GAP = 95; // zo ver liggen de dingen minstens uit elkaar
 const FIRST = 520; // vóór het strandhuisje ligt niets
+const SNAP = 45; // vinger of tik zo dicht bij een schelp of kristal: dan loopt ze naar dat ding
 
 export const SHELL_COLORS = ['#ffb3c7', '#ffd8b0', '#fff1e0', '#f7a6a0', '#e6c3ff'];
 export const CRYSTAL_COLORS = ['#b38bff', '#7fd8ff', '#ff8ad8', '#7dffcf', '#8aa2ff'];
@@ -34,6 +35,20 @@ export function newWalk(rand = Math.random) {
 export const left = (walk, kind) => walk.items.filter((it) => it.kind === kind && !it.got).length;
 export const allFound = (walk) => walk.items.every((it) => it.got);
 
+// is de vinger vlak bij iets dat er nog ligt? dan precies naar dat ding
+export function snap(walk, target) {
+  if (!target) return null;
+  let best = null;
+  walk.items.forEach((it) => {
+    const d = Math.hypot(it.x - target.x, it.y - target.y);
+    if (!it.got && d < SNAP && (!best || d < best.d)) best = { x: it.x, y: it.y, d };
+  });
+  return best ? { x: best.x, y: best.y } : target;
+}
+
+// is ze echt verplaatst? (vast tegen de rand telt niet als lopen)
+export const moved = (from, to, len, max) => len > 0 && Math.hypot(to.x - from.x, to.y - from.y) >= Math.min(0.5, max * 0.1);
+
 // Een stap: dir = { x, y } van de toetsen (-1, 0 of 1), of target = { x, y } waar de vinger
 // is. Geeft terug wat er net is opgeraapt.
 export function step(walk, dir, target, dt) {
@@ -45,14 +60,15 @@ export function step(walk, dir, target, dt) {
     if (Math.hypot(dx, dy) < 8) dx = dy = 0;
   }
   const len = Math.hypot(dx, dy);
-  walk.moving = len > 0;
+  const from = { x: walk.x, y: walk.y };
   walk.time += dt;
-  if (walk.moving) {
+  if (len > 0) {
     const move = Math.min(SPEED * dt, target ? len : Infinity);
     walk.x = Math.max(60, Math.min(WORLD.w - 60, walk.x + (dx / len) * move));
     walk.y = Math.max(WORLD.top, Math.min(WORLD.bottom, walk.y + (dy / len) * move * 0.7));
     if (Math.abs(dx) > 1) walk.face = dx > 0 ? 1 : -1;
   }
+  walk.moving = moved(from, walk, len, SPEED * dt);
   const picked = walk.items.filter((it) => !it.got && Math.hypot(it.x - walk.x, (it.y - walk.y) * 1.4) < REACH);
   picked.forEach((it) => { it.got = walk.time; });
   return picked;

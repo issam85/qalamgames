@@ -26,3 +26,9 @@ export function wash(spots, p, toolKey) {
 
 // is deze stap (spons, douche of handdoek) overal gedaan?
 export const stepDone = (spots, toolKey) => spots.every((s) => s > STEPS.indexOf(toolKey));
+
+// wat is er nodig op de plek bij p (die nog niet schoon is)? null = daar is niets te doen
+export function neededAt(spots, p) {
+  const i = SPOTS.findIndex(([x, y], k) => spots[k] < CLEAN && Math.hypot(p.x - x, p.y - y) < REACH);
+  return i < 0 ? null : STEPS[spots[i]];
+}

@@ -1,6 +1,8 @@
 // De zee zonder tekenen (zo te testen): zwemmen, de oesters op de bodem die open en
 // dicht gaan, en parels pakken. Logisch vak 960 × 540; de zee is breder dan het scherm.
 // x, y = het midden van de prinses.
+import { moved } from './beach-world.js';
+
 export const SEA = { w: 2400, surface: 170, top: 182, bottom: 452, bed: 492 };
 export const OYSTERS = 8;
 const SPEED = 220;
@@ -38,14 +40,15 @@ export function swimStep(swim, dir, target, dt) {
     if (Math.hypot(dx, dy) < 8) dx = dy = 0;
   }
   const len = Math.hypot(dx, dy);
-  swim.moving = len > 0;
+  const from = { x: swim.x, y: swim.y };
   swim.time += dt;
-  if (swim.moving) {
+  if (len > 0) {
     const move = Math.min(SPEED * dt, target ? len : Infinity);
     swim.x = Math.max(80, Math.min(SEA.w - 80, swim.x + (dx / len) * move));
     swim.y = Math.max(SEA.top, Math.min(SEA.bottom, swim.y + (dy / len) * move));
     if (Math.abs(dx) > 1) swim.face = dx > 0 ? 1 : -1;
   }
+  swim.moving = moved(from, swim, len, SPEED * dt);
   // belletjes onder water stijgen op tot het wateroppervlak
   if (swim.time > swim.nextBubble && swim.y > SEA.top + 20) {
     swim.bubbles.push({ x: swim.x + swim.face * 70, y: swim.y - 10, r: 3 + Math.random() * 4 });
@@ -53,9 +56,11 @@ export function swimStep(swim, dir, target, dt) {
   }
   swim.bubbles.forEach((b) => { b.y -= 60 * dt; });
   swim.bubbles = swim.bubbles.filter((b) => b.y > SEA.surface);
-  // een parel pak je bij de hand: iets vóór het midden van de prinses
+  // een parel pak je bij de hand (iets vóór het midden van de prinses), of als je er
+  // vlak boven zwemt en wacht tot de oester opengaat
   const hand = { x: swim.x + swim.face * 60, y: swim.y + 10 };
-  const picked = swim.oysters.filter((o) => !o.got && openness(o, swim.time) > 0.5 && Math.hypot(o.x - hand.x, o.y - 20 - hand.y) < REACH);
+  const near = (o) => Math.hypot(o.x - hand.x, o.y - 20 - hand.y) < REACH || Math.hypot(o.x - swim.x, o.y - 20 - (swim.y + 30)) < REACH;
+  const picked = swim.oysters.filter((o) => !o.got && openness(o, swim.time) > 0.5 && near(o));
   picked.forEach((o) => { o.got = swim.time; });
   return picked;
 }

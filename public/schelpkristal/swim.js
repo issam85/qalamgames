@@ -20,16 +20,23 @@ export const sleeves = (p) => mirror(`<path d="M116 210 C100 250 92 290 90 318" 
   + `<path d="M116 210 C100 250 92 290 90 318" fill="none" stroke="${p.c}" stroke-width="21" stroke-linecap="round"/>`
   + `<path d="M80 316 h20" stroke="${p.line}" stroke-width="3" stroke-linecap="round"/>`);
 
-// het patroon op de tuniek (zelfde volgorde als Zwemkleding in data.js)
-const flower = ([x, y]) => `<g fill="#fff" opacity="0.9">${[[x - 5, y - 2], [x + 5, y - 2], [x - 3, y + 5], [x + 3, y + 5], [x, y - 6]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="3.8"/>`).join('')}</g><circle cx="${x}" cy="${y}" r="3" fill="#ffd43b"/>`;
-const star = ([x, y]) => `<path d="M${x} ${y} l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="#ffd43b" stroke="#fff" stroke-width="1"/>`;
-const PATTERNS = [
+// De patronen (zelfde volgorde als Zwemkleding en Patroon in data.js), ook voor de jurken
+// (dresses.js). area = waar de bloemen, golven en sterren komen; c = hun kleur.
+const flower = (c) => ([x, y]) => `<g fill="${c}" opacity="0.9">${[[x - 5, y - 2], [x + 5, y - 2], [x - 3, y + 5], [x + 3, y + 5], [x, y - 6]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="3.8"/>`).join('')}</g><circle cx="${x}" cy="${y}" r="3" fill="#ffd43b"/>`;
+const star = (c) => ([x, y]) => `<path d="M${x} ${y} l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="${c}" stroke="#fff" stroke-width="1"/>`;
+const waves = (c, [ys, x0, n]) => `<g fill="none" stroke="${c}" stroke-width="4" opacity="0.6">${ys.map((y) => `<path d="M${x0} ${y} q12 -10 24 0${' t24 0'.repeat(n - 1)}"/>`).join('')}</g>`;
+export const PATTERNS = [
   () => '',
-  () => [[132, 240], [170, 262], [122, 300], [160, 320], [184, 360], [118, 360]].map(flower).join(''),
-  () => `<g fill="none" stroke="#fff" stroke-width="4" opacity="0.6">${[250, 290, 330, 370].map((y) => `<path d="M96 ${y} q12 -10 24 0 t24 0 t24 0 t24 0 t24 0"/>`).join('')}</g>`,
-  () => [[140, 234], [176, 270], [118, 290], [154, 330], [190, 352], [120, 368]].map(star).join(''),
+  (area, c = '#fff') => area.flowers.map(flower(c)).join(''),
+  (area, c = '#fff') => waves(c, area.waves),
+  (area, c = '#ffd43b') => area.stars.map(star(c)).join(''),
 ];
-export const pattern = (kind) => `<clipPath id="tuniek"><path d="${TUNIC}"/></clipPath><g clip-path="url(#tuniek)">${PATTERNS[kind]()}</g>`;
+const TUNIC_AREA = {
+  flowers: [[132, 240], [170, 262], [122, 300], [160, 320], [184, 360], [118, 360]],
+  waves: [[250, 290, 330, 370], 96, 5],
+  stars: [[140, 234], [176, 270], [118, 290], [154, 330], [190, 352], [120, 368]],
+};
+export const pattern = (kind) => `<clipPath id="tuniek"><path d="${TUNIC}"/></clipPath><g clip-path="url(#tuniek)">${(PATTERNS[kind] || PATTERNS[0])(TUNIC_AREA)}</g>`;
 
 // De capuchon: om het hoofd en over de schouders, het gezicht blijft vrij. back komt
 // vóór het gezicht in de tekening (het gezicht ligt erop), rim erna (de rand).

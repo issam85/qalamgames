@@ -1,13 +1,19 @@
 // Tik op de prinses in het kleedhokje: op haar kroon gaan de kronen open, op haar haar de
-// kapsels, op haar ketting de kettingen, enzovoort. Zo hoef je niet te kunnen lezen om te
-// kiezen. Een wijzend handje laat zien dat het kan, tot er een keer op de prinses is getikt.
+// kapsels, op haar gezicht het gezicht, op haar oor of pols de sieraden, enzovoort. Zo hoef
+// je niet te kunnen lezen om te kiezen. Een wijzend handje laat zien dat het kan, tot er een
+// keer op de prinses is getikt.
+import { HAND } from './icons.js';
 
-// welke soort hoort bij deze plek op de prinses (vak 300 × 520)
+// welke soort hoort bij deze plek op de prinses (vak 300 × 520); null = naast de prinses
 export function zoneAt(x, y, swimming) {
+  if (x < 60 || x > 240 || y < 0 || y > 515) return null;
   if (swimming) return 'zwem';
+  if (Math.abs(Math.abs(x - 150) - 42) < 10 && y > 130 && y < 168) return 'sieraden'; // oorbellen
+  if (y > 92 && ((x - 150) / 40) ** 2 + ((y - 118) / 46) ** 2 < 1) return 'gezicht';
   if (y < 92) return 'kroon';
   if (y < 175) return 'haar';
   if (y < 228 && x > 110 && x < 190) return 'ketting';
+  if (y > 300 && y < 345 && (x < 106 || x > 194)) return 'sieraden'; // armband om de pols
   if (y < 380 && (x < 98 || x > 202)) return 'haar'; // lange lokken langs het lijf
   if (y > 452) return 'schoenen';
   return 'jurk';
@@ -17,7 +23,7 @@ export function dollTouch(dollEl, pick) {
   const hand = document.createElement('div');
   hand.className = 'tap-hand';
   hand.setAttribute('aria-hidden', 'true');
-  hand.innerHTML = '<svg viewBox="0 0 48 48"><path d="M18 44 L12 30 Q10 25 15 26 L19 31 V8 Q19 4 23 4 Q27 4 27 8 V22 L37 24 Q42 25 41 31 L38 44 Z" fill="#fff" stroke="#5a2a5a" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+  hand.innerHTML = HAND;
   dollEl.parentElement.append(hand);
 
   dollEl.addEventListener('click', (e) => {

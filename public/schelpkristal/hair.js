@@ -40,8 +40,9 @@ function braid(p) {
     + shape('M106 340 L94 368 L106 362 L118 368 Z', p);
 }
 
-export function hairBack(style, p) {
-  if (style === 'staart') return shape(SHORT, p) + shape(TAIL, p) + shine('M216 130 C226 180 220 240 214 290') + TIE;
+// noTie = er zit een haarversiering op de plek van het elastiekje (extras.js)
+export function hairBack(style, p, noTie = false) {
+  if (style === 'staart') return shape(SHORT, p) + shape(TAIL, p) + shine('M216 130 C226 180 220 240 214 290') + (noTie ? '' : TIE);
   if (style === 'knot') return shape(SHORT, p) + shape(BUN, p) + gloss(142, 22, 9, 5, -10) + shape('M126 46 Q150 58 174 46 L172 54 Q150 64 128 54 Z', p);
   let extra = '';
   if (style === 'krul') extra = curls([[78, 330], [104, 350], [132, 358], [168, 358], [196, 350], [222, 330], [62, 270], [238, 270], [64, 210], [236, 210]], p);

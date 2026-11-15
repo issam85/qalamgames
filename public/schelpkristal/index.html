@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="kleed-fit.css">
   <link rel="stylesheet" href="strand.css">
   <link rel="stylesheet" href="douche.css">
+  <link rel="stylesheet" href="extra.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel Zoek Schelp Kristal — kies je prinses, zoek 's avonds met je lantaarn schelpen en kristallen op het strand, douche het zand eraf en kies jurken, kronen, kettingen en schoenen. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
   <meta name="keywords" content="Zoek Schelp Kristal, prinses, aankleedspel, dress-up, strand, schelpen, kristallen, spel, game, Al Qalam, basisschool Gouda, Qalam Games" />
@@ -37,6 +38,7 @@
 <!-- /qalam-seo -->
 </head>
 <body>
+  <button id="back-btn" class="back-btn" aria-label="Terug" hidden></button>
   <section id="screen-start" class="screen active">
     <header class="bar">
       <h1>Zoek Schelp Kristal</h1>
@@ -59,7 +61,6 @@
 
   <section id="screen-kleed" class="screen">
     <header class="bar">
-      <button class="pill back">Terug</button>
       <h1>Kleedhokje</h1>
       <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
@@ -70,7 +71,7 @@
         <h2 id="kleed-title"></h2>
         <div id="kleed-items" class="items"></div>
         <div id="kleed-swatches" class="swatches" aria-label="Kleur"></div>
-        <p id="kleed-note" class="note" aria-live="polite"></p>
+        <div id="kleed-note" class="note" aria-live="polite"></div>
         <div class="kleed-buttons">
           <button id="kleed-surprise" class="btn gold">Verras me!</button>
           <button id="kleed-done" class="btn green">Klaar!</button>
@@ -81,8 +82,7 @@
 
   <section id="screen-strand" class="screen">
     <header class="bar">
-      <button class="pill back">Terug</button>
-      <p id="strand-progress" class="hunt"></p>
+      <p id="strand-progress" class="hunt" aria-live="polite"></p>
       <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="strand">
@@ -90,10 +90,10 @@
       <p class="strand-hint">Loop met de pijltjes, of houd je vinger waar de prinses heen moet. Zoek de schelpen en kristallen die glinsteren!</p>
       <div id="strand-end" class="strand-end" hidden>
         <h2>Alles gevonden!</h2>
-        <p>Je hebt alle schelpen en kristallen van vanavond.</p>
+        <p class="end-pics" role="img" aria-label="Alle 10 schelpen en 5 kristallen van vanavond"><span class="ico shell"></span><b>10</b><span class="ico crystal"></span><b>5</b></p>
         <div class="strand-buttons">
           <button id="strand-again" class="btn gold">Nog een keer</button>
-          <button class="btn green back">Terug</button>
+          <button class="btn green back end-back">Terug</button>
         </div>
       </div>
     </div>
@@ -101,7 +101,6 @@
 
   <section id="screen-douche" class="screen">
     <header class="bar">
-      <button class="pill back">Terug</button>
       <h1>Stranddouche</h1>
       <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
@@ -122,8 +121,7 @@
 
   <section id="screen-zee" class="screen">
     <header class="bar">
-      <button class="pill back">Terug</button>
-      <p id="zee-progress" class="hunt"></p>
+      <p id="zee-progress" class="hunt" aria-live="polite"></p>
       <div class="found"><span class="ico shell" aria-hidden="true"></span><b class="shells">0</b><span class="ico crystal" aria-hidden="true"></span><b class="crystals">0</b><span class="ico pearl" aria-hidden="true"></span><b class="pearls">0</b></div>
     </header>
     <div class="strand">
@@ -131,10 +129,10 @@
       <p class="strand-hint">Zwem met de pijltjes, of houd je vinger waar de prinses heen moet. Duik naar een oester als hij open is en pak de parel!</p>
       <div id="zee-end" class="strand-end" hidden>
         <h2>Alle parels!</h2>
-        <p>Je hebt alle parels uit de zee gehaald.</p>
+        <p class="end-pics" role="img" aria-label="Alle 8 parels uit de zee"><span class="ico pearl"></span><b>8</b></p>
         <div class="strand-buttons">
           <button id="zee-again" class="btn gold">Nog een keer</button>
-          <button class="btn green back">Terug</button>
+          <button class="btn green back end-back">Terug</button>
         </div>
       </div>
     </div>

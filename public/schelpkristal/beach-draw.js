@@ -3,7 +3,7 @@
 import { LIGHTS, H } from './beach-scene.js';
 import { shell, crystal, sparkle } from './beach-items.js';
 
-const S = 0.44; // de prinses (vak 300 × 520) op het strand
+export const S = 0.44; // de prinses (vak 300 × 520) op het strand
 const LANTERN = 190; // straal van het licht van de lantaarn
 
 // de schelpen en kristallen die er nog liggen, half in het zand; front = alleen wat
@@ -58,7 +58,7 @@ export function drawDark(ctx, dark, walk, cam, friends = []) {
   });
 }
 
-// de prinses met de lantaarn; sprite = plaatje van de prinses (vak 300 × 520)
+// de prinses met de lantaarn; sprite = plaatje van de prinses (sprites.js)
 export function drawPrincess(ctx, sprite, walk, cam) {
   const bob = walk.moving ? Math.abs(Math.sin(walk.time * 10)) * 6 : Math.sin(walk.time * 2) * 1.5;
   const x = walk.x - cam;
@@ -70,7 +70,7 @@ export function drawPrincess(ctx, sprite, walk, cam) {
   ctx.translate(x, walk.y - bob);
   ctx.rotate(walk.moving ? Math.sin(walk.time * 10) * 0.04 : 0);
   ctx.scale(walk.face, 1);
-  if (sprite.complete && sprite.naturalWidth) ctx.drawImage(sprite, -150 * S, -510 * S, 300 * S, 520 * S);
+  if (sprite.ready) ctx.drawImage(sprite, -150 * S, -510 * S, 300 * S, 520 * S);
   const swing = Math.sin(walk.time * (walk.moving ? 8 : 2)) * 0.25;
   ctx.translate(26, -79);
   ctx.rotate(swing);
@@ -111,18 +111,33 @@ export function drawPicked(ctx, walk, cam) {
   });
 }
 
-// een wolkje met tekst boven een vriendje (wat het net vond)
-export function drawSay(ctx, f, text, cam) {
-  if (!text) return;
-  ctx.font = '700 18px Fredoka, sans-serif';
-  const w = ctx.measureText(text).width + 20;
+// een wolkje boven een vriendje met wat het net vond (een schelp of kristal)
+export function drawSay(ctx, f, it, cam) {
+  if (!it) return;
   const x = f.x - cam;
   const y = f.y - 250;
   ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
   ctx.beginPath();
-  ctx.roundRect(x - w / 2, y - 16, w, 30, 15);
+  ctx.ellipse(x, y, 34, 26, 0, 0, 6.28);
+  ctx.moveTo(x - 8, y + 22);
+  ctx.lineTo(x, y + 38);
+  ctx.lineTo(x + 8, y + 22);
   ctx.fill();
-  ctx.fillStyle = '#c2419a';
-  ctx.textAlign = 'center';
-  ctx.fillText(text, x, y + 5);
+  ctx.save();
+  ctx.translate(x, y + 12);
+  ctx.scale(1.1, 1.1);
+  (it.kind === 'shell' ? shell : crystal)(ctx, it);
+  ctx.restore();
+  sparkle(ctx, x + 20, y - 12, 6, '#ffd43b');
+}
+
+// het doel na een tik: een kloppend ringetje op de grond
+export function drawGoal(ctx, goal, cam, t) {
+  if (!goal) return;
+  const r = 14 + Math.sin(t * 6) * 4;
+  ctx.strokeStyle = 'rgba(255, 212, 59, 0.9)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.ellipse(goal.x - cam, goal.y, r * 1.6, r * 0.7, 0, 0, 6.28);
+  ctx.stroke();
 }

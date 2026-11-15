@@ -5,7 +5,10 @@ import { newSwim, swimStep, pearlsLeft, SEA, OYSTERS } from './sea-world.js';
 import { seaBackground, surface, fish } from './sea-scene.js';
 import { oysters, bubbles } from './sea-oysters.js';
 import { beachInput } from './beach-input.js';
+import { drawGoal } from './beach-draw.js';
 import { swimSvg } from './princess.js';
+import { sprite as toSprite, pixelRatio } from './sprites.js';
+import { countPart } from './pictures.js';
 import { ting } from './sound.js';
 
 const canvas = document.getElementById('zee-canvas');
@@ -15,20 +18,24 @@ const endEl = document.getElementById('zee-end');
 const input = beachInput(canvas, 0);
 const S = 0.36; // de prinses (vak 300 × 520) in de zee
 let bg = null;
-let sprite = new Image();
+let sprite = null; // plaatje van de prinses (sprites.js)
 let swim = null;
 let api = null; // { game, save(), counters() }
 let frame = 0;
 let last = 0;
 
-const progress = () => { progressEl.innerHTML = `Parels <b>${OYSTERS - pearlsLeft(swim)} / ${OYSTERS}</b>`; };
+function progress() {
+  const got = OYSTERS - pearlsLeft(swim);
+  progressEl.innerHTML = countPart('pearl', `${got}/${OYSTERS}`);
+  progressEl.setAttribute('aria-label', `Parels ${got} van ${OYSTERS}`);
+}
 
 // liggend, met het hoofd in de zwemrichting; ze schopt een beetje met haar benen
 function drawSwimmer(cam) {
   ctx.save();
   ctx.translate(swim.x - cam, swim.y + Math.sin(swim.time * 3) * 4);
   ctx.rotate(swim.face * (Math.PI / 2 - 0.12) + Math.sin(swim.time * (swim.moving ? 9 : 3)) * 0.04);
-  if (sprite.complete && sprite.naturalWidth) ctx.drawImage(sprite, -150 * S, -260 * S, 300 * S, 520 * S);
+  if (sprite && sprite.ready) ctx.drawImage(sprite, -150 * S, -260 * S, 300 * S, 520 * S);
   ctx.restore();
 }
 
@@ -56,13 +63,16 @@ function tick() {
   const cam = () => Math.max(0, Math.min(SEA.w - 960, swim.x - 420));
   if (endEl.hidden) {
     const picked = swimStep(swim, input.dir(), input.target(cam()), dt);
+    if (input.goal() && !swim.moving) input.clearGoal(); // aangekomen (of vast)
     if (picked.length) {
       api.game.pearls += picked.length;
       ting(true);
       api.save();
       api.counters();
       progress();
-      if (!pearlsLeft(swim)) setTimeout(() => { endEl.hidden = false; }, 900);
+      const s = swim;
+      // alleen als dit nog dezelfde duik is (niet na "Nog een keer")
+      if (!pearlsLeft(swim)) setTimeout(() => { if (swim === s) endEl.hidden = false; }, 900);
     }
   } else {
     swim.time += dt;
@@ -74,6 +84,7 @@ function tick() {
   surface(ctx, c, swim.time);
   fish(ctx, c, swim.time);
   oysters(ctx, swim, c);
+  drawGoal(ctx, input.goal(), c, swim.time);
   drawSwimmer(c);
   bubbles(ctx, swim, c);
   drawPicked(c);
@@ -88,7 +99,7 @@ function start() {
 }
 
 function fit() {
-  const ratio = Math.min(2, window.devicePixelRatio || 1);
+  const ratio = pixelRatio();
   canvas.width = 960 * ratio;
   canvas.height = 540 * ratio;
 }
@@ -102,8 +113,7 @@ export function initSea(seaApi) {
 export function showSea() {
   bg = bg || seaBackground();
   fit();
-  sprite = new Image();
-  sprite.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(swimSvg(api.game.princess, api.game.outfit))}`;
+  sprite = toSprite(swimSvg(api.game.princess, api.game.outfit), 300 * S, 520 * S);
   start();
   cancelAnimationFrame(frame);
   last = performance.now();

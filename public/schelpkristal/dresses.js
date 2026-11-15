@@ -1,7 +1,9 @@
 // De jurken (zelfde volgorde als in data.js). Elke jurk: een lijfje (hals 'hart' of
 // 'rond'), mouwen ('pof', 'bandje', 'schouder' of 'lang'), een rok en soms een sleep
-// achter het lijf. p = de verf (paint uit glans.js). Taille op y = 300.
+// achter het lijf. p = de verf (paint uit glans.js). Taille op y = 300. outline = de
+// omtrek van de rok, voor het patroon (dressPattern).
 import { shape, gloss, sparkle, mirror, dots, paint, light, GOLD } from './glans.js';
+import { PATTERNS } from './swim.js';
 
 const HEART = 'M114 214 Q132 204 150 218 Q168 204 186 214 C192 240 190 262 182 300 L118 300 C110 262 108 240 114 214 Z';
 const ROUND = 'M112 198 Q150 214 188 198 C194 230 192 262 182 300 L118 300 C108 262 106 230 112 198 Z';
@@ -25,10 +27,11 @@ const flower = ([x, y], c) => `<g fill="${c}" opacity="0.95">${dots([[x - 6, y -
 const clip = (id, d, inner) => `<clipPath id="${id}"><path d="${d}"/></clipPath><g clip-path="url(#${id})">${inner}</g>`;
 
 export const DRESSES = [
-  { neck: 'hart', sleeve: 'pof', skirt: (p) => shape(BELL, p) + folds + `<g fill="#fff" stroke="${p.line}" stroke-width="0.8">${dots(hem(11, BELL_HEM), 5)}</g>` + sparkle(80, 420, 6) + sparkle(222, 380, 5) },
+  { neck: 'hart', sleeve: 'pof', outline: [BELL], skirt: (p) => shape(BELL, p) + folds + `<g fill="#fff" stroke="${p.line}" stroke-width="0.8">${dots(hem(11, BELL_HEM), 5)}</g>` + sparkle(80, 420, 6) + sparkle(222, 380, 5) },
   {
     neck: 'hart',
     sleeve: 'schouder',
+    outline: ['M118 300 C90 360 62 430 56 482 Q150 504 244 482 C238 430 210 360 182 300 Z'],
     train: (p) => shape('M182 300 C230 380 268 446 294 500 Q230 514 150 498 Z', lt(p, 0.35)),
     skirt: (p) => shape('M118 300 C90 360 62 430 56 482 Q150 504 244 482 C238 430 210 360 182 300 Z', lt(p)) + folds
       + mirror(shape('M120 300 C104 360 84 420 60 480 C90 476 112 466 124 450 C122 400 122 350 120 300 Z', p)),
@@ -36,6 +39,7 @@ export const DRESSES = [
   {
     neck: 'hart',
     sleeve: 'bandje',
+    outline: ['M120 300 C112 360 122 400 114 432 C98 458 72 474 62 488 Q150 504 238 488 C228 474 202 458 186 432 C178 400 188 360 180 300 Z'],
     skirt: (p) => {
       const d = 'M120 300 C112 360 122 400 114 432 C98 458 72 474 62 488 Q150 504 238 488 C228 474 202 458 186 432 C178 400 188 360 180 300 Z';
       const scales = Array.from({ length: 8 }, (_, r) => Array.from({ length: 6 }, (_, c) => `<path d="M${104 + c * 18 + (r % 2) * 9} ${314 + r * 15} q9 12 18 0" />`).join('')).join('');
@@ -46,12 +50,15 @@ export const DRESSES = [
   {
     neck: 'rond',
     sleeve: 'bandje',
+    outline: ['M118 300 C100 340 86 380 80 408 Q150 424 220 408 C214 380 200 340 182 300 Z'],
     skirt: (p) => shape('M118 300 C100 340 86 380 80 408 Q150 424 220 408 C214 380 200 340 182 300 Z', p)
       + [[128, 330], [168, 344], [110, 384], [150, 372], [192, 392]].map((xy) => flower(xy, '#fff')).join('') + gloss(132, 340, 10, 22),
   },
   {
     neck: 'hart',
     sleeve: 'pof',
+    outline: ['M74 430 C64 456 56 472 50 486 Q150 506 250 486 C244 472 236 456 226 430 Z', 'M98 358 C88 398 78 420 72 442 Q150 458 228 442 C222 420 212 398 202 358 Z',
+      'M118 300 C108 330 100 350 96 370 Q150 384 204 370 C200 350 192 330 182 300 Z'],
     skirt: (p) => shape('M74 430 C64 456 56 472 50 486 Q150 506 250 486 C244 472 236 456 226 430 Z', p)
       + shape('M98 358 C88 398 78 420 72 442 Q150 458 228 442 C222 420 212 398 202 358 Z', lt(p, 0.35))
       + shape('M118 300 C108 330 100 350 96 370 Q150 384 204 370 C200 350 192 330 182 300 Z', p)
@@ -60,6 +67,7 @@ export const DRESSES = [
   {
     neck: 'rond',
     sleeve: 'lang',
+    outline: [BELL],
     skirt: (p) => shape(BELL, p) + folds
       + `<g fill="#ffd43b" stroke="#c9a400" stroke-width="1">${[[120, 340], [176, 372], [96, 410], [150, 430], [212, 440], [70, 466], [230, 470], [128, 470]].map(([x, y]) => `<path d="M${x} ${y} ${STAR}"/>`).join('')}</g>`
       + sparkle(200, 340, 6) + sparkle(84, 380, 5),
@@ -67,6 +75,7 @@ export const DRESSES = [
   {
     neck: 'hart',
     sleeve: 'schouder',
+    outline: [ALINE],
     skirt: (p) => shape(ALINE, p) + folds
       + `<g fill="#fff" opacity="0.7">${dots([[110, 330], [150, 320], [186, 338], [96, 380], [130, 372], [170, 388], [206, 400], [84, 430], [120, 420], [158, 440], [196, 452], [228, 466], [72, 470], [140, 476]], 2.2)}</g>`
       + sparkle(124, 400, 7) + sparkle(190, 420, 6) + sparkle(98, 452, 5) + sparkle(168, 350, 5),
@@ -74,6 +83,7 @@ export const DRESSES = [
   {
     neck: 'hart',
     sleeve: 'pof',
+    outline: [BELL],
     skirt: (p) => shape(BELL, p) + folds + `<g fill="${light(p.c, 0.55)}" stroke="${p.line}" stroke-width="1">${hem(10, BELL_HEM).map(([x, y]) => `<ellipse cx="${x.toFixed(1)}" cy="${(y - 6).toFixed(1)}" rx="15" ry="10"/>`).join('')}</g>`
       + [[118, 350], [180, 368], [90, 420], [150, 410], [210, 430]].map((xy) => flower(xy, '#fff')).join(''),
   },
@@ -90,4 +100,13 @@ export function sleeves(dress, p) {
       + shape('M78 312 h24 v10 h-24 z', GOLD));
   }
   return mirror(`<path d="M126 216 L120 196" stroke="${p.line}" stroke-width="7" stroke-linecap="round"/><path d="M126 216 L120 196" stroke="${p.c}" stroke-width="4.5" stroke-linecap="round"/>`);
+}
+
+// het patroon op de rok, binnen de omtrek van de jurk; kind = nummer in Patroon (0 = effen)
+const grid = (dx) => Array.from({ length: 6 }, (_, r) => Array.from({ length: 7 }, (__, c) => [44 + c * 36 + ((r + dx) % 2) * 18, 324 + r * 32])).flat();
+const SKIRT_AREA = { flowers: grid(0), stars: grid(1), waves: [[336, 372, 408, 444, 480], 26, 11] };
+export function dressPattern(dress, kind, p) {
+  if (!kind || !PATTERNS[kind]) return '';
+  return `<clipPath id="jpat">${dress.outline.map((d) => `<path d="${d}"/>`).join('')}</clipPath>`
+    + `<g clip-path="url(#jpat)">${PATTERNS[kind](SKIRT_AREA, p.c)}</g>`;
 }
