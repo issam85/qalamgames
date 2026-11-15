@@ -96,3 +96,22 @@
     height: 44px;
   }
 }
+
+/* Lage liggende tablet (bv. 1024 × 600): het paneel schuift, maar de knoppen onderaan
+   (Klaar!, Foto, Opnieuw) blijven altijd in beeld. */
+@media (max-height: 640px) and (min-width: 701px) {
+  .kast-panel {
+    overflow-y: auto;
+  }
+
+  .kast-panel h2 {
+    display: none;
+  }
+
+  .kast-buttons {
+    position: sticky;
+    bottom: 0;
+    padding-top: 6px;
+    background: inherit;
+  }
+}
