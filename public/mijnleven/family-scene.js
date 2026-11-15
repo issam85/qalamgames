@@ -5,16 +5,22 @@ import { SKIN_PAINT, INK, paint, defs, shape, gloss } from './glans.js';
 import { RECIPES } from './recipes.js';
 import { MEMBERS, hearts } from './family.js';
 import { sceneSvg } from './ui.js';
+import { wall, planks, rug, windowSvg, frame, grad, star } from './decor.js';
 
 const HAIR = paint('#3b2314');
 const SHIRT = paint('#4f7fd9');
 const KUFI = paint('#f4f4f4');
 const RED = paint('#e53935');
 const BLANKET = paint('#b36bff');
-const ROOM = '<rect x="30" y="0" width="240" height="340" rx="14" fill="#ffeef6"/>'
-  + '<rect x="126" y="14" width="48" height="46" rx="6" fill="#bfe6ff" stroke="#fff" stroke-width="4"/><path d="M150 14v46M126 37h48" stroke="#fff" stroke-width="3"/>'
-  + '<rect x="30" y="262" width="240" height="78" fill="#e7c9a0"/><ellipse cx="150" cy="306" rx="106" ry="22" fill="#ff9ecf" opacity="0.7"/>'
-  + '<rect x="44" y="176" width="212" height="96" rx="22" fill="#b79cf2"/><rect x="44" y="228" width="212" height="44" rx="14" fill="#a384ea"/>';
+// de woonkamer: muur met raam en lijstjes, houten vloer, kleed en een bank met kussens
+const ROOM = wall('#ffe6f0', 262) + windowSvg(124, 14, 52, 50, 'day', '#ff8ac8')
+  + frame(40, 20, 26, 22, star(50, 24, 0.9)) + frame(234, 20, 26, 22, '<path d="M247 24 A8 8 0 1 0 255 36 A6 6 0 1 1 247 24 Z" fill="#ffd43b"/>')
+  + planks(262, '#e2b98a') + rug(150, 306, 106, 22, '#ff9ecf')
+  + grad('bank', '#c9b2f7', '#9f82e6') + grad('zitting', '#b79cf2', '#8f6fdc')
+  + '<rect x="44" y="176" width="212" height="96" rx="22" fill="url(#g-bank)" stroke="#7c5cc9" stroke-width="1.5"/>'
+  + '<rect x="44" y="228" width="212" height="44" rx="14" fill="url(#g-zitting)" stroke="#7c5cc9" stroke-width="1.5"/>'
+  + '<g fill="#ffd43b" stroke="#c9a400" stroke-width="1.2"><rect x="56" y="194" width="34" height="30" rx="8" transform="rotate(-8 73 209)"/><rect x="210" y="194" width="34" height="30" rx="8" transform="rotate(8 227 209)"/></g>'
+  + '<rect x="36" y="200" width="14" height="72" rx="7" fill="url(#g-bank)" stroke="#7c5cc9" stroke-width="1.5"/><rect x="250" y="200" width="14" height="72" rx="7" fill="url(#g-bank)" stroke="#7c5cc9" stroke-width="1.5"/>';
 
 const heart = (x, y, full) => `<path d="M${x} ${y} c-7 -8 -14 2 0 12 c14 -10 7 -20 0 -12z" fill="${full ? RED.fill : '#fff'}" stroke="${full ? RED.line : '#c9b8d8'}" stroke-width="2"/>`
   + (full ? `<circle cx="${x - 3.5}" cy="${y - 1}" r="1.6" fill="#fff" opacity="0.8"/>` : '');

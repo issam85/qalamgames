@@ -4,6 +4,7 @@ import { JURK, HOOFDDOEK } from './doll-parts.js';
 import { face, arms, soft } from './doll.js';
 import { paint, defs, shape, scoped } from './glans.js';
 import { STYLE_SVG, STRAND_X, MAX_END } from './hair-styles.js';
+import { wall, grad, glow } from './decor.js';
 
 // naam en waar het kapsel handig voor is
 export const STYLES = [
@@ -70,8 +71,18 @@ export const HATS = [
   ['Diadeem', '<path d="M102 98 C118 72 182 72 198 98" fill="none" stroke="#ffd43b" stroke-width="6" stroke-linecap="round"/><g fill="#5ec8ff" stroke="#fff" stroke-width="1.5"><circle cx="150" cy="73" r="6"/><circle cx="128" cy="78" r="4"/><circle cx="172" cy="78" r="4"/></g>'],
 ];
 
-// hoofd en schouders; extra = wat er nog bovenop moet (het gereedschap bij de muis)
-export function bustSvg(outfit, hair, makeup, extra = '') {
+// de kapsalon: een spiegel met lampjes en een plankje met spullen, achter het meisje
+export const SALON = wall('#ffe3f1') + grad('spiegel', '#f2fbff', '#bfe3ff') + glow('schijn', '#fff3b0')
+  + '<ellipse cx="44" cy="80" rx="22" ry="16" fill="url(#g-schijn)"/><ellipse cx="256" cy="80" rx="22" ry="16" fill="url(#g-schijn)"/>'
+  + '<g fill="#fff8d6" stroke="#c9a400" stroke-width="1.5"><circle cx="44" cy="78" r="7"/><circle cx="256" cy="78" r="7"/></g>'
+  + '<rect x="50" y="10" width="200" height="300" rx="96" fill="url(#g-spiegel)" stroke="#c9a400" stroke-width="11"/><rect x="50" y="10" width="200" height="300" rx="96" fill="none" stroke="#ffd43b" stroke-width="7"/>'
+  + '<path d="M82 70 C92 44 112 32 130 28" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity="0.8"/>'
+  + '<rect x="30" y="300" width="240" height="40" fill="#f6d9ea"/><rect x="30" y="300" width="240" height="3" fill="#fff"/>'
+  + '<rect x="36" y="272" width="14" height="30" rx="4" fill="#ff8ac8" stroke="#c2419a" stroke-width="1.2"/><rect x="40" y="266" width="6" height="8" rx="2" fill="#c2419a"/><rect x="250" y="278" width="14" height="24" rx="4" fill="#5ec8ff" stroke="#1e6fa8" stroke-width="1.2"/>';
+
+// hoofd en schouders; extra = wat er nog bovenop moet (het gereedschap bij de muis),
+// backdrop = wat erachter komt (de kapsalon)
+export function bustSvg(outfit, hair, makeup, extra = '', backdrop = '') {
   const { choice, color } = outfit;
   const jurk = paint(soft(color.jurk));
   const doek = paint(soft(color.hoofddoek));
@@ -81,5 +92,5 @@ export function bustSvg(outfit, hair, makeup, extra = '') {
     : front + face(makeup) + knotsSvg(hair) + (hair.shine ? SHINE : '') + HATS[hair.hat][1];
   return scoped(`<svg viewBox="${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}" role="img" aria-label="Jouw meisje bij de kapper">`
     + defs([jurk, doek, paint(hair.color), paint('#ff8ac8'), paint('#f3d9a4'), paint('#f7e3b8')])
-    + back + JURK[choice.jurk](jurk) + arms(jurk) + top + extra + '</svg>');
+    + backdrop + back + JURK[choice.jurk](jurk) + arms(jurk) + top + extra + '</svg>');
 }

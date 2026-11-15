@@ -4,10 +4,16 @@ import { INGREDIENTS } from './recipes.js';
 import { recipeOf, phase, BOWL } from './cook.js';
 import { stoveSvg, dishSvg } from './cook-stove.js';
 import { sceneSvg } from './ui.js';
+import { wall, tiles, grad, plant, shadow } from './decor.js';
+import { gloss } from './glans.js';
 
-const ROOM = '<rect x="30" y="0" width="240" height="340" rx="14" fill="#fff3d6"/>'
-  + '<g stroke="#fff" stroke-width="2" opacity="0.8"><path d="M30 60h240M30 120h240M30 180h240M90 0v230M150 0v230M210 0v230"/></g>'
-  + '<rect x="30" y="234" width="240" height="106" fill="#c98f5a"/><rect x="30" y="228" width="240" height="10" fill="#e0a872"/>';
+// de keuken: muur, tegeltjes boven het aanrecht, een marmeren blad en kastjes
+const ROOM = wall('#ffe9c2') + tiles(118, 228, '#ffd9a0', 36) + grad('blad', '#fffdf7', '#e3d7c3') + grad('kastje', '#d9a86c', '#b5793a')
+  + '<rect x="30" y="226" width="240" height="14" fill="url(#g-blad)"/><rect x="30" y="226" width="240" height="3" fill="#fff" opacity="0.8"/>'
+  + '<rect x="30" y="240" width="240" height="100" fill="#c98f5a"/>'
+  + '<g fill="url(#g-kastje)" stroke="#8a4f22" stroke-width="1.5"><rect x="40" y="250" width="100" height="78" rx="6"/><rect x="160" y="250" width="100" height="78" rx="6"/></g>'
+  + '<g fill="#ffd43b" stroke="#c9a400" stroke-width="1.2"><circle cx="130" cy="289" r="4.5"/><circle cx="170" cy="289" r="4.5"/></g>'
+  + gloss(60, 270, 8, 5, -30) + gloss(180, 270, 8, 5, -30) + shadow(256, 228, 14, 4) + plant(256, 226, 0.55);
 // waar de ingrediënten in de kom liggen
 const PLACES = [[-32, -2], [28, -4], [-4, 6], [6, -8]];
 
@@ -34,7 +40,7 @@ function bowlSvg(cook, recipe) {
       + `<g transform="translate(${x} ${y}) scale(1 0.22) rotate(${Math.round(cook.stir * 1440)})" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="0.6">`
       + '<path d="M-42 0 A42 42 0 0 1 0 -42"/><path d="M42 0 A42 42 0 0 1 0 42"/></g>'
     : '';
-  return `<path d="M72 ${y} C76 252 118 264 150 264 C182 264 224 252 228 ${y} Z" fill="#5ec8ff"/>`
+  return grad('kom', '#8ad8ff', '#2f8fd0') + `<path d="M72 ${y} C76 252 118 264 150 264 C182 264 224 252 228 ${y} Z" fill="url(#g-kom)" stroke="#1e6fa8" stroke-width="1.5"/>`
     + '<path d="M84 214 C104 238 196 238 216 214" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.6"/>'
     + `<ellipse cx="${x}" cy="${y}" rx="78" ry="20" fill="#8ad8ff"/><ellipse cx="${x}" cy="${y}" rx="68" ry="15" fill="#3d9fd6"/>${blobs}${mixed}`;
 }
