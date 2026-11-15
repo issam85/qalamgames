@@ -8,6 +8,16 @@ export const PRINCESSES = [
   { name: 'Roos', skin: '#f3cfae', hair: '#c4522a', style: 'steil', eyes: '#7a4fc2' },
 ];
 
+// haar per prinses: kapsel en kleur (bewaard in game.looks, per nummer van de prinses)
+export const HAIR_STYLES = [
+  { key: 'golf', label: 'Golven' }, { key: 'krul', label: 'Krullen' }, { key: 'vlecht', label: 'Vlecht' },
+  { key: 'steil', label: 'Steil' }, { key: 'staart', label: 'Staart' }, { key: 'knot', label: 'Knot' },
+];
+export const HAIR_COLORS = [
+  ['#f2c94c', 'blond'], ['#a0673a', 'lichtbruin'], ['#4a2a17', 'bruin'], ['#24160f', 'zwart'], ['#c4522a', 'rood'],
+  ['#ff8ac8', 'roze'], ['#b36bff', 'paars'], ['#4c8dff', 'blauw'], ['#c9ccd8', 'zilver'],
+];
+
 export const CATS = [
   {
     key: 'jurk', label: 'Jurk', items: ['Baljurk', 'Met sleep', 'Zeemeermin', 'Zomerjurk', 'Laagjes', 'Sterrenjurk', 'Glitterjurk', 'Bloemenjurk'],

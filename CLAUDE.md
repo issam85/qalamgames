@@ -508,9 +508,14 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   soort van die plek gaat open (`doll-touch.js`, `zoneAt()`: hoofd en kroon = kronen, hals =
   kettingen, voeten = schoenen, de rest = jurk); een wijzend handje laat dat zien tot de eerste
   tik. CSS: `pictures.css`, `kleed-fit.css` (raster binnen de schermhoogte, Klaar! altijd in
-  beeld). Volgende stappen, elk na akkoord: 2 haarkleur en kapsel per prinses, 3 gezicht
-  (ogen, wimpers, mond, lippenstift, blosjes, sproetjes, glitter) per prinses, 4 oorbellen,
-  armband, haarversiering, patroon op de jurk; dan in `zoneAt()` het hoofd naar haar/gezicht.
+  beeld).
+- Haar per prinses (stap 2): soort "Haar" tussen Kroon en Ketting, zes kapsels (`HAIR_STYLES`:
+  golf, krul, vlecht, steil, staart, knot; staart en knot in `hair.js`) en negen kleuren
+  (`HAIR_COLORS`, ook roze, paars, blauw, zilver). Bewaard in `game.looks[nummer]` (`hair-pick.js`,
+  gecontroleerd in `validLooks()`); `setLooks()` in `princess.js` laat elke tekening dat haar
+  gebruiken. Tik op hoofd of lange lokken = Haar, bovenop het hoofd = Kroon. Volgende stappen,
+  elk na akkoord: 3 gezicht (ogen, wimpers, mond, lippenstift, blosjes, sproetjes, glitter) per
+  prinses, 4 oorbellen, armband, haarversiering, patroon op de jurk.
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.

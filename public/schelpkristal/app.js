@@ -3,7 +3,7 @@
 // (schelpen en kristallen op het strand, parels in de zee).
 import { loadGame, saveGame } from './storage.js';
 import { PRINCESSES } from './data.js';
-import { princessSvg } from './princess.js';
+import { princessSvg, setLooks } from './princess.js';
 import { initDressing, showDressing } from './dressing.js';
 import { decorate } from './pictures.js';
 import { initBeach, showBeach, hideBeach } from './beach.js';
@@ -11,6 +11,7 @@ import { initShower, showShower } from './shower-room.js';
 import { initSea, showSea, hideSea } from './sea.js';
 
 const game = loadGame();
+setLooks(game.looks);
 const save = () => saveGame(game);
 
 function counters() {

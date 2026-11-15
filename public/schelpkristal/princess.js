@@ -8,6 +8,11 @@ import { hairBack, hairCrown, hairFront } from './hair.js';
 import { paint, skinPaint, svg, mirror, irisFill, INK } from './glans.js';
 import { pants, tunic, pattern, hood, sleeves as swimSleeves } from './swim.js';
 
+// eigen haar per prinses (kapsel en kleur uit het kleedhokje); app.js geeft game.looks door
+let looks = {};
+export const setLooks = (saved) => { looks = saved || {}; };
+const princessOf = (i, look) => ({ ...PRINCESSES[i], ...(looks[i] || {}), ...(look || {}) });
+
 // wit valt weg tegen een lichte achtergrond: dan een heel lichte grijstint
 const soft = (hex) => (hex === '#ffffff' ? '#f4f4f4' : hex);
 
@@ -42,8 +47,9 @@ function body(skin) {
 
 // princess = nummer in PRINCESSES; outfit = { choice: {…}, color: {…} };
 // box = welk stuk je ziet (bij het kiezen alleen het bovenlijf)
-export function princessSvg(princess, outfit, label = 'Jouw prinses', box = '0 0 300 520') {
-  const pr = PRINCESSES[princess];
+// look = even een ander kapsel of kleur proberen (voor de plaatjes in het kleedhokje)
+export function princessSvg(princess, outfit, label = 'Jouw prinses', box = '0 0 300 520', look = null) {
+  const pr = princessOf(princess, look);
   const skin = skinPaint(pr.skin);
   const hair = paint(pr.hair);
   const { choice, color } = outfit;
@@ -62,7 +68,7 @@ export function princessSvg(princess, outfit, label = 'Jouw prinses', box = '0 0
 // zonder kroon en sieraden; alleen gezicht en handen zijn bloot. Geeft alleen de
 // tekening terug (zonder <svg>), voor in een grotere tekening.
 export function bathingPrincess(princess, outfit) {
-  const pr = PRINCESSES[princess];
+  const pr = princessOf(princess);
   const skin = skinPaint(pr.skin);
   const hair = paint(pr.hair);
   const p = paint(soft(outfit.color.zwem));

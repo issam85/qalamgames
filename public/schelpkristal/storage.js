@@ -2,6 +2,7 @@
 // strand en in de zee gevonden heeft en wat ze daarmee heeft vrijgespeeld. In een privévenster
 // lukt opslaan niet; dan geldt het alleen voor dit bezoek.
 import { PRINCESSES, CATS, SWATCHES, MATCH, defaultOutfit, hasItem } from './data.js';
+import { validLooks } from './hair-pick.js';
 
 const KEY = 'schelpkristal';
 const COLORS = SWATCHES.map(([hex]) => hex);
@@ -32,6 +33,7 @@ export function loadGame() {
   const game = {
     princess: Number.isInteger(saved.princess) && saved.princess >= 0 && saved.princess < PRINCESSES.length ? saved.princess : 0,
     outfit: validOutfit(fillOutfit(saved.outfit)) ? fillOutfit(saved.outfit) : defaultOutfit(),
+    looks: validLooks(saved.looks), // haar per prinses
     shells: count(saved.shells),
     crystals: count(saved.crystals),
     pearls: count(saved.pearls),

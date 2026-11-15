@@ -1,12 +1,14 @@
-// Tik op de prinses in het kleedhokje: op haar kroon gaan de kronen open, op haar ketting
-// de kettingen, enzovoort. Zo hoef je niet te kunnen lezen om te kiezen. Een wijzend
-// handje laat zien dat het kan, tot er een keer op de prinses is getikt.
+// Tik op de prinses in het kleedhokje: op haar kroon gaan de kronen open, op haar haar de
+// kapsels, op haar ketting de kettingen, enzovoort. Zo hoef je niet te kunnen lezen om te
+// kiezen. Een wijzend handje laat zien dat het kan, tot er een keer op de prinses is getikt.
 
 // welke soort hoort bij deze plek op de prinses (vak 300 × 520)
 export function zoneAt(x, y, swimming) {
   if (swimming) return 'zwem';
-  if (y < 170) return 'kroon';
+  if (y < 92) return 'kroon';
+  if (y < 175) return 'haar';
   if (y < 228 && x > 110 && x < 190) return 'ketting';
+  if (y < 380 && (x < 98 || x > 202)) return 'haar'; // lange lokken langs het lijf
   if (y > 452) return 'schoenen';
   return 'jurk';
 }

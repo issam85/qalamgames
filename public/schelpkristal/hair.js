@@ -1,4 +1,4 @@
-// Het lange haar van de prinsessen, in drie lagen: achter het lijf, achter het gezicht
+// Het haar van de prinsessen (lang, of een staart of knot), in drie lagen: achter het lijf, achter het gezicht
 // (de kruin) en vóór het gezicht (pony en lokken over de schouders). Hoofd rond
 // (150, 118), vak 300 × 520. p = de verf van het haar (paint uit glans.js).
 import { shape, gloss, mirror, dots } from './glans.js';
@@ -9,6 +9,13 @@ const BACK = {
   krul: 'M150 50 C74 50 58 120 64 190 C68 260 56 300 70 340 Q150 372 230 340 C244 300 232 260 236 190 C242 120 226 50 150 50 Z',
   vlecht: 'M150 56 C88 56 78 118 84 186 L216 186 C222 118 212 56 150 56 Z',
 };
+// staart en knot: kort achter het hoofd, met een staart opzij of een knot bovenop
+const SHORT = 'M150 56 C88 56 78 118 84 176 L216 176 C222 118 212 56 150 56 Z';
+const TAIL = 'M188 76 C232 86 240 150 228 200 C220 240 232 282 214 318 C204 284 204 244 208 202 C212 160 204 118 182 96 Z';
+const BUN = 'M150 6 C168 6 176 18 176 30 C176 46 164 54 150 54 C136 54 124 46 124 30 C124 18 132 6 150 6 Z';
+const TIE = '<circle cx="194" cy="86" r="8" fill="#ff5fa2" stroke="#c2419a" stroke-width="1.5"/>';
+const SIDE = 'M108 118 C102 140 104 160 110 174 C114 152 116 136 118 122 Z';
+
 const CROWN = 'M150 58 C96 58 82 104 88 160 L212 160 C218 104 204 58 150 58 Z';
 const FRINGE = 'M106 116 C102 80 126 62 156 63 C188 65 200 92 196 120 C188 100 172 90 156 93 C140 97 128 93 121 85 C117 98 112 106 106 116 Z';
 
@@ -34,6 +41,8 @@ function braid(p) {
 }
 
 export function hairBack(style, p) {
+  if (style === 'staart') return shape(SHORT, p) + shape(TAIL, p) + shine('M216 130 C226 180 220 240 214 290') + TIE;
+  if (style === 'knot') return shape(SHORT, p) + shape(BUN, p) + gloss(142, 22, 9, 5, -10) + shape('M126 46 Q150 58 174 46 L172 54 Q150 64 128 54 Z', p);
   let extra = '';
   if (style === 'krul') extra = curls([[78, 330], [104, 350], [132, 358], [168, 358], [196, 350], [222, 330], [62, 270], [238, 270], [64, 210], [236, 210]], p);
   return shape(BACK[style], p) + extra + (style === 'vlecht' ? '' : shine('M92 200 C88 250 90 300 96 350'));
@@ -46,6 +55,7 @@ export function hairCrown(p) {
 export function hairFront(style, p) {
   let locks;
   if (style === 'krul') locks = mirror(curls([[106, 150], [100, 178], [102, 206], [96, 234], [100, 262]], p));
+  else if (style === 'staart' || style === 'knot') locks = mirror(shape(SIDE, p));
   else if (style === 'vlecht') locks = braid(p) + shape('M190 120 C200 150 198 170 192 188 C186 170 186 150 184 130 Z', p);
   else locks = mirror(shape(LOCK[style], p) + shine('M106 160 C102 200 100 240 100 280'));
   return locks + shape(FRINGE, p) + gloss(140, 80, 18, 7, -10) + shine('M128 76 C140 70 160 68 176 74');
