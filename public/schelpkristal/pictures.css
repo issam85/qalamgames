@@ -1,0 +1,124 @@
+/* Plaatjes op de knoppen: icoon met het woord klein eronder, tekeningen van de spullen in
+   het kleedhokje, en het wijzende handje bij de prinses. */
+
+.cat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat svg {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+.items {
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  overflow-y: auto;
+  min-height: 0;
+  padding: 2px;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 3px 5px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.item .pic {
+  width: 100%;
+  height: 64px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #2f2f80, #5b4a8f);
+}
+
+.item .pic svg {
+  width: 100%;
+  height: 100%;
+}
+
+.item.locked .pic {
+  filter: grayscale(0.9);
+  opacity: 0.55;
+}
+
+.item.locked {
+  position: relative;
+}
+
+.item.locked::before {
+  display: none;
+}
+
+/* slotje rechtsboven op wat nog niet van jou is */
+.item.locked::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 14px;
+  border-radius: 3px;
+  background: #8a6aa8;
+  box-shadow: 0 -6px 0 -2px #fff, 0 -7px 0 -1px #8a6aa8;
+}
+
+.with-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.with-pic .pic svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+}
+
+/* beginscherm: grote plaatjesknoppen, het woord klein eronder */
+.start-buttons .with-pic {
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 6px;
+  font-size: 15px;
+}
+
+.start-buttons .with-pic .pic svg {
+  width: 52px;
+  height: 52px;
+}
+
+@media (max-width: 700px) {
+  .pill.with-pic .name { display: none; }
+
+  .cat {
+    flex-direction: column;
+    gap: 0;
+    font-size: 11px;
+  }
+
+  .cat svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .items {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    max-height: 30vh;
+  }
+
+  .item .pic {
+    height: 52px;
+  }
+
+  .start-buttons .with-pic .pic svg {
+    width: 40px;
+    height: 40px;
+  }
+}
