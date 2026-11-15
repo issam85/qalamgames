@@ -4,9 +4,11 @@ const pad = (x) => ({ type: 'pad', x, y: 0, w: 1, h: 0.2 });
 const thorns = (x, w) => ({ type: 'thorn', x, y: 0, w, h: 0.5 });
 export const saw = (cx, cy, r) => ({ type: 'saw', cx, cy, r, x: cx - r, y: cy - r, w: 2 * r, h: 2 * r });
 
+const MACE_R = 0.38; // straal van de stekelbal (was 0,55: te moeilijk)
+
 function mace(px, py, length, swing, period, x0) {
-  const reach = length * Math.sin(swing) + 0.55;
-  return { type: 'mace', px, py, length, swing, period, x0, r: 0.55, x: px - reach, y: py - length - 0.55, w: 2 * reach, h: length + 1.1 };
+  const reach = length * Math.sin(swing) + MACE_R;
+  return { type: 'mace', px, py, length, swing, period, x0, r: MACE_R, x: px - reach, y: py - length - MACE_R, w: 2 * reach, h: length + 2 * MACE_R };
 }
 
 // zagen half in de grond, op de maat van een sprong
