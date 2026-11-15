@@ -3,13 +3,15 @@
 // (schelpen en kristallen op het strand, parels in de zee).
 import { loadGame, saveGame } from './storage.js';
 import { PRINCESSES } from './data.js';
-import { princessSvg } from './princess.js';
+import { princessSvg, setLooks } from './princess.js';
 import { initDressing, showDressing } from './dressing.js';
+import { decorate } from './pictures.js';
 import { initBeach, showBeach, hideBeach } from './beach.js';
 import { initShower, showShower } from './shower-room.js';
 import { initSea, showSea, hideSea } from './sea.js';
 
 const game = loadGame();
+setLooks(game.looks);
 const save = () => saveGame(game);
 
 function counters() {
@@ -50,6 +52,11 @@ function show(id, arg) {
   counters();
   SHOW[id](arg);
 }
+
+// plaatjes op de knoppen, voor wie nog niet leest
+[['to-strand', 'strand'], ['to-douche', 'douche'], ['to-zee', 'zee'], ['to-kleed', 'kleed'], ['kleed-done', 'klaar'], ['kleed-surprise', 'verras']]
+  .forEach(([id, name]) => decorate(document.getElementById(id), name));
+document.querySelectorAll('.pill.back').forEach((b) => decorate(b, 'terug'));
 
 initDressing({ game, save, counters });
 initBeach({ game, save, counters });

@@ -505,6 +505,21 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
   lantaarn. Ze zoeken samen (wat zij vinden telt mee), lopen langzamer (95) en rusten 4 s
   na een vondst; "Adam vond een schelp!" in een wolkje. Alleen vrienden: alles in ±42 s.
   `beach-friends.js` regels · tekenen in `beach.js` en `drawSay()` in `beach-draw.js`.
+- Voor kinderen die (nog) niet lezen (stap 1 van 4, nov 2026): overal een plaatje met het woord
+  klein eronder. Beginscherm, Klaar, Verras me en Terug krijgen een icoon (`pictures.js`,
+  `decorate()`); de soorten een icoon (`CAT_ICONS`); elk ding een kleine tekening uit de prinses
+  zelf in haar kleuren (`itemPicture()`, uitsnede per soort in `CROPS`). Tik op de prinses en de
+  soort van die plek gaat open (`doll-touch.js`, `zoneAt()`: hoofd en kroon = kronen, hals =
+  kettingen, voeten = schoenen, de rest = jurk); een wijzend handje laat dat zien tot de eerste
+  tik. CSS: `pictures.css`, `kleed-fit.css` (raster binnen de schermhoogte, Klaar! altijd in
+  beeld).
+- Haar per prinses (stap 2): soort "Haar" tussen Kroon en Ketting, zes kapsels (`HAIR_STYLES`:
+  golf, krul, vlecht, steil, staart, knot; staart en knot in `hair.js`) en negen kleuren
+  (`HAIR_COLORS`, ook roze, paars, blauw, zilver). Bewaard in `game.looks[nummer]` (`hair-pick.js`,
+  gecontroleerd in `validLooks()`); `setLooks()` in `princess.js` laat elke tekening dat haar
+  gebruiken. Tik op hoofd of lange lokken = Haar, bovenop het hoofd = Kroon. Volgende stappen,
+  elk na akkoord: 3 gezicht (ogen, wimpers, mond, lippenstift, blosjes, sproetjes, glitter) per
+  prinses, 4 oorbellen, armband, haarversiering, patroon op de jurk.
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.
