@@ -38,6 +38,13 @@ HTML-pagina in `public/`, geopend in een iframe (`components/GameView.jsx`).
   `<!-- qalam-seo -->`-blok per spelpagina, `public/robots.txt` en `public/sitemap.xml`.
   Nieuw spel = ook in `<noscript>`, `sitemap.xml` en een eigen SEO-blok.
 - Meer achtergrond: `PROJECT.md`.
+- App-versie (installeren op een tablet, bv. voor Samsung Kids): `public/manifest.webmanifest`,
+  iconen in `public/icons/` (blauw met het gouden Q-tegeltje, ruim in het midden zodat Android
+  het rond of als druppel kan uitsnijden), `public/sw.js` en `public/offline.html`. De service
+  worker bewaart bewust niets van de spellen (alles komt vers van de site); alleen zonder
+  internet toont hij `offline.html`. Wordt alleen in de gebouwde site aangemeld (`main.jsx`).
+  Installeren: in Chrome op de tablet ⋮ → "App installeren"; daarna in Samsung Kids bij de apps
+  toevoegen.
 
 ## Herstel 26 oktober 2026
 
