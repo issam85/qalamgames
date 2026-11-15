@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GameCard from './GameCard';
 import { LICHTINGEN } from '../data/lichtingen';
 import '../styles/lichtingen.css';
@@ -15,6 +15,13 @@ export default function Lichtingen() {
   const [activeId, setActiveId] = useState(LICHTINGEN[0].id);
   const active = LICHTINGEN.find((l) => l.id === activeId);
   const ranked = active.rest.length > 0;
+
+  // de knop in de hero opent een lichting (de nieuwste)
+  useEffect(() => {
+    const open = (e) => setActiveId(e.detail);
+    window.addEventListener('lichting', open);
+    return () => window.removeEventListener('lichting', open);
+  }, []);
 
   // Kies een tab en schuif hem in beeld (op mobiel staan de tabs in een schuifbare rij)
   const select = (id) => {

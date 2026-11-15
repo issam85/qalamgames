@@ -1,6 +1,11 @@
-import { Play } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 import LoopVideo from './LoopVideo';
+import { LICHTINGEN } from '../data/lichtingen';
 import '../styles/hero.css';
+
+// de nieuwste lichting staat bovenaan in data/lichtingen.js
+const NEWEST = LICHTINGEN[0];
+const openNewest = () => window.dispatchEvent(new CustomEvent('lichting', { detail: NEWEST.id }));
 
 export default function Hero() {
   return (
@@ -20,8 +25,8 @@ export default function Hero() {
           <p className="hero-sub">Programmeren met AI</p>
           <p className="hero-lead">Leerlingen uit groep 6, 7 en 8 bouwen met AI hun eigen games. Speel ze hier gratis, per lichting.</p>
           <div className="hero-actions">
-            <a href="#marioparty" className="btn btn-green btn-lg">
-              <Play size={20} fill="currentColor" aria-hidden="true" /> Speel Mario Party
+            <a href="#lichtingen" className="btn btn-green btn-lg" onClick={openNewest}>
+              <ArrowDown size={20} aria-hidden="true" /> Ga nu naar {NEWEST.label}
             </a>
             <a href="#lichtingen" className="btn btn-white btn-lg">Bekijk alle spellen</a>
           </div>
