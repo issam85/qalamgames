@@ -37,6 +37,21 @@ export function createScene(keyGlyph, keyName) {
     });
   }
 
+  // Op een tablet: welke speler staat het dichtst bij waar je tikt (op het veld)?
+  // Je tikt meestal op het lijf, dus rekenen vanaf een stukje lager: de voeten.
+  function nearestHuman(g, x, y) {
+    const a = Math.atan2((y + CHEST - view.cy) / view.ry, (x - view.cx) / view.rx);
+    let best = -1;
+    let bestD = Infinity;
+    g.players.forEach((p, i) => {
+      if (p.out || p.human < 0 || angles[i] === undefined) return;
+      let d = Math.abs(a - angles[i]) % (Math.PI * 2);
+      if (d > Math.PI) d = Math.PI * 2 - d;
+      if (d < bestD) [best, bestD] = [p.human, d];
+    });
+    return best;
+  }
+
   function bombPos(g) {
     const { flight } = g;
     if (flight) {
@@ -73,6 +88,14 @@ export function createScene(keyGlyph, keyName) {
     const p = pos(i);
     const player = g.players[i];
     const pose = poseOf(g, i, bomb, t);
+    if (player.human >= 0 && !player.out) {
+      c.fillStyle = player.color;
+      c.globalAlpha = 0.75;
+      c.beginPath();
+      c.ellipse(p.x, p.y, 40, 14, 0, 0, Math.PI * 2);
+      c.fill();
+      c.globalAlpha = 1;
+    }
     drawKid(c, player.kid, p.x + (pose.wobble || 0), p.y, 1, pose);
     if (pose.arms === 'hold' && progress(g) > 0.35) drawSweat(c, p.x, p.y, t);
     drawName(c, player, p.x, p.y, g.humans > 1 && player.human >= 0 ? keyName(player.human, g.humans) : '');
@@ -105,6 +128,8 @@ export function createScene(keyGlyph, keyName) {
     draw,
     drawBanners: (c, g, touch) => drawBanners(c, view, g, touch),
     pos,
+    nearestHuman,
+    reset() { angles.length = 0; },
     setPortrait(portrait) { view = portrait ? PORTRAIT : LANDSCAPE; return view; },
     get view() { return view; },
   };

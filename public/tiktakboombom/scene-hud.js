@@ -29,7 +29,9 @@ function pill(c, text, x, y, size, bg, fg) {
 
 export function drawName(c, player, x, y, key) {
   const human = player.human >= 0;
-  pill(c, key ? `${player.name} · ${key}` : player.name, x, y + 18, human ? 16 : 14, human ? '#ffd43b' : 'rgba(255,255,255,.82)', human ? '#7a4b00' : '#40506b');
+  const text = key ? `${player.name} · ${key}` : player.name;
+  if (human) pill(c, text, x, y + 18, 16, player.color, '#fff');
+  else pill(c, text, x, y + 18, 14, 'rgba(255,255,255,.82)', '#40506b');
 }
 
 // De toets die je nu moet indrukken, boven het hoofd.
@@ -43,11 +45,12 @@ export function drawKeyPrompt(c, glyph, x, y, t) {
   c.beginPath();
   c.arc(x, y, r, 0, Math.PI * 2);
   c.fill();
-  label(c, glyph, x, y + 1, glyph.length > 4 ? 15 : glyph.length > 1 ? 21 : 33, '#7a2e00');
+  const icon = /\p{Extended_Pictographic}/u.test(glyph);
+  label(c, glyph, x, y + 2, icon ? 30 : glyph.length > 4 ? 15 : glyph.length > 1 ? 21 : 33, '#7a2e00');
 }
 
 export function drawWait(c, x, y) {
-  pill(c, 'Wacht…', x, y, 19, '#fff', '#c62828');
+  pill(c, '✋ Wacht…', x, y, 19, '#fff', '#c62828');
 }
 
 // "Tik… tak…" groot op de grond, midden in de kring.
@@ -56,10 +59,13 @@ export function drawTikTak(c, v, text, urgent) {
 }
 
 export function drawTopBar(c, v, g) {
-  if (g.round > 0) pill(c, `Ronde ${g.round}`, v.w - 124, 34, 20, 'rgba(255,255,255,.92)', '#1565c0');
+  // Staand bovenaan in het midden; liggend rechtsboven, want daar zou de toets van het
+  // kind bovenaan in de kring eroverheen vallen.
+  const x = v.h > v.w ? v.w / 2 : v.w - 110;
+  if (g.round > 0) pill(c, `Ronde ${g.round}`, x, 30, 19, 'rgba(255,255,255,.92)', '#1565c0');
   const justHit = g.phase === 'boom' || g.phase === 'over' ? g.players[g.loser] : null;
   g.players.filter((p) => p.out && p !== justHit).forEach((p, i) => {
-    drawKid(c, p.kid, 38 + i * 56, 72, 0.5, { mood: 'soot' });
+    drawKid(c, p.kid, 100 + i * 56, 72, 0.5, { mood: 'soot' });
   });
 }
 
@@ -75,6 +81,10 @@ export function drawBanners(c, v, g, touch) {
     banner(c, v, `Ronde ${g.round}`, touch ? 'Tik zodra de bom bij je is!' : 'Klaar om door te geven?', '#ffd43b');
   } else if (g.phase === 'boom') {
     const p = g.players[g.loser];
-    banner(c, v, 'BOEM!', p.name === 'Jij' ? 'Jij hield de bom vast!' : `${p.name} hield de bom vast!`, '#ff7043');
+    const small = `${p.name} hield de bom vast!`;
+    banner(c, v, 'BOEM!', small, '#ff7043');
+    // het uitgevallen kind, met roet, links naast de tekst
+    const half = Math.max(c.measureText(small).width / 2, 120);
+    drawKid(c, p.kid, Math.max(34, v.w / 2 - half - 40), v.h / 2 + 62, 0.85, { mood: 'soot' });
   }
 }

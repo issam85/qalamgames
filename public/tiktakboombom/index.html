@@ -31,10 +31,9 @@
 <!-- /qalam-seo -->
 </head>
 <body>
-  <div id="stage"><canvas id="canvas"></canvas></div>
-  <div id="zones" hidden></div>
+  <div id="stage"><canvas id="canvas" role="img" aria-label="Speelveld: kinderen staan in een kring en geven een knipperende bom door"></canvas></div>
 
-  <button id="mute" class="mute"></button>
+  <button id="mute" class="mute" type="button" aria-label="Geluid uit" aria-pressed="false"></button>
 
   <div id="menu" class="overlay">
     <div class="card">
@@ -42,24 +41,35 @@
       <p class="how">De bom gaat rond in de kring en knippert steeds sneller. Geef hem snel door, maar pas als hij bij je is. Druk je te vroeg, dan laat je hem vallen! Wie de bom vasthoudt als hij ontploft, ligt eruit.<strong id="how-keys"></strong></p>
       <p class="ask">Hoeveel spelers?</p>
       <div class="choice">
-        <button class="btn on" data-players="1">1</button>
-        <button class="btn" data-players="2">2</button>
-        <button class="btn" data-players="3">3</button>
-        <button class="btn" data-players="4">4</button>
-        <button class="btn" data-players="5">5</button>
+        <button class="btn on" data-players="1" aria-pressed="true">1</button>
+        <button class="btn" data-players="2" aria-pressed="false">2</button>
+        <button class="btn" data-players="3" aria-pressed="false">3</button>
+        <button class="btn" data-players="4" aria-pressed="false">4</button>
+        <button class="btn" data-players="5" aria-pressed="false">5</button>
       </div>
-      <button id="start" class="btn">Start!</button>
+      <button id="start" class="btn"><span aria-hidden="true">&#9654;</span> Start!</button>
     </div>
   </div>
 
-  <button id="to-menu" class="back-btn" type="button" aria-label="Terug naar spelers kiezen" title="Terug naar spelers kiezen" hidden>&#8592;</button>
+  <button id="to-menu" class="back-btn" type="button" aria-label="Pauze" title="Pauze" hidden>&#8592;</button>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="card">
+      <h2 class="paused">Pauze</h2>
+      <div class="row">
+        <button id="resume" class="btn icon-btn"><span aria-hidden="true">&#9654;</span>Verder</button>
+        <button id="pause-menu" class="btn blue icon-btn"><span aria-hidden="true">&#10229;</span>Spelers kiezen</button>
+      </div>
+    </div>
+  </div>
 
   <div id="end" class="overlay" hidden>
     <div class="card">
       <h2 id="end-title"></h2>
       <p id="end-text" class="how"></p>
+      <div id="end-ranks" class="keys ranks"></div>
       <div class="row">
-        <button id="again" class="btn">Opnieuw</button>
+        <button id="again" class="btn"><span aria-hidden="true">&#8635;</span> Opnieuw</button>
         <button id="back" class="btn blue">Spelers kiezen</button>
       </div>
     </div>

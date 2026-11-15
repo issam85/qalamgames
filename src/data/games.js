@@ -17,7 +17,7 @@ export const GAMES = {
   tiktakboombom: {
     title: 'Tiktak Boom Bom', src: '/tiktakboombom/index.html', accent: '#e53935',
     blurb: 'De bom gaat rond in de kring en knippert steeds sneller. Geef hem snel door, maar pas als hij echt bij je is. Wie de bom vasthoudt als hij ontploft, ligt eruit. De laatste die overblijft wint!',
-    controls: [['Pijltje naar rechts', 'Bom doorgeven (1 speler)'], ['A, G, spatie, L, pijltje', 'Bom doorgeven (2 t/m 5 spelers)'], ['Tablet', 'Tik op je eigen strook']],
+    controls: [['Pijltje naar rechts', 'Bom doorgeven (1 speler)'], ['A, G, spatie, L of →', 'Elke speler heeft een eigen toets (A, G, spatie, L of →); het startscherm laat zien welke'], ['Tablet', 'Tik bij je eigen poppetje']],
     howto: 'Kies 1 tot 5 spelers; op het startscherm zie je wie welke toets heeft. Wacht tot de bom in je handen is en geef hem dan meteen door. Druk je te vroeg, dan laat je hem vallen.',
   },
   sterrensprong: {

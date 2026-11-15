@@ -27,8 +27,14 @@ export function setMuted(value) {
 export function unlockSound() {
   const Audio = window.AudioContext || window.webkitAudioContext;
   if (!ctx && Audio) ctx = new Audio();
-  ctx?.resume();
+  ctx?.resume().catch(() => {});
 }
+
+// Terug van een ander tabblad of de achtergrond: het geluid weer aanzetten (zonder
+// nieuwe AudioContext, die mag alleen na een klik of toets).
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && ctx) ctx.resume().catch(() => {});
+});
 
 function tone(freq, dur, type, vol, slideTo, delay = 0) {
   if (muted || !ctx) return;

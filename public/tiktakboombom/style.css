@@ -19,6 +19,7 @@ body {
   background: radial-gradient(circle at 50% 30%, #8ee0ff, #35a7f0 55%, #1565c0);
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 #stage {
@@ -119,6 +120,7 @@ button {
   font-size: 22px;
   background: #2e7d32;
   box-shadow: 0 5px 0 #1b5e20;
+  touch-action: manipulation;
 }
 
 .btn:active {

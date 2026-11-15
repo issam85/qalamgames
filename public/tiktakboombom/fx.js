@@ -1,4 +1,4 @@
-// Explosie, rook, trillend beeld, witte flits en korte teksten boven de kinderen.
+// Explosie, rook, trillend beeld, witte flits, korte teksten en een kring waar je tikt.
 import { label } from './scene-hud.js';
 
 const FIRE = ['#fff59d', '#ffca28', '#ff7043', '#e53935'];
@@ -6,6 +6,7 @@ const FIRE = ['#fff59d', '#ffca28', '#ff7043', '#e53935'];
 export function createFx() {
   let parts = [];
   let pops = [];
+  let rings = [];
   let shake = 0;
   let flash = 0;
 
@@ -33,6 +34,19 @@ export function createFx() {
     pops.push({ text, x, y, color, age: 0 });
   }
 
+  // Een kring waar je tikt: in je spelerskleur, grijs als het niet jouw beurt is.
+  function ripple(x, y, color) {
+    rings.push({ x, y, color, age: 0 });
+  }
+
+  function clear() {
+    parts = [];
+    pops = [];
+    rings = [];
+    shake = 0;
+    flash = 0;
+  }
+
   function update(dt) {
     shake = Math.max(0, shake - dt);
     flash = Math.max(0, flash - dt * 3.2);
@@ -46,6 +60,8 @@ export function createFx() {
     parts = parts.filter((p) => p.age < p.life);
     pops.forEach((p) => { p.age += dt; });
     pops = pops.filter((p) => p.age < 0.9);
+    rings.forEach((r) => { r.age += dt; });
+    rings = rings.filter((r) => r.age < 0.45);
   }
 
   function draw(c, v) {
@@ -56,6 +72,14 @@ export function createFx() {
       c.beginPath();
       c.arc(p.x, p.y, p.r * (0.5 + k * 0.7), 0, Math.PI * 2);
       c.fill();
+    });
+    rings.forEach((r) => {
+      c.globalAlpha = 1 - r.age / 0.45;
+      c.strokeStyle = r.color;
+      c.lineWidth = 7;
+      c.beginPath();
+      c.arc(r.x, r.y, 18 + r.age * 110, 0, Math.PI * 2);
+      c.stroke();
     });
     c.globalAlpha = 1;
     pops.forEach((p) => {
@@ -73,5 +97,5 @@ export function createFx() {
     ? [(Math.random() - 0.5) * 34 * shake, (Math.random() - 0.5) * 34 * shake]
     : [0, 0]);
 
-  return { boom, pop, update, draw, offset };
+  return { boom, pop, ripple, clear, update, draw, offset };
 }

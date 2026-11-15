@@ -1,5 +1,5 @@
 // Een nieuw potje: zes kinderen in de kring, spelers op vaste plekken.
-import { KIDS } from './data.js';
+import { KIDS, PLAYER_COLORS } from './data.js';
 
 // Op welke plek in de kring elke speler staat: verspreid, en in de volgorde van de toetsen.
 const HUMAN_SEATS = {
@@ -25,6 +25,7 @@ export function createGame(humans, rng = Math.random) {
   HUMAN_SEATS[humans].forEach((seat, human) => {
     players[seat].human = human;
     players[seat].name = humans === 1 ? 'Jij' : `Speler ${human + 1}`;
+    players[seat].color = PLAYER_COLORS[human];
   });
   return {
     players, humans, rng, phase: 'menu', round: 0, timer: 0, fuse: 1, elapsed: 0, blink: 0,

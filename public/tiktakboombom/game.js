@@ -7,7 +7,7 @@ export const FUSE_MAX = 30;
 const INTRO = 1.8;
 const BOOM = 2.6;
 const DROP = 0.8; // zo lang ben je de bom kwijt als je hem laat vallen
-const GRACE = 0.07; // zo kort voor de landing telt een druk nog als goed
+const GRACE = 0.16; // zo kort voor de landing telt een druk nog als goed
 
 export const progress = (g) => Math.min(1, g.elapsed / g.fuse);
 const alive = (g) => g.players.filter((p) => !p.out);
@@ -132,20 +132,21 @@ export function step(g, dt) {
   }
 }
 
-// Een speler drukt. Te vroeg (de bom vliegt nog naar je toe) = je laat hem straks vallen.
+// Een speler drukt; true = de druk telt. Te vroeg (bom vliegt nog naar je toe) = vallen.
 export function press(g, human) {
-  if (g.phase !== 'play') return;
   const i = g.players.findIndex((p) => p.human === human && !p.out);
-  if (i < 0) return;
-  if (g.flight) {
-    if (g.flight.to !== i || g.flight.early) return;
-    if (g.flight.dur - g.flight.t <= GRACE) {
-      g.flight.buffered = true;
-    } else {
-      g.flight.early = true;
-      emit(g, 'early', { who: i });
-    }
-  } else if (g.holder === i && g.drop <= 0) {
+  if (g.phase !== 'play' || i < 0) return false;
+  const f = g.flight;
+  if (!f) {
+    if (g.holder !== i || g.drop > 0) return false;
     throwBomb(g, i);
+    return true;
   }
+  if (f.to !== i || f.early) return false;
+  if (f.dur - f.t <= GRACE) f.buffered = true;
+  else {
+    f.early = true;
+    emit(g, 'early', { who: i });
+  }
+  return f.buffered;
 }

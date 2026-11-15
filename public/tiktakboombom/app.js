@@ -1,23 +1,24 @@
 // Schermen en spellus van Tiktak Boom Bom
-import { startRound, step, press } from './game.js';
+import { startRound, step } from './game.js';
 import { createGame } from './game-setup.js';
 import { resultOf } from './result.js';
 import { createScene } from './scene.js';
 import { bindInput, keyGlyph, keyName, isTouch } from './input.js';
 import { createFx } from './fx.js';
 import { sound, unlockSound, isMuted, setMuted } from './sound.js';
+import { addDots, choosePlayers, showResult, showMute } from './menu.js';
+import { createPresses } from './presses.js';
 
 const $ = (id) => document.getElementById(id);
 const stage = $('stage');
 const canvas = $('canvas');
 const c = canvas.getContext('2d');
-const menu = $('menu');
-const end = $('end');
 const scene = createScene(keyGlyph, keyName);
 const fx = createFx();
 
 let humans = 1;
 let game = createGame(1);
+let paused = false;
 let last = performance.now();
 
 function fit() {
@@ -31,31 +32,47 @@ function fit() {
   canvas.height = Math.round(v.h * k * ratio);
 }
 
+// Welk scherm erover ligt; ← alleen tijdens het spelen, geluid alleen op de schermen.
+function show(screen) {
+  ['menu', 'end', 'pause'].forEach((id) => { $(id).hidden = id !== screen; });
+  paused = screen === 'pause';
+  $('to-menu').hidden = Boolean(screen);
+  $('mute').hidden = !screen;
+}
+
+const playing = () => $('menu').hidden && $('end').hidden && !paused;
+
 function begin() {
   unlockSound();
   document.activeElement?.blur(); // anders vangt de Start-knop de toetsen af
   game = createGame(humans);
-  menu.hidden = true;
-  end.hidden = true;
-  $('to-menu').hidden = false;
+  scene.reset();
+  fx.clear();
+  show(null);
   startRound(game);
 }
 
-// terug naar spelers kiezen (tijdens het spelen met ←, na afloop met de knop)
 function toMenu() {
-  end.hidden = true;
-  menu.hidden = false;
-  $('to-menu').hidden = true;
   game = createGame(humans);
+  scene.reset();
+  fx.clear();
+  show('menu');
+}
+
+// Pauze met ← of Escape; Escape in de pauze = verder.
+function pause() {
+  if (playing()) show('pause');
+}
+
+function resume() {
+  show(null);
+  document.activeElement?.blur();
 }
 
 function showEnd() {
   const r = resultOf(game);
-  $('end-title').textContent = r.title;
-  $('end-title').classList.toggle('won', r.won);
-  $('end-text').textContent = r.text;
-  end.hidden = false;
-  $('to-menu').hidden = true;
+  showResult(r);
+  show('end');
   if (r.won) sound.win();
   else sound.lose();
 }
@@ -66,10 +83,10 @@ function handle(e) {
   else if (e.type === 'throw') sound.toss();
   else if (e.type === 'go') sound.go();
   else if (e.type === 'over') showEnd();
-  else if (e.type === 'early') fx.pop('Te vroeg!', at.x, at.y - 120, '#ffd43b');
+  else if (e.type === 'early') fx.pop('✋ Te vroeg!', at.x, at.y - 120, '#ffd43b');
   else if (e.type === 'drop') {
     sound.oops();
-    fx.pop('Oeps!', at.x, at.y - 120, '#ff8a65');
+    fx.pop('😬 Oeps!', at.x, at.y - 120, '#ff8a65');
   } else if (e.type === 'boom') {
     sound.boom();
     fx.boom(at.x, at.y - 44);
@@ -80,12 +97,16 @@ function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   const t = now / 1000;
-  step(game, dt);
-  game.events.splice(0).forEach(handle);
-  scene.update(game, dt);
-  fx.update(dt);
+  if (!paused) {
+    step(game, dt);
+    game.events.splice(0).forEach(handle);
+    scene.update(game, dt);
+    fx.update(dt);
+  }
   const k = canvas.width / scene.view.w;
-  const [sx, sy] = fx.offset();
+  const [sx, sy] = paused ? [0, 0] : fx.offset();
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.clearRect(0, 0, canvas.width, canvas.height);
   c.setTransform(k, 0, 0, k, sx * k, sy * k);
   scene.draw(c, game, t);
   fx.draw(c, scene.view);
@@ -93,49 +114,19 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
-// Op het startscherm: wie welke toets heeft. Op een tablet: de stroken om op te tikken.
-function showControls() {
-  const box = $('how-keys');
-  box.replaceChildren();
-  $('zones').replaceChildren();
-  const names = Array.from({ length: humans }, (_, i) => `Speler ${i + 1}`);
-  if (isTouch() || humans === 1) {
-    box.textContent = humans > 1 ? 'Iedereen tikt op de eigen strook van het scherm.'
-      : isTouch() ? 'Tik op het scherm om door te geven.' : 'Geef door met pijltje naar rechts.';
-  } else {
-    const keys = document.createElement('div');
-    keys.className = 'keys';
-    names.forEach((name, i) => {
-      const chip = document.createElement('span');
-      chip.textContent = `${name}: ${keyName(i, humans)}`;
-      keys.append(chip);
-    });
-    box.append(keys);
-  }
-  $('zones').hidden = !isTouch() || humans === 1;
-  $('zones').style.gridTemplateColumns = `repeat(${humans}, 1fr)`;
-  names.forEach((name) => {
-    const zone = document.createElement('div');
-    zone.textContent = name;
-    $('zones').append(zone);
-  });
-}
-
+addDots();
 document.querySelectorAll('[data-players]').forEach((btn) => {
   btn.addEventListener('click', () => {
     humans = Number(btn.dataset.players);
-    document.querySelectorAll('[data-players]').forEach((b) => b.classList.toggle('on', b === btn));
-    showControls();
+    choosePlayers(humans);
   });
 });
 $('start').addEventListener('click', begin);
 $('again').addEventListener('click', begin);
 $('back').addEventListener('click', toMenu);
-$('to-menu').addEventListener('click', toMenu);
-
-function showMute() {
-  $('mute').textContent = isMuted() ? 'Geluid: uit' : 'Geluid: aan';
-}
+$('to-menu').addEventListener('click', pause);
+$('resume').addEventListener('click', resume);
+$('pause-menu').addEventListener('click', toMenu);
 $('mute').addEventListener('click', () => {
   unlockSound();
   setMuted(!isMuted());
@@ -144,8 +135,17 @@ $('mute').addEventListener('click', () => {
 });
 showMute();
 
-bindInput(stage, () => humans, (who) => press(game, who));
+const presses = createPresses({ getGame: () => game, getHumans: () => humans, playing, scene, fx, canvas });
+bindInput(stage, {
+  getHumans: () => humans,
+  playing,
+  onKey: presses.onKey,
+  onTap: presses.onTap,
+  onEscape: () => (paused ? resume() : pause()),
+  onActivity: unlockSound,
+});
 addEventListener('resize', fit);
 fit();
-document.querySelector('[data-players="1"]').click();
+choosePlayers(1);
+show('menu');
 requestAnimationFrame(frame);

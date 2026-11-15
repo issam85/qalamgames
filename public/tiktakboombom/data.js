@@ -10,3 +10,7 @@ export const KIDS = [
   { name: 'Ilyas', skin: '#d9a273', shirt: '#fdd835', hair: 'cap', hairColor: '#c62828' },
   { name: 'Maryam', skin: '#c98d5e', shirt: '#ec407a', hair: 'hijab', hairColor: '#ffb300' },
 ];
+
+// Kleur per speler: de ring onder het poppetje, de naam, de toetsen en de tik-kring.
+// Geen rood of geel: die horen bij de bom en de knoppen.
+export const PLAYER_COLORS = ['#1e88e5', '#43a047', '#8e24aa', '#ef6c00', '#d81b60'];
