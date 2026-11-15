@@ -94,11 +94,13 @@ export function createPlayer(scene) {
     },
     update(run, dt, inMenu) {
       time += dt;
+      const base = run.flip ? Math.PI : 0; // ondersteboven hangt de lantaarn op zijn kop
+      const upright = Math.round((spin - base) / TURN) * TURN + base;
       if (run.fly) {
-        spin += (Math.round(spin / TURN) * TURN - spin) * Math.min(1, dt * 12); // rechtop op het tapijt
+        spin += (upright - spin) * Math.min(1, dt * 12); // rechtop op het tapijt
       } else if (run.grounded) {
         if (!wasGrounded) squash = 1;
-        spin += (Math.round(spin / TURN) * TURN - spin) * Math.min(1, dt * 24);
+        spin += (upright - spin) * Math.min(1, dt * 24);
       } else {
         spin -= SPIN * dt;
       }
@@ -118,6 +120,7 @@ export function createPlayer(scene) {
       const height = run.y - run.floor;
       shadow.position.set(run.x, run.floor + 0.04, 0);
       shadow.material.opacity = Math.max(0.08, 0.4 - height * 0.1);
+      shadow.visible = lantern.visible && !run.flip;
     },
   };
 }

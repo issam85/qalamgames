@@ -1,8 +1,9 @@
-// Poorten: een grote gloeiende ovaal waar je doorheen gaat. Roze = vliegen, mint = weer lopen.
+// Poorten: een grote gloeiende ovaal waar je doorheen gaat. Roze = vliegen, geel = ondersteboven,
+// mint = weer gewoon lopen.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { glowSprite } from './pattern.js';
 
-export const PORTAL_COLORS = { fly: '#ff6ec7', run: '#5cf2d6' };
+export const PORTAL_COLORS = { fly: '#ff6ec7', flip: '#ffe14d', run: '#5cf2d6' };
 const HEIGHT = 5.2;
 
 function buildPortal(portal) {

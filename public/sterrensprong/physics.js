@@ -1,6 +1,7 @@
-// Spelregels zonder beeld: lopen, springen, vliegen, landen en botsen. Los te testen.
+// Spelregels zonder beeld: lopen, springen, vliegen, ondersteboven, landen en botsen. Los te testen.
 import { PHYS } from './config.js';
 import { HAZARDS } from './hazards.js';
+import { fly, walk, settle } from './motion.js';
 
 const HEIGHT = PHYS.half * 2;
 const indexAt = (list, x) => {
@@ -12,9 +13,10 @@ const indexAt = (list, x) => {
 // start = plek op de grond om te beginnen; in de oefenmodus het laatste checkpoint
 export function createRun(level, start = 0) {
   const portal = indexAt(level.portals, start);
+  const mode = level.portals[portal].mode;
   return {
     level, x: start, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, ringBuffer: 0, cursor: 0,
-    state: 'run', zone: indexAt(level.zones, start), portal, fly: level.portals[portal].mode === 'fly',
+    state: 'run', zone: indexAt(level.zones, start), portal, fly: mode === 'fly', flip: mode === 'flip',
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
     events: [], // voor beeld: jump, land, boost, zone, portal
   };
@@ -30,7 +32,7 @@ function launch(run, ob, power) {
 }
 
 function tryBoost(run, ob, held) {
-  if (run.fly || run.used.has(ob)) return;
+  if (run.fly || run.flip || run.used.has(ob)) return;
   if (ob.type === 'pad') {
     if (run.vy <= 0 && run.y <= ob.y + ob.h + 0.05) launch(run, ob, PHYS.pad);
   } else if (run.y + HEIGHT > ob.y && run.y < ob.y + ob.h && (held || run.ringBuffer > 0)) {
@@ -38,13 +40,14 @@ function tryBoost(run, ob, held) {
   }
 }
 
-// een blok: erop staan of landen, met het tapijt langs de onderkant schuiven, of botsen
+// een blok: erop staan of landen, langs de onderkant schuiven (vliegen) of eronder landen
+// (ondersteboven), of botsen. Ondersteboven op de bovenkant komen is botsen.
 function touchBlock(run, ob, prevY, room) {
   const top = ob.y + ob.h;
   if (run.y >= top) room.floor = Math.max(room.floor, top);
   else if (run.y + HEIGHT <= ob.y) room.ceiling = Math.min(room.ceiling, ob.y);
-  else if (prevY >= top - PHYS.landTolerance && run.vy <= 0) room.floor = Math.max(room.floor, top);
-  else if (run.fly && prevY + HEIGHT <= ob.y + PHYS.landTolerance && run.vy >= 0) {
+  else if (!run.flip && prevY >= top - PHYS.landTolerance && run.vy <= 0) room.floor = Math.max(room.floor, top);
+  else if ((run.fly || run.flip) && prevY + HEIGHT <= ob.y + PHYS.landTolerance && run.vy >= 0) {
     room.ceiling = Math.min(room.ceiling, ob.y);
   } else run.state = 'dead';
 }
@@ -69,7 +72,7 @@ function resolve(run, prevY, held) {
   return room;
 }
 
-// elk stuk van het level heeft zijn eigen snelheid en kleur; poorten wisselen lopen en vliegen
+// elk stuk van het level heeft zijn eigen snelheid en kleur; poorten wisselen lopen, vliegen en ondersteboven
 function updatePlace(run) {
   const { zones, portals } = run.level;
   if (run.zone + 1 < zones.length && run.x >= zones[run.zone + 1].x) {
@@ -79,43 +82,9 @@ function updatePlace(run) {
   if (run.portal + 1 < portals.length && run.x >= portals[run.portal + 1].x) {
     run.portal++;
     run.fly = portals[run.portal].mode === 'fly';
+    run.flip = portals[run.portal].mode === 'flip';
     run.grounded = false;
     run.events.push({ type: 'portal', mode: portals[run.portal].mode, x: run.x, y: run.y });
-  }
-}
-
-// vasthouden = omhoog, loslaten = zakken
-function fly(run, held, dt) {
-  const push = held ? PHYS.flyUp : -PHYS.flyDown;
-  run.vy = Math.max(-PHYS.flyMax, Math.min(PHYS.flyMax, run.vy + push * dt));
-  run.y += run.vy * dt;
-}
-
-function walk(run, held, dt) {
-  if (run.grounded && (held || run.buffer > 0)) {
-    run.vy = PHYS.jump;
-    run.grounded = false;
-    run.buffer = 0;
-    run.events.push({ type: 'jump', x: run.x, y: run.y });
-  }
-  if (!run.grounded) {
-    run.vy -= PHYS.gravity * dt;
-    run.y += run.vy * dt;
-  }
-}
-
-function settle(run, room) {
-  if (run.fly) {
-    if (run.y <= room.floor) [run.y, run.vy] = [room.floor, Math.max(0, run.vy)];
-    if (run.y + HEIGHT >= room.ceiling) [run.y, run.vy] = [room.ceiling - HEIGHT, Math.min(0, run.vy)];
-  } else if (!run.grounded && run.vy <= 0 && run.y <= room.floor) {
-    run.y = room.floor;
-    run.vy = 0;
-    run.grounded = true;
-    run.events.push({ type: 'land', x: run.x, y: run.y });
-  } else if (run.grounded && run.y > room.floor) {
-    run.grounded = false;
-    run.vy = 0;
   }
 }
 

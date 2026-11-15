@@ -2,6 +2,7 @@
 import { row, rhythm, stairs, shelf, tunnel, padOver, towers, ringChain } from './patterns.js';
 import { flight } from './patterns-fly.js';
 import { sawRow, sawTowers, maceRow } from './patterns-hazards.js';
+import { upsideDown } from './patterns-flip.js';
 
 const AIR = 0.548; // zo lang duurt een gewone sprong
 const LEAD_IN = 14; // vrije aanloop
@@ -50,6 +51,9 @@ const WORLD_1 = buildWorld('Lantaarnstad', 'stad', [
   { title: 'Het vliegende tapijt', colors: ROSE, speed: 9.5, rest: 6, pieces: [
     flight(5, 3), row(2), flight(4, 3),
   ] },
+  { title: 'Ondersteboven', colors: AMBER, speed: 10, rest: 6, pieces: [
+    upsideDown(4, 1),
+  ] },
   { title: 'De doornentuin', colors: GREEN, speed: 10, rest: 6, pieces: [
     towers(3, 1, 3), row(3), ringChain(1), sawRow(2), towers(4, 1, 3), ringChain(2), maceRow(1), tunnel(5),
     row(3), sawTowers(3, 1, 3), ringChain(2), row(3), stairs(4, true), towers(5, 1, 2), maceRow(2), row(3),
@@ -68,6 +72,9 @@ const WORLD_2 = buildWorld('Sterrenbazaar', 'bazaar', [
   { title: 'Over de markt vliegen', colors: GREEN, speed: 11, rest: 5, pieces: [
     flight(7, 3), rhythm(4), flight(6, 2, { spiky: true }),
   ] },
+  { title: 'Op het plafond', colors: CRIMSON, speed: 11, rest: 5, pieces: [
+    upsideDown(6, 2),
+  ] },
   { title: 'Het dakterras', colors: TEAL, speed: 11.5, rest: 4, pieces: [
     sawTowers(6, 1, 2), maceRow(3), ringChain(3), tunnel(7), rhythm(6), towers(5, 3, 2), sawRow(3), stairs(4, true),
     ringChain(4), shelf(14, 2), rhythm(5, 2), towers(6, 1, 1), row(3), padOver(), ringChain(4),
@@ -85,6 +92,9 @@ const WORLD_3 = buildWorld('Hemelpaleis', 'paleis', [
   ] },
   { title: 'Door de wolken', colors: TEAL, speed: 12.5, rest: 3.5, pieces: [
     flight(8, 2, { saws: true }), rhythm(5), flight(7, 2, { spiky: true }), row(3), flight(6, 2, { spiky: true, saws: true }),
+  ] },
+  { title: 'Ondersteboven door het paleis', colors: ROSE, speed: 12.5, rest: 3.5, pieces: [
+    upsideDown(8, 3), row(3), upsideDown(6, 3),
   ] },
   { title: 'De top', colors: AMBER, speed: 13, rest: 3, pieces: [
     rhythm(8), sawTowers(8, 1, 1), ringChain(5), maceRow(4), tunnel(9), rhythm(7, 2), sawTowers(7, 3, 2),
