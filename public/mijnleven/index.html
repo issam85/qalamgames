@@ -10,10 +10,11 @@
   <link rel="stylesheet" href="huis.css">
   <link rel="stylesheet" href="kast.css">
   <link rel="stylesheet" href="kast-phone.css">
+  <link rel="stylesheet" href="knoppen.css">
+  <link rel="stylesheet" href="liggend.css">
   <link rel="stylesheet" href="kapper.css">
   <link rel="stylesheet" href="bad.css">
   <link rel="stylesheet" href="keuken.css">
-  <link rel="stylesheet" href="moskee.css">
   <link rel="stylesheet" href="winkel.css">
   <link rel="stylesheet" href="overlay.css">
 <!-- qalam-seo -->
@@ -42,7 +43,7 @@
   <section id="screen-huis" class="screen active">
     <header class="bar">
       <h1>Mijn Leven</h1>
-      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span><span class="stars-word"> sterren</span></div>
     </header>
     <div class="huis">
       <div class="huis-me">
@@ -64,9 +65,9 @@
 
   <section id="screen-kast" class="screen">
     <header class="bar">
-      <button class="pill home">Huis</button>
+      <button class="back-btn home" aria-label="Terug naar het huis">←</button>
       <h1>Kledingkast</h1>
-      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span> sterren</div>
+      <div class="stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg><span class="stars-count">0</span><span class="stars-word"> sterren</span></div>
     </header>
     <div class="kast">
       <nav id="kast-cats" class="cats" aria-label="Soort kleding"></nav>
@@ -77,8 +78,8 @@
         <div id="kast-swatches" class="swatches" aria-label="Kleur"></div>
         <div class="kast-buttons">
           <button id="kast-surprise" class="btn gold">Verras me!</button>
-          <button id="kast-photo" class="btn blue">Foto</button>
-          <button id="kast-done" class="btn green">Klaar!</button>
+          <button id="kast-photo" class="btn blue"><svg class="btn-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg> Foto</button>
+          <button id="kast-done" class="btn green"><span aria-hidden="true">✓</span> Klaar!</button>
         </div>
       </div>
     </div>
@@ -91,9 +92,10 @@
         <a id="photo-save" class="btn green" download="mijn-outfit.png">Opslaan</a>
         <button id="photo-close" class="btn blue">Terug</button>
       </div>
+      <p id="photo-tip" class="photo-tip" hidden>Vraag een grote mens om een schermafbeelding te maken.</p>
     </div>
   </div>
-  <div id="toast" class="toast" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <script type="module" src="app.js"></script>
 </body>

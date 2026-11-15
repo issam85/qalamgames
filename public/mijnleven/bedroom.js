@@ -2,8 +2,8 @@
 // muziekdoosje (tik op de toetsen of kies een liedje) en ga slapen. Slapen begint
 // een nieuwe dag, en kan pas als je moe bent (genoeg gedaan in huis).
 import { SWATCHES } from './data.js';
-import { PYJAMAS, bedroomSvg, musicSvg, keyAt } from './bedroom-scene.js';
-import { TUNES, playKey, playTune, stopTune } from './tunes.js';
+import { PYJAMAS, bedroomSvg, musicSvg, keyAt, pyjamaThumb, MUSIC_ICON, noteIcon } from './bedroom-scene.js';
+import { TUNES, playKey, playTune, stopTune, unlockAudio } from './tunes.js';
 import { trackPointer } from './pointer.js';
 import { roomScreen } from './screen.js';
 import { button, swatch, today } from './ui.js';
@@ -15,6 +15,7 @@ roomScreen({
 const el = (name) => document.getElementById(`slaap-${name}`);
 const PARTS = [['pyjama', 'Pyjama', 'Kies een pyjama en een kleur.'], ['muziek', 'Muziekdoosje', 'Tik op de toetsen en maak je eigen liedje, of kies er een.']];
 const NIGHT_MS = 2600; // zo lang duurt de nacht
+const TUNE_COLORS = ['#ffd43b', '#5ec8ff', '#ff8ac8'];
 
 let api = null; // { getPyjama(), setPyjama(pyjama), getOutfit(), getHair(), getMakeup(), tired() → { done, need } }
 let part = 'pyjama';
@@ -24,6 +25,7 @@ let litTimer = 0;
 
 const say = (text) => { el('hint').textContent = text; };
 export const inPyjama = (pyjama) => pyjama.day === today();
+export const isNight = () => night;
 
 function draw() {
   const pyjama = api.getPyjama();
@@ -51,28 +53,35 @@ function wear(patch) {
 
 function items() {
   const pyjama = api.getPyjama();
-  if (part === 'pyjama') return PYJAMAS.map((label, i) => button('item', label, inPyjama(pyjama) && pyjama.kind === i, () => wear({ kind: i })));
-  return TUNES.map(([label, steps]) => button('item', label, false, () => {
+  if (part === 'pyjama') {
+    return PYJAMAS.map((label, i) => button('item', label, inPyjama(pyjama) && pyjama.kind === i, () => wear({ kind: i }), pyjamaThumb(i, pyjama.color)));
+  }
+  return TUNES.map(([label, steps], i) => button('item', label, false, () => {
+    unlockAudio();
     say(`Je hoort ${label}.`);
     playTune(steps, light, () => say(PARTS[1][2]));
-  }));
+  }, noteIcon(TUNE_COLORS[i])));
 }
 
 function renderPanel() {
   const pyjama = api.getPyjama();
   const { done, need } = api.tired();
+  const icons = { pyjama: pyjamaThumb(pyjama.kind, pyjama.color), muziek: MUSIC_ICON };
   el('nav').replaceChildren(...PARTS.map(([key, label, hint]) => button('cat', label, key === part, () => {
+    if (key === 'muziek') unlockAudio();
     part = key;
     stopTune();
     say(hint);
     render();
-  })));
+  }, icons[key])));
   el('label').textContent = done >= need ? 'Je bent moe' : `${done} van ${need} dingen gedaan`;
   el('meter').style.width = `${Math.min(1, done / need) * 100}%`;
   el('items').replaceChildren(...items());
   el('colors').replaceChildren(...(part === 'pyjama' ? SWATCHES : []).map(([hex, name]) => swatch(
     hex, name, inPyjama(pyjama) && pyjama.color === hex, () => wear({ color: hex }),
   )));
+  // tijdens de nacht doet geen enkele knop iets
+  document.querySelectorAll('#screen-slaap .kast button').forEach((btn) => { btn.disabled = night; });
 }
 
 function render() {
@@ -80,8 +89,10 @@ function render() {
   draw();
 }
 
-// het wordt nacht: je ligt in bed, en daarna roept onMorning() de nieuwe dag
+// Het wordt nacht: je ligt in bed, en daarna roept onMorning() de nieuwe dag. Geeft
+// false terug als het al nacht is.
 export function fallAsleep(onMorning) {
+  if (night) return false;
   stopTune();
   night = true;
   part = 'pyjama';
@@ -89,8 +100,10 @@ export function fallAsleep(onMorning) {
   render();
   setTimeout(() => {
     night = false;
+    renderPanel();
     onMorning();
   }, NIGHT_MS);
+  return true;
 }
 
 export function initBedroom(bedroomApi) {

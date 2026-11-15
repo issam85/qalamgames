@@ -1,17 +1,15 @@
-// De kapper: kies gereedschap en gebruik het op het haar. Borstel en kam sleep je
-// over de knopen, de schaar sleep je door een lok, de föhn sleep je tot het haar
-// glanst; puntkam, hoed en hoofddoek werken met een tik. Alles wordt bewaard.
+// De kapper: borstel en kam sleep je over de knopen, de schaar door een lok, de föhn
+// tot het haar glanst; puntkam, hoed en hoofddoek werken met een tik.
 import { bustSvg, shineSvg, knotsLeft, freshHair, newDay, SALON } from './hair.js';
 import { clippingsSvg } from './hair-styles.js';
 import { paint } from './glans.js';
 import { TOOLS, toolSvg } from './salon-tools.js';
 import { DRY_STEPS, TAP_DRY, onHair, untangle, cut, tapHair } from './salon-actions.js';
 import { renderSalonPanel } from './salon-panel.js';
-import { trackPointer } from './pointer.js';
+import { trackPointer, onFrame } from './pointer.js';
 import { today } from './ui.js';
 
-const stageEl = document.getElementById('kapper-stage');
-const hintEl = document.getElementById('kapper-hint');
+const [stageEl, hintEl] = ['stage', 'hint'].map((name) => document.getElementById(`kapper-${name}`));
 
 let api = null; // { getOutfit(), getMakeup(), getHair(), setHair(hair), getOwned() }
 let tool = TOOLS[0];
@@ -30,6 +28,7 @@ function draw() {
     + clippingsSvg(falling, paint(h.color), performance.now()) + toolSvg(tool.key, pointer);
   stageEl.innerHTML = bustSvg(api.getOutfit(), h, api.getMakeup(), extra, SALON);
 }
+const redraw = onFrame(draw);
 
 // laat de afgeknipte stukjes vallen tot ze weg zijn
 function fall() {
@@ -125,7 +124,7 @@ function onMove(p, pressed) {
   const from = pointer || p;
   pointer = p;
   if (p && pressed) drag(p, from);
-  draw();
+  redraw();
 }
 
 export function initSalon(salonApi) {

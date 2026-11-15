@@ -1,12 +1,12 @@
 // De badkamer: onder de douche was je je met spons, douche en handdoek (slepen); voor
 // de spiegel poets je je tanden (slepen) en doe je make-up op (kleur kiezen, tikken).
-import { TOOLS, toolSvg } from './bath-tools.js';
+import { TOOLS, toolSvg, toolIcon } from './bath-tools.js';
 import { MAKEUP, freshMakeup, hasColor } from './makeup.js';
-import { BRUSH_STEPS, freshBath, newDay, washed, progress, wash, stepDone, onFace, onMouth } from './bath.js';
+import { BRUSH_STEPS, freshBath, newDay, washed, progress, wash, stepDone, neededAt, STEPS, onFace, onMouth } from './bath.js';
 import { showerSvg, mirrorSvg } from './bath-scene.js';
-import { trackPointer } from './pointer.js';
+import { trackPointer, onFrame } from './pointer.js';
 import { roomScreen } from './screen.js';
-import { button, swatch, today } from './ui.js';
+import { button, swatch, keyed, pulse, today } from './ui.js';
 
 roomScreen({
   room: 'bad', title: 'Badkamer', nav: 'Spullen in de badkamer', stage: 'salon-stage', heading: 'Schoon',
@@ -44,6 +44,7 @@ function draw() {
     ? showerSvg(api.getHair(), bath(), api.getMakeup(), cursor)
     : mirrorSvg(api.getMakeup(), { open: tool.key === 'tanden', clean: bath().teeth, foam: brushed > 0 && !bath().teeth }, cursor);
 }
+const redraw = onFrame(draw);
 
 function check(label, ok) {
   const li = document.createElement('li');
@@ -55,11 +56,11 @@ function check(label, ok) {
 function renderPanel() {
   const b = bath();
   const part = progress(b);
-  toolsEl.replaceChildren(...TOOLS.map((t) => button('cat', t.label, t === tool, () => {
+  toolsEl.replaceChildren(...TOOLS.map((t) => keyed(button('cat', t.label, t === tool, () => {
     tool = t;
     say(t.hint);
     render();
-  })));
+  }, toolIcon(t, pick[t.key])), t.key)));
   labelEl.textContent = part === 1 ? 'Helemaal schoon!' : `${Math.round(part * 100)}%`;
   meterEl.style.width = `${part * 100}%`;
   listEl.replaceChildren(check('Douchen', washed(b)), check('Tanden poetsen', b.teeth));
@@ -89,6 +90,9 @@ function tap(p) {
 function drag(p) {
   if (tool.scene === 'douche') {
     const spots = wash(bath().spots, p, tool.key);
+    const need = spots ? '' : neededAt(bath().spots, p);
+    // te vroeg (douche op vuil, handdoek op schuim): de knop van het goede spul licht op
+    if (need && STEPS.indexOf(need) < STEPS.indexOf(tool.key)) pulse(toolsEl.querySelector(`[data-key="${need}"]:not(.is-next)`));
     if (!spots) return;
     setBath({ spots });
     if (stepDone(spots, tool.key)) say(NEXT[tool.key]);
@@ -114,7 +118,7 @@ export function initBathroom(bathApi) {
     move: (p, pressed) => {
       pointer = p;
       if (p && pressed) drag(p);
-      draw();
+      redraw();
     },
     up: () => {},
   });

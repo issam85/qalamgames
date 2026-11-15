@@ -1,6 +1,7 @@
 // De tekeningen bij het vuur: het fornuis met de pan, de balk met de pijl, en het
 // gerecht als het klaar is.
-import { GOOD } from './cook.js';
+import { GOOD, goodZone } from './cook.js';
+import { scoped } from './glans.js';
 
 const GOLD = '#e8a33d';
 const hex = (n) => Math.round(n).toString(16).padStart(2, '0');
@@ -17,6 +18,9 @@ const steam = (x, y) => `<path d="M${x} ${y} q-8 -11 0 -22 t0 -22" fill="none" s
 const star = (x, y) => `<path d="M${x} ${y} l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="#ffd43b"/>`;
 const dots = (list, r, fill) => `<g fill="${fill}">${list.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>`;
 
+const SNAIL = '<path d="M-12 6 H10 Q14 6 14 2" fill="none" stroke="#8a6400" stroke-width="3" stroke-linecap="round"/><circle cx="-2" cy="-1" r="7" fill="#ffe066" stroke="#8a6400" stroke-width="2"/><path d="M-2 -1 m-3 0 a3 3 0 1 0 3 -3" fill="none" stroke="#8a6400" stroke-width="1.5"/>';
+const THUMB = '<path d="M-8 -1 h4 v10 h-4 z" fill="#43a047"/><path d="M-3 9 V-1 L1 -9 Q4 -11 4 -7 L3 -3 H9 Q12 -3 11 0 L9 7 Q8 9 6 9 Z" fill="#66bb6a" stroke="#1b5e20" stroke-width="1.5" stroke-linejoin="round"/>';
+const FLAME = '<path d="M0 -10 C6 -4 9 1 7 5 C5 10 -5 10 -7 5 C-9 0 -4 -3 0 -10 Z" fill="#ff7a3d"/><path d="M0 -2 C3 1 4 4 2 6 C0 8 -3 7 -3 4 C-3 2 -1 1 0 -2 Z" fill="#ffd43b"/>';
 const STOVE = '<defs><linearGradient id="g-fornuis" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b6b78"/><stop offset="1" stop-color="#2f2f38"/></linearGradient></defs>'
   + '<rect x="30" y="226" width="240" height="114" fill="url(#g-fornuis)"/><rect x="30" y="226" width="240" height="8" fill="#8a8a9a"/><rect x="30" y="226" width="240" height="2" fill="#fff" opacity="0.6"/>'
   + '<g fill="#b8c2d0" stroke="#55555f" stroke-width="1.5"><circle cx="60" cy="300" r="9"/><circle cx="90" cy="300" r="9"/><circle cx="210" cy="300" r="9"/><circle cx="240" cy="300" r="9"/></g><g stroke="#2f2f38" stroke-width="2" stroke-linecap="round"><path d="M60 294 v6"/><path d="M90 294 v6"/><path d="M210 294 v6"/><path d="M240 294 v6"/></g>'
@@ -24,15 +28,18 @@ const STOVE = '<defs><linearGradient id="g-fornuis" x1="0" y1="0" x2="0" y2="1">
   + '<g fill="#ff7a59"><path d="M100 246 l8 -16 8 16z"/><path d="M124 250 l8 -18 8 18z"/><path d="M160 250 l8 -18 8 18z"/><path d="M184 246 l8 -16 8 16z"/></g>'
   + '<g fill="#ffd43b"><path d="M128 250 l4 -9 4 9z"/><path d="M164 250 l4 -9 4 9z"/></g>';
 
-// de balk: links nog niet goed, groen = goed, rechts te laat; de pijl loopt mee
-function barSvg(heat) {
+// de balk: links nog niet goed, groen = goed, rechts te laat; de pijl loopt mee.
+// extra = hoeveel breder het groen is (na een paar keer mis)
+function barSvg(heat, extra) {
   const x = (part) => 50 + 200 * part;
+  const zone = goodZone(extra);
   return '<rect x="50" y="34" width="200" height="16" rx="8" fill="#ffe9a8"/><rect x="234" y="34" width="16" height="16" rx="8" fill="#5d3a1a"/>'
-    + `<rect x="${x(GOOD[1])}" y="34" width="${x(1) - x(GOOD[1]) - 8}" height="16" fill="#5d3a1a"/>`
-    + `<rect x="${x(GOOD[0])}" y="34" width="${x(GOOD[1]) - x(GOOD[0])}" height="16" fill="#43a047"/>`
+    + `<rect x="${x(zone[1])}" y="34" width="${x(1) - x(zone[1]) - 8}" height="16" fill="#5d3a1a"/>`
+    + `<rect x="${x(zone[0])}" y="34" width="${x(zone[1]) - x(zone[0])}" height="16" fill="#43a047"/>`
     + `<path d="M${x(heat).toFixed(1)} 32 l-8 -14 h16 z" fill="#c2419a" stroke="#fff" stroke-width="2"/>`
-    + `<g font-size="10" text-anchor="middle" fill="#5b4a6e"><text x="${x(GOOD[0] / 2)}" y="64">nog niet</text>`
-    + `<text x="${x((GOOD[0] + GOOD[1]) / 2)}" y="64" fill="#1b5e20">goed!</text><text x="${x((1 + GOOD[1]) / 2)}" y="64">te laat</text></g>`;
+    // onder de balk: een slak (nog niet), een duim (goed!) en een vlammetje (te laat)
+    + [[zone[0] / 2, SNAIL, 'nog niet'], [(zone[0] + zone[1]) / 2, THUMB, 'goed!'], [(1 + zone[1]) / 2, FLAME, 'te laat']]
+      .map(([part, icon, word]) => `<g transform="translate(${x(part).toFixed(1)} 68)">${icon}<text y="22" font-size="11" text-anchor="middle" fill="#5b4a6e">${word}</text></g>`).join('');
 }
 
 function panSvg(recipe, heat) {
@@ -54,8 +61,8 @@ function stackSvg(count, x, y, rx) {
   return `<ellipse cx="${x}" cy="${y + rx * 0.16}" rx="${rx * 1.35}" ry="${rx * 0.3}" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>${cakes}`;
 }
 
-export function stoveSvg(recipe, round, heat) {
-  return STOVE + barSvg(heat) + panSvg(recipe, heat) + (!recipe.pot && round ? stackSvg(round, 78, 304, 28) : '');
+export function stoveSvg(recipe, round, heat, extra = 0) {
+  return STOVE + barSvg(heat, extra) + panSvg(recipe, heat) + (!recipe.pot && round ? stackSvg(round, 78, 304, 28) : '');
 }
 
 const BOWL = '<path d="M82 222 C86 276 124 286 150 286 C176 286 214 276 218 222 Z" fill="#fff" stroke="#e6d6f5" stroke-width="2"/><ellipse cx="150" cy="222" rx="68" ry="16" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>';
@@ -73,3 +80,6 @@ export function dishSvg(recipe) {
     + star(60, 110) + star(232, 96) + star(240, 190) + star(54, 196)
     + '<text x="150" y="64" text-anchor="middle" font-size="26" fill="#c2419a">Klaar!</text>';
 }
+
+// het gerecht als plaatje voor de knop van het recept
+export const dishThumb = (recipe) => scoped(`<svg viewBox="66 176 168 120" aria-hidden="true">${DISH[recipe.key](recipe)}</svg>`);

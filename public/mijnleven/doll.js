@@ -1,7 +1,7 @@
 // Het meisje: bouwt de SVG op uit de gekozen kleren, laag voor laag, in de Glans-stijl
 // (glans.js). Het vak is 300 × 520: hoofd rond (150, 118), schouders op 196, handen op
 // (90, 330) en (210, 330), de tas hangt aan de rechterhand.
-import { JURK, HOOFDDOEK, SCHOENEN, TAS, SIERADEN, EXTRA, GOWN, gownTop } from './doll-parts.js';
+import { JURK, HOOFDDOEK, SCHOENEN, TAS, EXTRA, GOWN, gownTop, jewels } from './doll-parts.js';
 import { SKIN, SKIN_PAINT, INK, paint, defs, mirror, scoped } from './glans.js';
 
 export { SKIN };
@@ -46,7 +46,7 @@ export function arms(p) {
     + hand(90));
 }
 
-// outfit: { choice: { categorie: nummer }, color: { categorie: kleur } }
+// outfit: { choice: { categorie: nummer, sieraden: [nummers] }, color: { categorie: kleur } }
 export function dollSvg(outfit, makeup) {
   const { choice, color } = outfit;
   const p = Object.fromEntries(Object.keys(color).map((k) => [k, paint(soft(color[k]))]));
@@ -61,7 +61,7 @@ export function dollSvg(outfit, makeup) {
     + face(makeup)
     + (gown ? gownTop(p.jurk) : SCHOENEN[choice.schoenen](p.schoenen) + TAS[choice.tas](p.tas))
     + hand(210)
-    + SIERADEN[choice.sieraden](p.sieraden)
+    + jewels(choice.sieraden, p.sieraden)
     + EXTRA[choice.extra](p.extra)
     + '</svg>');
 }

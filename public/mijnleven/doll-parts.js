@@ -101,6 +101,11 @@ export const SIERADEN = [
   (p) => `<path d="M118 208 ${STAR}" fill="${p.c}" stroke="#fff" stroke-width="2"/>`,
   (p) => `<path d="M124 202 Q150 280 176 202" fill="none" stroke="${p.c}" stroke-width="4"/><path d="M144 258 ${STAR}" fill="${p.c}" stroke="#fff" stroke-width="2"/>`,
 ];
+const ARMBANDEN = 3;
+const HORLOGE = 4;
+// alle sieraden uit de lijst; met een horloge (links) zitten de armbanden alleen rechts
+export const jewels = (list, p) => list.map((i) => (i === ARMBANDEN && list.includes(HORLOGE)
+  ? `<ellipse cx="210" cy="317" rx="13" ry="5" fill="none" stroke="${p.c}" stroke-width="5"/>` : SIERADEN[i](p))).join('');
 
 export const EXTRA = [
   () => '',

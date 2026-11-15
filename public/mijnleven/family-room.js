@@ -3,9 +3,9 @@
 // boek over een dochter te slepen, en wie alle hartjes heeft mag naar bed.
 import { MEMBERS, READ_STEPS, freshFamily, newDay, progress, allFed, memberAt, readTo, act } from './family.js';
 import { familySvg } from './family-scene.js';
-import { trackPointer } from './pointer.js';
+import { trackPointer, onFrame } from './pointer.js';
 import { roomScreen } from './screen.js';
-import { button, cursorSvg, today } from './ui.js';
+import { button, keyed, glyphIcon, cursorSvg, today } from './ui.js';
 
 roomScreen({ room: 'gezin', title: 'Gezin', nav: 'Wat ga je doen', stage: 'salon-stage', heading: 'Gelukkig' });
 const navEl = document.getElementById('gezin-nav');
@@ -30,18 +30,21 @@ let api = null; // { getFamily(), setFamily(family), getMeal(), eatMeal() }
 let tool = TOOLS[0];
 let pointer = null; // plek van muis of vinger in het vak van de tekening
 let reading = MEMBERS.map(() => 0); // hoe ver je bent met voorlezen, per gezinslid
+let hungry = -1; // wie er nu een wolkje met de keuken heeft (geen eten)
+let hungryTimer = 0;
 
 const family = () => api.getFamily();
 const say = (text) => { hintEl.textContent = text; };
-const draw = () => { stageEl.innerHTML = familySvg(family(), api.getMeal(), cursorSvg(tool.glyph, pointer, 0)); };
+const draw = () => { stageEl.innerHTML = familySvg(family(), api.getMeal(), cursorSvg(tool.glyph, pointer, 0), hungry); };
+const redraw = onFrame(draw);
 
 function renderPanel() {
   const part = progress(family());
-  navEl.replaceChildren(...TOOLS.map((t) => button('cat', t.label, t === tool, () => {
+  navEl.replaceChildren(...TOOLS.map((t) => keyed(button('cat', t.label, t === tool, () => {
     tool = t;
     say(t.hint);
     render();
-  })));
+  }, glyphIcon(t.glyph, '-26 -26 52 52')), t.key)));
   labelEl.textContent = part === 1 ? 'Iedereen is blij!' : `${Math.round(part * 100)}%`;
   meterEl.style.width = `${part * 100}%`;
 }
@@ -56,11 +59,23 @@ function change(next) {
   renderPanel();
 }
 
+// gezinslid i krijgt even een wolkje met de keuken: er is nog geen eten
+function askFood(i) {
+  hungry = i;
+  clearTimeout(hungryTimer);
+  hungryTimer = setTimeout(() => {
+    hungry = -1;
+    draw();
+  }, 3000);
+}
+
 function tap(p) {
   const i = memberAt(p);
   if (i < 0) return;
   const result = act(family(), tool.key, i, Boolean(api.getMeal()));
   if (result.text) say(result.text);
+  // geen eten: een wolkje met de keuken erin, zodat je ziet waar je heen moet
+  if (tool.key === 'eten' && !result.family && !api.getMeal() && !family().fed[i]) askFood(i);
   if (!result.family) return;
   change(result.family);
   // als iedereen gegeten heeft, is het eten op
@@ -92,7 +107,7 @@ export function initFamily(familyApi) {
     move: (p, pressed) => {
       pointer = p;
       if (p && pressed && tool.key === 'boek') read(p);
-      draw();
+      redraw();
     },
     up: () => {},
   });
@@ -111,6 +126,10 @@ export function showFamily() {
   pointer = null;
   reading = MEMBERS.map(() => 0);
   if (progress(family()) === 1) say('Iedereen is blij en de meisjes slapen. Morgen willen ze weer spelen!');
-  else say(api.getMeal() || allFed(family()) ? tool.hint : 'Er is nog geen eten. Kook iets in de keuken, of speel eerst met de meisjes.');
+  else if (api.getMeal() || allFed(family())) say(tool.hint);
+  else {
+    say('Er is nog geen eten. Kook iets in de keuken, of speel eerst met de meisjes.');
+    askFood(0);
+  }
   render();
 }

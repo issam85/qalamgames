@@ -1,0 +1,98 @@
+/* Liggend op een lage tablet of telefoon (hooguit 520 hoog): drie smalle kolommen.
+   Knoppen blijven groot genoeg voor een vinger (44–48 px); past het niet, dan kun je
+   de kolom schuiven. */
+
+@media (max-height: 520px) and (min-width: 701px) {
+  .kast {
+    grid-template-columns: 170px minmax(0, 1fr) 310px;
+    gap: 10px;
+  }
+
+  .cats {
+    gap: 5px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .cat {
+    flex: none;
+    min-height: 44px;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-width: 2px;
+  }
+
+  .cat.has-icon {
+    padding: 2px 10px 2px 4px;
+  }
+
+  .cat.has-icon .btn-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .kast-panel {
+    gap: 6px;
+    padding: 8px 10px;
+    overflow-y: auto;
+  }
+
+  .kast-panel h2 {
+    display: none;
+  }
+
+  .items {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .item {
+    min-height: 48px;
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+
+  .item .btn-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .item small {
+    font-size: 10px;
+  }
+
+  .swatches {
+    gap: 6px;
+  }
+
+  .swatch {
+    width: 44px;
+    height: 44px;
+    border-width: 3px;
+  }
+
+  .kast-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .kast-buttons .gold {
+    grid-column: auto;
+  }
+
+  .btn {
+    min-height: 44px;
+    font-size: 14px;
+    padding: 8px 4px;
+  }
+
+  .bar {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .back-btn {
+    width: 44px;
+    height: 44px;
+  }
+}

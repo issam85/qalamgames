@@ -1,26 +1,23 @@
 // Moskee en Mekka: links kies je wudu (de stappen in de goede volgorde tikken), het
 // gebed (bij de lucht het goede gebed kiezen) of de reis naar Mekka (rondjes om de
-// Kaaba slepen, Zamzam drinken, heen en weer lopen tussen Safa en Marwa).
+// Kaaba slepen, Zamzam drinken, heen en weer lopen tussen Safa en Marwa). Het paneel
+// zit in mosque-panel.js.
 import {
-  WUDU, WUDU_SHELF, PRAYERS, KAABA, SAFA_X, MARWA_X, freshMosque, newDay, wuduDone, prayersDone, askedPrayer,
-  pickWudu, pickPrayer, journeyStep, progress, onSquare, circle, walk, towardsMarwa,
+  WUDU, PRAYERS, KAABA, SAFA_X, MARWA_X, freshMosque, newDay, wuduDone, prayersDone, askedPrayer,
+  pickWudu, pickPrayer, journeyStep, onSquare, circle, walk, towardsMarwa,
 } from './mosque.js';
 import { wuduSvg, prayerSvg } from './mosque-scene.js';
 import { meccaSvg } from './mecca-scene.js';
 import { JOURNEY, intro } from './mosque-text.js';
-import { trackPointer } from './pointer.js';
-import { roomScreen } from './screen.js';
-import { button, today } from './ui.js';
+import { renderMosquePanel, mosqueMeter } from './mosque-panel.js';
+import { trackPointer, onFrame } from './pointer.js';
+import { pulse, today } from './ui.js';
 
-roomScreen({
-  room: 'moskee', title: 'Moskee en Mekka', nav: 'Wat ga je doen', stage: 'cook-stage',
-  extra: '<div id="moskee-items" class="items"></div>',
-});
 const el = (name) => document.getElementById(`moskee-${name}`);
-const PARTS = [['wudu', 'Wudu'], ['gebed', 'Gebed'], ['mekka', 'Reis naar Mekka']];
 let api = null; // { getMosque(), setMosque(mosque), journeyDone() }
 let part = 'wudu';
 let where = { x: KAABA.x + 76, y: KAABA.y }; // waar jij loopt op de reis
+let lap = null; // waar de haal om de Kaaba nu is (null = er is geen haal op het plein)
 
 const mosque = () => api.getMosque();
 const say = (text) => { el('hint').textContent = text; };
@@ -29,6 +26,7 @@ function draw() {
   if (part === 'wudu') el('stage').innerHTML = wuduSvg(mosque());
   else el('stage').innerHTML = part === 'gebed' ? prayerSvg(mosque()) : meccaSvg(mosque(), where);
 }
+const redraw = onFrame(draw);
 
 function change(next, text) {
   api.setMosque(next);
@@ -38,8 +36,17 @@ function change(next, text) {
 
 function tapWudu(index) {
   const next = pickWudu(mosque(), index);
-  if (!next) say(index < mosque().wudu ? 'Die stap heb je al gedaan.' : `Nog niet. Eerst: ${WUDU[mosque().wudu].toLowerCase()}.`);
-  else change(next, wuduDone(next) ? 'Je wudu is klaar! Nu kun je bidden.' : 'Goed zo! Wat komt er nu?');
+  if (next) {
+    change(next, wuduDone(next) ? 'Je wudu is klaar! Nu kun je bidden.' : 'Goed zo! Wat komt er nu?');
+    return;
+  }
+  if (index < mosque().wudu) {
+    say('Die stap heb je al gedaan.');
+    return;
+  }
+  // een foute stap: de goede knop licht op
+  say(`Nog niet. Eerst: ${WUDU[mosque().wudu].toLowerCase()}.`);
+  pulse(el('items').querySelector(`[data-key="stap-${mosque().wudu}"]`));
 }
 
 function tapPrayer(index) {
@@ -63,73 +70,58 @@ function travel(next) {
   renderPanel();
 }
 
-function items() {
-  const m = mosque();
-  if (part === 'wudu') return WUDU_SHELF.map((i) => button('item', WUDU[i], i < m.wudu, () => tapWudu(i)));
-  if (part === 'gebed') return PRAYERS.map((p, i) => button('item', p.name, false, () => tapPrayer(i)));
-  if (journeyStep(m) === 'zamzam') return [button('btn gold', 'Drink Zamzam', false, () => travel({ ...m, zamzam: true }))];
-  if (journeyStep(m) !== 'klaar') return [];
-  const link = document.createElement('a');
-  link.className = 'btn gold';
-  link.href = '/#hajj';
-  link.target = '_top';
-  link.textContent = 'Speel het Hajj-spel';
-  return [link];
-}
-
-function meter() {
-  const amount = progress(mosque(), part);
-  el('label').textContent = amount === 1 ? 'Klaar!' : `${Math.round(amount * 100)}%`;
-  el('meter').style.width = `${amount * 100}%`;
-}
-
-function renderPanel() {
-  const m = mosque();
-  // een onderdeel dat af is krijgt een vinkje
-  const ok = { wudu: wuduDone(m), gebed: prayersDone(m), mekka: journeyStep(m) === 'klaar' };
-  el('nav').replaceChildren(...PARTS.map(([key, label]) => button('cat', ok[key] ? `${label} ✓` : label, key === part, () => {
+const renderPanel = () => renderMosquePanel(mosque(), part, {
+  part: (key) => {
     part = key;
     say(intro(mosque(), part));
     render();
-  })));
-  el('title').textContent = PARTS.find(([key]) => key === part)[1];
-  meter();
-  el('items').replaceChildren(...items());
-}
+  },
+  wudu: tapWudu,
+  prayer: tapPrayer,
+  zamzam: () => travel({ ...mosque(), zamzam: true }),
+});
 
 function render() {
   renderPanel();
   draw();
 }
 
-// slepen op de reis: rondjes om de Kaaba, of lopen tussen Safa en Marwa
+// Slepen op de reis: rondjes om de Kaaba, of lopen tussen Safa en Marwa. Bij de tawaf
+// telt alleen een haal op het plein: ga je eraf, dan begint de haal opnieuw waar je
+// weer op het plein komt (een sprong over de Kaaba telt dus niet).
 function onMove(p, pressed) {
   if (!p || !pressed || part !== 'mekka') return;
   const step = journeyStep(mosque());
-  if (step === 'tawaf' && onSquare(p)) {
-    travel(circle(mosque(), where, p));
-    where = p;
-    meter();
+  if (step === 'tawaf') {
+    if (!onSquare(p)) lap = null;
+    else {
+      if (lap) travel(circle(mosque(), lap, p));
+      lap = p;
+      where = p;
+      mosqueMeter(mosque(), part);
+    }
   } else if (step === 'sai') {
     where = { x: Math.max(SAFA_X, Math.min(MARWA_X, p.x)), y: 0 };
     travel(walk(mosque(), where.x));
   }
-  draw();
+  redraw();
 }
 
 export function initMosque(mosqueApi) {
   api = mosqueApi;
   trackPointer(el('stage'), {
-    // bij de tawaf begint een nieuwe haal waar je neerkomt: een sprong telt niet mee;
     // bij Zamzam drink je met een tik
     down: (p) => {
-      const step = part === 'mekka' ? journeyStep(mosque()) : '';
-      if (step === 'tawaf' && onSquare(p)) where = p;
-      if (step === 'zamzam') travel({ ...mosque(), zamzam: true });
+      lap = null;
+      if (part === 'mekka' && journeyStep(mosque()) === 'zamzam') {
+        travel({ ...mosque(), zamzam: true });
+        draw();
+        return;
+      }
       onMove(p, true);
     },
     move: onMove,
-    up: () => {},
+    up: () => { lap = null; },
   });
   el('reset').addEventListener('click', () => {
     where = { x: KAABA.x + 76, y: KAABA.y };

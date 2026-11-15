@@ -28,6 +28,17 @@ body {
   background: linear-gradient(180deg, #f6e9ff 0%, #ffe6f3 55%, #e6fff4 100%);
   padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
     max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  /* op een tablet: geen blauwe vlek bij een tik en geen tekst die blauw wordt */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* de foto mag je wel vasthouden om hem op te slaan */
+#photo-img {
+  -webkit-user-select: auto;
+  user-select: auto;
+  -webkit-touch-callout: default;
 }
 
 button, a {
@@ -52,7 +63,8 @@ button, a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 14px;
+  /* rechts ruimte voor het deurtje van de website (rechtsboven over het spel) */
+  padding: 6px 66px 6px 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 4px 14px rgba(120, 80, 160, 0.12);
@@ -65,15 +77,6 @@ button, a {
   font-weight: 700;
   font-size: clamp(22px, 3.4vw, 34px);
   color: var(--pink);
-}
-
-.pill {
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 3px solid #e9d5ff;
-  background: #fff;
-  color: #6d28d9;
-  font-weight: 800;
 }
 
 .stars {

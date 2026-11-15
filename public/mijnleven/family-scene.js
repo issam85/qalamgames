@@ -5,6 +5,7 @@ import { SKIN_PAINT, INK, paint, defs, shape, gloss } from './glans.js';
 import { RECIPES } from './recipes.js';
 import { MEMBERS, hearts } from './family.js';
 import { sceneSvg } from './ui.js';
+import { ICONS } from './house-icons.js';
 import { wall, planks, rug, windowSvg, frame, grad, star } from './decor.js';
 
 const HAIR = paint('#3b2314');
@@ -25,7 +26,7 @@ const ROOM = wall('#ffe6f0', 262) + windowSvg(124, 14, 52, 50, 'day', '#ff8ac8')
 const heart = (x, y, full) => `<path d="M${x} ${y} c-7 -8 -14 2 0 12 c14 -10 7 -20 0 -12z" fill="${full ? RED.fill : '#fff'}" stroke="${full ? RED.line : '#c9b8d8'}" stroke-width="2"/>`
   + (full ? `<circle cx="${x - 3.5}" cy="${y - 1}" r="1.6" fill="#fff" opacity="0.8"/>` : '');
 const heartsRow = (list, x, y) => list.map((full, j) => heart(x + (j - (list.length - 1) / 2) * 16, y, full)).join('');
-const label = (name, x) => `<text x="${x}" y="326" text-anchor="middle" font-size="12" fill="#5b4a6e">${name}</text>`;
+const label = (name, x) => `<text x="${x}" y="328" text-anchor="middle" font-size="14" fill="#5b4a6e">${name}</text>`;
 // links en rechts hetzelfde, gespiegeld rond x
 const mirror = (x, one) => `${one}<g transform="translate(${2 * x} 0) scale(-1 1)">${one}</g>`;
 const head = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${SKIN_PAINT.fill}" stroke="${SKIN_PAINT.line}" stroke-width="1.2"/>`;
@@ -87,12 +88,22 @@ function mealSvg(meal) {
   if (!recipe) return '';
   return '<ellipse cx="226" cy="64" rx="30" ry="9" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>'
     + `<path d="M204 62 C210 40 242 40 248 62 Z" fill="${recipe.mix}" stroke="rgba(0,0,0,0.15)"/>`
-    + `<text x="226" y="88" text-anchor="middle" font-size="10" fill="#5b4a6e">${recipe.label}</text>`;
+    + `<text x="226" y="90" text-anchor="middle" font-size="14" fill="#5b4a6e">${recipe.label}</text>`;
 }
 
-// extra = wat er nog bovenop moet (wat je vasthoudt, bij de muis)
-export function familySvg(family, meal, extra = '') {
+// een wolkje met de keuken erin boven gezinslid i: "ik heb honger"
+function bubble(i) {
+  if (i < 0) return '';
+  const x = Math.min(232, Math.max(68, MEMBERS[i].x));
+  const y = MEMBERS[i].child ? 84 : 2;
+  return `<path d="M${x - 24} ${y + 4} h48 a8 8 0 0 1 8 8 v24 a8 8 0 0 1 -8 8 h-18 l-6 8 -6 -8 h-18 a8 8 0 0 1 -8 -8 v-24 a8 8 0 0 1 8 -8 z" fill="#fff" stroke="#c2419a" stroke-width="2.5"/>`
+    + ICONS.keuken.replace('<svg ', `<svg x="${x - 16}" y="${y + 8}" width="32" height="32" `);
+}
+
+// extra = wat er nog bovenop moet (wat je vasthoudt, bij de muis), hungry = wie er
+// een wolkje met de keuken heeft (-1 = niemand)
+export function familySvg(family, meal, extra = '', hungry = -1) {
   const people = MEMBERS.map((m, i) => (m.child ? child(m, i, family) : papa(m, family))).join('');
   const paints = [SHIRT, HAIR, KUFI, RED, BLANKET, paint('#3a2a4d'), paint('#f4f4f4'), ...MEMBERS.filter((m) => m.child).map((m) => paint(m.color))];
-  return sceneSvg('Jouw gezin in de woonkamer', defs(paints) + ROOM + mealSvg(meal) + people + extra);
+  return sceneSvg('Jouw gezin in de woonkamer', defs(paints) + ROOM + mealSvg(meal) + people + bubble(hungry) + extra);
 }

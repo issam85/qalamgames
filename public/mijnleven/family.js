@@ -73,3 +73,11 @@ export function act(family, tool, i, hasMeal) {
   }
   return {};
 }
+
+// wat het gezin als eerste nog wil: de sleutel van de knop die je dan nodig hebt
+export function wish(family) {
+  if (!allFed(family)) return 'eten';
+  if (!family.tea) return 'thee';
+  if (family.play.some((n) => n < THROWS)) return 'bal';
+  return family.read.every(Boolean) ? 'bed' : 'boek';
+}

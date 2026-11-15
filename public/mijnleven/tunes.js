@@ -14,10 +14,22 @@ export const TUNES = [
 let audio = null;
 let timers = [];
 
+// Geluid mag pas na een tik van jou (Android en iPad houden het anders stil). Roep dit
+// aan in de klik zelf, vóór een liedje begint.
+export function unlockAudio() {
+  try {
+    audio = audio || new AudioContext();
+    if (audio.state !== 'running') audio.resume();
+  } catch {
+    // geen geluid op dit apparaat
+  }
+}
+
 // één toets: een heldere toon die snel wegsterft, zoals een muziekdoosje
 export function playKey(index) {
   try {
     audio = audio || new AudioContext();
+    if (audio.state !== 'running') audio.resume();
     const now = audio.currentTime;
     const tone = audio.createOscillator();
     const volume = audio.createGain();

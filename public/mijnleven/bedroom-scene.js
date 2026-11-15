@@ -1,7 +1,7 @@
 // De tekeningen van de slaapkamer: de kamer met het bed (overdag, in pyjama of
 // 's nachts slapend) en het muziekdoosje met acht toetsen.
 import { dollSvg, face, arms, soft, SKIN } from './doll.js';
-import { paint, defs, shape, mirror, gloss } from './glans.js';
+import { paint, defs, shape, mirror, gloss, scoped } from './glans.js';
 import { wall, planks, rug, windowSvg, lamp, grad, dots as decoDots } from './decor.js';
 import { STYLE_SVG } from './hair-styles.js';
 import { sceneSvg } from './ui.js';
@@ -16,6 +16,19 @@ const PATTERN = [
   '<g fill="#fff" opacity="0.6"><rect x="108" y="220" width="84" height="12"/><rect x="106" y="260" width="88" height="12"/><rect x="104" y="300" width="92" height="12"/></g>',
   `<g fill="#fff" opacity="0.8">${dots([[128, 226], [170, 240], [142, 272], [176, 296], [124, 314], [156, 328]], 7)}</g>`,
 ];
+
+const JACKET = 'M112 196 C104 230 106 256 102 300 C98 320 100 332 104 338 L196 338 C200 332 202 320 198 300 C194 256 196 230 188 196 Z';
+
+// plaatjes voor de knoppen: het pyjamajasje met zijn patroon, het muziekdoosje en een
+// muzieknoot in een eigen kleur
+export function pyjamaThumb(kind, color) {
+  const p = paint(soft(color));
+  return scoped(`<svg viewBox="88 186 124 158" aria-hidden="true">${defs([p])}${arms(p).replace(/<circle[^>]*>/g, '')}${shape(JACKET, p)}${PATTERN[kind]}</svg>`);
+}
+export const MUSIC_ICON = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 18 L40 18 L36 8 L12 8 Z" fill="#ffd1ec" stroke="#c9a400" stroke-width="2" stroke-linejoin="round"/>'
+  + '<rect x="6" y="18" width="36" height="22" rx="5" fill="#c2419a" stroke="#c9a400" stroke-width="2"/><g fill="#fff"><rect x="11" y="26" width="5" height="10" rx="2"/><rect x="19" y="26" width="5" height="10" rx="2"/><rect x="27" y="26" width="5" height="10" rx="2"/><rect x="35" y="26" width="3" height="10" rx="1.5"/></g></svg>';
+export const noteIcon = (c) => `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 34 V10 L38 6 V30" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>`
+  + `<ellipse cx="15" cy="35" rx="7" ry="5.5" fill="${c}"/><ellipse cx="33" cy="31" rx="7" ry="5.5" fill="${c}"/></svg>`;
 
 // de kamer: muur met een raam op de nacht, een lamp, houten vloer en een kleed
 const ROOM = wall('#eadffc', 270) + windowSvg(60, 26, 60, 60, 'night', '#b36bff') + lamp(232, '#ff8ac8')
@@ -36,7 +49,7 @@ function standing(look) {
   const leg = shape('M108 330 L148 330 L146 494 L112 494 Z', p) + '<ellipse cx="128" cy="500" rx="24" ry="9" fill="#fff" stroke="#e6d6f5" stroke-width="2"/>';
   const [back, front] = STYLE_SVG[0](hair, look.hair.ends);
   return `<svg ${place} viewBox="0 0 300 520">${defs([p, hair])}${back}${mirror(leg)}`
-    + shape('M112 196 C104 230 106 256 102 300 C98 320 100 332 104 338 L196 338 C200 332 202 320 198 300 C194 256 196 230 188 196 Z', p)
+    + shape(JACKET, p)
     + `${PATTERN[look.pyjama.kind]}${arms(p)}${front}${face(look.makeup)}</svg>`;
 }
 
@@ -74,8 +87,9 @@ export function musicSvg(lit) {
   const keys = paints.map((p, i) => `<rect x="${keyX(i)}" y="178" width="23" height="${140 - i * 9}" rx="8" fill="${p.fill}" stroke="${i === lit ? '#fff' : p.line}" stroke-width="${i === lit ? 4 : 1.5}"/>` + gloss(keyX(i) + 7, 196, 4, 10)).join('');
   const notes = lit >= 0 ? `<text x="${keyX(lit) + 4}" y="166" font-size="22" fill="#c2419a">♪</text>` : '';
   const box = paint('#c2419a');
-  return sceneSvg('Het muziekdoosje', defs([...paints, box]) + wall('#eadffc') + lamp(252, '#ffd43b')
-    + `<path d="M70 70 L230 70 L214 30 L86 30 Z" fill="${paint('#ffd1ec').fill}" stroke="#c9a400" stroke-width="3" stroke-linejoin="round"/><rect x="62" y="70" width="176" height="68" rx="10" fill="${box.fill}" stroke="#c9a400" stroke-width="3"/>` + gloss(90, 86, 14, 6, -20)
+  const lid = paint('#ffd1ec');
+  return sceneSvg('Het muziekdoosje', defs([...paints, box, lid]) + wall('#eadffc') + lamp(252, '#ffd43b')
+    + `<path d="M70 70 L230 70 L214 30 L86 30 Z" fill="${lid.fill}" stroke="#c9a400" stroke-width="3" stroke-linejoin="round"/><rect x="62" y="70" width="176" height="68" rx="10" fill="${box.fill}" stroke="#c9a400" stroke-width="3"/>` + gloss(90, 86, 14, 6, -20)
     + '<text x="150" y="112" text-anchor="middle" font-size="18" fill="#fff">Muziekdoosje</text>'
     + '<rect x="30" y="322" width="240" height="18" fill="#d8b98c"/>' + keys + notes);
 }

@@ -3,7 +3,7 @@
 import { WUDU, PRAYERS, askedPrayer, prayersDone, wuduDone } from './mosque.js';
 import { sceneSvg } from './ui.js';
 import { wall, tiles, grad, glow, sparkles } from './decor.js';
-import { gloss, light, dark } from './glans.js';
+import { gloss, light, dark, scoped } from './glans.js';
 
 const dots = (list, r) => list.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('');
 // de wasplaats: tegels met een rij boogjes, een gouden kraan en een witte bak
@@ -22,19 +22,22 @@ export function wuduSvg(mosque) {
     const ok = i < mosque.wudu;
     return `<rect x="150" y="${y - 14}" width="108" height="28" rx="14" fill="#fff" stroke="${ok ? '#43a047' : '#b9e3de'}" stroke-width="3"/>`
       + `<circle cx="166" cy="${y}" r="10" fill="${ok ? '#43a047' : '#1e8f84'}"/><text x="166" y="${y + 4}" text-anchor="middle" font-size="11" fill="#fff">${ok ? '✓' : i + 1}</text>`
-      + `<text x="182" y="${y + 4}" font-size="12" fill="${ok ? '#1b5e20' : '#9bb8b4'}">${ok ? name : '?'}</text>`;
+      + `<text x="182" y="${y + 5}" font-size="14" fill="${ok ? '#1b5e20' : '#9bb8b4'}">${ok ? name : '?'}</text>`;
   }).join('');
   const shine = wuduDone(mosque) ? `<g fill="#ffd43b">${dots([[60, 180], [118, 170], [70, 300], [116, 306]], 5)}</g>${sparkles([[100, 160, 5], [130, 300, 4]])}` : '';
   return sceneSvg('De wasplaats voor wudu', WASH + rows + shine);
 }
 
-// per gebed: de lucht (boven, onder), de zon of maan en de kleur van de moskee
+// Per gebed: de lucht (boven, onder), de zon of een gloed op de horizon, de maan en
+// de sterren, en of het donker is. Het oosten is rechts, het westen links.
+// Fajr: nog donker en sterren, een bleke streep licht in het oosten, nog geen zon.
+// Maghrib: de zon is net onder, een oranjerode gloed in het westen, boven al donker.
 const SKY = [
-  { top: '#2b3a67', low: '#f7b7a3', sun: [250, 234, '#ffcf87'], dark: true },
+  { top: '#141d45', low: '#33477a', glow: [262, 236, '#d6e8ff'], stars: true, dark: true },
   { top: '#4db4f5', low: '#cdeeff', sun: [150, 54, '#ffe066'] },
   { top: '#6fb7f0', low: '#ffe2b0', sun: [70, 122, '#ffc24d'] },
-  { top: '#4a3470', low: '#ff9a5a', sun: [62, 234, '#ff7a3d'], dark: true },
-  { top: '#0b1030', low: '#1d2a5a', moon: true, dark: true },
+  { top: '#1c1f4a', low: '#7a3f6a', glow: [38, 236, '#ff6a3d'], dark: true },
+  { top: '#0b1030', low: '#1d2a5a', moon: true, stars: true, dark: true },
 ];
 const STARS = `<g fill="#fff" opacity="0.9">${dots([[60, 40], [104, 78], [150, 30], [198, 66], [240, 34], [226, 112], [76, 124], [128, 108]], 2)}</g>`;
 const MOON = '<path d="M206 40 A22 22 0 1 0 228 76 A17 17 0 1 1 206 40 Z" fill="#fff3c4"/>';
@@ -55,14 +58,24 @@ function mosqueSvg(night) {
 const MAT = grad('kleed-m', '#e05a4a', '#9c2a1e', 0.3, 1) + '<path d="M106 262 H194 L206 330 H94 Z" fill="url(#g-kleed-m)" stroke="#7a1f14" stroke-width="1.5"/><path d="M114 270 H186 L194 322 H106 Z" fill="none" stroke="#ffd43b" stroke-width="3"/>'
   + '<path d="M136 318 V296 C136 280 164 280 164 296 V318 Z" fill="#ffd43b" opacity="0.85"/><g stroke="#ffd43b" stroke-width="2" stroke-linecap="round"><path d="M98 334 v4 M110 334 v4 M122 334 v4 M134 334 v4 M146 334 v4 M158 334 v4 M170 334 v4 M182 334 v4 M194 334 v4"/></g>';
 
+// de lucht (een rij uit SKY, horizon op y = 236), h = hoe hoog het vlak is
+function skySvg(sky, h) {
+  const [x, y, c] = sky.sun || sky.glow || [0, 0, '#fff3c4'];
+  const halo = sky.sun ? `<circle cx="${x}" cy="${y}" r="60" fill="url(#g-zon)"/><circle cx="${x}" cy="${y}" r="24" fill="${c}"/>` : '';
+  return grad('lucht', sky.top, sky.low) + glow('zon', c) + `<rect x="30" y="0" width="240" height="${h}" rx="14" fill="url(#g-lucht)"/>`
+    + (sky.glow ? `<defs><radialGradient id="g-horizon"><stop offset="0" stop-color="${c}" stop-opacity="0.95"/><stop offset="0.45" stop-color="${c}" stop-opacity="0.5"/>`
+      + `<stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${x}" cy="${y}" rx="150" ry="105" fill="url(#g-horizon)"/>` : '')
+    + halo + (sky.stars ? STARS : '') + (sky.moon ? MOON : '');
+}
+
+// een tegeltje met de lucht van gebed i, voor op de knop
+export const skyTile = (i) => scoped(`<svg viewBox="30 40 240 196" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${skySvg(SKY[i], 236)}</svg>`);
+
 export function prayerSvg(mosque) {
   const done = prayersDone(mosque);
   const sky = SKY[done ? 4 : PRAYERS.indexOf(askedPrayer(mosque))];
-  const glowing = sky.moon ? MOON + STARS : `<circle cx="${sky.sun[0]}" cy="${sky.sun[1]}" r="24" fill="${sky.sun[2]}"/>`;
   const title = done ? '<text x="150" y="150" text-anchor="middle" font-size="18" fill="#ffd43b">Alle vijf gebeden!</text>' : '';
   const ground = sky.dark ? grad('gras', '#2e5460', '#1b353d') : grad('gras', '#9ddc9a', '#5fb376');
-  return sceneSvg('De moskee', grad('lucht', sky.top, sky.low) + glow('zon', sky.sun ? sky.sun[2] : '#fff3c4')
-    + `<rect x="30" y="0" width="240" height="340" rx="14" fill="url(#g-lucht)"/>`
-    + (sky.sun ? `<circle cx="${sky.sun[0]}" cy="${sky.sun[1]}" r="60" fill="url(#g-zon)"/>` : '') + `${glowing}${mosqueSvg(sky.dark)}`
+  return sceneSvg('De moskee', `${skySvg(sky, 340)}${mosqueSvg(sky.dark)}`
     + `${ground}<rect x="30" y="236" width="240" height="104" fill="url(#g-gras)"/>${MAT}${title}`);
 }

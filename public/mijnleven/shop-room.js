@@ -1,9 +1,13 @@
 // De winkel: kies links kleren, make-up of haarspullen, tik op iets om het te passen
 // en koop het met je sterren. Wat je koopt zie je meteen terug in de kast, de
 // badkamer en bij de kapper.
-import { GROUPS, ITEMS, owns, buy } from './shop.js';
+import { GROUPS, ITEMS, owns, buy, parseKey } from './shop.js';
 import { shopSvg } from './shop-scene.js';
 import { roomScreen } from './screen.js';
+import { itemThumb, catThumb } from './thumbs.js';
+import { hatThumb } from './thumbs-hair.js';
+import { TOOLS as MAKEUP_TOOLS, toolIcon } from './bath-tools.js';
+import { MAKEUP } from './makeup.js';
 import { button } from './ui.js';
 
 roomScreen({
@@ -18,6 +22,18 @@ let group = GROUPS[0][0];
 let item = null; // wat je bekijkt
 
 const say = (text) => { el('hint').textContent = text; };
+const lipstick = (kind, hex) => toolIcon(MAKEUP_TOOLS.find((t) => t.key === kind), hex);
+
+// het plaatje van iets uit de winkel: de kleding in jouw kleur, de make-up in zijn
+// kleur, of het haarspul op een hoofd
+function iconOf(item) {
+  const [kind, index] = parseKey(item.key);
+  if (item.group === 'kleren') return itemThumb(kind, index, api.getLook().outfit.color[kind]);
+  return item.group === 'makeup' ? lipstick(kind, MAKEUP[kind][index][0]) : hatThumb(index);
+}
+const GROUP_ICONS = {
+  kleren: () => catThumb('jurk', api.getLook().outfit.color.jurk), makeup: () => lipstick('lips', '#e0245e'), haar: () => hatThumb(3),
+};
 const owned = () => api.getOwned();
 
 function draw() {
@@ -39,13 +55,15 @@ function renderPanel() {
     item = null;
     say('Tik op iets om het te passen.');
     render();
-  })));
+  }, GROUP_ICONS[key]())));
   el('label').textContent = `${stars} ${stars === 1 ? 'ster' : 'sterren'}`;
   el('meter').style.width = `${Math.min(1, stars / MOST) * 100}%`;
   el('items').replaceChildren(...ITEMS.filter((i) => i.group === group).map((i) => {
     const mine = owns(owned(), i.key);
-    return button('item', mine ? `${i.label} ✓` : `${i.label} · ${i.price} ★`, i === item, () => look(i));
+    return button('item', mine ? `${i.label} ✓` : `${i.label} · ${i.price} ★`, i === item, () => look(i), iconOf(i));
   }));
+  // Kopen is grijs als er niets te kopen is: niets gekozen, al van jou of te weinig sterren
+  el('done').classList.toggle('is-off', !item || owns(owned(), item.key) || stars < item.price);
 }
 
 function render() {
@@ -65,7 +83,7 @@ function purchase() {
     return;
   }
   api.purchase(item, result);
-  say(`Gekocht! ${item.label} is nu van jou. Je draagt het meteen.`);
+  say(`Gekocht! ${item.label} is nu van jou. ${item.group === 'haar' ? 'Je vindt het bij de kapper.' : 'Je draagt het meteen.'}`);
   render();
 }
 

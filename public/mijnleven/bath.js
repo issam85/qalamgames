@@ -39,3 +39,9 @@ export const stepDone = (spots, toolKey) => spots.every((s) => s > STEPS.indexOf
 
 export const onFace = (p) => Math.hypot(p.x - 150, p.y - 118) < 60;
 export const onMouth = (p) => Math.hypot(p.x - 150, p.y - 150) < 26;
+
+// wat een plek bij p nu nodig heeft (spons, douche of handdoek); '' als er niets is
+export function neededAt(spots, p) {
+  const i = spots.findIndex((s, j) => s < CLEAN && Math.hypot(p.x - SPOTS[j][0], p.y - SPOTS[j][1]) < REACH);
+  return i < 0 ? '' : STEPS[spots[i]];
+}

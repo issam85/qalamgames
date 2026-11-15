@@ -8,6 +8,12 @@
   background: radial-gradient(ellipse at 50% 90%, #fff 0%, #e3f6ff 60%, #d2ecff 100%);
 }
 
+/* geen schaduwfilter op een tekening die bij elke beweging opnieuw wordt gemaakt */
+.salon-stage .doll svg,
+.cook-stage .doll svg {
+  filter: none;
+}
+
 .meter-row {
   display: flex;
   justify-content: space-between;

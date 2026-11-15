@@ -37,6 +37,7 @@
 }
 
 .room {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
@@ -84,8 +85,28 @@
   color: var(--pink);
 }
 
-.room.is-open:hover {
-  transform: translateY(-3px);
+/* alleen met een muis: op een tablet blijft "hover" anders hangen na een tik */
+@media (hover: hover) {
+  .room.is-open:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* vandaag al af: een gouden ster in de hoek */
+.room.is-done::after {
+  content: '★';
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 3px solid #fff;
+  box-shadow: 0 3px 0 #c9a400;
+  color: #fff;
+  font: 700 18px/24px 'Fredoka', sans-serif;
+  text-align: center;
 }
 
 @media (max-width: 700px) {
@@ -102,21 +123,18 @@
   }
 
   .room {
-    padding: 9px 12px;
+    grid-template-rows: auto;
+    padding: 6px 10px;
   }
 
   .room span:not(.room-icon) {
     display: none;
   }
 
-  .room {
-    grid-template-rows: auto;
-  }
-
   .room-icon {
     grid-row: 1;
-    width: 30px;
-    height: 30px;
+    width: 48px;
+    height: 48px;
   }
 }
 

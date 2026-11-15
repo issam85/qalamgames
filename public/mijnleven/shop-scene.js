@@ -4,6 +4,7 @@ import { dollSvg } from './doll.js';
 import { bustSvg } from './hair.js';
 import { MAKEUP } from './makeup.js';
 import { parseKey } from './shop.js';
+import { wearJewel } from './data.js';
 import { sceneSvg } from './ui.js';
 import { wall, planks, grad, glow, shadow } from './decor.js';
 import { paint, defs, gloss } from './glans.js';
@@ -36,7 +37,8 @@ function tag(item, owned) {
 function trying(item, look) {
   const [kind, index] = parseKey(item.key);
   if (item.group === 'kleren') {
-    const outfit = { ...look.outfit, choice: { ...look.outfit.choice, [kind]: index } };
+    const choice = kind === 'sieraden' ? wearJewel(look.outfit.choice.sieraden, index) : index;
+    const outfit = { ...look.outfit, choice: { ...look.outfit.choice, [kind]: choice } };
     return dollSvg(outfit, look.makeup).replace('<svg ', '<svg x="82" y="52" width="136" height="236" ');
   }
   const hair = { ...look.hair, hijab: item.group === 'makeup' ? look.hair.hijab : false, hat: item.group === 'haar' ? index : look.hair.hat };

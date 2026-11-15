@@ -1,6 +1,6 @@
 // Het gereedschap van de kapper: naam, uitleg en het plaatje dat met je muis of
 // vinger meebeweegt. power = hoe hard het een knoop losmaakt per haal.
-import { cursorSvg } from './ui.js';
+import { cursorSvg, glyphIcon } from './ui.js';
 
 export const TOOLS = [
   { key: 'borstel', label: 'Borstel', hint: 'Sleep over de knopen om ze eruit te borstelen.', power: 1 },
@@ -28,3 +28,6 @@ const GLYPHS = {
 };
 
 export const toolSvg = (tool, p) => cursorSvg(GLYPHS[tool], p);
+
+// het plaatje voor de knop (de puntkam is lang: daar een breder vak)
+export const toolIcon = (tool) => glyphIcon(GLYPHS[tool], tool === 'puntkam' ? '-26 -30 82 60' : '-36 -36 72 72');

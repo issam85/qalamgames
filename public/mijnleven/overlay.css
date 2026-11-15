@@ -11,7 +11,7 @@
   background: rgba(58, 42, 77, 0.7);
 }
 
-.overlay[hidden], .toast[hidden] {
+.overlay[hidden], .toast[hidden], .btn[hidden], .photo-tip[hidden] {
   display: none;
 }
 
@@ -27,6 +27,16 @@
   border: 3px solid var(--gold);
   font-weight: 800;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  cursor: pointer;
+}
+
+.photo-tip {
+  max-width: 360px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--soft);
 }
 
 .photo-card {

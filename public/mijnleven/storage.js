@@ -1,7 +1,7 @@
 // Bewaart het spel op dit apparaat: de outfit, het haar, de make-up, het wassen, het
 // eten dat klaarstaat, het gezin, de moskee, de pyjama, het aantal
 // nachten, wat er in de winkel gekocht is, de sterren en de dag van de laatste beloning per kamer. In een privévenster lukt opslaan niet; dan geldt het alleen voor dit bezoek.
-import { defaultOutfit, CATS, SWATCHES } from './data.js';
+import { defaultOutfit, jewelsFrom, CATS, SWATCHES } from './data.js';
 import { freshHair, STYLES, HAIR_COLORS, SPOTS, HATS } from './hair.js';
 import { STRAND_X, MIN_END, MAX_END } from './hair-styles.js';
 import { freshBath, SPOTS as WASH_SPOTS, CLEAN } from './bath.js';
@@ -13,13 +13,21 @@ import { PYJAMAS } from './bedroom-scene.js';
 
 const KEY = 'mijnleven';
 
-// alleen een outfit met geldige keuzes en kleuren, anders de standaard
-function validOutfit(outfit) {
-  if (!outfit || !outfit.choice || !outfit.color) return false;
-  const colors = SWATCHES.map(([hex]) => hex);
-  return CATS.every((cat) => Number.isInteger(outfit.choice[cat.key])
-    && outfit.choice[cat.key] >= 0 && outfit.choice[cat.key] < cat.items.length
-    && colors.includes(outfit.color[cat.key]));
+// De outfit per categorie nakijken: een fout veld (soort of kleur) zet alleen die
+// categorie terug. De sieraden waren vroeger één nummer en zijn nu een lijst.
+function loadOutfit(saved) {
+  const outfit = defaultOutfit();
+  if (!saved || typeof saved !== 'object') return outfit;
+  const choice = saved.choice || {};
+  const color = saved.color || {};
+  CATS.forEach(({ key, items }) => {
+    const pick = key === 'sieraden' ? jewelsFrom(choice[key])
+      : (Number.isInteger(choice[key]) && choice[key] >= 0 && choice[key] < items.length ? choice[key] : null);
+    if (pick === null || !SWATCHES.some(([hex]) => hex === color[key])) return;
+    outfit.choice[key] = pick;
+    outfit.color[key] = color[key];
+  });
+  return outfit;
 }
 
 function validHair(hair) {
@@ -83,7 +91,7 @@ export function loadGame() {
     data = {};
   }
   return {
-    outfit: validOutfit(data.outfit) ? data.outfit : defaultOutfit(),
+    outfit: loadOutfit(data.outfit),
     stars: Number.isInteger(data.stars) && data.stars >= 0 ? data.stars : 0,
     starDay: typeof data.starDay === 'string' ? data.starDay : '',
     hair: loadHair(data.hair),

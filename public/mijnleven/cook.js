@@ -6,7 +6,8 @@ import { RECIPES } from './recipes.js';
 export const BOWL = { x: 150, y: 178 }; // midden van de kom in de tekening
 export const GOOD = [0.58, 0.84]; // het groene stuk van de balk bij het vuur
 export const BAKE_MS = 3200; // zo lang duurt het tot het aanbrandt
-const STIR_TURNS = 4; // zoveel rondjes roeren
+const STIR_TURNS = 3; // zoveel rondjes roeren
+export const WIDER = 0.04; // na drie keer mis wordt het groen aan elke kant zoveel breder (30%)
 
 export const freshCook = (key) => ({ recipe: key, added: [], stir: 0, round: 0 });
 export const recipeOf = (cook) => RECIPES.find((r) => r.key === cook.recipe);
@@ -44,8 +45,12 @@ export function stir(cook, from, to) {
   return { ...cook, stir: Math.min(1, cook.stir + turn / (STIR_TURNS * 2 * Math.PI)) };
 }
 
-// heat = 0 (net op het vuur) – 1 (aangebrand)
-export function judge(heat) {
-  if (heat < GOOD[0]) return 'early';
-  return heat <= GOOD[1] ? 'good' : 'late';
+// het groene stuk, extra = hoeveel breder aan elke kant (0 of WIDER)
+export const goodZone = (extra = 0) => [GOOD[0] - extra, GOOD[1] + extra];
+
+// heat = 0 (net op het vuur) – 1 (aangebrand), extra = zie goodZone
+export function judge(heat, extra = 0) {
+  const [from, to] = goodZone(extra);
+  if (heat < from) return 'early';
+  return heat <= to ? 'good' : 'late';
 }

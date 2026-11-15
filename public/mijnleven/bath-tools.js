@@ -1,6 +1,6 @@
 // De spullen in de badkamer: naam, uitleg, bij welke plek ze horen (douche of spiegel)
 // en het plaatje dat met je muis of vinger meebeweegt. c = de gekozen make-upkleur.
-import { cursorSvg } from './ui.js';
+import { cursorSvg, glyphIcon } from './ui.js';
 
 const stick = (len) => `<rect x="-4" y="2" width="8" height="${len}" rx="4" fill="#3a2a4d"/><rect x="-6" y="-4" width="12" height="8" fill="#ffd43b"/>`;
 
@@ -26,3 +26,5 @@ export const TOOLS = [
 ];
 
 export const toolSvg = (tool, p, color) => cursorSvg(tool.glyph(color), p, tool.turn);
+// het plaatje voor de knop, in de gekozen make-upkleur
+export const toolIcon = (tool, color) => glyphIcon(tool.glyph(color), tool.key === 'tanden' ? '-30 -30 86 60' : '-34 -34 68 68');

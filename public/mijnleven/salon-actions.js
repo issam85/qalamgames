@@ -5,6 +5,7 @@ import { STRAND_X, MIN_END, HAIR_DY } from './hair-styles.js';
 
 export const DRY_STEPS = 40; // zo lang föhnen tot het glanst
 export const TAP_DRY = 5; // een tik met de föhn telt ook
+const REACH = 34; // zo dichtbij moet borstel of kam bij een knoop zijn
 
 // p = plek in het vak van de tekening; het haar zit rond het hoofd en eronder
 export const onHair = (p) => p.x > 70 && p.x < 230 && p.y > 5 && p.y < 345;
@@ -16,7 +17,7 @@ export function untangle(knots, p, power, inside) {
   const next = [...knots];
   let changed = false;
   SPOTS.forEach(([x, y], i) => {
-    const near = Math.hypot(p.x - x, p.y - y) < 26;
+    const near = Math.hypot(p.x - x, p.y - y) < REACH;
     if (near && !inside.has(i) && next[i] > 0) {
       next[i] = Math.max(0, next[i] - power);
       changed = true;
