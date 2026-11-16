@@ -25,7 +25,7 @@ export function createPause(g, { input, tries, play, backToMenu, loadLevel }) {
   function goOn() {
     if (g.mode === 'paused') return resume();
     if (g.mode !== 'won' || g.pause > 0) return undefined;
-    if (tries.practice) return play(false); // oefenen gehaald: nu echt, met levens
+    if (tries.practice) return play(false); // oefenen gehaald: nu echt, vanaf de gouden checkpoints
     if (g.worldIndex === WORLDS.length - 1) return backToMenu();
     loadLevel(g.worldIndex + 1);
     return play(false);

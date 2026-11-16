@@ -406,11 +406,13 @@ homepage in Lichting 4.
   en na de pauze roept het spel `requireRelease()` aan: een vinger of toets die nog neer is,
   springt pas weer na loslaten, en tikken tijdens het klaarstaan tellen niet. In het menu start
   alleen de Start-knop of het toetsenbord het spel, niet een tik naast het menu.
-- Start: 5 levens (`tries.js`) en checkpoints (gouden ruitjes op de balk, uit
+- Start: geen levens (keuze gebruiker, 16 nov) maar checkpoints (gouden ruitjes op de balk, uit
   `level.lifeCheckpoints`) op de veilige plek het dichtst bij `lifeAt` van de wereld: wereld 1
   17, 33, 50, 67 en 83%, de andere 20, 40, 60 en 80%. Een checkpoint ligt
-  `max(3, snelheid × 0,8)` blokken vóór het stukje (hooguit rust − 0,6). Botsen = een leven minder
-  en terug naar het laatste checkpoint; levens op = terug naar 0% met weer 5 levens.
+  `max(3, snelheid × 0,8)` blokken vóór het stukje (hooguit rust − 0,6). Botsen = terug naar het
+  laatste checkpoint, onbeperkt; `tries.js` telt de pogingen. Na elke botsing "Poging N", op het
+  eindscherm "in N pogingen"; het kleinste aantal per wereld staat in `attempts` (`progress.js`)
+  en als "N×" op het kaartje in het menu.
 - In een tunnel of onder een blok stoot je lopend je hoofd (`physics.js` + `settleWalking` in
   `motion.js`) in plaats van af te gaan; tegen de zijkant ben je nog steeds af.
 - Beeld zonder lezen: meldingen (`toast.js`) zijn een groot plaatje met een woord eronder, in een
@@ -420,13 +422,14 @@ homepage in Lichting 4.
   handje vóór de eerste punt, ring, tunnel en de eerste vlieg- en ondersteboven-poort; bewaard
   in `seen` zodra je er voorbij bent.
 - Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
-  of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start met
-  levens) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + hartje,
+  of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + goud ruitje,
   Oefenen = ∞ + groen ruitje.
 - Vliegen (`patterns-fly.js`, `carpet.js`, `portals3d.js`): door een roze poort op het vliegende
   tapijt, vasthouden = omhoog, loslaten = zakken; een mint poort = weer lopen. Tussen een plafond
   (onderkant op 7) en doornen door openingen van 3 (makkelijk) of 2 blokken hoog. Langs de
   onderkant van een blok schuif je, tegen de zijkant ben je af. Elke wereld heeft een vliegstuk.
+  Na de poort eerst `snelheid × 1,4 + 4` blokken vrij vliegen (geen doornen) om gevoel te krijgen,
+  daarna poortjes om de `snelheid × 0,6 + 4` blokken.
   De ring: een druk in de lucht telt 0,2 s vooruit (`ringBuffer`), een sprong vanaf de grond niet.
 - Ondersteboven (`patterns-flip.js`, bewegen in `motion.js`): door een gele poort draait de
   zwaartekracht om, je valt naar het plafond (onderkant op 6) en loopt daar ondersteboven;
@@ -454,7 +457,7 @@ homepage in Lichting 4.
   kleurzones · `scenery.js` stad en maan · `obstacles3d.js` + `neon.js` · `boosts3d.js` ringen
   en veren · `player3d.js` lantaarn · `shatter.js` · `fx.js` + `events.js` · `pattern.js`
   texturen · `menu.js` + `menu.css` · `skins.js` kleuren · `progress.js` + `storage.js` ·
-  `hud.js` (balk, levens, eindscherm) · `toast.js` · `icons.js` · `hint.js` · `tutorial.js` ·
+  `hud.js` (balk, pogingen, eindscherm) · `toast.js` · `icons.js` · `hint.js` · `tutorial.js` ·
   `input.js` · `quality.js` (trage computer: na 2 s meten, > 20 ms per beeld → 1 pixel per
   pixel; gladde randen alleen bij devicePixelRatio 1) · CSS `style.css`, `menu.css`,
   `overlay.css` (eindscherm, pauze, handjes, minder beweging). Thumbnail en deelbeeld zijn

@@ -60,11 +60,6 @@ html, body {
 }
 .marks i.on { background: #ffd43b; border-color: #fff; }
 
-.lives { display: flex; justify-content: center; gap: 3px; margin-top: 2px; }
-.lives[hidden] { display: none; }
-.lives svg { width: 24px; height: 24px; fill: #ff4d6d; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .55)); }
-.lives svg.off { fill: rgba(255, 255, 255, .22); }
-
 #toast {
   position: fixed;
   top: 18%;

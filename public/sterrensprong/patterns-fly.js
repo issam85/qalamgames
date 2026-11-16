@@ -26,8 +26,9 @@ function gate(at, bottom, gap, spiky) {
 // gates = aantal openingen, gap = hoe hoog een opening is (3 makkelijk, 2 moeilijk)
 // spiky = punten rond de openingen, saws = zagen half in het plafond tussen de poortjes
 export const flight = (gates, gap, { spiky = false, saws = false } = {}) => (x, tempo) => {
-  const lead = 6;
-  const step = Math.ceil(tempo.speed * 0.6) + 2 + (spiky ? 1 : 0);
+  // eerst ruim een seconde vrij vliegen om gevoel te krijgen; doornen pas vlak voor het eerste poortje
+  const lead = Math.ceil(tempo.speed * 1.4) + 4;
+  const step = Math.ceil(tempo.speed * 0.6) + 4 + (spiky ? 1 : 0);
   const parts = [];
   for (let i = 0; i < gates; i++) {
     const bottom = Math.min(BOTTOMS[i % BOTTOMS.length], CEILING - gap - (spiky ? 1 : 0));
@@ -36,7 +37,7 @@ export const flight = (gates, gap, { spiky = false, saws = false } = {}) => (x, 
     if (saws && i + 1 < gates) parts.push(saw(at + step / 2 + 0.5, CEILING, 1.1));
   }
   const end = x + lead + (gates - 1) * step + 6;
-  parts.push(block(x + 2, CEILING, end - x - 2, 1), thorns(x + 3, end - x - 4));
+  parts.push(block(x + 2, CEILING, end - x - 2, 1), thorns(x + lead - 3, end - x - lead - 1));
   return {
     parts,
     portals: [{ x: x + 1, mode: 'fly' }, { x: end, mode: 'run' }],

@@ -15,8 +15,8 @@ export function createRound(g, { input, view, tries, progress, clearRun }) {
   function finishWorld() {
     g.mode = 'won';
     g.pause = WIN_PAUSE;
-    if (!tries.practice) completeWorld(progress, g.level, g.worldIndex, WORLDS.length);
-    showWorldDone(g.level, WORLDS[g.worldIndex + 1], tries.practice);
+    if (!tries.practice) completeWorld(progress, g.level, g.worldIndex, WORLDS.length, tries.count);
+    showWorldDone(g.level, WORLDS[g.worldIndex + 1], tries.practice, tries.count);
   }
 
   function crash() {
@@ -24,15 +24,14 @@ export function createRound(g, { input, view, tries, progress, clearRun }) {
     g.pause = DEATH_PAUSE;
     view.crash(g.run);
     flash();
-    tries.lose();
     const percent = percentOf(g.run);
     if (!tries.practice && recordPercent(progress, g.level, percent)) showToast('Nieuw record', starWith(percent));
   }
 
   function afterCrash() {
-    const outOfLives = tries.respawn();
+    tries.respawn();
     clearRun();
-    if (outOfLives) showToast('Opnieuw', ICONS.broken, true);
+    showToast(`Poging ${tries.count}`, '', true); // na elke botsing: de hoeveelste keer
     g.mode = tries.reached < 0 ? 'run' : 'wait';
     g.pause = RESPAWN_PAUSE;
   }

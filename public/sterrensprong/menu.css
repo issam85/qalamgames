@@ -125,3 +125,6 @@
   .menu h2 { margin: 4px 0 2px; font-size: 14px; }
   .start { padding: 6px; font-size: 20px; }
 }
+
+/* in hoeveel pogingen een wereld gehaald is */
+.world .tries { margin-left: auto; font-weight: 700; color: #b8860b; }

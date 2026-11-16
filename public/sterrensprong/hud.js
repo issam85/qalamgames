@@ -1,27 +1,16 @@
-// Alles boven het 3D-beeld: voortgang met checkpoint-ruitjes, levens, flits, eindscherm en pauze.
-import { START_LIVES } from './tries.js';
-import { ICONS, HEART_PATH } from './icons.js';
+// Alles boven het 3D-beeld: voortgang met checkpoint-ruitjes, pogingen, flits, eindscherm en pauze.
+import { ICONS } from './icons.js';
 
 const $ = (id) => document.getElementById(id);
 
 export const percentOf = (run) => Math.min(100, Math.floor((run.x / run.level.length) * 100));
 
-const HEART = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_PATH}"/></svg>`;
 const shown = {}; // wat er nu staat: alleen bij een verandering naar de pagina schrijven
 
 function changed(key, value) {
   if (shown[key] === value) return false;
   shown[key] = value;
   return true;
-}
-
-function updateLives(lives, practice) {
-  const box = $('lives');
-  if (changed('practice', practice)) box.hidden = practice;
-  if (!changed('lives', lives)) return;
-  if (!box.children.length) box.innerHTML = HEART.repeat(START_LIVES);
-  [...box.children].forEach((heart, i) => heart.classList.toggle('off', i >= lives));
-  box.setAttribute('aria-label', `${lives} levens`);
 }
 
 // gouden ruitjes op de balk, precies waar de checkpoints van Start liggen
@@ -39,7 +28,6 @@ function updateMarks(level, practice, reached) {
 export function updateHud(run, tries, best) {
   const { practice } = tries;
   const percent = percentOf(run);
-  updateLives(tries.lives, practice);
   updateMarks(run.level, practice, tries.reached);
   if (changed('percent', percent)) {
     $('bar-fill').style.width = `${percent}%`;
@@ -69,10 +57,11 @@ function showOverlay(title, text, go) {
 }
 
 // bij 100%; de knoppen werken pas na een korte pauze (setOverlayReady)
-export function showWorldDone(level, next, practice) {
-  if (practice) showOverlay('Oefenen gehaald!', 'Nu echt, met 5 levens', 'Start');
-  else if (!next) showOverlay('Alles gehaald!', 'Alle werelden zijn klaar', null);
-  else showOverlay(`${level.name} gehaald!`, `Volgende: ${next.name}`, `Naar ${next.name}`);
+export function showWorldDone(level, next, practice, count) {
+  const times = count === 1 ? 'in één keer!' : `in ${count} pogingen`;
+  if (practice) showOverlay('Oefenen gehaald!', `${times} · nu echt, vanaf de gouden checkpoints`, 'Start');
+  else if (!next) showOverlay('Alles gehaald!', `${level.name} ${times}`, null);
+  else showOverlay(`${level.name} gehaald!`, `${times} · volgende: ${next.name}`, `Naar ${next.name}`);
   setOverlayReady(false);
 }
 

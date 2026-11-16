@@ -1,6 +1,6 @@
 // Het startscherm: kies een wereld en de kleuren van je lantaarn.
 import { COMBOS, BODY_COLORS, METAL_COLORS } from './skins.js';
-import { bestOf } from './progress.js';
+import { bestOf, attemptsOf } from './progress.js';
 import { ICONS, ring } from './icons.js';
 
 const $ = (id) => document.getElementById(id);
@@ -59,8 +59,8 @@ function buildWorlds(worlds, progress, selected, onWorld) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'world';
-    button.innerHTML = '<span class="badge"></span><b></b>';
-    button.lastChild.textContent = `${index + 1}. ${level.name}`;
+    button.innerHTML = '<span class="badge"></span><b></b><span class="tries"></span>';
+    button.children[1].textContent = `${index + 1}. ${level.name}`;
     button.addEventListener('click', () => {
       if (index === current) return;
       current = index;
@@ -80,11 +80,13 @@ function buildWorlds(worlds, progress, selected, onWorld) {
       const best = bestOf(progress, worlds[index]);
       let text = 'nog niet gespeeld';
       if (!open) text = `op slot, haal eerst ${worlds[index - 1].name}`;
-      else if (best === 100) text = 'gehaald';
+      else if (best === 100) text = `gehaald in ${attemptsOf(progress, worlds[index]) || '?'} pogingen`;
       else if (best > 0) text = `beste ${best}%`;
       button.setAttribute('aria-label', `${index + 1}. ${worlds[index].name}: ${text}`);
       button.title = text;
       button.firstChild.innerHTML = badge(open, best);
+      const times = attemptsOf(progress, worlds[index]);
+      button.lastChild.textContent = best === 100 && times ? `${times}×` : ''; // in hoeveel pogingen gehaald
     });
   }
   refresh();
@@ -97,8 +99,8 @@ function buildWorlds(worlds, progress, selected, onWorld) {
 export function createMenu({ skin, worlds, progress, selected }, actions) {
   buildColors({ ...skin }, actions.onSkin);
   const setWorld = buildWorlds(worlds, progress, selected, actions.onWorld);
-  // ▶ + hartje = echt spelen met levens; ∞ + groen ruitje = oefenen
-  $('start').innerHTML = `${ICONS.play}<span>Start</span>${ICONS.heart}`;
+  // ▶ + goud ruitje = echt spelen (gouden checkpoints); ∞ + groen ruitje = oefenen
+  $('start').innerHTML = `${ICONS.play}<span>Start</span>${ICONS.gold}`;
   $('practice').innerHTML = `${ICONS.infinity}<span>Oefenen</span>${ICONS.green}`;
   $('start').addEventListener('click', actions.onStart);
   $('practice').addEventListener('click', actions.onPractice);
