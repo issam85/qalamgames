@@ -1,5 +1,5 @@
 // Spelregels zonder tekenen (zo te testen): musje, kaastorens, punten en botsen.
-import { PHYS, TOWER, SPEED, GROUND } from './config.js';
+import { PHYS, TOWER, SPEED, GROUND, SIZE } from './config.js';
 
 export const birdX = (w) => Math.min(w * 0.28, 260);
 
@@ -11,8 +11,29 @@ export function gapFor(n) {
 
 export const speedFor = (score) => Math.min(SPEED.max, SPEED.start + score * SPEED.perPoint);
 
+// Maat bij een score: groot aan het begin, kleiner in stapjes.
+export function baseSize(score) {
+  let size = SIZE.start;
+  for (const [from, s] of SIZE.steps) if (score >= from) size = s;
+  return size;
+}
+
+// In of vlak bij de opening van een kaastoren wordt het musje kleiner.
+function inTunnel(world) {
+  const reach = TOWER.width / 2 + SIZE.reach;
+  return world.towers.some((t) => Math.abs(t.x - world.bird.x) < reach);
+}
+
+function grow(world, dt) {
+  const b = world.bird;
+  const want = baseSize(world.score) * (inTunnel(world) ? SIZE.tunnel : 1);
+  b.scale += (want - b.scale) * Math.min(1, SIZE.rate * dt);
+}
+
+export const birdRadius = (world) => PHYS.radius * world.bird.scale;
+
 export function createWorld(w, h, rnd = Math.random) {
-  const bird = { x: birdX(w), y: h * 0.42, vy: 0, flapAt: -1 };
+  const bird = { x: birdX(w), y: h * 0.42, vy: 0, flapAt: -1, scale: SIZE.start };
   return {
     w, h, ground: h - GROUND, bird, rnd,
     towers: [], spawned: 0, score: 0, state: 'ready',
@@ -53,7 +74,7 @@ function circleHitsRect(cx, cy, r, x, y, w, h) {
 
 export function hitsTower(world, t) {
   const { x, y } = world.bird;
-  const r = PHYS.radius * 0.85;
+  const r = birdRadius(world) * 0.85;
   const left = t.x - TOWER.width / 2;
   return circleHitsRect(x, y, r, left, -1000, TOWER.width, t.top + 1000)
     || circleHitsRect(x, y, r, left, t.bottom, TOWER.width, world.ground - t.bottom);
@@ -82,6 +103,7 @@ export function step(world, dt, events = []) {
     while (world.nextX < world.w + TOWER.width) spawn(world);
     world.towers = world.towers.filter((t) => t.x > -TOWER.width);
     fall(world, dt);
+    grow(world, dt);
     for (const t of world.towers) {
       if (!t.passed && t.x + TOWER.width / 2 < b.x) {
         t.passed = true;
@@ -89,7 +111,8 @@ export function step(world, dt, events = []) {
         events.push({ type: 'point', score: world.score });
       }
     }
-    const crash = b.y - PHYS.radius < 0 || b.y + PHYS.radius > world.ground
+    const r = birdRadius(world);
+    const crash = b.y - r < 0 || b.y + r > world.ground
       || world.towers.some((t) => hitsTower(world, t));
     if (crash) {
       world.state = 'fall';
@@ -100,8 +123,8 @@ export function step(world, dt, events = []) {
   }
   if (world.state === 'fall') {
     fall(world, dt);
-    if (b.y + PHYS.radius >= world.ground) {
-      b.y = world.ground - PHYS.radius;
+    if (b.y + birdRadius(world) >= world.ground) {
+      b.y = world.ground - birdRadius(world);
       world.state = 'over';
       events.push({ type: 'land' });
     }

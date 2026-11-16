@@ -15,6 +15,7 @@ export function drawBird(ctx, world) {
   ctx.save();
   ctx.translate(b.x, b.y);
   ctx.rotate(tilt);
+  ctx.scale(b.scale, b.scale);
   ctx.lineWidth = 2;
   ctx.strokeStyle = '#4e2f1a';
   // staartje

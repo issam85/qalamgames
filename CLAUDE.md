@@ -640,6 +640,9 @@ kids". Staat in `public/fladder/` (ES-modules zonder build), op de homepage in L
   raken = einde. De eerste 3 torens hebben een opening van 210, daarna 3 kleiner per toren tot
   150; snelheid 170 + 3 per punt tot 250. Na elke 10 punten: avond → nacht → ochtend.
   Beste score en geluid aan/uit in `localStorage` (`fladder`).
+- Maat van het musje (`SIZE`, wens van de gebruiker): begint 1,3× zo groot, vanaf 10 punten
+  gewoon (1×), vanaf 20 punten 0,85×. In en vlak bij de opening van een kaastoren krimpt het
+  vanzelf naar 0,75× daarvan en daarna groeit het weer; botsen rekent met de maat.
 - Alle getallen om het makkelijker of moeilijker te maken staan in `config.js`.
 - `world.js` regels (zonder tekenen, zo te testen) · `scene.js` alles samen tekenen ·
   `sky.js` lucht, sterren, zon/maan, wolken · `skyline.js` grachtenhuizen, stadhuis, molen,

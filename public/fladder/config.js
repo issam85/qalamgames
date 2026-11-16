@@ -37,3 +37,12 @@ export function fieldSize(width, height) {
   }
   return { w: FIELD.minWidth, h: Math.round(Math.min(FIELD.maxHeight, FIELD.minWidth / aspect)) };
 }
+
+// Grootte van het musje (1 = gewone maat). Groter is makkelijker te zien, kleiner past beter.
+export const SIZE = {
+  start: 1.3, // zo groot begint het musje
+  steps: [[10, 1], [20, 0.85]], // vanaf zoveel punten → zo groot
+  tunnel: 0.75, // in de opening van een kaastoren wordt het musje zo klein
+  reach: 50, // zoveel pixels vóór en na een toren begint of stopt het krimpen
+  rate: 8, // hoe snel het krimpt en groeit
+};
