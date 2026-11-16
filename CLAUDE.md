@@ -650,3 +650,39 @@ kids". Staat in `public/fladder/` (ES-modules zonder build), op de homepage in L
   `controls.js` toetsen, tikken, geluidsknop · `sound.js` · `storage.js` · `app.js` schermen
   en spellus. Thumbnail en deelbeeld zijn gerenderd uit de eigen tekeningen (headless
   Chrome); het hulpscript staat niet in de repo.
+
+## OutMatch (nieuw spel, november 2026)
+
+De gebruiker vroeg om een spel als Rematch. Dat wordt niet nagebouwd: dit is een eigen
+arcade-voetbalspel in hetzelfde genre. 3 tegen 3 met een CPU-keeper per team, in een kooi op een
+dak in een avondstad, brede camera, geen muziek. Maker voorlopig "Al Qalam kids". Staat in
+`public/outmatch/` (ES-modules zonder build, three.js uit `marioparty/vendor/`), op de homepage
+in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outmatch-prompt.md`
+(stappen 1–10).
+
+- Klaar: stap 1 (kooi, bal, lopen, sprinten, schieten), 2 (passen, lob, tackle, CPU-keeper met
+  Makkelijk/Normaal/Lastig), 3 (CPU-teams 3 tegen 3) en de homepage (eerder dan gepland, op
+  verzoek van de gebruiker live gezet). Nog te doen: 4 wedstrijdverloop (1,5 minuut, blessuretijd
+  10 of 20 s, penalty's bij gelijkspel, eindscherm), 5 twee spelers in één team en besturing voor
+  tablet en telefoon (nu alleen toetsenbord; staand vallen de doelen buiten beeld), 6 menu, namen
+  en nummers, 7 toernooi en training, 8 geluid en afwerking. Het spel start nu meteen en loopt
+  eindeloos door.
+- Toetsen (`KEYS` in `input.js`): WASD lopen, Shift sprint, F vasthouden = schieten, Spatie pass,
+  R lob, E tackle, Q om de bal roepen. Met één speler werken ook de pijltjes en de toetsen van
+  speler 2.
+- Regels zonder beeld, te testen in Node: `config.js` (alle getallen), `ball.js` + `collide.js`
+  (vloer, muren, plafondnet, palen, net vangt de bal), `player.js` + `actions.js` + `kick.js`
+  (schothulp buigt alleen een schot dat net naast gaat naar binnen de palen) + `pass.js` +
+  `tackle.js`, `keeper.js` + `save.js`, `teams.js` (rollen achter/links/rechts, speler 1 =
+  rechts), `cpu.js` + `cpu-roles.js` + `cpu-ball.js` + `geo.js`, `rules.js` (wedstrijd, aftrap,
+  doelpunt). Beeld: `view.js`, `world.js` (camera), `arena.js`, `city.js`, `textures.js`,
+  `figure3d.js`, `keeper3d.js`, `ball3d.js`, `hud.js` + `hud.css`.
+- Tests (in de repo, `tools/`): `node tools/outmatch-test.mjs` (bal), `outmatch-test-spel.mjs`
+  (passen, tackle, keeper: zachte schoten gehouden, harde hoekschoten ~80% raak, per niveau
+  44/35/11% raak) en `outmatch-test-cpu.mjs` (50 CPU-wedstrijden: ~5,5 doelpunten, 50 passes,
+  24 tackles per 90 s). Draai ze na elke wijziging aan de regels.
+- In de browser van de app tekent een verborgen paneel alleen bij een schermafdruk (elke
+  afdruk = één beeld van max. 0,05 s). Thumbnail en deelbeeld zijn gemaakt met een tijdelijke
+  pagina die de wedstrijd neerzet, het 3D-beeld direct na het tekenen op een 2D-canvas zet met de
+  titel, en het als data-URL in de pagina schrijft (`chrome --headless --dump-dom`); een gewone
+  headless schermafdruk geeft geen WebGL. Het hulpscript staat niet in de repo.

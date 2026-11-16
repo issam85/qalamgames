@@ -38,6 +38,12 @@ export const GAMES = {
     controls: [['Fladderen', 'Spatie, pijltje omhoog of klik'], ['Tablet', 'Tik op het scherm']],
     howto: 'Eén knop: fladderen. Het musje valt vanzelf, dus tik op tijd. Elke kaastoren waar je langs vliegt is een punt. Je beste score wordt bewaard op je eigen apparaat.',
   },
+  outmatch: {
+    title: 'OutMatch', src: '/outmatch/index.html', accent: '#e03131',
+    blurb: 'Voetbal 3 tegen 3 in een kooi op een dak in de avondstad. De bal kaatst tegen de muren, er is geen buitenspel. Pass, lob, tackel en scoor langs de keeper!',
+    controls: [['Lopen en sprinten', 'WASD en Shift'], ['Schieten', 'F vasthouden en loslaten'], ['Pass, lob, tackle', 'Spatie, R en E'], ['Om de bal roepen', 'Q']],
+    howto: 'Jij bent de speler met P1 en speelt samen met twee computerspelers tegen drie anderen. Houd F langer vast voor een harder schot. Druk Q en je teamgenoot passt naar je. Nu nog met toetsenbord; besturing voor de tablet komt eraan.',
+  },
   fightnight: {
     title: 'Fight Night', src: '/fightnight.html', accent: '#FAC775', video: '/video/fightnight.mp4',
     blurb: "Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je tegenstander met jabs, combo's en knock-outs.",
