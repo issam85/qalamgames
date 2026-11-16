@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>OutMatch — spel van Al Qalam Gouda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="hud.css">
+</head>
+<body>
+  <canvas id="view"></canvas>
+  <div class="scoreboard"><span class="team home">Jij</span><span id="score">0 – 0</span><span class="team away">Gasten</span></div>
+  <div class="meters">
+    <div id="stamina" class="meter"><span>Sprint</span><div class="track"><div id="stamina-fill"></div></div></div>
+    <div id="charge" class="meter"><span>Kracht</span><div class="track"><div id="charge-fill"></div></div></div>
+  </div>
+  <p class="keys">WASD lopen · Shift sprinten · F vasthouden en loslaten = schieten</p>
+  <div id="goal"></div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
