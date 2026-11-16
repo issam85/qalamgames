@@ -1,6 +1,6 @@
-// Test de natuurkunde van OutMatch zonder beeld: node tools/outmatch-test.mjs
+// Test de bal van OutMatch zonder beeld: node tools/outmatch-test.mjs
+// (spelers en keeper: tools/outmatch-test-spel.mjs)
 import { STEP, FIELD, GOAL, BALL } from '../public/outmatch/config.js';
-import { createMatch, kickOff, stepMatch } from '../public/outmatch/rules.js';
 import { createBall, stepBall, goalSide } from '../public/outmatch/ball.js';
 
 let failed = 0;
@@ -74,25 +74,6 @@ for (let i = 0; i < 2000; i++) {
   }
 }
 check('bal blijft altijd in de kooi', escaped === 0, `(${escaped} van 2000 ontsnapt)`);
-
-// 8. speler loopt naar de bal, neemt hem aan, dribbelt en schiet raak
-const match = createMatch();
-kickOff(match);
-const me = match.players[0];
-const goals = [];
-for (let t = 0; t < 8 && !goals.length; t += 1 / 60) {
-  const b = match.ball.pos;
-  const owns = match.ball.owner === me;
-  const target = owns ? { x: 9, z: 0 } : b;
-  const dx = target.x - me.pos.x, dz = target.z - me.pos.z;
-  const near = owns && me.pos.x > 7;
-  stepMatch(match, { p1: { x: dx, z: dz, sprint: true, shoot: near && me.charge < 0.6 } }, 1 / 60);
-  goals.push(...match.events.filter((e) => e.type === 'goal'));
-}
-check('speler scoort vanaf de aftrap', goals.length === 1 && match.score[0] === 1);
-for (let t = 0; t < 1; t += 1 / 60) stepMatch(match, { p1: { x: 1, z: 0, sprint: true } }, 1 / 60);
-check('na een doelpunt blijft de bal liggen', match.ball.owner === null && match.pause > 0);
-check('sprinten kost uithouding', me.stamina < 1, `(${me.stamina.toFixed(2)})`);
 
 console.log(failed ? `\n${failed} test(s) mislukt` : '\nAlles groen');
 if (failed) throw new Error('tests mislukt');

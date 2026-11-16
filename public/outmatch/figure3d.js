@@ -57,7 +57,7 @@ export function createFigure(scene, kit, tag) {
   body.add(torso);
   const arms = [-0.25, 0.25].map((z) => {
     const arm = limb(0.06, 0.4, shirt);
-    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), lambert(SKIN));
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(kit.gloves ? 0.08 : 0.06, 8, 6), lambert(kit.gloves || SKIN));
     hand.position.y = -0.55;
     arm.add(hand);
     arm.position.set(0, 1.3, z);
@@ -105,6 +105,16 @@ export function poseFigure(fig, player, dt) {
   if (player.charging) {
     fig.legs[1].rotation.z = -0.4 - player.charge * 0.6; // been naar achteren
     fig.body.rotation.z = 0.08;
+  }
+  if (player.tackle > 0) { // glijden: laag, been vooruit, naar achteren leunen
+    fig.body.position.y = -0.35;
+    fig.body.rotation.z = 0.5;
+    fig.legs[1].rotation.z = 1.3;
+    fig.legs[0].rotation.z = 0.5;
+  } else if (player.stumble > 0) { // struikelen: voorover met maaiende armen
+    fig.body.rotation.z = -0.55;
+    fig.arms[0].rotation.z = Math.sin(fig.phase * 4 + player.stumble * 30) * 1.2;
+    fig.arms[1].rotation.z = -fig.arms[0].rotation.z;
   }
   if (player.kickTime > 0) {
     const t = 1 - player.kickTime / 0.25;

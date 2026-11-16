@@ -34,6 +34,9 @@ export function createInput() {
         z: held(sets, 'down') - held(sets, 'up'), // naar beneden in beeld = naar de camera
         sprint: held(sets, 'sprint'),
         shoot: held(sets, 'shoot'),
+        pass: held(sets, 'pass'),
+        lob: held(sets, 'lob'),
+        tackle: held(sets, 'tackle'),
       };
     });
     return result;

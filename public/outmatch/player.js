@@ -1,6 +1,8 @@
-// Een voetballer: lopen, sprinten, draaien, de bal aannemen, dribbelen en schieten.
-import { FIELD, PLAYER, CONTROL, SHOT, BALL } from './config.js';
-import { kick, footDistance } from './kick.js';
+// Een voetballer: lopen, sprinten, draaien, de bal aannemen en dribbelen.
+import { FIELD, PLAYER, CONTROL, BALL } from './config.js';
+import { footDistance } from './kick.js';
+import { stepTackle } from './tackle.js';
+import { doActions } from './actions.js';
 
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
@@ -19,6 +21,11 @@ export function createPlayer({ id, team = 0, attack = 1, x = 0, z = 0 }) {
     charge: 0, // 0..1 terwijl je de schiettoets vasthoudt
     charging: false,
     kickTime: 0, // voor de animatie
+    tackle: 0, // tijd over van een tackle
+    tackleCool: 0,
+    tackleHit: false,
+    stumble: 0, // even niets kunnen na een gemiste tackle
+    held: {}, // welke actietoetsen vorige stap ingedrukt waren
   };
 }
 
@@ -28,6 +35,25 @@ export function placePlayer(player, x, z) {
   player.facing = player.aim = player.attack > 0 ? 0 : Math.PI;
   player.charge = 0;
   player.charging = false;
+  player.tackle = player.stumble = 0;
+}
+
+function clampToField(player) {
+  const lx = FIELD.halfL - PLAYER.radius, lz = FIELD.halfW - PLAYER.radius;
+  if (Math.abs(player.pos.x) > lx) { player.pos.x = Math.sign(player.pos.x) * lx; player.vel.x = 0; }
+  if (Math.abs(player.pos.z) > lz) { player.pos.z = Math.sign(player.pos.z) * lz; player.vel.z = 0; }
+}
+
+// tijdens een tackle schuif je door, struikelend kom je tot stilstand
+function slide(player, dt) {
+  if (player.tackle <= 0) {
+    const f = Math.exp(-6 * dt);
+    player.vel.x *= f;
+    player.vel.z *= f;
+  }
+  player.pos.x += player.vel.x * dt;
+  player.pos.z += player.vel.z * dt;
+  clampToField(player);
 }
 
 function stamina(player, wants, dt) {
@@ -54,9 +80,7 @@ function move(player, intent, dt) {
   vel.z += dz * f;
   player.pos.x += vel.x * dt;
   player.pos.z += vel.z * dt;
-  const lx = FIELD.halfL - PLAYER.radius, lz = FIELD.halfW - PLAYER.radius;
-  if (Math.abs(player.pos.x) > lx) { player.pos.x = Math.sign(player.pos.x) * lx; vel.x = 0; }
-  if (Math.abs(player.pos.z) > lz) { player.pos.z = Math.sign(player.pos.z) * lz; vel.z = 0; }
+  clampToField(player);
   if (len > 0.2) {
     const want = Math.atan2(-intent.z, intent.x);
     player.aim = want;
@@ -69,9 +93,11 @@ function move(player, intent, dt) {
 // de bal aannemen als hij dichtbij en laag genoeg is
 function control(player, ball) {
   if (ball.owner === player) return;
-  if (ball.owner || ball.noTouch > 0 || ball.pos.y > CONTROL.height) return;
+  if (ball.owner || ball.noTouch > 0 || player.stumble > 0) return;
+  const rel = Math.hypot(ball.vel.x - player.vel.x, ball.vel.z - player.vel.z);
+  const high = rel < CONTROL.softSpeed ? CONTROL.softHeight : CONTROL.height; // zachte ballen ook hoger
+  if (ball.pos.y > high || rel > CONTROL.maxTrap) return;
   if (footDistance(player, ball) > CONTROL.reach) return;
-  if (Math.hypot(ball.vel.x - player.vel.x, ball.vel.z - player.vel.z) > CONTROL.maxTrap) return;
   ball.owner = player;
   ball.lastTouch = player;
 }
@@ -92,24 +118,12 @@ function dribble(player, ball, dt) {
   ball.pos.y = BALL.radius;
 }
 
-// opladen zolang je vasthoudt, trappen bij loslaten
-function shoot(player, ball, held, dt, events) {
-  if (held) {
-    player.charging = true;
-    player.charge = Math.min(1, player.charge + dt / SHOT.charge);
-    return;
-  }
-  if (!player.charging) return;
-  player.charging = false;
-  kick(player, ball, player.charge, events);
-  player.charge = 0;
-}
-
-// intent: { x, z, sprint, shoot } uit de toetsen (of later de CPU)
-export function stepPlayer(player, intent, ball, dt, events) {
+// intent: { x, z, sprint, shoot, pass, lob, tackle } uit de toetsen (of later de CPU)
+export function stepPlayer(player, intent, ball, mates, dt, events) {
   player.kickTime = Math.max(0, player.kickTime - dt);
-  move(player, intent, dt);
+  if (stepTackle(player, ball, dt, events)) slide(player, dt);
+  else move(player, intent, dt);
   control(player, ball);
-  shoot(player, ball, intent.shoot, dt, events);
+  doActions(player, intent, ball, mates, dt, events);
   dribble(player, ball, dt);
 }

@@ -10,8 +10,8 @@ export const FIELD = {
 };
 
 export const GOAL = {
-  halfW: 2, // halve breedte van de doelmond
-  height: 2.1,
+  halfW: 2.5, // halve breedte van de doelmond
+  height: 2.2,
   depth: 1.3,
   post: 0.07, // dikte van paal en lat (straal)
 };
@@ -47,6 +47,8 @@ export const CONTROL = {
   hold: 0.58, // bal voor je voeten tijdens het dribbelen
   pull: 18, // hoe snel de bal naar je voeten komt
   maxTrap: 17, // hardere ballen neem je niet aan
+  softSpeed: 10,
+  softHeight: 1,
   noTouch: 0.3, // na een trap even niet aannemen
 };
 
@@ -57,6 +59,53 @@ export const SHOT = {
   lift: 2.2, // omhoog bij een zacht schot
   liftMax: 5.5,
   volley: 1.05, // een losse bal raak je tot hier
-  assist: 0.55, // deel van de hoek naar het doel dat wordt bijgestuurd
-  assistCone: 0.7, // alleen als je al zo ongeveer naar het doel kijkt (radialen)
+  assist: 0.6, // deel van de hoek naar binnen de palen dat wordt bijgestuurd
+  assistCone: 0.35, // alleen als het schot net naast zou gaan (radialen)
+  inside: 0.35, // zo ver binnen de paal mikt de hulp
+};
+
+export const PASS = {
+  cone: 0.95, // teamgenoten binnen deze hoek van je kijkrichting (radialen)
+  min: 9,
+  max: 19,
+  perMeter: 0.9,
+  lift: 0.6,
+  blind: 14, // pass zonder teamgenoot in die richting
+};
+
+export const LOB = {
+  up: 9.5, // snelheid omhoog (hoog genoeg om over de keeper te gaan)
+  min: 6,
+  max: 16,
+  blind: 11, // zo ver zonder teamgenoot (meter)
+};
+
+export const TACKLE = {
+  time: 0.3, // zo lang duurt de uitval
+  speed: 9.5,
+  reach: 1,
+  poke: 6, // de bal schiet zo hard los
+  stumble: 0.55, // mis = even struikelen
+  cool: 0.8,
+};
+
+// de CPU-keeper per moeilijkheid: reactietijd, duiksnelheid, vangen tot, foutje in het inschatten
+export const KEEPER = {
+  radius: 0.35,
+  walk: 4.5,
+  rush: 5.5,
+  out: 0.6, // zo ver voor de doellijn
+  outMax: 1.1,
+  hold: 1, // seconden met de bal in de handen
+  windup: 0.1, // aanloop van een duik
+  diveTime: 0.55,
+  down: 0.5,
+  reach: 0.28, // armen tot de bal, staand
+  diveReach: 0.75, // vanaf het midden tot de handen, liggend
+  box: 4, // strafschopgebied: zo diep
+  levels: {
+    easy: { react: 0.34, step: 2.5, dive: 5.5, catch: 13, error: 0.8 },
+    normal: { react: 0.26, step: 3.2, dive: 6.5, catch: 16, error: 0.55 },
+    hard: { react: 0.18, step: 4, dive: 7.8, catch: 20, error: 0.3 },
+  },
 };

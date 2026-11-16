@@ -23,3 +23,14 @@ export function showGoal(team) {
   void el.offsetWidth; // animatie opnieuw starten
   el.classList.add('show');
 }
+
+let toastTimer = 0;
+
+// korte melding midden in beeld, bv. "Gered!"
+export function showToast(text) {
+  const el = $('toast');
+  el.textContent = text;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 900);
+}

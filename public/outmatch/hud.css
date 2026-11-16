@@ -80,3 +80,22 @@
   80% { opacity: 1; }
   100% { opacity: 0; transform: scale(1.05); }
 }
+
+#toast {
+  position: fixed;
+  top: 22%;
+  left: 50%;
+  transform: translateX(-50%) scale(.8);
+  padding: 8px 22px;
+  border-radius: 18px;
+  background: #fff;
+  color: #1d2b53;
+  font-size: 26px;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+  opacity: 0;
+  transition: opacity .15s, transform .15s;
+  pointer-events: none;
+}
+
+#toast.show { opacity: 1; transform: translateX(-50%) scale(1); }

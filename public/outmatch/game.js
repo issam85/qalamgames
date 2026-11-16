@@ -1,8 +1,8 @@
-// Spelverloop van stap 1: één speler op het veld, lopen, sprinten en schieten.
+// Spelverloop: één speler tegen de keepers; lopen, sprinten, schieten, passen, lobben, tackelen.
 import { createMatch, kickOff, stepMatch } from './rules.js';
 import { createInput } from './input.js';
 import { createView } from './view.js';
-import { updateHud, showGoal } from './hud.js';
+import { updateHud, showGoal, showToast } from './hud.js';
 
 const match = createMatch();
 kickOff(match);
@@ -19,6 +19,7 @@ function frame() {
   stepMatch(match, input.intents(humans), dt);
   match.events.forEach((e) => {
     if (e.type === 'goal') showGoal(e.team);
+    if (e.type === 'save') showToast(e.caught ? 'Gevangen!' : 'Gered!');
   });
   view.draw(dt);
   updateHud(match);
