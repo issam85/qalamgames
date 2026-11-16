@@ -20,6 +20,8 @@ for (let m = 0; m < MATCHES; m++) {
   const level = ['easy', 'normal', 'hard'][m % 3];
   const match = createMatch({ level, humans: [] });
   kickOff(match, m % 2);
+  match.phase = 'play';
+  match.time = 1e9; // hier zonder klok: alleen het voetbal zelf
   let still = 0, hold = 0;
   for (let t = 0; t < LENGTH; t += STEP) {
     const before = { ...match.ball.pos };

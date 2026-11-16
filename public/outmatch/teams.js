@@ -9,11 +9,15 @@ export function createTeams(humans) {
     CPU.roles.forEach((role, i) => {
       const human = team === 0 ? humans[[2, 1, 0][i]] : undefined; // speler 1 is 'rechts'
       const id = human || `c${team}${i}`;
-      players.push(Object.assign(createPlayer({ id, team, attack: team === 0 ? 1 : -1 }), { role, cpu: !human }));
+      const name = human === 'p2' ? 'Speler 2' : NAMES[team][i];
+      players.push(Object.assign(createPlayer({ id, team, attack: team === 0 ? 1 : -1 }), { role, cpu: !human, name }));
     });
   });
   return players;
 }
+
+// namen voor het eindscherm (in stap 6 zelf aan te passen)
+const NAMES = [['Bilal', 'Sami', 'Jij'], ['Adam', 'Idris', 'Zakaria']];
 
 const SPOTS = { achter: { x: -8, z: 0 }, links: { x: -3.5, z: -4 }, rechts: { x: -3.5, z: 4 } };
 

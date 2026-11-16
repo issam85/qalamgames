@@ -6,6 +6,7 @@ import { createMatch as fullMatch, kickOff, stepMatch } from '../public/outmatch
 function createMatch(options) {
   const match = fullMatch(options);
   match.players = match.players.filter((p) => !p.cpu);
+  match.phase = 'play';
   return match;
 }
 import { createPlayer } from '../public/outmatch/player.js';

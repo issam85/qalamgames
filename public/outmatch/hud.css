@@ -1,8 +1,16 @@
-.scoreboard {
+.top {
   position: fixed;
   top: max(10px, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.scoreboard {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -27,6 +35,49 @@
 .team.away { background: #495057; }
 
 #score { min-width: 64px; font-size: 26px; font-weight: 700; text-align: center; }
+
+.clockrow { display: flex; gap: 6px; }
+
+#clock, #extra {
+  padding: 2px 12px;
+  border-radius: 10px;
+  background: #1d2b53;
+  color: #fff;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+}
+
+#extra { background: #ffd43b; color: #1d2b53; }
+#extra[hidden], .pens[hidden], .penalty[hidden] { display: none; }
+
+.pens { display: flex; gap: 46px; }
+.pens div { display: flex; gap: 5px; }
+.pens i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; background: rgba(0, 0, 0, .35); }
+.pens i.in { background: #43a047; }
+.pens i.out { background: #e03131; }
+
+body:not(.playing) .meters, body:not(.playing) .keys { display: none; }
+
+.penalty {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 18px;
+  background: #fff;
+  color: #1d2b53;
+  font-size: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+  pointer-events: none;
+}
+
+.penalty .track { width: 220px; height: 16px; border-color: #1d2b53; }
+#penalty-fill { width: 0; background: linear-gradient(90deg, #43a047, #ffd43b 70%, #e03131); }
 
 .meters {
   position: fixed;

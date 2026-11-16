@@ -1,10 +1,12 @@
 // Alles in beeld samen: de kooi, de stad, de spelers en de bal.
+import { FIELD } from './config.js';
 import { createWorld } from './world.js';
 import { createArena } from './arena.js';
 import { createCity } from './city.js';
 import { createFigure, poseFigure } from './figure3d.js';
 import { createBall3d, poseBall } from './ball3d.js';
 import { poseKeeper } from './keeper3d.js';
+import { createPenaltyMarks } from './penalty3d.js';
 
 const TAGS = { p1: { text: 'P1', color: '#ffd43b' }, p2: { text: 'P2', color: '#4dabf7' } };
 const KITS = [
@@ -26,12 +28,15 @@ export function createView(canvas, match) {
   });
   const keepers = match.keepers.map((k) => createFigure(world.scene, KEEPER_KITS[k.team]));
   const ball = createBall3d(world.scene);
+  const marks = createPenaltyMarks(world.scene);
 
   function draw(dt) {
     match.players.forEach((p) => poseFigure(figures.get(p), p, dt));
     match.keepers.forEach((k, i) => poseKeeper(keepers[i], k, dt));
     poseBall(ball, match.ball, dt);
-    world.follow(match.ball.pos, dt);
+    marks.update(match);
+    const kick = match.phase === 'penalties' && match.kick;
+    world.follow(kick ? { x: kick.shooter.attack * FIELD.halfL } : match.ball.pos, kick ? dt * 4 : dt); // bij een penalty: het doel in beeld
     world.render();
   }
 

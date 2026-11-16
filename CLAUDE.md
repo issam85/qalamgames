@@ -661,12 +661,19 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
 (stappen 1–10).
 
 - Klaar: stap 1 (kooi, bal, lopen, sprinten, schieten), 2 (passen, lob, tackle, CPU-keeper met
-  Makkelijk/Normaal/Lastig), 3 (CPU-teams 3 tegen 3) en de homepage (eerder dan gepland, op
-  verzoek van de gebruiker live gezet). Nog te doen: 4 wedstrijdverloop (1,5 minuut, blessuretijd
-  10 of 20 s, penalty's bij gelijkspel, eindscherm), 5 twee spelers in één team en besturing voor
-  tablet en telefoon (nu alleen toetsenbord; staand vallen de doelen buiten beeld), 6 menu, namen
-  en nummers, 7 toernooi en training, 8 geluid en afwerking. Het spel start nu meteen en loopt
-  eindeloos door.
+  Makkelijk/Normaal/Lastig), 3 (CPU-teams 3 tegen 3), 4 (startscherm, klok van 1:30, blessuretijd
+  10 of 20 s met bordje, bij gelijkspel penalty's, eindscherm met doelpuntenmakers en Opnieuw) en
+  de homepage (eerder dan gepland, op verzoek van de gebruiker live gezet). Nog te doen: 5 twee
+  spelers in één team en besturing voor tablet en telefoon (nu alleen toetsenbord; staand vallen
+  de doelen buiten beeld en overlappen de toetsenregel en de meters), 6 menu (moeilijkheid kiezen,
+  teamnaam, namen en nummers; nu altijd Normaal, namen vast in `teams.js`), 7 toernooi en
+  training, 8 geluid en afwerking.
+- Penalty's (`shootout.js` volgorde en winnaar, `penalty.js` één penalty, `penalty3d.js`
+  doelwit en pijl): 3 per team om en om, daarna tot er een verschil is; stip op 5 m. Een echte
+  schutter drukt F of spatie twee keer: richten (pijl heen en weer) en kracht (balk; bijna vol =
+  over de lat). De CPU-keeper gokt een hoek (`guess` per niveau: 0,2 / 0,3 / 0,45); hoek ~75%
+  raak, midden ~62%. Het voorstel dat speler 1 bij penalty's van de tegenstander de keeper
+  bestuurt, is nog niet bevestigd en niet gebouwd. Klok: `clock.js` (stopt tijdens het juichen).
 - Toetsen (`KEYS` in `input.js`): WASD lopen, Shift sprint, F vasthouden = schieten, Spatie pass,
   R lob, E tackle, Q om de bal roepen. Met één speler werken ook de pijltjes en de toetsen van
   speler 2.
@@ -675,9 +682,11 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
   (schothulp buigt alleen een schot dat net naast gaat naar binnen de palen) + `pass.js` +
   `tackle.js`, `keeper.js` + `save.js`, `teams.js` (rollen achter/links/rechts, speler 1 =
   rechts), `cpu.js` + `cpu-roles.js` + `cpu-ball.js` + `geo.js`, `rules.js` (wedstrijd, aftrap,
-  doelpunt). Beeld: `view.js`, `world.js` (camera), `arena.js`, `city.js`, `textures.js`,
-  `figure3d.js`, `keeper3d.js`, `ball3d.js`, `hud.js` + `hud.css`.
-- Tests (in de repo, `tools/`): `node tools/outmatch-test.mjs` (bal), `outmatch-test-spel.mjs`
+  doelpunt, fases ready/play/injury/penalties/end). Beeld: `view.js`, `world.js` (camera), `arena.js`, `city.js`, `textures.js`,
+  `figure3d.js`, `keeper3d.js`, `ball3d.js`, `hud.js` + `hud.css`, `screens.js` + `screen.css`
+  (start- en eindscherm).
+- Tests (in de repo, `tools/`): `node tools/outmatch-test.mjs` (bal), `outmatch-test-wedstrijd.mjs`
+  (klok, blessuretijd, penalty's), `outmatch-test-spel.mjs`
   (passen, tackle, keeper: zachte schoten gehouden, harde hoekschoten ~80% raak, per niveau
   44/35/11% raak) en `outmatch-test-cpu.mjs` (50 CPU-wedstrijden: ~5,5 doelpunten, 50 passes,
   24 tackles per 90 s). Draai ze na elke wijziging aan de regels.

@@ -103,10 +103,11 @@ export const KEEPER = {
   reach: 0.28, // armen tot de bal, staand
   diveReach: 0.75, // vanaf het midden tot de handen, liggend
   box: 4, // strafschopgebied: zo diep
+  // guess = kans dat de keeper bij een penalty de goede kant kiest
   levels: {
-    easy: { react: 0.34, step: 2.5, dive: 5.5, catch: 13, error: 0.8 },
-    normal: { react: 0.26, step: 3.2, dive: 6.5, catch: 16, error: 0.55 },
-    hard: { react: 0.18, step: 4, dive: 7.8, catch: 20, error: 0.3 },
+    easy: { react: 0.34, step: 2.5, dive: 5.5, catch: 13, error: 0.8, guess: 0.2 },
+    normal: { react: 0.26, step: 3.2, dive: 6.5, catch: 16, error: 0.55, guess: 0.3 },
+    hard: { react: 0.18, step: 4, dive: 7.8, catch: 20, error: 0.3, guess: 0.45 },
   },
 };
 
@@ -121,4 +122,17 @@ export const CPU = {
   pressRange: 1.4, // vanaf hier tackelen
   lane: 1.1, // een pass is vrij als niemand zo dicht bij de lijn staat
   call: 1.2, // seconden dat "om de bal roepen" geldt
+};
+
+// de wedstrijd: speeltijd, blessuretijd (een van beide, willekeurig) en penalty's
+export const MATCH = {
+  length: 90,
+  extras: [10, 20],
+  goalPause: 1.6, // juichen voordat de bal terug naar het midden gaat
+  kickWait: 1.2, // het andere team wacht even bij de aftrap
+  penalties: 3, // per team, daarna om en om tot er een verschil is
+  spot: 5, // penaltystip: zo ver van de doellijn
+  aimPeriod: 1.6, // de pijl gaat in zoveel seconden heen en terug
+  powerPeriod: 1.1,
+  resultPause: 1.4, // even kijken hoe de penalty afliep
 };
