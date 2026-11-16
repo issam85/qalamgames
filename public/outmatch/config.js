@@ -109,3 +109,16 @@ export const KEEPER = {
     hard: { react: 0.18, step: 4, dive: 7.8, catch: 20, error: 0.3 },
   },
 };
+
+// de CPU-spelers per moeilijkheid: denktijd, snelheid, mikfout, tackles per seconde dichtbij, schietafstand
+export const CPU = {
+  roles: ['achter', 'links', 'rechts'],
+  levels: {
+    easy: { think: 0.2, speed: 0.82, aimError: 0.22, tackle: 0.5, shootRange: 9, sprint: 0.5 },
+    normal: { think: 0.13, speed: 0.92, aimError: 0.13, tackle: 0.9, shootRange: 11, sprint: 0.7 },
+    hard: { think: 0.08, speed: 1, aimError: 0.07, tackle: 1.4, shootRange: 12.5, sprint: 0.9 },
+  },
+  pressRange: 1.4, // vanaf hier tackelen
+  lane: 1.1, // een pass is vrij als niemand zo dicht bij de lijn staat
+  call: 1.2, // seconden dat "om de bal roepen" geldt
+};

@@ -37,6 +37,7 @@ export function createInput() {
         pass: held(sets, 'pass'),
         lob: held(sets, 'lob'),
         tackle: held(sets, 'tackle'),
+        call: held(sets, 'call'),
       };
     });
     return result;

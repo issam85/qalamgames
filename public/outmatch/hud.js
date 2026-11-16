@@ -9,7 +9,7 @@ export function updateHud(match) {
     $('score').textContent = score;
     shownScore = score;
   }
-  const me = match.players[0];
+  const me = match.players.find((p) => p.id === 'p1');
   $('stamina-fill').style.width = `${Math.round(me.stamina * 100)}%`;
   $('stamina').classList.toggle('tired', me.tired);
   $('charge').classList.toggle('on', me.charging);

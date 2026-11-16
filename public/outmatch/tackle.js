@@ -24,7 +24,8 @@ export function stepTackle(player, ball, dt, events) {
   if (player.tackle <= 0) return false;
   player.tackle -= dt;
   const keeperHolds = ball.owner && ball.owner.keeper;
-  if (!player.tackleHit && !keeperHolds && ball.pos.y < 1 && footDistance(player, ball) < TACKLE.reach) {
+  const mate = ball.owner && ball.owner.team === player.team;
+  if (!player.tackleHit && !keeperHolds && !mate && ball.pos.y < 1 && footDistance(player, ball) < TACKLE.reach) {
     const victim = ball.owner;
     ball.owner = null;
     ball.noTouch = CONTROL.noTouch * 0.5;

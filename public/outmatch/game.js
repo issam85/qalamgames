@@ -8,7 +8,7 @@ const match = createMatch();
 kickOff(match);
 const input = createInput();
 const view = createView(document.getElementById('view'), match);
-const humans = match.players.map((p) => p.id);
+const humans = match.players.filter((p) => !p.cpu).map((p) => p.id);
 let last = performance.now();
 
 // requestAnimationFrame geeft in de browser van de app geen tijd mee: zelf meten

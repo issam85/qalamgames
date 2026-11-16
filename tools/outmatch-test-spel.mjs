@@ -1,6 +1,13 @@
 // Test spelers en keeper van OutMatch zonder beeld: node tools/outmatch-test-spel.mjs
 import { FIELD, STEP } from '../public/outmatch/config.js';
-import { createMatch, kickOff, stepMatch } from '../public/outmatch/rules.js';
+import { createMatch as fullMatch, kickOff, stepMatch } from '../public/outmatch/rules.js';
+
+// alleen speler 1 en de keepers, zonder CPU-veldspelers
+function createMatch(options) {
+  const match = fullMatch(options);
+  match.players = match.players.filter((p) => !p.cpu);
+  return match;
+}
 import { createPlayer } from '../public/outmatch/player.js';
 
 // vaste toevalsgetallen, zodat de test elke keer hetzelfde uitkomt
