@@ -628,3 +628,22 @@ Maker "Al Qalam kids". Staat in `public/schelpkristal/` (ES-modules zonder build
 - Let op: `requestAnimationFrame` geeft in de browser van de app geen tijd mee, en een
   verborgen browserpaneel tekent alleen bij een schermafdruk. Meet de tijd zelf met
   `performance.now()`.
+
+## Fladder over Gouda (nieuw spel, november 2026)
+
+De gebruiker vroeg om Flappy Bird. Dat wordt niet nagebouwd (naam, vogel, groene buizen en
+uiterlijk horen bij dat spel): dit is een eigen één-knop-fladderspel. Een musje vliegt over
+Gouda tussen torens van Goudse kaas door (keuze van de gebruiker). Maker voorlopig "Al Qalam
+kids". Staat in `public/fladder/` (ES-modules zonder build), op de homepage in Lichting 4.
+
+- Eén knop (spatie, pijl omhoog, W, klik, tik). Elke toren = 1 punt; kaas, straat of bovenkant
+  raken = einde. De eerste 3 torens hebben een opening van 210, daarna 3 kleiner per toren tot
+  150; snelheid 170 + 3 per punt tot 250. Na elke 10 punten: avond → nacht → ochtend.
+  Beste score en geluid aan/uit in `localStorage` (`fladder`).
+- Alle getallen om het makkelijker of moeilijker te maken staan in `config.js`.
+- `world.js` regels (zonder tekenen, zo te testen) · `scene.js` alles samen tekenen ·
+  `sky.js` lucht, sterren, zon/maan, wolken · `skyline.js` grachtenhuizen, stadhuis, molen,
+  straat · `cheese.js` kaastorens · `bird.js` musje · `fx.js` +1, sterretjes, veertjes ·
+  `controls.js` toetsen, tikken, geluidsknop · `sound.js` · `storage.js` · `app.js` schermen
+  en spellus. Thumbnail en deelbeeld zijn gerenderd uit de eigen tekeningen (headless
+  Chrome); het hulpscript staat niet in de repo.

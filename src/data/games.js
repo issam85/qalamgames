@@ -32,6 +32,12 @@ export const GAMES = {
     controls: [['Lopen', 'Pijltjes of WASD'], ['Tablet', 'Houd je vinger waar de prinses heen moet'], ['Douche en kleedhokje', 'Klik of tik, sleep']],
     howto: 'Zoek op het strand alle schelpen en kristallen: alleen wat in het licht van je lantaarn ligt zie je goed. Met wat je vindt speel je in het kleedhokje nieuwe jurken, kronen, kettingen en schoenen vrij.',
   },
+  fladder: {
+    title: 'Fladder over Gouda', src: '/fladder/index.html', accent: '#ffd43b',
+    blurb: 'Help het musje over Gouda! Fladder tussen de torens van Goudse kaas door en haal zoveel mogelijk punten. Na elke 10 punten wordt het avond, nacht of ochtend.',
+    controls: [['Fladderen', 'Spatie, pijltje omhoog of klik'], ['Tablet', 'Tik op het scherm']],
+    howto: 'Eén knop: fladderen. Het musje valt vanzelf, dus tik op tijd. Elke kaastoren waar je langs vliegt is een punt. Je beste score wordt bewaard op je eigen apparaat.',
+  },
   fightnight: {
     title: 'Fight Night', src: '/fightnight.html', accent: '#FAC775', video: '/video/fightnight.mp4',
     blurb: "Een knokspel in een echte boksarena: kies je vechter, doe de warming-up en versla je tegenstander met jabs, combo's en knock-outs.",

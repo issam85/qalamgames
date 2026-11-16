@@ -10,6 +10,7 @@ export const LICHTINGEN = [
       { game: 'tiktakboombom', student: 'Al Qalam kids', klas: 'Al Qalam School' },
       { game: 'sterrensprong', student: 'Al Qalam kids', klas: 'Al Qalam School' },
       { game: 'schelpkristal', student: 'Al Qalam kids', klas: 'Al Qalam School' },
+      { game: 'fladder', student: 'Al Qalam kids', klas: 'Al Qalam School' },
     ],
     rest: [],
   },
