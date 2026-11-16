@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fladder over Gouda — spel van Al Qalam Gouda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage"><canvas id="canvas" role="img" aria-label="Speelveld: een musje vliegt over Gouda tussen torens van kaas door"></canvas></div>
+
+  <button id="mute" class="round-btn mute" type="button" aria-label="Geluid uit" aria-pressed="false"></button>
+  <button id="to-menu" class="round-btn back-btn" type="button" aria-label="Pauze" title="Pauze" hidden>&#10074;&#10074;</button>
+
+  <div id="menu" class="overlay">
+    <div class="card">
+      <h1>Fladder over Gouda</h1>
+      <p class="how">Help het musje over de stad! Fladder tussen de torens van Goudse kaas door. Elke toren is een punt. Raak je de kaas, de straat of de lucht bovenaan, dan is het spel voorbij.</p>
+      <p class="keys"><span>Spatie</span> <span>Pijltje omhoog</span> <span>Klik of tik</span></p>
+      <button id="start" class="btn"><span aria-hidden="true">&#9654;</span> Start</button>
+      <p class="best">Beste score: <strong id="menu-best">0</strong></p>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="card">
+      <h2>Pauze</h2>
+      <div class="row">
+        <button id="resume" class="btn"><span aria-hidden="true">&#9654;</span> Verder</button>
+        <button id="pause-menu" class="btn blue">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="end" class="overlay" hidden>
+    <div class="card">
+      <h2>Au, kaas!</h2>
+      <p id="end-record" class="record" hidden>Nieuw record!</p>
+      <div class="scores">
+        <div><span>Score</span><strong id="end-score">0</strong></div>
+        <div><span>Beste</span><strong id="end-best">0</strong></div>
+      </div>
+      <div class="row">
+        <button id="again" class="btn"><span aria-hidden="true">&#8635;</span> Opnieuw</button>
+        <button id="end-menu" class="btn blue">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
