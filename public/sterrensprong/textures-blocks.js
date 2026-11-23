@@ -1,4 +1,5 @@
-// Blokvlakken per wereld, getekend in code: steen met een ster, mozaïektegels, marmer met goud.
+// Blokvlakken per wereld, getekend in code: steen met een ster, mozaïektegels, marmer met goud,
+// zandsteen.
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { star } from './pattern.js';
 
@@ -97,4 +98,25 @@ export const stripeTexture = () => draw((ctx) => {
     ctx.fillStyle = (x / 16) % 2 ? '#ffffff' : '#c9c9c9';
     ctx.fillRect(x, 0, 16, SIZE);
   }
+});
+
+// Woestijnoase: zandsteen in laagjes met een uitgehakte ster
+export const sandstoneTexture = () => draw((ctx, random) => {
+  ctx.fillStyle = '#e0a868';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+  ['#d4945a', '#e8b97c', '#c98650'].forEach((color, i) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 14 + i * 38 + random() * 8, SIZE, 7 + random() * 6);
+  });
+  for (let i = 0; i < 60; i++) {
+    ctx.fillStyle = random() > 0.5 ? 'rgba(120,70,30,.25)' : 'rgba(255,240,200,.3)';
+    ctx.fillRect(random() * SIZE, random() * SIZE, 2, 2);
+  }
+  ctx.strokeStyle = '#9a5a2a';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, SIZE - 4, SIZE - 4);
+  ctx.fillStyle = '#c47a3c';
+  ctx.strokeStyle = '#fff0c8';
+  ctx.lineWidth = 2;
+  star(ctx, SIZE / 2, SIZE / 2, 18);
 });

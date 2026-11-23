@@ -395,9 +395,9 @@ een nachtstad. Geen muziek (keuze van de gebruiker). Maker voorlopig "Al Qalam k
 `public/sterrensprong/` (ES-modules zonder build, three.js uit `marioparty/vendor/`), op de
 homepage in Lichting 4.
 
-- Eén knop (spatie, pijl omhoog, W, klik, tik); vasthouden blijft springen. Drie werelden, elk
-  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis (88, 129 en 181 s;
-  lengte 846, 1403 en 2244 blokken). Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13).
+- Eén knop (spatie, pijl omhoog, W, klik, tik); vasthouden blijft springen. Vier werelden, elk
+  één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis, Woestijnoase
+  (92, 133, 187 en 154 s). Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13).
   Wereld 1 heeft geen drie punten op een rij meer (alleen `row(1)`/`row(2)`); wereld 3 heeft
   minstens 4 blokken rust tussen stukjes ('De top' 5). De volgende wereld gaat open na 100% met
   Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden, beste
@@ -424,9 +424,11 @@ homepage in Lichting 4.
 - Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
   of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + goud ruitje,
   Oefenen = ∞ + groen ruitje.
-- Wereld 4 "Woestijnoase" (23 nov; regels en de hele wereld klaar, nog te doen: woestijn-
-  uiterlijk en uitleg, nu nog met de stijl van de stad), 154 s in vijf stukken: De oase, De
-  karavaan, Over de duinen vliegen, Ondersteboven in de oase, De sterrenbron. Kleurlampen (`lamps.js` regels, `lamps3d.js`
+- Wereld 4 "Woestijnoase" (23 nov), 154 s in vijf stukken: De oase, De karavaan, Over de
+  duinen vliegen, Ondersteboven in de oase, De sterrenbron. Stijl `oase` (`styles.js`):
+  zandsteen (`sandstoneTexture`), duinen, palmen, kamelen en water (`scenery-desert.js`).
+  Handjes de eerste keer (`tutorial.js`): gekleurde muur, zwevende lamp, lamp bij het vliegen.
+  Kleurlampen (`lamps.js` regels, `lamps3d.js`
   beeld, `patterns-lamps.js` stukjes). Blokken met `tone` 'gold'/'blue' zijn alleen vast als die
   kleur aan staat (`run.tone`), anders doorschijnend. Een lamp (`type: 'lamp'`) zet zijn kleur aan:
   een lichtzuil (`beam`) raak je altijd, een zwevende lamp alleen als je erdoor springt of vliegt.

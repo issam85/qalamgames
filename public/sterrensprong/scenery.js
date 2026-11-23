@@ -2,6 +2,7 @@
 import * as THREE from '../marioparty/vendor/three.module.min.js';
 import { styleOf } from './styles.js';
 import { addMarket, addClouds } from './scenery-extra.js';
+import { addDesert } from './scenery-desert.js';
 
 const CITY_Z = -13;
 const PARALLAX = 0.5; // de stad schuift half zo snel als de baan
@@ -77,6 +78,7 @@ export function createScenery(scene, level) {
   const span = level.length * PARALLAX + 70;
   if (style.extras === 'market') addMarket(group, span);
   if (style.extras === 'clouds') addClouds(group, span);
+  if (style.extras === 'desert') addDesert(group, span);
   scene.add(group);
   const moon = moonSprite();
   scene.add(moon);

@@ -1,5 +1,5 @@
 // Het uiterlijk per wereld: blokken, randen en de achtergrond.
-import { stoneTexture, zelligeTexture, marbleTexture } from './textures-blocks.js';
+import { stoneTexture, zelligeTexture, marbleTexture, sandstoneTexture } from './textures-blocks.js';
 
 export const STYLES = {
   // Lantaarnstad: stenen huizen met kleine koepels
@@ -19,6 +19,12 @@ export const STYLES = {
     block: marbleTexture, tint: '#ffffff', edge: '#ffd43b',
     city: { dark: '#2a2070', dome: '#e0b100', window: '#fff1b8', domeEvery: 1, towerEvery: 2 },
     extras: 'clouds',
+  },
+  // Woestijnoase: zandsteen, lage lemen huizen, duinen, palmen, kamelen en water
+  oase: {
+    block: sandstoneTexture, tint: '#ffffff', edge: '#ffb84d',
+    city: { dark: '#2b1640', dome: '#2b1640', window: '#ffb347', domeEvery: 2, towerEvery: 7 },
+    extras: 'desert',
   },
 };
 

@@ -109,7 +109,7 @@ const WORLD_3 = buildWorld('Hemelpaleis', 'paleis', LIFE, [
 ]);
 
 // wereld 4: kleurlampen. Alleen de kleur die aan staat is vast (lamps.js)
-const WORLD_4 = buildWorld('Woestijnoase', 'stad', LIFE, [
+const WORLD_4 = buildWorld('Woestijnoase', 'oase', LIFE, [
   { title: 'De oase', colors: AMBER, speed: 10, rest: 6, pieces: [
     lampWalls(4), row(2), lampBridges(3), stairs(3), lampStairs(3), shelf(11, 2), lampBridges(4),
     padOver(), lampOrbs(3), lampStairs(4), ringChain(2),

@@ -1,5 +1,6 @@
 // De eerste keer een handje: vóór de eerste punt, de eerste ring, de eerste tunnel en de eerste
-// poort (vliegen en ondersteboven). Per soort één keer; pas bewaard als je er voorbij bent.
+// poort (vliegen en ondersteboven), en in de Woestijnoase de eerste gekleurde muur en de eerste
+// zwevende lampen. Per soort één keer; pas bewaard als je er voorbij bent.
 import { readSave, patchSave } from './storage.js';
 import { showHint } from './hint.js';
 
@@ -18,12 +19,19 @@ function targets(level) {
   const tunnel = first(obs, (o) => o.type === 'block' && o.y > 1);
   const fly = first(level.portals, (p) => p.mode === 'fly');
   const flip = first(level.portals, (p) => p.mode === 'flip');
+  const modeAt = (x) => level.portals.filter((p) => p.x <= x).pop().mode;
+  const wall = first(obs, (o) => o.type === 'block' && o.tone);
+  const orb = first(obs, (o) => o.type === 'lamp' && !o.beam && modeAt(o.x) === 'run');
+  const flyOrb = first(obs, (o) => o.type === 'lamp' && !o.beam && modeAt(o.x) === 'fly');
   const at = (item, seconds) => (item ? speedAt(item.x) * seconds : 0);
   add('spike', spike, at(spike, 0.7), 'tap', 'Tik!');
   add('ring', ring, at(ring, 0.6), 'tap', 'Tik in de ring');
   add('tunnel', tunnel, at(tunnel, 0.8), 'no', 'Niet tikken');
   add('fly', fly, at(fly, 0.5), 'hold', 'Vasthouden = omhoog', at(fly, 1.5));
   add('flip', flip, at(flip, 0.5), 'down', 'Tik = naar beneden', at(flip, 1.5));
+  add('lampwall', wall, at(wall, 0.8), 'no', 'Andere kleur: doorlopen');
+  add('lamp', orb, at(orb, 0.7), 'tap', 'Spring in de lamp');
+  add('lampfly', flyOrb, at(flyOrb, 0.8), 'hold', 'Vlieg door de lamp');
   return list;
 }
 
