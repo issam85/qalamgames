@@ -96,3 +96,25 @@ html, body {
 #flash.on { animation: flash .28s ease-out; }
 
 @keyframes flash { from { opacity: .55; } to { opacity: 0; } }
+
+/* 3-2-1 na de pauze (countdown.js) */
+#count {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(90px, 22vw, 200px);
+  font-weight: 700;
+  color: #ffd43b;
+  text-shadow: 0 6px 0 #c62828, 0 10px 24px rgba(0, 0, 0, .5);
+  pointer-events: none;
+}
+#count[hidden] { display: none; }
+#count.pop { animation: count .8s ease-out; }
+
+@keyframes count {
+  0% { opacity: 0; transform: scale(1.6); }
+  20% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: .2; transform: scale(.85); }
+}

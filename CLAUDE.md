@@ -399,8 +399,8 @@ homepage in Lichting 4.
   één level aan één stuk tot 100%: Lantaarnstad, Sterrenbazaar, Hemelpaleis, Woestijnoase
   (92, 133, 187 en 154 s). Elk stuk heeft een eigen kleur, naam en snelheid (9 → 13).
   Wereld 1 heeft geen drie punten op een rij meer (alleen `row(1)`/`row(2)`); wereld 3 heeft
-  minstens 4 blokken rust tussen stukjes ('De top' 5). De volgende wereld gaat open na 100% met
-  Start, niet met Oefenen. In `localStorage` (`sterrensprong`): kleuren, open werelden, beste
+  minstens 4 blokken rust tussen stukjes ('De top' 5). Alle werelden zijn open; 100% met
+  Start (niet Oefenen) geeft een ster en het aantal pogingen. In `localStorage` (`sterrensprong`): kleuren, open werelden, beste
   percentage en `seen` (welke handjes al getoond zijn); altijd via `patchSave` (voegt samen).
 - Invoer (`input.js`): elke vinger telt apart (pointerId). Na een botsing, tijdens het klaarstaan
   en na de pauze roept het spel `requireRelease()` aan: een vinger of toets die nog neer is,
@@ -424,8 +424,9 @@ homepage in Lichting 4.
 - Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
   of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + goud ruitje,
   Oefenen = ∞ + groen ruitje.
-- Wereld 4 "Woestijnoase" (23 nov) is altijd open (`WORLD_4.open`, keuze gebruiker; het menu kijkt
-  naar `unlocked` óf `open`), 154 s in vijf stukken: De oase, De karavaan, Over de
+- Alle werelden zijn altijd open (`open` in `levels.js`, keuze gebruiker 23 nov; het menu kijkt
+  naar `unlocked` óf `open`). Na de pauze telt het spel 3-2-1 af (`countdown.js`, 0,8 s per cijfer).
+- Wereld 4 "Woestijnoase" (23 nov), 154 s in vijf stukken: De oase, De karavaan, Over de
   duinen vliegen, Ondersteboven in de oase, De sterrenbron. Stijl `oase` (`styles.js`):
   zandsteen (`sandstoneTexture`), duinen, palmen, kamelen en water (`scenery-desert.js`).
   Handjes de eerste keer (`tutorial.js`): gekleurde muur, zwevende lamp, lamp bij het vliegen.

@@ -24,7 +24,7 @@ export const GAMES = {
     title: 'Sterrensprong', src: '/sterrensprong/index.html', accent: '#ffc93c',
     blurb: 'Jouw lantaarn rent vanzelf door een 3D-nachtstad. Spring over punten, doornen en torens en haal alle vier de werelden tot 100%. In de Woestijnoase zet je met lampen gouden en blauwe bruggen aan. Kies je eigen kleuren!',
     controls: [['Springen', 'Spatie, pijltje omhoog of klik'], ['Tablet', 'Tik op het scherm']],
-    howto: 'Eén knop: springen. Vasthouden blijft springen. In een ring druk je nog een keer. Bots je, dan ga je terug naar je laatste gouden checkpoint en zie je de hoeveelste poging het is. Haal je de wereld, dan zie je in hoeveel pogingen. Een nieuwe wereld gaat open als je 100% haalt met Start. In de Woestijnoase is alleen de kleur van de laatste lamp vast: spring of vlieg door een lamp om zijn kleur aan te zetten.',
+    howto: 'Eén knop: springen. Vasthouden blijft springen. In een ring druk je nog een keer. Bots je, dan ga je terug naar je laatste gouden checkpoint en zie je de hoeveelste poging het is. Haal je de wereld, dan zie je in hoeveel pogingen. Alle werelden zijn meteen te spelen. In de Woestijnoase is alleen de kleur van de laatste lamp vast: spring of vlieg door een lamp om zijn kleur aan te zetten.',
   },
   schelpkristal: {
     title: 'Zoek Schelp Kristal', src: '/schelpkristal/index.html', accent: '#ff8ac8',

@@ -1,7 +1,8 @@
-// Pauze (knop linksboven, Escape of het tabblad weg) en de ▶-knop van het eindscherm.
+// Pauze (knop linksboven, Escape of het tabblad weg) en de ▶-knop van het eindscherm. Na de
+// pauze telt het spel 3-2-1 af.
 import { WORLDS } from './levels.js';
 import { showPause, hideOverlay } from './hud.js';
-import { RESPAWN_PAUSE } from './round.js';
+import { COUNTDOWN } from './countdown.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -17,8 +18,13 @@ export function createPause(g, { input, tries, play, backToMenu, loadLevel }) {
     hideOverlay();
     input.requireRelease();
     input.takePress();
-    g.mode = g.resumeTo === 'run' ? 'wait' : g.resumeTo;
-    if (g.resumeTo === 'run') g.pause = RESPAWN_PAUSE; // eerst even klaarstaan
+    if (g.resumeTo === 'dead') {
+      g.mode = 'dead';
+      return;
+    }
+    g.mode = 'wait'; // eerst 3-2-1 (countdown.js), dan pas verder
+    g.pause = COUNTDOWN;
+    g.counting = true;
   }
 
   // ▶ in de pauze of op het eindscherm (ook met spatie)

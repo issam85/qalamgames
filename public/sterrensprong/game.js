@@ -13,6 +13,7 @@ import { createTries } from './tries.js';
 import { createTutorial } from './tutorial.js';
 import { createRound } from './round.js';
 import { createPause } from './pause.js';
+import { showCount } from './countdown.js';
 
 const view = createView(document.getElementById('view'));
 const input = createInput(onPress);
@@ -21,7 +22,7 @@ const tries = createTries();
 const tutorial = createTutorial();
 
 // de toestand, gedeeld met round.js en pause.js. mode: ready, run, wait, dead, won, paused
-const g = { mode: 'ready', resumeTo: 'run', pause: 0, spare: 0, worldIndex: 0, level: null, run: null };
+const g = { mode: 'ready', resumeTo: 'run', counting: false, pause: 0, spare: 0, worldIndex: 0, level: null, run: null };
 let last = performance.now();
 
 function loadLevel(index) {
@@ -94,11 +95,15 @@ function frame() {
   else if (g.mode === 'wait') {
     input.requireRelease(); // tikken en vasthouden tijdens het klaarstaan tellen niet
     input.takePress();
-    if (g.pause <= 0) g.mode = 'run';
+    if (g.pause <= 0) {
+      g.mode = 'run';
+      g.counting = false;
+    }
   } else if (g.mode === 'won') {
     view.finale(dt);
     if (wasWaiting && g.pause <= 0) setOverlayReady(true);
   }
+  showCount(g.mode === 'wait' && g.counting ? g.pause : 0);
   tutorial.update(g.mode === 'run' || g.mode === 'wait' ? g.run : null);
   view.draw(g.run, dt, g.mode === 'ready');
   updateHud(g.run, tries, bestOf(progress, g.level));

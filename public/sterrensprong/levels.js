@@ -130,6 +130,7 @@ const WORLD_4 = buildWorld('Woestijnoase', 'oase', LIFE, [
   ] },
 ]);
 
-WORLD_4.open = true; // keuze gebruiker (23 nov): meteen te spelen, zonder eerst Hemelpaleis
+// keuze gebruiker (23 nov): alle werelden meteen te spelen, zonder eerst de vorige te halen
+[WORLD_1, WORLD_2, WORLD_3, WORLD_4].forEach((world) => { world.open = true; });
 
 export const WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4];
