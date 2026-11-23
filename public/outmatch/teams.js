@@ -7,13 +7,24 @@ export function createTeams(humans) {
   const players = [];
   [0, 1].forEach((team) => {
     CPU.roles.forEach((role, i) => {
-      const human = team === 0 ? humans[[2, 1, 0][i]] : undefined; // speler 1 is 'rechts'
-      const id = human || `c${team}${i}`;
-      const name = human === 'p2' ? 'Speler 2' : NAMES[team][i];
-      players.push(Object.assign(createPlayer({ id, team, attack: team === 0 ? 1 : -1 }), { role, cpu: !human, name }));
+      const cpuId = `c${team}${i}`;
+      const extra = { role, cpu: true, cpuId, cpuName: NAMES[team][i], name: NAMES[team][i] };
+      players.push(Object.assign(createPlayer({ id: cpuId, team, attack: team === 0 ? 1 : -1 }), extra));
     });
   });
+  setHumans(players, humans);
   return players;
+}
+
+const SLOT = { rechts: 0, links: 1, achter: 2 }; // speler 1 is 'rechts', speler 2 'links'
+
+// wie in team 0 door een echte speler bestuurd wordt; de rest is CPU
+export function setHumans(players, humans) {
+  players.filter((p) => p.team === 0).forEach((p) => {
+    const id = humans[SLOT[p.role]];
+    const name = humans.length > 1 && id ? `Speler ${id.slice(1)}` : p.cpuName;
+    Object.assign(p, { id: id || p.cpuId, cpu: !id, name, held: {}, brain: null, callTime: 0 });
+  });
 }
 
 // namen voor het eindscherm (in stap 6 zelf aan te passen)

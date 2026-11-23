@@ -2,6 +2,7 @@
 import { clockText } from './clock.js';
 import { shootoutScore } from './shootout.js';
 import { winnerOf } from './rules.js';
+import { helpHtml } from './help.js';
 
 const screen = document.getElementById('screen');
 let onButton = null;
@@ -10,7 +11,7 @@ function open(html, button, action) {
   screen.innerHTML = `<div class="card">${html}<button class="big" type="button">${button}</button></div>`;
   screen.hidden = false;
   onButton = action;
-  screen.querySelector('button').addEventListener('click', press);
+  screen.querySelector('.big').addEventListener('click', press);
 }
 
 function press() {
@@ -21,21 +22,33 @@ function press() {
   action();
 }
 
-// Enter of spatie drukt ook op de knop
+// Enter of spatie drukt ook op de knop; 1 en 2 kiezen het aantal spelers
 window.addEventListener('keydown', (e) => {
-  if (screen.hidden || (e.code !== 'Enter' && e.code !== 'Space')) return;
+  if (screen.hidden) return;
+  if (e.code === 'Digit1' || e.code === 'Digit2') choose(Number(e.code.slice(-1)));
+  if (e.code !== 'Enter' && e.code !== 'Space') return;
   e.preventDefault();
   press();
 });
 
-const KEYS = [['WASD', 'lopen'], ['Shift', 'sprinten'], ['F', 'vasthouden = schieten'], ['Spatie', 'passen'],
-  ['R', 'lob'], ['E', 'tackle'], ['Q', 'om de bal roepen']];
+let count = 1;
 
+// het aantal spelers kiezen op het startscherm
+function choose(n) {
+  const help = screen.querySelector('.help');
+  if (!help) return;
+  count = n;
+  help.innerHTML = helpHtml(n);
+  screen.querySelectorAll('.choice button').forEach((b) => b.classList.toggle('on', Number(b.dataset.n) === n));
+}
+
+// onStart(aantal spelers)
 export function showStart(onStart) {
-  const keys = KEYS.map(([k, what]) => `<li><kbd>${k}</kbd>${what}</li>`).join('');
   open(`<h1>OutMatch</h1><p class="sub">3 tegen 3 in de kooi · 1,5 minuut</p>
-    <p>Jij bent <b>P1</b> en speelt met twee teamgenoten. Gelijk na de blessuretijd? Dan penalty's!</p>
-    <ul class="keylist">${keys}</ul>`, 'Start', onStart);
+    <div class="choice"><button type="button" data-n="1">1 speler</button><button type="button" data-n="2">2 spelers</button></div>
+    <div class="help"></div><p class="muted">Gelijk na de blessuretijd? Dan penalty's!</p>`, 'Start', () => onStart(count));
+  screen.querySelectorAll('.choice button').forEach((b) => b.addEventListener('click', () => choose(Number(b.dataset.n))));
+  choose(count);
 }
 
 function goalLines(match) {
@@ -49,6 +62,6 @@ export function showEnd(match, onAgain) {
   const title = winner === 0 ? 'Gewonnen!' : 'Verloren';
   const pens = match.shootout ? `<p class="sub">${shootoutScore(match.shootout).join(' – ')} na penalty's</p>` : '';
   open(`<h1 class="${winner === 0 ? 'win' : 'lose'}">${title}</h1>
-    <div class="final"><span class="team home">Jij</span><b>${match.score.join(' – ')}</b><span class="team away">Gasten</span></div>
+    <div class="final"><span class="team home">${match.players.filter((p) => !p.cpu).length > 1 ? 'Wij' : 'Jij'}</span><b>${match.score.join(' – ')}</b><span class="team away">Gasten</span></div>
     ${pens}${goalLines(match)}`, 'Opnieuw', onAgain);
 }

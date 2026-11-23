@@ -4,6 +4,7 @@ import { STEP, MATCH } from '../public/outmatch/config.js';
 import { createMatch, resetMatch, stepMatch, winnerOf } from '../public/outmatch/rules.js';
 import { createShootout, recordKick } from '../public/outmatch/shootout.js';
 import { setupKick, stepKick } from '../public/outmatch/penalty.js';
+import { setHumans } from '../public/outmatch/teams.js';
 
 // vaste toevalsgetallen (mulberry32), zodat de test elke keer hetzelfde uitkomt
 let seed = 777;
@@ -75,6 +76,21 @@ check('penalty door het midden: vaak gehouden', middle.save >= 12, JSON.stringif
 const tooHard = { goal: 0, save: 0, mis: 0 };
 for (let i = 0; i < 20; i++) tooHard[humanKick(1.2, 0.99)]++;
 check('volle kracht: over de lat', tooHard.mis >= 15, JSON.stringify(tooHard));
+
+// 4. twee spelers in één team: aan- en uitzetten, en om en om de penalty's
+const duo = createMatch({ humans: ['p1'] });
+setHumans(duo.players, ['p1', 'p2']);
+const ids = duo.players.filter((p) => !p.cpu).map((p) => `${p.id}:${p.role}`).sort().join();
+check('twee spelers: p1 rechts, p2 links', ids === 'p1:rechts,p2:links', ids);
+const takers = [0, 1, 2].map((r) => setupKick(duo, 0, r).shooter.id).join();
+check('penalty\'s om en om door P1 en P2', takers === 'p1,p2,p1', takers);
+resetMatch(duo);
+for (let i = 0; i < 20 / STEP; i++) stepMatch(duo, { p1: {}, p2: {} }, STEP);
+check('twee spelers: wedstrijd loopt', duo.phase === 'play' && duo.time < MATCH.length, `${duo.time.toFixed(1)}`);
+setHumans(duo.players, ['p1']);
+const back = duo.players.filter((p) => !p.cpu).map((p) => p.id).join();
+const sami = duo.players.find((p) => p.role === 'links' && p.team === 0);
+check('terug naar één speler: P2 wordt weer CPU', back === 'p1' && sami.id === 'c01' && sami.name === 'Sami', `${back} ${sami.id} ${sami.name}`);
 
 console.log(failed ? `\n${failed} test(s) mislukt` : '\nAlles groen');
 if (failed) throw new Error('tests mislukt');

@@ -1,0 +1,81 @@
+/* Joystick en knoppen voor tablet en telefoon. Alleen zichtbaar met body.touch tijdens het spelen. */
+#pads {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50vh;
+  display: none;
+  padding: 0 max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  pointer-events: none;
+}
+
+.touch.ingame #pads { display: flex; gap: 12px; }
+.pad { flex: 1; display: flex; align-items: flex-end; }
+.two .pad { border-top: 3px solid transparent; }
+.two .pad.p1 { border-image: linear-gradient(90deg, transparent, rgba(255, 212, 59, .5), transparent) 1; }
+.two .pad.p2 { border-image: linear-gradient(90deg, transparent, rgba(77, 171, 247, .5), transparent) 1; }
+
+.stick { position: relative; flex: 1; align-self: stretch; pointer-events: auto; }
+.stick .tag { display: none; position: absolute; left: 6px; bottom: 6px; padding: 1px 8px; border-radius: 10px; color: #1d2b53; font-size: 13px; }
+.two .stick .tag { display: block; }
+.p1 .stick .tag { background: #ffd43b; }
+.p2 .stick .tag { background: #4dabf7; }
+
+/* de joystick: staat linksonder, en springt naar je duim */
+.stick .base {
+  position: absolute;
+  left: 78px;
+  bottom: 14px;
+  width: 116px;
+  height: 116px;
+  margin: -58px 0 0 -58px;
+  border: 3px solid rgba(255, 255, 255, .55);
+  border-radius: 50%;
+  background: rgba(13, 20, 64, .35);
+  display: grid;
+  place-items: center;
+}
+
+.stick .base:not([style]) { margin: 0 0 0 -58px; }
+.knob { width: 52px; height: 52px; border-radius: 50%; background: rgba(255, 255, 255, .85); box-shadow: 0 3px 8px rgba(0, 0, 0, .4); }
+
+.btns {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-areas: ". lob tackle" "sprint pass shoot";
+  align-items: end;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.tb {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .88);
+  color: #1d2b53;
+  font: 700 14px Fredoka, system-ui, sans-serif;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, .35);
+  touch-action: none;
+}
+
+.tb.down { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0, 0, 0, .35); filter: brightness(.9); }
+.tb.lob { grid-area: lob; }
+.tb.tackle { grid-area: tackle; background: rgba(255, 236, 153, .92); }
+.tb.sprint { grid-area: sprint; background: rgba(169, 227, 75, .9); }
+.tb.pass { grid-area: pass; background: rgba(116, 192, 252, .92); }
+.tb.shoot { grid-area: shoot; width: 82px; height: 82px; font-size: 17px; background: #ffd43b; color: #c62828; }
+
+/* lage schermen (telefoon liggend) en twee spelers: kleiner */
+@media (max-height: 500px) {
+  .tb { width: 52px; height: 52px; font-size: 12px; }
+  .tb.shoot { width: 66px; height: 66px; font-size: 14px; }
+  .btns { gap: 7px; }
+  .stick .base { width: 96px; height: 96px; margin: -48px 0 0 -48px; left: 64px; }
+  .stick .base:not([style]) { margin: 0 0 0 -48px; }
+}
+
+.two .tb { width: 54px; height: 54px; font-size: 12px; }
+.two .tb.shoot { width: 68px; height: 68px; font-size: 14px; }

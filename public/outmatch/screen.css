@@ -72,3 +72,23 @@
 }
 
 .big:active { transform: translateY(4px); box-shadow: 0 2px 0 #1b5e20; }
+
+.choice { display: flex; gap: 8px; }
+.choice button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 14px;
+  background: #e7f0ff;
+  color: #1d2b53;
+  font: 700 18px Fredoka, system-ui, sans-serif;
+  box-shadow: 0 4px 0 #a5c3f5;
+  cursor: pointer;
+}
+
+.choice button.on { background: #ffd43b; box-shadow: 0 4px 0 #c9a400; }
+.help { display: grid; gap: 10px; justify-items: center; }
+.card b.p1, .keytable .p1 { padding: 0 6px; border-radius: 8px; background: #ffd43b; }
+.card b.p2, .keytable .p2 { padding: 0 6px; border-radius: 8px; background: #4dabf7; color: #fff; }
+.keytable { border-spacing: 8px 4px; font-size: 15px; text-align: left; }
+.keytable kbd { display: inline-block; min-width: 40px; padding: 1px 6px; border-radius: 6px; background: #e7f0ff; border-bottom: 3px solid #a5c3f5; font: inherit; text-align: center; }
+.touchlist kbd { min-width: 58px; }

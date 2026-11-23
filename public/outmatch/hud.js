@@ -12,6 +12,35 @@ function set(key, value, apply) {
   apply(value);
 }
 
+const PRESS = { p1: 'F of spatie', p2: 'Enter of /' };
+
+function penaltyText(match, kick, touch) {
+  const two = match.players.filter((p) => !p.cpu).length > 1;
+  const who = two ? `${kick.shooter.id.toUpperCase()} · ` : '';
+  const how = touch ? 'tik op Schiet' : `druk ${two ? PRESS[kick.shooter.id] : 'F of spatie'}`;
+  return `${who}${kick.stage === 'aim' ? 'Richten' : 'Kracht'}: ${how}`;
+}
+
+// per echte speler een sprint- en krachtbalk
+function meters(match, playing) {
+  const humans = match.players.filter((p) => !p.cpu).sort((a, b) => a.id.localeCompare(b.id));
+  set('meters', humans.map((p) => p.id).join(), () => {
+    $('meters').innerHTML = humans.map((p) => `<div class="mset ${p.id}"><b class="chip">${p.id.toUpperCase()}</b>
+      <div class="meter stamina"><span>Sprint</span><div class="track"><div></div></div></div>
+      <div class="meter charge"><span>Kracht</span><div class="track"><div></div></div></div></div>`).join('');
+    document.body.classList.toggle('two', humans.length > 1);
+  });
+  if (!playing) return;
+  humans.forEach((p) => {
+    const box = $('meters').querySelector(`.${p.id}`);
+    const [stamina, charge] = box.querySelectorAll('.meter');
+    stamina.lastElementChild.firstElementChild.style.width = `${Math.round(p.stamina * 100)}%`;
+    stamina.classList.toggle('tired', p.tired);
+    charge.classList.toggle('on', p.charging);
+    charge.lastElementChild.firstElementChild.style.width = `${Math.round(p.charge * 100)}%`;
+  });
+}
+
 function penaltyHud(match) {
   const { kick, shootout } = match;
   set('pens', shootout ? shootout.kicks.map((k) => k.join('')).join('|') : '', () => {
@@ -25,9 +54,10 @@ function penaltyHud(match) {
     $('score').textContent = shootoutScore(shootout).join(' – ');
   });
   const mine = kick && !kick.shooter.cpu && (kick.stage === 'aim' || kick.stage === 'power');
-  set('penalty', mine ? kick.stage : '', (stage) => {
-    $('penalty').hidden = !stage;
-    $('penalty-text').textContent = stage === 'aim' ? 'Richten: druk F of spatie' : 'Kracht: druk F of spatie';
+  const touch = document.body.classList.contains('touch');
+  set('penalty', mine ? `${kick.stage}|${kick.shooter.id}|${touch}` : '', () => {
+    $('penalty').hidden = !mine;
+    if (mine) $('penalty-text').textContent = penaltyText(match, kick, touch);
   });
   if (mine) $('penalty-fill').style.width = `${Math.round((kick.stage === 'power' ? kick.power : 0) * 100)}%`;
 }
@@ -41,13 +71,9 @@ export function updateHud(match) {
     $('extra').textContent = `+${v}`;
   });
   set('playing', playing, (v) => document.body.classList.toggle('playing', v));
+  set('ingame', playing || match.phase === 'penalties', (v) => document.body.classList.toggle('ingame', v));
   penaltyHud(match);
-  const me = match.players.find((p) => p.id === 'p1');
-  if (!me || !playing) return;
-  $('stamina-fill').style.width = `${Math.round(me.stamina * 100)}%`;
-  $('stamina').classList.toggle('tired', me.tired);
-  $('charge').classList.toggle('on', me.charging);
-  $('charge-fill').style.width = `${Math.round(me.charge * 100)}%`;
+  meters(match, playing);
 }
 
 export function showGoal(text) {

@@ -678,9 +678,8 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
 - Klaar: stap 1 (kooi, bal, lopen, sprinten, schieten), 2 (passen, lob, tackle, CPU-keeper met
   Makkelijk/Normaal/Lastig), 3 (CPU-teams 3 tegen 3), 4 (startscherm, klok van 1:30, blessuretijd
   10 of 20 s met bordje, bij gelijkspel penalty's, eindscherm met doelpuntenmakers en Opnieuw) en
-  de homepage (eerder dan gepland, op verzoek van de gebruiker live gezet). Nog te doen: 5 twee
-  spelers in één team en besturing voor tablet en telefoon (nu alleen toetsenbord; staand vallen
-  de doelen buiten beeld en overlappen de toetsenregel en de meters), 6 menu (moeilijkheid kiezen,
+  de homepage (eerder dan gepland, op verzoek van de gebruiker live gezet) en 5 (twee spelers,
+  tablet en telefoon, zie hieronder). Nog te doen: 6 menu (moeilijkheid kiezen,
   teamnaam, namen en nummers; nu altijd Normaal, namen vast in `teams.js`), 7 toernooi en
   training, 8 geluid en afwerking.
 - Penalty's (`shootout.js` volgorde en winnaar, `penalty.js` één penalty, `penalty3d.js`
@@ -692,6 +691,18 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
 - Toetsen (`KEYS` in `input.js`): WASD lopen, Shift sprint, F vasthouden = schieten, Spatie pass,
   R lob, E tackle, Q om de bal roepen. Met één speler werken ook de pijltjes en de toetsen van
   speler 2.
+- Twee spelers (startscherm "1 speler / 2 spelers", ook toets 1 en 2): samen in team 0, P1 =
+  'rechts', P2 = 'links', de 'achter' blijft CPU. `setHumans()` in `teams.js` zet plekken om naar
+  echt of CPU (zelfde spelerobjecten, dus het beeld blijft); ring en label horen bij de plek
+  (`TAGS` in `view.js`). P2: pijltjes, rechter Shift, Enter, `/`, `.`, `'`, `\`. Penalty's om en om
+  P1, P2. Uitleg en toetsenregel: `help.js`. Per speler een sprint- en krachtbalk (`meters.css`).
+- Tablet en telefoon (`touch.js` + `touch.css`): per speler een joystick die naar je duim springt
+  (links) en knoppen Lob, Tackle, Sprint, Pas, Schiet (rechts); met twee spelers ieder een eigen
+  helft. Aan bij `pointer: coarse` of na een aanraking, uit zodra iemand een speltoets gebruikt
+  (`body.touch`). `input.js` telt toetsen en knoppen bij elkaar op. Rechtop: "Draai je scherm"
+  en het spel pauzeert (`layout.css`); lage schermen (≤ 500 px) krijgen een compacte kaart en HUD.
+  Testen zonder echt apparaat: `body.touch` zelf zetten en PointerEvents sturen; `touchState(id)`
+  laat zien wat de knoppen doorgeven. Nog niet getest op een echte tablet of telefoon.
 - Regels zonder beeld, te testen in Node: `config.js` (alle getallen), `ball.js` + `collide.js`
   (vloer, muren, plafondnet, palen, net vangt de bal), `player.js` + `actions.js` + `kick.js`
   (schothulp buigt alleen een schot dat net naast gaat naar binnen de palen) + `pass.js` +

@@ -71,9 +71,8 @@ export function createFigure(scene, kit, tag) {
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.01;
   root.add(shadow);
-  if (tag) addTag(root, tag);
   scene.add(root);
-  return { root, body, legs, arms, head, phase: 0 };
+  return { root, body, legs, arms, head, phase: 0, tag: tag ? addTag(root, tag) : null };
 }
 
 // een ring onder de voeten en een label boven het hoofd
@@ -85,7 +84,10 @@ function addTag(root, tag) {
   label.scale.set(0.9, 0.45, 1);
   label.position.y = 2.15;
   label.renderOrder = 10;
-  root.add(ring, label);
+  const group = new THREE.Group();
+  group.add(ring, label);
+  root.add(group);
+  return group;
 }
 
 // zet de figuur op de plek van de speler en speelt de bewegingen

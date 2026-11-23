@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="hud.css">
   <link rel="stylesheet" href="screen.css">
+  <link rel="stylesheet" href="meters.css">
+  <link rel="stylesheet" href="touch.css">
+  <link rel="stylesheet" href="layout.css">
 <!-- qalam-seo -->
   <meta name="description" content="Speel OutMatch — voetbal 3 tegen 3 in een kooi op een dak in de avondstad. Passen, lobben, tackelen en scoren tegen de computer. Een zelfbedacht spel van leerlingen van basisschool Al Qalam in Gouda. Gratis online te spelen." />
   <meta name="keywords" content="OutMatch, voetbalspel, 3 tegen 3, kooivoetbal, 3D, spel, game, Al Qalam, basisschool Gouda, Qalam Games" />
@@ -38,15 +41,13 @@
     <div class="clockrow"><span id="clock">1:30</span><span id="extra" hidden>+20</span></div>
     <div id="pens" class="pens" hidden><div id="pens0"></div><div id="pens1"></div></div>
   </div>
-  <div class="meters">
-    <div id="stamina" class="meter"><span>Sprint</span><div class="track"><div id="stamina-fill"></div></div></div>
-    <div id="charge" class="meter"><span>Kracht</span><div class="track"><div id="charge-fill"></div></div></div>
-  </div>
-  <p class="keys">WASD lopen · Shift sprint · F vasthouden = schieten · Spatie pass · R lob · E tackle · Q roepen</p>
+  <div id="meters" class="meters"></div>
+  <p class="keys"></p>
   <div id="penalty" class="penalty" hidden><p id="penalty-text"></p><div class="track"><div id="penalty-fill"></div></div></div>
   <section id="screen" class="screen" hidden></section>
   <div id="toast"></div>
   <div id="goal"></div>
+  <div id="rotate"><div class="phone"></div><p>Draai je scherm</p></div>
   <script type="module" src="game.js"></script>
 </body>
 </html>

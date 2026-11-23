@@ -1,0 +1,36 @@
+/* Sprint- en krachtbalk per speler; op een tablet linksboven, zodat de duimen vrij zijn. */
+.meters {
+  position: fixed;
+  left: max(14px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.mset { display: grid; grid-template-columns: auto auto; gap: 4px 8px; align-items: center; }
+.mset .chip { grid-row: span 2; display: none; padding: 2px 8px; border-radius: 10px; color: #1d2b53; font-size: 14px; }
+.two .mset .chip { display: block; }
+.mset.p1 .chip { background: #ffd43b; }
+.mset.p2 .chip { background: #4dabf7; }
+
+.meter { display: flex; align-items: center; gap: 8px; font-size: 14px; text-shadow: 0 2px 3px rgba(0, 0, 0, .6); }
+.meter span { width: 52px; }
+.track { width: 150px; height: 12px; border: 2px solid rgba(255, 255, 255, .8); border-radius: 8px; overflow: hidden; background: rgba(0, 0, 0, .35); }
+.track div { height: 100%; width: 100%; background: linear-gradient(90deg, #43a047, #a9e34b); }
+.meter.charge .track div { width: 0; background: linear-gradient(90deg, #ffd43b, #ff6b6b); }
+.tired .track div { background: #868e96; }
+.meter.charge { opacity: .35; transition: opacity .15s; }
+.meter.charge.on { opacity: 1; }
+
+.touch .meters { top: max(10px, env(safe-area-inset-top)); bottom: auto; gap: 6px; }
+.touch .meter { font-size: 12px; }
+.touch .meter span { width: 44px; }
+.touch .track { width: 96px; height: 10px; }
+.touch.two .meters { grid-template-columns: auto auto; gap: 6px 14px; }
+
+@media (max-width: 960px) {
+  .touch.two .meters { grid-template-columns: auto; gap: 4px; }
+  .touch.two .meter { font-size: 11px; }
+  .touch.two .track { width: 80px; height: 8px; }
+}

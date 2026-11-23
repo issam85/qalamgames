@@ -1,4 +1,6 @@
-// Toetsen per speler. Met één speler sturen beide sets dezelfde speler.
+// Toetsen per speler, plus de aanraakknoppen. Met één speler sturen beide sets dezelfde speler.
+import { touchState } from './touch.js';
+
 export const KEYS = {
   p1: {
     up: ['KeyW'], down: ['KeyS'], left: ['KeyA'], right: ['KeyD'],
@@ -17,6 +19,7 @@ export function createInput() {
   window.addEventListener('keydown', (e) => {
     if (!ALL.has(e.code)) return;
     e.preventDefault();
+    document.body.classList.remove('touch'); // wie toetsen gebruikt, heeft geen knoppen nodig
     down.add(e.code);
   });
   window.addEventListener('keyup', (e) => down.delete(e.code));
@@ -29,15 +32,18 @@ export function createInput() {
     const result = {};
     ids.forEach((id) => {
       const sets = ids.length === 1 ? [KEYS.p1, KEYS.p2] : [KEYS[id]];
+      const t = touchState(id) || {};
+      const key = (action) => held(sets, action) || Boolean(t[action]);
+      const clamp = (v) => Math.max(-1, Math.min(1, v));
       result[id] = {
-        x: held(sets, 'right') - held(sets, 'left'),
-        z: held(sets, 'down') - held(sets, 'up'), // naar beneden in beeld = naar de camera
-        sprint: held(sets, 'sprint'),
-        shoot: held(sets, 'shoot'),
-        pass: held(sets, 'pass'),
-        lob: held(sets, 'lob'),
-        tackle: held(sets, 'tackle'),
-        call: held(sets, 'call'),
+        x: clamp(held(sets, 'right') - held(sets, 'left') + (t.x || 0)),
+        z: clamp(held(sets, 'down') - held(sets, 'up') + (t.z || 0)), // naar beneden in beeld = naar de camera
+        sprint: key('sprint'),
+        shoot: key('shoot'),
+        pass: key('pass'),
+        lob: key('lob'),
+        tackle: key('tackle'),
+        call: key('call'),
       };
     });
     return result;

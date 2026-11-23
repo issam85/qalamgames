@@ -9,7 +9,7 @@ import { startDive } from './save.js';
 const EDGE = GOAL.halfW - 0.25; // de pijl gaat tot net binnen de palen
 
 function taker(match, team, round) {
-  const humans = match.players.filter((p) => p.team === team && !p.cpu);
+  const humans = match.players.filter((p) => p.team === team && !p.cpu).sort((a, b) => a.id.localeCompare(b.id)); // P1 eerst
   const pool = humans.length ? humans : match.players.filter((p) => p.team === team);
   return pool[round % pool.length];
 }
