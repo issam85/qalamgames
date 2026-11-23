@@ -4,7 +4,7 @@ import { footDistance } from './kick.js';
 
 export function startTackle(player, ball) {
   if (player.tackle > 0 || player.stumble > 0 || player.tackleCool > 0) return false;
-  if (ball.owner === player) return false; // met de bal tackel je niet
+  if (ball.owner === player || player.air > 0) return false; // met de bal of in de lucht tackel je niet
   player.tackle = TACKLE.time;
   player.tackleCool = TACKLE.cool;
   player.tackleHit = false;
@@ -23,7 +23,7 @@ export function stepTackle(player, ball, dt, events) {
   }
   if (player.tackle <= 0) return false;
   player.tackle -= dt;
-  const keeperHolds = ball.owner && ball.owner.keeper;
+  const keeperHolds = ball.owner && (ball.owner.keeper || ball.owner.air > 0); // ook niet bij wie door de lucht loopt
   const mate = ball.owner && ball.owner.team === player.team;
   if (!player.tackleHit && !keeperHolds && !mate && ball.pos.y < 1 && footDistance(player, ball) < TACKLE.reach) {
     const victim = ball.owner;

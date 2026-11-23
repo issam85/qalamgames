@@ -1,6 +1,7 @@
 // De bal: vliegen, stuiteren, rollen en wanneer hij helemaal over de doellijn is.
 import { FIELD, GOAL, BALL } from './config.js';
 import { collideBall } from './collide.js';
+import { stepRebound, bend } from './tricks.js';
 
 export function createBall() {
   return {
@@ -10,14 +11,15 @@ export function createBall() {
     noTouch: 0, // even niet aan te nemen na een trap
     lastTouch: null,
     ownTime: 0, // zo lang heeft de huidige eigenaar de bal al
+    rebound: null, // net tegen de rand gekaatst: { by, age }
+    curve: null, // krulschot: { rate, time, by }
   };
 }
 
 export function placeBall(ball, x = 0, z = 0) {
   Object.assign(ball.pos, { x, y: BALL.radius, z });
   Object.assign(ball.vel, { x: 0, y: 0, z: 0 });
-  ball.owner = null;
-  ball.noTouch = 0;
+  Object.assign(ball, { owner: null, noTouch: 0, rebound: null, curve: null });
 }
 
 export function onGround(ball) {
@@ -54,7 +56,9 @@ export function goalSide(ball) {
 export function stepBall(ball, dt, events) {
   ball.noTouch = Math.max(0, ball.noTouch - dt);
   ball.ownTime = ball.owner ? ball.ownTime + dt : 0;
+  stepRebound(ball, dt);
   if (ball.owner) return;
+  bend(ball, dt);
   const sub = dt / BALL.substeps;
   for (let i = 0; i < BALL.substeps; i++) {
     fly(ball, sub);

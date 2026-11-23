@@ -680,8 +680,26 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
   10 of 20 s met bordje, bij gelijkspel penalty's, eindscherm met doelpuntenmakers en Opnieuw) en
   de homepage (eerder dan gepland, op verzoek van de gebruiker live gezet) en 5 (twee spelers,
   tablet en telefoon, zie hieronder). Nog te doen: 6 menu (moeilijkheid kiezen,
-  teamnaam, namen en nummers; nu altijd Normaal, namen vast in `teams.js`), 7 toernooi en
+  teamnaam, namen en nummers; nu altijd Makkelijk, namen vast in `teams.js`), 7 toernooi en
   training, 8 geluid en afwerking.
+- Wensen van de ontwerper (een leerling, 23 nov): het moet makkelijker ("als je Shift drukt is
+  het al te laat"), trucs (klaar, zie hieronder), en een eigen team zoals in FC: munten verdienen
+  (winst 300, verlies 50) en packs kopen (goud 1200, brons goedkoper; alleen munten uit het spel,
+  nooit echt geld, laten zien wat erin kan zitten). Team en packs worden een eigen stap, samen met
+  het menu van stap 6.
+- Makkelijker (klaar): het spel staat op niveau Makkelijk (`createMatch` in `game.js`). Per
+  niveau in `CPU.levels`: trager denken en lopen, minder tackles, en `calm` = zo lang laat de CPU
+  een echte speler met rust nadat die de bal heeft aangenomen (1,2 / 0,4 / 0 s; `ball.ownTime`).
+  Bal vasthouden tegen de bots: makkelijk ~5,6 s, normaal ~2,9 s.
+- Trucs (`tricks.js`, getallen in `TRICK`): schiet je de bal hard tegen de rand (`ball.rebound`,
+  gezet in `collide.js`) en neem je hem binnen 2 s zelf weer aan, dan begint de flip reset (3 s).
+  Schiet je dan, dan krijg je een krulschot: 15% harder, eerst 0,26 rad naar buiten en per
+  afgelegde meter terug naar waar je mikte (`ball.curve`); tegen de keeper op Lastig 28/40 raak
+  tegen 16/40 gewoon. Druk je Lob (of op een losse eigen kaatsbal dichtbij), dan de Jezusloop: 5 s
+  met de bal 1,3 m boven de grond (`player.y`, `player.air`), niemand kan tackelen, over anderen
+  heen, schieten gaat omlaag naar het doel; bal weg = landen; één keer per wedstrijd
+  (`jesusUsed`). In beeld zweeft het lijf boven schaduw en ring. CPU's doen de trucs (nog) niet
+  bewust. Test: `tools/outmatch-test-trucs.mjs`.
 - Penalty's (`shootout.js` volgorde en winnaar, `penalty.js` één penalty, `penalty3d.js`
   doelwit en pijl): 3 per team om en om, daarna tot er een verschil is; stip op 5 m. Een echte
   schutter drukt F of spatie twee keer: richten (pijl heen en weer) en kracht (balk; bijna vol =
@@ -715,7 +733,7 @@ in Lichting 4. De volledige opdracht en alle keuzes van de gebruiker: `docs/outm
   (klok, blessuretijd, penalty's), `outmatch-test-spel.mjs`
   (passen, tackle, keeper: zachte schoten gehouden, harde hoekschoten ~80% raak, per niveau
   44/35/11% raak) en `outmatch-test-cpu.mjs` (50 CPU-wedstrijden: ~5,5 doelpunten, 50 passes,
-  24 tackles per 90 s). Draai ze na elke wijziging aan de regels.
+  24 tackles per 90 s) en `outmatch-test-trucs.mjs`. Draai ze na elke wijziging aan de regels.
 - In de browser van de app tekent een verborgen paneel alleen bij een schermafdruk (elke
   afdruk = één beeld van max. 0,05 s). Thumbnail en deelbeeld zijn gemaakt met een tijdelijke
   pagina die de wedstrijd neerzet, het 3D-beeld direct na het tekenen op een 2D-canvas zet met de

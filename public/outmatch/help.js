@@ -28,12 +28,20 @@ function touch(count) {
     <li>${kbd('Sprint')}vasthouden = rennen</li></ul>`;
 }
 
+// de trucs: flip reset en Jezusloop
+function tricks(count, touchMode) {
+  const [shoot, lob] = touchMode ? ['Schiet', 'Lob'] : count > 1 ? ['F / Enter', 'R / .'] : ['F', 'R'];
+  return `<p class="tricks"><b>Trucs:</b> schiet de bal hard tegen de rand en neem hem zelf weer aan.
+  Binnen 3 seconden ${kbd(shoot)} = krulschot (flip reset). ${kbd(lob)} = Jezusloop: 5 seconden met de bal
+  door de lucht, niemand kan je tackelen (één keer per wedstrijd).</p>`;
+}
+
 export function helpHtml(count) {
   const intro = count === 1
     ? '<p>Jij bent <b class="p1">P1</b> en speelt met twee teamgenoten.</p>'
     : '<p>Jullie zijn <b class="p1">P1</b> en <b class="p2">P2</b> in één team, met een teamgenoot.</p>';
   const touchMode = document.body.classList.contains('touch');
-  return `${intro}${touchMode ? touch(count) : keys(count)}`;
+  return `${intro}${touchMode ? touch(count) : keys(count)}${tricks(count, touchMode)}`;
 }
 
 // de regel onderin tijdens het spelen

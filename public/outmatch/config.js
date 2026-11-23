@@ -125,6 +125,17 @@ export const CPU = {
   call: 1.2, // seconden dat "om de bal roepen" geldt
 };
 
+export const TRICK = { // trucs na een kaatsbal tegen de rand (zie tricks.js)
+  catchTime: 2, // zo lang na het kaatsen telt de bal als je eigen kaatsbal
+  flip: 3, // flip reset: zo lang mag je schieten voor een krulschot
+  curl: 0.26, // zo ver (radialen) gaat het krulschot eerst naar buiten
+  power: 1.15, // en zoveel harder
+  air: 5, // Jezusloop: seconden in de lucht
+  height: 1.3, // zo hoog loop je (boven de anderen uit)
+  reach: 2.2, // een losse kaatsbal pak je tot hier met een sprong
+  airAim: 0.9, // een schot uit de lucht gaat naar deze hoogte bij het doel
+};
+
 // de wedstrijd: speeltijd, blessuretijd (een van beide, willekeurig) en penalty's
 export const MATCH = {
   length: 90,

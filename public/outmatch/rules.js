@@ -28,6 +28,7 @@ export function createMatch({ level = 'normal', humans = ['p1'] } = {}) {
 // een nieuwe wedstrijd met dezelfde spelers
 export function resetMatch(match) {
   Object.assign(match, { score: [0, 0], goals: [], shootout: null, kick: null, phase: 'play' });
+  match.players.forEach((p) => { p.jesusUsed = false; });
   startClock(match);
   kickOff(match, 0);
 }

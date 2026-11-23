@@ -87,6 +87,7 @@
 
 .choice button.on { background: #ffd43b; box-shadow: 0 4px 0 #c9a400; }
 .help { display: grid; gap: 10px; justify-items: center; }
+.help .tricks { margin: 0; max-width: 52ch; font-size: 0.86rem; line-height: 1.45; text-align: center; color: #495057; }
 .card b.p1, .keytable .p1 { padding: 0 6px; border-radius: 8px; background: #ffd43b; }
 .card b.p2, .keytable .p2 { padding: 0 6px; border-radius: 8px; background: #4dabf7; color: #fff; }
 .keytable { border-spacing: 8px 4px; font-size: 15px; text-align: left; }

@@ -92,7 +92,7 @@ function addTag(root, tag) {
 
 // zet de figuur op de plek van de speler en speelt de bewegingen
 export function poseFigure(fig, player, dt) {
-  fig.root.position.set(player.pos.x, 0, player.pos.z);
+  fig.root.position.set(player.pos.x, 0, player.pos.z); // schaduw en ring blijven op de grond
   fig.root.rotation.y = player.facing;
   const speed = Math.hypot(player.vel.x, player.vel.z);
   fig.phase += dt * speed * 1.7;
@@ -123,4 +123,7 @@ export function poseFigure(fig, player, dt) {
     fig.legs[1].rotation.z = -0.9 + t * 2.2; // de trap naar voren
     fig.arms[0].rotation.z = 0.7;
   }
+  const lift = player.y || 0; // Jezusloop: het lijf zweeft boven zijn schaduw
+  fig.body.position.y += lift;
+  if (fig.tag) fig.tag.children[1].position.y = 2.15 + lift;
 }

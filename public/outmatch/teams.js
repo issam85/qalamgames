@@ -48,7 +48,7 @@ export function separate(players, keepers) {
   const all = [...players, ...keepers];
   players.forEach((p, i) => {
     all.forEach((o, j) => {
-      if (j <= i && !o.keeper) return;
+      if ((j <= i && !o.keeper) || p.y > 0.5 || o.y > 0.5) return; // wie door de lucht loopt, gaat erover
       const min = PLAYER.radius + (o.keeper ? KEEPER.radius : PLAYER.radius);
       const dx = p.pos.x - o.pos.x, dz = p.pos.z - o.pos.z;
       const d = Math.hypot(dx, dz);

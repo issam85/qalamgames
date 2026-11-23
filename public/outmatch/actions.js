@@ -3,6 +3,7 @@ import { SHOT } from './config.js';
 import { kick } from './kick.js';
 import { pass, lob } from './pass.js';
 import { startTackle } from './tackle.js';
+import { tryJesus } from './tricks.js';
 
 // opladen zolang je vasthoudt, trappen bij loslaten
 function shoot(player, ball, held, dt, events) {
@@ -38,6 +39,6 @@ export function doActions(player, intent, ball, mates, dt, events) {
   const t = pressed(player, intent, 'tackle');
   if (busy || player.charging) return;
   if (p) pass(player, ball, mates, events);
-  else if (l) lob(player, ball, mates, events);
+  else if (l) tryJesus(player, ball, events) || lob(player, ball, mates, events);
   else if (t) startTackle(player, ball);
 }

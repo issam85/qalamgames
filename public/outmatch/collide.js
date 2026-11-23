@@ -1,5 +1,6 @@
 // De bal tegen de kooi: vloer, muren, plafondnet, palen, lat en het net in het doel.
 import { FIELD, GOAL, BALL } from './config.js';
+import { markRebound } from './tricks.js';
 
 const R = BALL.radius;
 
@@ -87,6 +88,8 @@ function walls(ball, events) {
     pos.z = Math.sign(pos.z) * (FIELD.halfW - R);
     speed = reflect(vel, 0, 0, -Math.sign(pos.z), BALL.wall) || speed;
   }
+  if (speed) ball.curve = null;
+  if (speed > 3) markRebound(ball); // hard tegen de rand: een kaatsbal voor de trucs
   if (pos.y > FIELD.ceiling - R) {
     pos.y = FIELD.ceiling - R;
     speed = reflect(vel, 0, -1, 0, BALL.wall) || speed;

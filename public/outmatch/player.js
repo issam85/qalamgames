@@ -3,6 +3,7 @@ import { FIELD, PLAYER, CONTROL, BALL } from './config.js';
 import { footDistance } from './kick.js';
 import { stepTackle } from './tackle.js';
 import { doActions } from './actions.js';
+import { onControl, stepTricks } from './tricks.js';
 
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
@@ -26,6 +27,10 @@ export function createPlayer({ id, team = 0, attack = 1, x = 0, z = 0 }) {
     tackleHit: false,
     stumble: 0, // even niets kunnen na een gemiste tackle
     held: {}, // welke actietoetsen vorige stap ingedrukt waren
+    y: 0, // hoogte boven de vloer (Jezusloop)
+    air: 0, // tijd over in de lucht
+    flip: 0, // tijd over voor een krulschot
+    jesusUsed: false, // de Jezusloop kan één keer per wedstrijd
   };
 }
 
@@ -36,6 +41,7 @@ export function placePlayer(player, x, z) {
   player.charge = 0;
   player.charging = false;
   player.tackle = player.stumble = 0;
+  player.y = player.air = player.flip = 0;
 }
 
 function clampToField(player) {
@@ -91,7 +97,7 @@ function move(player, intent, dt) {
 }
 
 // de bal aannemen als hij dichtbij en laag genoeg is
-function control(player, ball) {
+function control(player, ball, events) {
   if (ball.owner === player) return;
   if (ball.owner || ball.noTouch > 0 || player.stumble > 0) return;
   const rel = Math.hypot(ball.vel.x - player.vel.x, ball.vel.z - player.vel.z);
@@ -101,6 +107,7 @@ function control(player, ball) {
   ball.owner = player;
   ball.lastTouch = player;
   ball.ownTime = 0;
+  onControl(player, ball, events);
 }
 
 // de bal blijft vlak voor de voeten en rolt mee
@@ -116,15 +123,16 @@ function dribble(player, ball, dt) {
   ball.vel.y = 0;
   ball.pos.x = nx;
   ball.pos.z = nz;
-  ball.pos.y = BALL.radius;
+  ball.pos.y = BALL.radius + player.y;
 }
 
 // intent: { x, z, sprint, shoot, pass, lob, tackle } uit de toetsen (of later de CPU)
 export function stepPlayer(player, intent, ball, mates, dt, events) {
   player.kickTime = Math.max(0, player.kickTime - dt);
+  stepTricks(player, ball, dt);
   if (stepTackle(player, ball, dt, events)) slide(player, dt);
   else move(player, intent, dt);
-  control(player, ball);
+  control(player, ball, events);
   doActions(player, intent, ball, mates, dt, events);
   dribble(player, ball, dt);
 }

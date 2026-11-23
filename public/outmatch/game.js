@@ -34,6 +34,9 @@ function onEvent(e) {
   else if (e.type === 'injury') showToast(`+${e.extra} seconden blessuretijd`, 1800);
   else if (e.type === 'shootout') showToast("Gelijk! Penalty's", 1800);
   else if (e.type === 'penalty') showToast(PENALTY_TEXT[e.result]);
+  else if (e.type === 'flip' && !e.player.cpu) showToast('Flip reset! Schiet = krulschot, Lob = Jezusloop', 1600);
+  else if (e.type === 'jesus') showToast(`Jezusloop! ${e.player.name} loopt door de lucht`, 1600);
+  else if (e.type === 'kick' && e.curl) showToast('Krulschot!', 900);
   else if (e.type === 'fulltime') setTimeout(() => showEnd(match, () => start()), e.shootout ? 600 : 1200);
 }
 
