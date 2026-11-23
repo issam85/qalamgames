@@ -77,6 +77,12 @@ export function createPlayer(scene) {
   let time = 0;
 
   return {
+    // een andere kleur gloed (kleurlampen), of null = weer de kleur van de lantaarn
+    setAura(color) {
+      const want = color || materials.body.color;
+      glow.color.set(want);
+      halo.material.color.set(want);
+    },
     setSkin({ body, metal }) {
       materials.body.color.set(body);
       materials.metal.color.set(metal);

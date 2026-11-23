@@ -424,6 +424,16 @@ homepage in Lichting 4.
 - Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
   of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + goud ruitje,
   Oefenen = ∞ + groen ruitje.
+- Wereld 4 "Woestijnoase" (in aanbouw, 23 nov; stap 1 van 3: regels en proefstuk, stap 2 de
+  hele wereld, stap 3 woestijn-uiterlijk en uitleg): kleurlampen (`lamps.js` regels, `lamps3d.js`
+  beeld, `patterns-lamps.js` stukjes). Blokken met `tone` 'gold'/'blue' zijn alleen vast als die
+  kleur aan staat (`run.tone`), anders doorschijnend. Een lamp (`type: 'lamp'`) zet zijn kleur aan:
+  een lichtzuil (`beam`) raak je altijd, een zwevende lamp alleen als je erdoor springt of vliegt.
+  Wordt een blok vast terwijl je erin zit, dan laat het je door (`run.through`). Elk lampstukje
+  begint met een lichtzuil; `toneAt()` geeft na een checkpoint de kleur van de laatste zuil. De
+  lantaarn gloeit in de kleur die aan staat. Stukjes: `lampWalls`, `lampBridges`, `lampOrbs`,
+  `lampStairs` (trap de lucht in, wens van de gebruiker: elke trede één hoger, elke sprong
+  gecontroleerd), `lampFlight` (vlieg door de lamp in de andere kleur dan de muur; `traps`).
 - Vliegen (`patterns-fly.js`, `carpet.js`, `portals3d.js`): door een roze poort op het vliegende
   tapijt, vasthouden = omhoog, loslaten = zakken; een mint poort = weer lopen. Tussen een plafond
   (onderkant op 7) en doornen door openingen van 3 (makkelijk) of 2 blokken hoog. Langs de

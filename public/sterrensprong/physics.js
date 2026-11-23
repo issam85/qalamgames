@@ -1,7 +1,9 @@
-// Spelregels zonder beeld: lopen, springen, vliegen, ondersteboven, landen en botsen. Los te testen.
+// Spelregels zonder beeld: lopen, springen, vliegen, ondersteboven, kleurlampen, landen en botsen.
+// Los te testen.
 import { PHYS } from './config.js';
 import { HAZARDS } from './hazards.js';
 import { fly, walk, settle } from './motion.js';
+import { toneAt, isGhost, touchLamp } from './lamps.js';
 
 const HEIGHT = PHYS.half * 2;
 const indexAt = (list, x) => {
@@ -18,6 +20,7 @@ export function createRun(level, start = 0) {
     level, x: start, y: 0, vy: 0, floor: 0, grounded: true, buffer: 0, ringBuffer: 0, cursor: 0,
     state: 'run', zone: indexAt(level.zones, start), portal, fly: mode === 'fly', flip: mode === 'flip',
     used: new Set(), // al gebruikte ringen en veren (nieuwe Set per gebruik: te kopiëren)
+    tone: toneAt(level, start), through: new Set(), // kleurlampen (lamps.js)
     events: [], // voor beeld: jump, land, boost, zone, portal
   };
 }
@@ -68,7 +71,9 @@ function resolve(run, prevY, held) {
     const ob = obstacles[i];
     if (ob.x >= right) break;
     if (ob.x + ob.w <= left) continue;
-    if (ob.type === 'block') touchBlock(run, ob, prevY, room);
+    if (ob.type === 'block') {
+      if (!isGhost(run, ob)) touchBlock(run, ob, prevY, room);
+    } else if (ob.type === 'lamp') touchLamp(run, ob, obstacles, run.cursor);
     else if (HAZARDS[ob.type]) run.state = HAZARDS[ob.type](run, ob) ? 'dead' : run.state;
     else tryBoost(run, ob, held);
   }

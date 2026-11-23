@@ -3,6 +3,7 @@ import { row, rhythm, stairs, shelf, tunnel, padOver, towers, ringChain } from '
 import { flight } from './patterns-fly.js';
 import { sawRow, sawTowers, maceRow } from './patterns-hazards.js';
 import { upsideDown } from './patterns-flip.js';
+import { lampWalls, lampBridges, lampOrbs, lampStairs, lampFlight } from './patterns-lamps.js';
 
 const AIR = 0.548; // zo lang duurt een gewone sprong
 const LEAD_IN = 14; // vrije aanloop
@@ -107,4 +108,12 @@ const WORLD_3 = buildWorld('Hemelpaleis', 'paleis', LIFE, [
   ] },
 ]);
 
-export const WORLDS = [WORLD_1, WORLD_2, WORLD_3];
+// wereld 4: kleurlampen. Alleen de kleur die aan staat is vast (lamps.js)
+const WORLD_4 = buildWorld('Woestijnoase', 'stad', LIFE, [
+  { title: 'De oase', colors: AMBER, speed: 10, rest: 6, pieces: [
+    lampWalls(4), row(2), lampBridges(4), lampStairs(4), row(2), lampOrbs(4), lampFlight(4),
+    lampBridges(5, true), lampStairs(5, true), lampFlight(5, true),
+  ] },
+]);
+
+export const WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4];

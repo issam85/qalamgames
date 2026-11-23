@@ -5,6 +5,7 @@ import { buildObstacles } from './obstacles3d.js';
 import { createBoosts } from './boosts3d.js';
 import { createPortals } from './portals3d.js';
 import { createHazards } from './hazards3d.js';
+import { createLamps, TONE_COLORS } from './lamps3d.js';
 import { createPlayer } from './player3d.js';
 import { createShatter } from './shatter.js';
 import { createFx } from './fx.js';
@@ -32,6 +33,7 @@ export function createView(canvas) {
   let boosts = null;
   let portals = null;
   let hazards = null;
+  let lamps = null;
   let markers = null;
   let finish = 0;
 
@@ -42,6 +44,7 @@ export function createView(canvas) {
       boosts = createBoosts(stage, level);
       portals = createPortals(stage, level);
       hazards = createHazards(stage, level);
+      lamps = createLamps(stage, level);
       markers = {
         practice: addMarkers(stage, level.checkpoints, '#7dff9b'),
         lives: addMarkers(stage, level.lifeCheckpoints, '#ffd43b'),
@@ -74,6 +77,8 @@ export function createView(canvas) {
       boosts.update(run, dt);
       portals.update(dt);
       hazards.update(run, dt);
+      lamps.update(run, dt);
+      player.setAura(lamps.used && !inMenu ? TONE_COLORS[run.tone] : null); // lantaarn in de kleur die aan staat
       shatter.update(dt);
       fx.update(dt);
       world.follow(run, dt, inMenu);

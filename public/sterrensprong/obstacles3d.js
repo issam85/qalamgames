@@ -80,7 +80,7 @@ function addFinish(scene, x) {
 }
 
 export function buildObstacles(scene, level) {
-  addBlocks(scene, of(level, 'block'), styleOf(level));
+  addBlocks(scene, of(level, 'block').filter((b) => !b.tone), styleOf(level)); // gekleurde: lamps3d.js
   addSpikes(scene, of(level, 'spike'));
   addThorns(scene, of(level, 'thorn'));
   addFinish(scene, level.length);

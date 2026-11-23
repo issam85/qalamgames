@@ -32,4 +32,5 @@ export function addNeonEdges(scene, geometry, matrices, color, thickness) {
   });
   mesh.frustumCulled = false;
   scene.add(mesh);
+  return mesh;
 }
