@@ -424,7 +424,8 @@ homepage in Lichting 4.
 - Pauze (`pause.js`): ⏸ linksboven, Escape of het tabblad weg; ▶ verder (eerst 0,7 s klaarstaan)
   of ⌂ menu. Eindscherm: na 1,5 s twee grote knoppen, ▶ volgende wereld (na Oefenen: Start) en ⌂ menu. Menu: slotje, voortgangsring of ster per wereld; Start = ▶ + goud ruitje,
   Oefenen = ∞ + groen ruitje.
-- Wereld 4 "Woestijnoase" (23 nov), 154 s in vijf stukken: De oase, De karavaan, Over de
+- Wereld 4 "Woestijnoase" (23 nov) is altijd open (`WORLD_4.open`, keuze gebruiker; het menu kijkt
+  naar `unlocked` óf `open`), 154 s in vijf stukken: De oase, De karavaan, Over de
   duinen vliegen, Ondersteboven in de oase, De sterrenbron. Stijl `oase` (`styles.js`):
   zandsteen (`sandstoneTexture`), duinen, palmen, kamelen en water (`scenery-desert.js`).
   Handjes de eerste keer (`tutorial.js`): gekleurde muur, zwevende lamp, lamp bij het vliegen.

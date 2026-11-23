@@ -130,4 +130,6 @@ const WORLD_4 = buildWorld('Woestijnoase', 'oase', LIFE, [
   ] },
 ]);
 
+WORLD_4.open = true; // keuze gebruiker (23 nov): meteen te spelen, zonder eerst Hemelpaleis
+
 export const WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4];

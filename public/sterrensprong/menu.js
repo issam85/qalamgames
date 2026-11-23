@@ -73,7 +73,7 @@ function buildWorlds(worlds, progress, selected, onWorld) {
 
   function refresh() {
     cards.forEach((button, index) => {
-      const open = index < progress.unlocked;
+      const open = index < progress.unlocked || worlds[index].open; // open = altijd te spelen
       button.disabled = !open;
       button.classList.toggle('on', index === current);
       button.setAttribute('aria-pressed', index === current);
