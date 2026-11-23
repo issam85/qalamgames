@@ -9,6 +9,7 @@ export function createBall() {
     owner: null, // de speler die dribbelt
     noTouch: 0, // even niet aan te nemen na een trap
     lastTouch: null,
+    ownTime: 0, // zo lang heeft de huidige eigenaar de bal al
   };
 }
 
@@ -52,6 +53,7 @@ export function goalSide(ball) {
 // één tijdstap voor een losse bal; een gedribbelde bal beweegt met de speler mee
 export function stepBall(ball, dt, events) {
   ball.noTouch = Math.max(0, ball.noTouch - dt);
+  ball.ownTime = ball.owner ? ball.ownTime + dt : 0;
   if (ball.owner) return;
   const sub = dt / BALL.substeps;
   for (let i = 0; i < BALL.substeps; i++) {

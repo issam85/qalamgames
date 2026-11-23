@@ -111,13 +111,14 @@ export const KEEPER = {
   },
 };
 
-// de CPU-spelers per moeilijkheid: denktijd, snelheid, mikfout, tackles per seconde dichtbij, schietafstand
+// de CPU-spelers per moeilijkheid: denktijd, snelheid, mikfout, tackles per seconde dichtbij, schietafstand;
+// calm = zo lang laat de CPU een echte speler met rust nadat die de bal heeft aangenomen
 export const CPU = {
   roles: ['achter', 'links', 'rechts'],
   levels: {
-    easy: { think: 0.2, speed: 0.82, aimError: 0.22, tackle: 0.5, shootRange: 9, sprint: 0.5 },
-    normal: { think: 0.13, speed: 0.92, aimError: 0.13, tackle: 0.9, shootRange: 11, sprint: 0.7 },
-    hard: { think: 0.08, speed: 1, aimError: 0.07, tackle: 1.4, shootRange: 12.5, sprint: 0.9 },
+    easy: { think: 0.3, speed: 0.74, aimError: 0.3, tackle: 0.3, shootRange: 8, sprint: 0.35, calm: 1.2 },
+    normal: { think: 0.13, speed: 0.92, aimError: 0.13, tackle: 0.9, shootRange: 11, sprint: 0.7, calm: 0.4 },
+    hard: { think: 0.08, speed: 1, aimError: 0.07, tackle: 1.4, shootRange: 12.5, sprint: 0.9, calm: 0 },
   },
   pressRange: 1.4, // vanaf hier tackelen
   lane: 1.1, // een pass is vrij als niemand zo dicht bij de lijn staat

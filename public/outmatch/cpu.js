@@ -67,7 +67,8 @@ function decide(player, match, brain, level) {
   }
   const goalSide = -player.attack * 0.6;
   brain.target = { x: ball.pos.x + goalSide, z: ball.pos.z };
-  brain.tackle = dist(player.pos, ball.pos) < CPU.pressRange && Math.random() < level.tackle * level.think;
+  const calm = !owner.cpu && ball.ownTime < level.calm; // een echte speler krijgt even rust
+  brain.tackle = !calm && dist(player.pos, ball.pos) < CPU.pressRange && Math.random() < level.tackle * level.think;
 }
 
 export function cpuIntent(player, match, dt) {

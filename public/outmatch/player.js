@@ -100,6 +100,7 @@ function control(player, ball) {
   if (footDistance(player, ball) > CONTROL.reach) return;
   ball.owner = player;
   ball.lastTouch = player;
+  ball.ownTime = 0;
 }
 
 // de bal blijft vlak voor de voeten en rolt mee

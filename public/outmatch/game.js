@@ -8,7 +8,7 @@ import { setHumans } from './teams.js';
 import { setTouchPlayers } from './touch.js';
 import { keysLine } from './help.js';
 
-const match = createMatch();
+const match = createMatch({ level: 'easy' }); // de bots zijn te snel op normaal; kiezen komt in het menu
 const input = createInput();
 const view = createView(document.getElementById('view'), match);
 const upright = window.matchMedia('(orientation: portrait) and (pointer: coarse)');
