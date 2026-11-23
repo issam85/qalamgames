@@ -111,8 +111,22 @@ const WORLD_3 = buildWorld('Hemelpaleis', 'paleis', LIFE, [
 // wereld 4: kleurlampen. Alleen de kleur die aan staat is vast (lamps.js)
 const WORLD_4 = buildWorld('Woestijnoase', 'stad', LIFE, [
   { title: 'De oase', colors: AMBER, speed: 10, rest: 6, pieces: [
-    lampWalls(4), row(2), lampBridges(4), lampStairs(4), row(2), lampOrbs(4), lampFlight(4),
-    lampBridges(5, true), lampStairs(5, true), lampFlight(5, true),
+    lampWalls(4), row(2), lampBridges(3), stairs(3), lampStairs(3), shelf(11, 2), lampBridges(4),
+    padOver(), lampOrbs(3), lampStairs(4), ringChain(2),
+  ] },
+  { title: 'De karavaan', colors: GREEN, speed: 10.5, rest: 5, pieces: [
+    lampBridges(5, true), sawRow(3), lampOrbs(4), tunnel(6), lampStairs(5), maceRow(2), ringChain(3),
+    lampBridges(5, true), lampStairs(5, true), towers(4, 1, 2), lampOrbs(5),
+  ] },
+  { title: 'Over de duinen vliegen', colors: ROSE, speed: 11, rest: 5, pieces: [
+    flight(6, 3), lampFlight(5), rhythm(4), lampFlight(6, true),
+  ] },
+  { title: 'Ondersteboven in de oase', colors: TEAL, speed: 11, rest: 5, pieces: [
+    upsideDown(6, 2),
+  ] },
+  { title: 'De sterrenbron', colors: CRIMSON, speed: 11.5, rest: 4, pieces: [
+    lampStairs(6, true), sawTowers(5, 1, 2), lampOrbs(6), maceRow(3), lampBridges(6, true), ringChain(4),
+    tunnel(7), lampStairs(6), lampOrbs(6), lampStairs(7, true), row(3),
   ] },
 ]);
 
